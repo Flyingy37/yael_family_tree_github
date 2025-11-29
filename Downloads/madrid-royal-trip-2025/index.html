@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Madrid Royal Trip 2025</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <!-- MarkerCluster CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+
+    <!-- Leaflet JS (Global) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- MarkerCluster JS (Global) -->
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+    <style>
+      body {
+        font-family: 'Rubik', sans-serif;
+        background-color: #0f172a; /* Dark Royal Blue */
+        color: #f8fafc;
+      }
+      /* Royal Font - English uses Playfair, Hebrew uses Frank Ruhl */
+      h1, h2, h3, .font-royal {
+        font-family: 'Playfair Display', 'Frank Ruhl Libre', serif;
+      }
+      
+      .text-gold-glow {
+        color: #fbbf24; /* amber-400 */
+        text-shadow: 0 0 10px rgba(251, 191, 36, 0.5), 0 0 20px rgba(251, 191, 36, 0.3);
+      }
+
+      /* Hide scrollbar for chrome/safari/opera */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      /* Hide scrollbar for IE, Edge and Firefox */
+      .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+      }
+      
+      /* Leaflet Customizations - Dark Mode */
+      .leaflet-popup-content-wrapper {
+        background-color: #1e293b; /* slate-800 */
+        color: #f8fafc;
+        border-radius: 12px;
+        padding: 0;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .leaflet-popup-tip {
+        background-color: #1e293b;
+      }
+      .leaflet-popup-content {
+        margin: 0;
+        width: 200px !important;
+      }
+      
+      /* Custom Pin Marker */
+      .custom-marker-pin {
+        width: 32px;
+        height: 32px;
+        border-radius: 50% 50% 50% 0;
+        background: #172554; /* blue-950 */
+        position: absolute;
+        transform: rotate(-45deg);
+        left: 50%;
+        top: 50%;
+        margin: -15px 0 0 -15px;
+        box-shadow: 0 3px 5px rgba(0,0,0,0.5);
+        border: 2px solid #fbbf24; /* amber-400 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .custom-marker-pin::after {
+        content: '';
+        width: 14px;
+        height: 14px;
+        margin: 6px 0 0 6px; /* center dot adjustment */
+        background: #fbbf24; /* amber-400 */
+        position: absolute;
+        border-radius: 50%;
+      }
+      
+      /* Custom Cluster Marker */
+      .custom-cluster-icon {
+        background: linear-gradient(135deg, #172554 0%, #1e3a8a 100%);
+        color: #fbbf24;
+        border: 2px solid #fbbf24;
+        border-radius: 50%;
+        text-align: center;
+        display: flex; /* Flex to center vertically/horizontally */
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-family: 'Rubik', sans-serif;
+        font-size: 14px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+      }
+
+      /* Bounce animation for selected marker */
+      @keyframes bounce {
+        0%, 100% { transform: translateY(0) rotate(-45deg); }
+        50% { transform: translateY(-10px) rotate(-45deg); }
+      }
+      .marker-bounce .custom-marker-pin {
+        animation: bounce 0.5s ease infinite;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
+    "leaflet": "data:text/javascript,export default window.L;"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
