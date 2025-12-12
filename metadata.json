@@ -1,0 +1,7 @@
+{
+  "name": "Amirnet English Practice for Mika Marcovici",
+  "description": "An application for Mika to practice for the Amirnet English test, with full practice exercises including sentence completion, restatements, and reading comprehension.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

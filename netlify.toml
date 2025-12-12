@@ -6,10 +6,9 @@ headers = []
   [functions."*"]
 
 [build]
-publish = "/Users/yaellivnatzaidman/Downloads/amirnet-english-practice-for-mika-marcovici/dist"
+publish = "dist"
 publishOrigin = "ui"
 commandOrigin = "ui"
-base = "/Users/yaellivnatzaidman/Downloads/amirnet-english-practice-for-mika-marcovici"
 command = "npm run build"
 
   [build.environment]
