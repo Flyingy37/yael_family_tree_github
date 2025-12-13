@@ -1,0 +1,7 @@
+{
+  "name": "Amirnet English for Mika",
+  "description": "A personalized English learning companion powered by Gemini, featuring conversation practice, adaptive quizzes, and roleplay scenarios designed for Mika.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
