@@ -1,1 +1,0 @@
-export { WordBankView } from '../WordBankView'
