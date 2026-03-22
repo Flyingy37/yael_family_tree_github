@@ -6,6 +6,7 @@ interface Props {
   families: Map<string, Family>;
   onNavigate: (personId: string) => void;
   onClose: () => void;
+  onShowSubtree?: (personId: string) => void;
 }
 
 function InfoRow({ label, value }: { label: string; value: string | null | undefined }) {
@@ -31,7 +32,7 @@ function PersonLink({ id, persons, onNavigate }: { id: string; persons: Map<stri
   );
 }
 
-export function PersonDetailPanel({ person, persons, families, onNavigate, onClose }: Props) {
+export function PersonDetailPanel({ person, persons, families, onNavigate, onClose, onShowSubtree }: Props) {
   // Find parents
   const parentFamily = person.familyAsChild ? families.get(person.familyAsChild) : null;
   const parents = parentFamily?.spouses || [];
@@ -66,6 +67,15 @@ export function PersonDetailPanel({ person, persons, families, onNavigate, onClo
 
       {person.hebrewName && person.hebrewName !== person.fullName && (
         <div className="text-sm text-gray-600 mb-2">{person.hebrewName}</div>
+      )}
+
+      {onShowSubtree && (
+        <button
+          onClick={() => onShowSubtree(person.id)}
+          className="w-full mb-3 py-1.5 px-3 text-xs bg-amber-50 text-amber-700 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors"
+        >
+          🌿 הצג עץ משנה של {person.givenName}
+        </button>
       )}
 
       <div className="space-y-0">

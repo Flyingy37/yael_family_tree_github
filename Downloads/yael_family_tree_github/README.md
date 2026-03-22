@@ -1,25 +1,83 @@
-# Yael Family Tree Master Dataset
+# 🌳 אילן יוחסין — משפחת לבנת זיידמן
 
-This repository contains the latest canonical consolidated genealogy dataset for the Yael Livnat Zaidman family tree project.
+אפליקציית ווב אינטראקטיבית לצפייה באילן היוחסין של משפחת לבנת-זיידמן.
+מכילה **4,145 אנשים** לאורך **32 דורות** של היסטוריה משפחתית.
 
-## Main file
+## תכונות
 
-- `canonical_genealogy_master_patched_manual_surnames_equivalences_2026-03-14.csv`
-  - Latest canonical people master dataset
-  - Includes standardized surnames and surname equivalence patches
-  - Intended as the current master export for the full tree
+### 🌳 תצוגת עץ
+- ויזואליזציה אינטראקטיבית עם גרירה, זום וניווט
+- צמתים צבעוניים לפי מין ודור
+- קישורים בין הורים, ילדים ובני זוג
+- **תצוגת עץ משנה** — לחיצה על אדם מציגה רק את העץ שלו
 
-## Dataset summary
+### 🗺️ מפת עולם
+- מפה אינטראקטיבית עם 977 אנשים עם קואורדינטות ידועות
+- אשכולות לפי מיקום עם popup שמציג את כל האנשים
+- צבעים לפי מין
 
-- Rows including header: 4146
-- Approximate people records: 4145
-- Format: CSV
+### 📅 ציר זמן
+- גרף עמודות לפי עשורים (לידות ופטירות)
+- לחיצה על עשור מציגה את כל האירועים בתקופה
 
-## Notes
+### 🔍 חיפוש וסינון
+- חיפוש fuzzy בעברית ואנגלית (שמות, מקומות, קשר ליעל)
+- סינון לפי: טווח דורות, שם משפחה, מין, מידע גנטי, קפיצות מיעל
+- פאנל פרטים עם ניווט בין בני משפחה
 
-This dataset is genealogical in nature and may contain personal or family-history information collected from multiple sources. Review privacy considerations before publishing publicly.
+## התקנה
 
-## Recommended use
+```bash
+# שיבוט הריפו
+git clone https://github.com/Flyingy37/yael_family_tree_github.git
+cd yael_family_tree_github
 
-- Private GitHub repository for working version
-- Public release only after redacting living individuals and sensitive notes if needed
+# התקנת תלויות
+npm install
+
+# הרצה בפיתוח (בונה את הנתונים ומפעיל שרת)
+npm run dev
+```
+
+האפליקציה תיפתח ב- http://localhost:5173
+
+## טכנולוגיות
+
+- **React 19** + **TypeScript** — ממשק משתמש
+- **Vite 6** — בנייה ופיתוח
+- **ReactFlow** — ויזואליזציית עץ אינטראקטיבית
+- **Leaflet** — מפה אינטראקטיבית
+- **Dagre** — אלגוריתם layout לעץ
+- **Fuse.js** — חיפוש fuzzy
+- **Tailwind CSS** — עיצוב RTL
+
+## מבנה הפרויקט
+
+```
+├── data/
+│   ├── canonical.csv       # נתונים קנוניים (4,145 רשומות)
+│   ├── curated.csv         # קרובים ישירים בעברית (351 רשומות)
+│   └── data_dictionary.md  # תיעוד העמודות
+├── scripts/
+│   └── build-graph.ts      # סקריפט עיבוד CSV → JSON
+├── src/
+│   ├── components/         # קומפוננטות React
+│   ├── hooks/              # React hooks
+│   ├── utils/              # פונקציות עזר
+│   ├── App.tsx             # קומפוננטה ראשית
+│   └── types.ts            # טיפוסי TypeScript
+└── public/
+    └── family-graph.json   # נוצר אוטומטית בבנייה
+```
+
+## נתונים
+
+הנתונים מבוססים על ייצוא גנאלוגי מבוסס GEDCOM עם:
+- זיהוי GEDCOM (`@I1@`, `@F1@`)
+- קישורי משפחה (`fams` לבני זוג, `famc` להורים)
+- מידע על דורות, קשר ליעל, DNA, ומיקומים
+- 24 אנשים עם מידע גנטי (mtDNA, Y-DNA, אוטוזומלי)
+
+## פרטיות
+
+מערך הנתונים כולל מידע אישי ומשפחתי. יש לשקול פרטיות לפני פרסום פומבי.
