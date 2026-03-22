@@ -92,32 +92,34 @@ export default function App() {
   return (
     <div className="h-screen flex flex-col bg-gray-50" dir="rtl">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-4 shadow-sm z-10">
-        <h1 className="text-lg font-bold text-gray-800 whitespace-nowrap">
-          🌳 אילן יוחסין — משפחת לבנת זיידמן
-        </h1>
+      <header className="bg-white border-b border-gray-200 px-4 py-3 shadow-sm z-10">
+        <div className="flex items-center gap-3 flex-wrap">
+          <h1 className="text-lg font-bold text-gray-800 whitespace-nowrap">
+            🌳 אילן יוחסין
+          </h1>
 
-        {/* View tabs */}
-        <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5">
-          {VIEW_TABS.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setViewMode(tab.id)}
-              className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
-                viewMode === tab.id
-                  ? 'bg-white shadow-sm font-medium text-gray-800'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              {tab.icon} {tab.label}
-            </button>
-          ))}
-        </div>
+          {/* View tabs */}
+          <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5">
+            {VIEW_TABS.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setViewMode(tab.id)}
+                className={`px-3 py-1.5 rounded-md text-sm transition-colors whitespace-nowrap ${
+                  viewMode === tab.id
+                    ? 'bg-white shadow-sm font-medium text-gray-800'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                {tab.icon} {tab.label}
+              </button>
+            ))}
+          </div>
 
-        <SearchBar searchIndex={searchIndex} onSelect={handleSelectPerson} />
-        <div className="flex-1" />
-        <div className="text-xs text-gray-400">
-          {displayIds.size.toLocaleString()} / {personList.length.toLocaleString()} אנשים
+          <SearchBar searchIndex={searchIndex} onSelect={handleSelectPerson} />
+          <div className="flex-1" />
+          <div className="text-xs text-gray-400 whitespace-nowrap">
+            {displayIds.size.toLocaleString()} / {personList.length.toLocaleString()} אנשים
+          </div>
         </div>
       </header>
 
