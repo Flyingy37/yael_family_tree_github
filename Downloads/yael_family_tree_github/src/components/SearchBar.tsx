@@ -11,16 +11,19 @@ export function SearchBar({ searchIndex, onSelect }: Props) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Person[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (query.length < 2) {
       setResults([]);
+      setHighlightedIndex(-1);
       return;
     }
     const hits = searchIndex.search(query, { limit: 10 });
     setResults(hits.map(h => h.item));
+    setHighlightedIndex(hits.length > 0 ? 0 : -1);
     setIsOpen(true);
   }, [query, searchIndex]);
 
@@ -37,7 +40,45 @@ export function SearchBar({ searchIndex, onSelect }: Props) {
   function handleSelect(person: Person) {
     setQuery(person.fullName);
     setIsOpen(false);
+    setHighlightedIndex(-1);
     onSelect(person.id);
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (!isOpen || results.length === 0) {
+      if (e.key === 'ArrowDown' && results.length > 0) {
+        e.preventDefault();
+        setIsOpen(true);
+        setHighlightedIndex(0);
+      }
+      return;
+    }
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setHighlightedIndex(i => (i + 1) % results.length);
+      return;
+    }
+
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setHighlightedIndex(i => (i <= 0 ? results.length - 1 : i - 1));
+      return;
+    }
+
+    if (e.key === 'Enter') {
+      if (highlightedIndex >= 0 && highlightedIndex < results.length) {
+        e.preventDefault();
+        handleSelect(results[highlightedIndex]);
+      }
+      return;
+    }
+
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      setIsOpen(false);
+      setHighlightedIndex(-1);
+    }
   }
 
   return (
@@ -47,18 +88,30 @@ export function SearchBar({ searchIndex, onSelect }: Props) {
         type="text"
         value={query}
         onChange={e => setQuery(e.target.value)}
+        onKeyDown={handleKeyDown}
         onFocus={() => results.length > 0 && setIsOpen(true)}
         placeholder="חיפוש לפי שם, משפחה או מקום..."
+        aria-label="חיפוש אנשים בעץ המשפחה"
+        aria-expanded={isOpen}
+        aria-autocomplete="list"
         className="w-64 px-3 py-2 border border-gray-300 rounded-lg text-sm
                    focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent
                    placeholder:text-gray-400"
       />
       {isOpen && results.length > 0 && (
-        <div className="absolute top-full mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
-          {results.map(person => (
+        <div
+          role="listbox"
+          className="absolute top-full mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto"
+        >
+          {results.map((person, index) => (
             <button
               key={person.id}
-              className="w-full px-3 py-2 text-right hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-0"
+              role="option"
+              aria-selected={index === highlightedIndex}
+              className={`w-full px-3 py-2 text-right transition-colors border-b border-gray-50 last:border-0 ${
+                index === highlightedIndex ? 'bg-blue-50' : 'hover:bg-blue-50'
+              }`}
+              onMouseEnter={() => setHighlightedIndex(index)}
               onClick={() => handleSelect(person)}
             >
               <div className="text-sm font-medium">{person.fullName}</div>

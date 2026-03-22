@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Fuse from 'fuse.js';
 import type { Person, Family, FamilyGraph } from '../types';
 
@@ -10,28 +10,44 @@ export interface FamilyData {
   searchIndex: Fuse<Person>;
   loading: boolean;
   error: string | null;
+  reload: () => void;
 }
 
 export function useFamilyData(): FamilyData {
   const [graph, setGraph] = useState<FamilyGraph | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reloadToken, setReloadToken] = useState(0);
+
+  const reload = useCallback(() => {
+    setReloadToken(prev => prev + 1);
+  }, []);
 
   useEffect(() => {
-    fetch('/family-graph.json')
+    const controller = new AbortController();
+
+    setLoading(true);
+    setError(null);
+
+    fetch('/family-graph.json', { signal: controller.signal })
       .then(res => {
-        if (!res.ok) throw new Error('Failed to load family data');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
       .then((data: FamilyGraph) => {
         setGraph(data);
-        setLoading(false);
       })
-      .catch(err => {
-        setError(err.message);
-        setLoading(false);
+      .catch((err: unknown) => {
+        if (err instanceof DOMException && err.name === 'AbortError') return;
+        const message = err instanceof Error ? err.message : 'Unknown error';
+        setError(`נכשלה טעינת הנתונים (${message})`);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
       });
-  }, []);
+
+    return () => controller.abort();
+  }, [reloadToken]);
 
   const persons = useMemo(() => {
     if (!graph) return new Map<string, Person>();
@@ -77,5 +93,6 @@ export function useFamilyData(): FamilyData {
     searchIndex,
     loading,
     error,
+    reload,
   };
 }

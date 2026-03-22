@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { Person } from '../types';
@@ -24,7 +24,7 @@ function getSexColor(sex: string): string {
 
 function FitBounds({ points }: { points: ClusterPoint[] }) {
   const map = useMap();
-  useMemo(() => {
+  useEffect(() => {
     if (points.length === 0) return;
     const lats = points.map(p => p.lat);
     const lngs = points.map(p => p.lng);

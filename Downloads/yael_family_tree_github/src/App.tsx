@@ -1,14 +1,15 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect, lazy, Suspense } from 'react';
 import { ReactFlowProvider } from '@xyflow/react';
 import { useFamilyData } from './hooks/useFamilyData';
-import { TreeView } from './components/TreeView';
-import { MapView } from './components/MapView';
-import { TimelineView } from './components/TimelineView';
 import { PersonDetailPanel } from './components/PersonDetailPanel';
 import { SearchBar } from './components/SearchBar';
 import { FilterPanel, applyFilters, DEFAULT_FILTERS, type Filters } from './components/FilterPanel';
 import { StatsPanel } from './components/StatsPanel';
 import { getSubtreeIds } from './utils/subtree';
+import {
+  downloadLastWebVitalsSnapshot,
+  getLastWebVitalsSnapshot,
+} from './performance/webVitals';
 
 type ViewMode = 'tree' | 'map' | 'timeline';
 
@@ -18,13 +19,42 @@ const VIEW_TABS: { id: ViewMode; label: string; icon: string }[] = [
   { id: 'timeline', label: 'ציר זמן', icon: '📅' },
 ];
 
+const loadTreeView = () => import('./components/TreeView');
+const loadMapView = () => import('./components/MapView');
+const loadTimelineView = () => import('./components/TimelineView');
+
+const TreeView = lazy(() =>
+  loadTreeView().then(module => ({ default: module.TreeView }))
+);
+const MapView = lazy(() =>
+  loadMapView().then(module => ({ default: module.MapView }))
+);
+const TimelineView = lazy(() =>
+  loadTimelineView().then(module => ({ default: module.TimelineView }))
+);
+
+const VIEW_PRELOADERS: Record<ViewMode, () => Promise<unknown>> = {
+  tree: loadTreeView,
+  map: loadMapView,
+  timeline: loadTimelineView,
+};
+
+function ViewLoadingFallback() {
+  return (
+    <div className="h-full w-full flex items-center justify-center text-gray-500 text-sm" dir="rtl">
+      טוען תצוגה...
+    </div>
+  );
+}
+
 export default function App() {
-  const { persons, families, rootPersonId, personList, searchIndex, loading, error } = useFamilyData();
+  const { persons, families, rootPersonId, personList, searchIndex, loading, error, reload } = useFamilyData();
   const [selectedPersonId, setSelectedPersonId] = useState<string | null>(null);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [viewMode, setViewMode] = useState<ViewMode>('tree');
   const [subtreeRootId, setSubtreeRootId] = useState<string | null>(null);
   const [subtreeDepth, setSubtreeDepth] = useState(4);
+  const [hasVitalsSnapshot, setHasVitalsSnapshot] = useState(false);
 
   const filteredIds = useMemo(
     () => applyFilters(personList, filters),
@@ -67,6 +97,45 @@ export default function App() {
     setViewMode('tree');
   }, []);
 
+  const handlePreloadView = useCallback((view: ViewMode) => {
+    void VIEW_PRELOADERS[view]();
+  }, []);
+
+  const handleExportVitals = useCallback(() => {
+    const ok = downloadLastWebVitalsSnapshot();
+    if (!ok) {
+      window.alert('עדיין אין snapshot של Web Vitals לייצוא. טעני את הדף שוב ובדקי Console.');
+    }
+  }, []);
+
+  useEffect(() => {
+    const preloadPreferredViews = () => {
+      void loadMapView();
+      void loadTimelineView();
+    };
+
+    if (typeof window === 'undefined') return;
+
+    const idleWindow = window as Window & {
+      requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+
+    if (idleWindow.requestIdleCallback) {
+      const idleId = idleWindow.requestIdleCallback(preloadPreferredViews, { timeout: 2000 });
+      return () => {
+        if (idleWindow.cancelIdleCallback) idleWindow.cancelIdleCallback(idleId);
+      };
+    }
+
+    const timeoutId = window.setTimeout(preloadPreferredViews, 1200);
+    return () => window.clearTimeout(timeoutId);
+  }, []);
+
+  useEffect(() => {
+    setHasVitalsSnapshot(getLastWebVitalsSnapshot() !== null);
+  }, [loading, error]);
+
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center bg-gray-50" dir="rtl">
@@ -81,9 +150,15 @@ export default function App() {
   if (error) {
     return (
       <div className="h-screen flex items-center justify-center bg-gray-50" dir="rtl">
-        <div className="text-center text-red-600">
+        <div className="text-center text-red-600 max-w-md px-4">
           <div className="text-lg font-bold">שגיאה בטעינת הנתונים</div>
-          <div className="text-sm mt-2">{error}</div>
+          <div className="text-sm mt-2 break-words">{error}</div>
+          <button
+            onClick={reload}
+            className="mt-4 px-4 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+          >
+            נסה/י שוב
+          </button>
         </div>
       </div>
     );
@@ -104,6 +179,8 @@ export default function App() {
               <button
                 key={tab.id}
                 onClick={() => setViewMode(tab.id)}
+                onMouseEnter={() => handlePreloadView(tab.id)}
+                onFocus={() => handlePreloadView(tab.id)}
                 className={`px-3 py-1.5 rounded-md text-sm transition-colors whitespace-nowrap ${
                   viewMode === tab.id
                     ? 'bg-white shadow-sm font-medium text-gray-800'
@@ -117,6 +194,17 @@ export default function App() {
 
           <SearchBar searchIndex={searchIndex} onSelect={handleSelectPerson} />
           <div className="flex-1" />
+          <button
+            onClick={handleExportVitals}
+            className={`text-xs px-2.5 py-1.5 rounded-md border transition-colors whitespace-nowrap ${
+              hasVitalsSnapshot
+                ? 'border-gray-300 text-gray-600 hover:bg-gray-100'
+                : 'border-gray-200 text-gray-400 hover:bg-gray-50'
+            }`}
+            title="ייצוא snapshot אחרון של Web Vitals לקובץ JSON"
+          >
+            ייצוא Web Vitals
+          </button>
           <div className="text-xs text-gray-400 whitespace-nowrap">
             {displayIds.size.toLocaleString()} / {personList.length.toLocaleString()} אנשים
           </div>
@@ -167,32 +255,34 @@ export default function App() {
 
         {/* Main view */}
         <div className="flex-1">
-          {viewMode === 'tree' && (
-            <ReactFlowProvider>
-              <TreeView
+          <Suspense fallback={<ViewLoadingFallback />}>
+            {viewMode === 'tree' && (
+              <ReactFlowProvider>
+                <TreeView
+                  persons={persons}
+                  families={families}
+                  filteredIds={displayIds}
+                  rootPersonId={subtreeRootId || rootPersonId}
+                  selectedPersonId={selectedPersonId}
+                  onSelectPerson={handleSelectPerson}
+                />
+              </ReactFlowProvider>
+            )}
+            {viewMode === 'map' && (
+              <MapView
                 persons={persons}
-                families={families}
                 filteredIds={displayIds}
-                rootPersonId={subtreeRootId || rootPersonId}
-                selectedPersonId={selectedPersonId}
                 onSelectPerson={handleSelectPerson}
               />
-            </ReactFlowProvider>
-          )}
-          {viewMode === 'map' && (
-            <MapView
-              persons={persons}
-              filteredIds={displayIds}
-              onSelectPerson={handleSelectPerson}
-            />
-          )}
-          {viewMode === 'timeline' && (
-            <TimelineView
-              persons={persons}
-              filteredIds={displayIds}
-              onSelectPerson={handleSelectPerson}
-            />
-          )}
+            )}
+            {viewMode === 'timeline' && (
+              <TimelineView
+                persons={persons}
+                filteredIds={displayIds}
+                onSelectPerson={handleSelectPerson}
+              />
+            )}
+          </Suspense>
         </div>
 
         {/* Right sidebar - person details */}
