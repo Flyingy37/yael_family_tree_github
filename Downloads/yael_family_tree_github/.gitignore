@@ -1,0 +1,29 @@
+.DS_Store
+.Rhistory
+.RData
+.Rproj.user/
+*.tmp
+*.log
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Generated data
+public/family-graph.json
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+
+# Excel/binary data files (keep CSVs only)
+*.xlsx
+*.xlsm
+*.numbers
+*.docx
