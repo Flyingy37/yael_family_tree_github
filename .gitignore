@@ -32,3 +32,41 @@ public/family-graph.json
 *.xlsm
 *.numbers
 *.docx
+
+# --- Public-repo safety: raw genealogy + DNA + internal reports ---
+# Master person data (contains living people, minors, DNA in notes) — keep locally or in a PRIVATE repo only.
+/data/canonical.csv
+/data/curated.csv
+
+# Pipeline outputs / review dumps (names, DNA hints)
+/reports/
+
+# Generated / review CSV in public/ (PII)
+/public/unlinked-people-review.csv
+
+# Root-level exports (not used by build-graph; often contain DNA columns)
+/Family_Tree_Yael_Livnat*.csv
+/Family_Tree_Yael_Livnat_github.xlsx
+/canonical_genealogy_master*.csv
+/heritage_6_mar_26*.csv
+/genealogy_exports_cleaned*.xlsx
+
+# One-off research note files at repo root (rename if you need a different pattern)
+/Resolved a repeated identity mix-up*
+
+# Typical genetic-genealogy export filenames (adjust if you add public-safe summaries with different names)
+*23andMe*
+*23andme*
+*FTDNA*
+*ftdna*
+*Family_Finder*
+*GEDmatch*
+*gedmatch*
+*MyHeritage_raw*
+*Chromosome*Browser*
+*haplogroup*
+*AutoCluster*
+*autocluster*
+*DNA_Match*
+*DNA_results*
+*dna_relatives*

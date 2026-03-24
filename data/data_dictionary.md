@@ -1,12 +1,20 @@
 # Family_Tree_Yael_Livnat Data Dictionary
 
-Recommended GitHub structure after refresh:
+## חשוב — פרטיות (עדכון)
 
-- `Family_Tree_Yael_Livnat.csv` - Curated close-relatives export for easy browsing and manual review.
-- `Family_Tree_Yael_Livnat_github.xlsx` - Excel version of the curated GitHub-friendly export.
-- `genealogy_exports_cleaned_2026-03-13.xlsx` - Large cleaned master workbook for deeper research.
-- `canonical_genealogy_master_patched_manual_surnames_equivalences_2026-03-14.csv` - Canonical flat table with standardized surnames.
-- `heritage_6_mar_26_FamilyTree.csv` - Large family-tree export from heritage workflow.
+קבצי **`canonical.csv`** ו־**`curated.csv`** אינם אמורים להיות בריפו **ציבורי** אם הם מכילים: מידע DNA, אנשים חיים, קטינים, או פרטים מזהים רבים. שמרי אותם **מקומית** או בריפו **פרטי** בלבד. לפרסום ציבורי יש לייצר **גרסה מסוננת** (בלי DNA, בלי קטינים, ולפי מדיניות משפחתית לאנשים חיים).
+
+ייצואי עץ / מאסטרים גדולים (`Family_Tree_*.csv`, `heritage_*`, `canonical_genealogy_master*.csv`, וכו׳) — אותו עיקרון: לא ל־Git ציבורי.
+
+---
+
+מקורות עבודה (מחוץ לריפו ציבורי, לרוב):
+
+- `Family_Tree_Yael_Livnat.csv` — ייצוא קרובים לבדיקה ידנית.
+- `Family_Tree_Yael_Livnat_github.xlsx` — גרסת Excel.
+- `genealogy_exports_cleaned_*.xlsx` — מאסטר ניקוי גדול.
+- `canonical_genealogy_master_*.csv` — טבלה קנונית שטוחה.
+- `heritage_*_FamilyTree.csv` — ייצוא מתהליך heritage.
 
 ## Curated CSV columns
 
@@ -25,6 +33,5 @@ Recommended GitHub structure after refresh:
 
 ## Recommendation
 
-- Keep the curated CSV/XLSX for human-readable GitHub browsing.
-- Keep one canonical master file for research and matching workflows.
-- Keep the heritage export only if you still actively use that pipeline; otherwise it can stay outside the repo.
+- **ריפו ציבורי:** רק קוד + (אופציונלי) נתונים **מסוננים**; כל המאסטרים וה־DNA — ריפו פרטי או דיסק מקומי.
+- **ריפו פרטי / מקומי:** שמירת מאסטר מלא, ייצואי MyHeritage/FTDNA, ודוחות פנימיים.
