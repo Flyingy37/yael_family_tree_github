@@ -1,0 +1,1324 @@
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
+import { parse } from 'csv-parse/sync';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(__dirname, '..');
+
+interface RawCanonical {
+  ged_id: string;
+  full_name: string;
+  given_final: string;
+  surname: string;
+  surname_final: string;
+  sex: string;
+  birth_date: string;
+  birth_place: string;
+  fams: string;
+  famc: string;
+  titl: string;
+  note: string;
+  note_plain: string;
+}
+
+interface RawCurated {
+  'Hops': string;
+  'Relationship to Yael': string;
+  'Full Name': string;
+  'Birth Name': string;
+  'Birth Year': string;
+  'Birth City': string;
+  'Generation': string;
+  'Father Name': string;
+  'Mother Name': string;
+  'Spouse Name': string;
+  'Children Names': string;
+  'ID': string;
+}
+
+interface RawSurnameOrigin {
+  Surname: string;
+  Location: string;
+  '\ufeffSurname'?: string;
+}
+
+interface SupplementalSignals {
+  holocaustNames: Set<string>;
+  partisanNames: Set<string>;
+  loadedFiles: string[];
+}
+
+interface Person {
+  id: string;
+  fullName: string;
+  givenName: string;
+  surname: string;
+  surnameFinal: string;
+  sex: 'M' | 'F' | 'U';
+  birthDate: string | null;
+  deathDate: string | null;
+  birthPlace: string | null;
+  generation: number | null;
+  relationToYael: string | null;
+  hops: number | null;
+  dnaInfo: string | null;
+  coordinates: [number, number] | null;
+  familiesAsSpouse: string[];
+  familyAsChild: string | null;
+  title: string | null;
+  hebrewName: string | null;
+  birthName: string | null;
+  fatherName: string | null;
+  motherName: string | null;
+  spouseName: string | null;
+  childrenNames: string | null;
+  surnameOrigin: string | null;
+  jewishLineage: string | null;
+  migrationInfo: string | null;
+  holocaustVictim: boolean;
+  warCasualty: boolean;
+  connectionPathCount: number | null;
+  doubleBloodTie: boolean;
+  tags: string[];
+}
+
+const MANUAL_TAG_OVERRIDES: Record<string, string[]> = {
+  // User-confirmed family annotation: grandfather Nahum/Nochim Alperovich
+  '@I11@': ['Partisan'],
+  // User-confirmed: maternal uncle appears in verified DNA matching evidence.
+  '@I23@': ['DNA'], // Zeev Vladimir Alperovich
+  // Requested notable public figures
+  '@I2560@': ['Famous'], // Hayim Nahman Bialik
+  '@I619@': ['Famous'], // Terry J. Dubrow
+  '@I1085@': ['Famous'], // Terry J. Dubrow (second profile)
+  '@I618@': ['Famous'], // Kevin Mark Dubrow (Riot)
+  // Requested: mark key ancestor as lineage/yichus.
+  '@I3465@': ['Lineage'], // Zvulen Eliezer Heilprin
+  // User-confirmed MyHeritage DNA-match profile cluster (Oded paternal-side matches).
+  '@I721@': ['DNA'], // Joseph/yushua Kaszinsky
+  '@I724@': ['DNA'], // Gordon (mother)
+  '@I500@': ['DNA'], // Joseph Gordon (brother)
+  '@I831@': ['DNA'], // Albert Gordon (brother)
+  '@I830@': ['DNA'], // Abraham E/abe Gozansky/Gordon
+};
+
+const MANUAL_HOLOCAUST_VICTIM_OVERRIDES: Record<string, boolean> = {
+  // User-confirmed branch examples around Nochim/Nachum Alperovich family.
+  '@I34@': true, // Michael Alperovich (father)
+  '@I35@': true, // Pesya Kastrol (mother)
+  '@I54@': true, // Rachel Alperovich (sister)
+  '@I56@': true, // Henia Alperovitch (sister)
+  '@I57@': true, // Rashka Alperovitch (sister)
+  '@I58@': false, // Ruven Duberstein - killed in battle (Russian army), not Shoah victim
+  '@I59@': false, // Michael Duberstein - died as an infant, before Shoah
+};
+
+const MANUAL_WAR_CASUALTY_OVERRIDES: Record<string, boolean> = {
+  '@I58@': true, // Ruven (Ruve) Vladimirovich Duberstein - killed in battle (Russian army)
+};
+
+const MANUAL_BIRTHPLACE_OVERRIDES: Record<string, string> = {
+  // User research note: likely origin from Belarus/Ukraine (Guzhinsky), while descendants are in Romania branch.
+  '@I30@': 'Belarus or Ukraine (Guzhinsky origin)',
+  // User-confirmed: Cilia Sara was born in Haifa during the British Mandate period.
+  '@I12@': 'Haifa, British Mandate for Palestine',
+};
+
+const MANUAL_TITLE_APPEND_OVERRIDES: Record<string, string> = {
+  '@I6@': 'DNA matches note: Abraham Guzhinsky appears in Oded match lists (paternal branch evidence).',
+  '@I618@': 'Music note: Kevin Mark DuBrow, associated with the heavy metal band Riot.',
+  '@I30@': 'Research note: family origin linked to Abraham Guzhinsky; likely Belarus/Ukraine.',
+  '@I721@': 'MyHeritage profile note: Joseph/Yushua Kaszinsky. Birth: Poland. Family context includes Gordon maternal line.',
+  '@I724@': 'MyHeritage profile note: Gordon (mother line linked to Joseph/Yushua Kaszinsky profile).',
+  '@I500@': 'MyHeritage profile note: Joseph Gordon identified as sibling in the Kaszinsky/Gordon profile cluster.',
+  '@I831@': 'MyHeritage profile note: Albert Gordon (b. 1911, Poland) identified as sibling in the Kaszinsky/Gordon profile cluster.',
+  '@I830@': 'MyHeritage profile note: Abraham E/abe Gozansky/Gordon. Military service marker: Gozansky/Gordon.',
+};
+
+const MANUAL_MIGRATION_INFO_OVERRIDES: Record<string, string> = {
+  // User-confirmed branch history for Cilia Sara Duberstein:
+  // family migrated from Belarus (Pleshchenitsy area), she was born in Haifa,
+  // then the family returned to Belarus around 1930.
+  '@I12@': 'Born in Haifa (British Mandate). Family origin in Belarus (Pleshchenitsy area), with return to Belarus around 1930.',
+};
+
+const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullName' | 'surname' | 'surnameFinal'>>> = {
+  // Requested display naming: include both Livnat and Zaidman on Yael.
+  '@I1@': { fullName: 'Yael Livnat Zaidman' },
+  // User-confirmed surname history in close family branch.
+  '@I22@': { surname: 'Lanzmann', surnameFinal: 'Amiron' }, // Mirriam Mali Amiron (nee Lanzmann)
+  '@I47@': { surname: 'Amiron', surnameFinal: 'Kfir' }, // Hava Kfir (nee Amiron)
+  '@I102@': { surname: 'Kfir', surnameFinal: 'Horvitz' }, // Michal Horvitz (nee Kfir)
+  '@I114@': { surname: 'Vulis', surnameFinal: 'Levi' }, // Ester Levi (nee Vulis)
+  '@I218@': { fullName: 'Boaz Bar Levi', surname: 'Levi', surnameFinal: 'Bar Levi' }, // Son listed as Boaz Bar Levi (formerly Levi)
+  '@I10@': { fullName: 'Mina Lanzmann', surname: 'Shvartz', surnameFinal: 'Lanzmann' }, // Mina Lanzmann (nee Shvartz)
+  '@I49@': { fullName: 'Marcu Doron', surname: 'Shvartz Dascalu', surnameFinal: 'Doron' }, // Marcu Doron (formerly Shvartz Dascalu)
+  '@I163@': { fullName: 'Yael Lanzmann', surname: 'Shipper', surnameFinal: 'Lanzmann' }, // Yael Lanzmann (nee Shipper)
+  '@I77@': { fullName: 'Mordechay Amiron', surname: 'Tekotzino', surnameFinal: 'Amiron' }, // Mordechay Amiron (formerly Tekotzino)
+  // User-confirmed: Avrum should be in Vulis surname cluster.
+  '@I1240@': { surname: 'Vulis', surnameFinal: 'Vulis' },
+};
+
+const MANUAL_MERGE_TO_PRIMARY: Record<string, string> = {
+  // High-confidence Vulis duplicates (same full name, matching branch context).
+  '@I849@': '@I1239@', // Shulim Shakhna Vulis
+  '@I1635@': '@I1234@', // David Vulis
+  // Avrum Vulis cluster: duplicate profiles from partial/alternate sources.
+  '@I1128@': '@I1240@', // Avrum Gershkov* M'skvira -> Avrum (1789) in Vulis branch
+  '@I1653@': '@I1240@', // Avrum Vulis M'skvira -> Avrum (1789) in Vulis branch
+  '@I4069@': '@I1240@', // R' Avrum Gershkov ... Vulis -> Avrum (1789) in Vulis branch
+};
+
+const SUPPLEMENTAL_RTF_FILES = [
+  'part_1.rtf',
+  'part_2.rtf',
+  'part_3.rtf',
+  'part_4.rtf',
+  'part_5.rtf',
+  'part_6.rtf',
+  'part_8.rtf',
+  'paet_7.rtf',
+  'part_7.rtf',
+];
+
+interface Family {
+  id: string;
+  spouses: string[];
+  children: string[];
+}
+
+// Parse GEDCOM-style dates like "13 FEB 1973"
+function parseGedcomDate(raw: string): string | null {
+  if (!raw || raw.trim() === '') return null;
+  const value = raw.trim();
+
+  // Normalize placeholder full dates (01.01.YYYY / 1 JAN YYYY) to just year.
+  const dottedPlaceholder = value.match(/^0?1[./-]0?1[./-](\d{4})$/);
+  if (dottedPlaceholder) return dottedPlaceholder[1];
+
+  const gedcomPlaceholder = value.match(/^0?1\s+JAN\s+(\d{4})$/i);
+  if (gedcomPlaceholder) return gedcomPlaceholder[1];
+
+  return value;
+}
+
+// Extract fields from note_plain
+function extractFromNotes(notePlain: string) {
+  const decodeHtmlEntities = (value: string): string =>
+    value
+      .replace(/&amp;/gi, '&')
+      .replace(/&lt;/gi, '<')
+      .replace(/&gt;/gi, '>')
+      .replace(/&quot;/gi, '"')
+      .replace(/&#39;/gi, "'");
+
+  // Some sources contain escaped HTML fragments like "&lt;/p&gt;&lt;p&gt;".
+  // Decode + strip tags before extracting structured fields.
+  const normalized = decodeHtmlEntities(notePlain || '');
+  const clean = normalized
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const gen = clean.match(/Generation:\s*(-?\d+)/);
+  const rel = clean.match(/Relationship to Yael:\s*(.+?)(?:\s*Generation|\s*Epithet|\s*Note:|$)/i);
+  const coords = clean.match(/Epithet:\s*\[([0-9.-]+),\s*([0-9.-]+)\]/);
+
+  // Collect DNA info
+  const dnaPatterns = [
+    /mtDNA Haplogroup:\s*[^\s].*?(?=\s*(?:Autosomal|Y-DNA|DNA Cluster|Epithet|$))/,
+    /Y-DNA Haplogroup:\s*[^\s].*?(?=\s*(?:Autosomal|mtDNA|DNA Cluster|Epithet|$))/,
+    /Autosomal DNA:\s*[^\s].*?(?=\s*(?:mtDNA|Y-DNA|DNA Cluster|Epithet|$))/,
+    /DNA Cluster:\s*[^\s].*?(?=\s*(?:mtDNA|Y-DNA|Autosomal|Epithet|$))/,
+  ];
+  const dnaInfoParts: string[] = [];
+  for (const pat of dnaPatterns) {
+    const m = clean.match(pat);
+    if (m) dnaInfoParts.push(m[0].trim());
+  }
+
+  return {
+    generation: gen ? parseInt(gen[1], 10) : null,
+    relationToYael: rel
+      ? rel[1]
+          .replace(/[<>]/g, ' ')
+          .replace(/\s*<\/?[a-z]*$/i, '')
+          .replace(/\s*\/$/g, '')
+          .replace(/\s+/g, ' ')
+          .trim()
+      : null,
+    coordinates: coords ? [parseFloat(coords[1]), parseFloat(coords[2])] as [number, number] : null,
+    dnaInfo: dnaInfoParts.length > 0 ? dnaInfoParts.join(' | ') : null,
+  };
+}
+
+// Split pipe-separated date/place fields (birth | death | burial)
+function splitPipeField(value: string): { birth: string | null; death: string | null } {
+  if (!value) return { birth: null, death: null };
+  const parts = value.split(' | ').map(s => s.trim());
+  return {
+    birth: parts[0] || null,
+    death: parts[1] || null,
+  };
+}
+
+function normalizeNameForLookup(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function normalizeSurnameKey(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[()]/g, ' ')
+    .replace(/[^a-z\u0590-\u05ff\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function rtfToRoughPlainText(rtf: string): string {
+  return rtf
+    .replace(/\\'[0-9a-fA-F]{2}/g, ' ')
+    .replace(/\\u-?\d+\??/g, ' ')
+    .replace(/\\[a-zA-Z]+\d*\s?/g, ' ')
+    .replace(/[{}]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function extractNamePrefix(fragment: string): string | null {
+  const m = fragment.match(/([A-Z][A-Za-z .,'()\-]{2,90})\s+(?:was|perished|died|escaped|joined)/);
+  if (!m) return null;
+  const candidate = m[1].trim();
+  if (candidate.length < 3) return null;
+  return candidate;
+}
+
+function loadSupplementalSignals(): SupplementalSignals {
+  const holocaustNames = new Set<string>();
+  const partisanNames = new Set<string>();
+  const loadedFiles: string[] = [];
+
+  const home = process.env.HOME || '';
+  const downloadsDir = join(home, 'Downloads');
+
+  for (const filename of SUPPLEMENTAL_RTF_FILES) {
+    const path = join(downloadsDir, filename);
+    if (!existsSync(path)) continue;
+    loadedFiles.push(filename);
+
+    const raw = readFileSync(path, 'utf-8');
+    const plain = rtfToRoughPlainText(raw);
+    const fragments = plain.split(/[.!?]/).map(s => s.trim()).filter(Boolean);
+
+    for (const fragment of fragments) {
+      const lower = fragment.toLowerCase();
+      const name = extractNamePrefix(fragment);
+      if (!name) continue;
+      const normalizedName = normalizeNameForLookup(name);
+      if (!normalizedName) continue;
+
+      if (
+        lower.includes('perished') ||
+        lower.includes('murdered') ||
+        lower.includes('holocaust') ||
+        lower.includes('shoah') ||
+        lower.includes('nazis')
+      ) {
+        holocaustNames.add(normalizedName);
+      }
+
+      if (
+        lower.includes('partisan') ||
+        lower.includes('partisans') ||
+        lower.includes('resistance')
+      ) {
+        partisanNames.add(normalizedName);
+      }
+    }
+  }
+
+  return { holocaustNames, partisanNames, loadedFiles };
+}
+
+function loadSurnameOriginsMap(): Map<string, string> {
+  const map = new Map<string, string>();
+  const home = process.env.HOME || '';
+  const surnamesPath = join(home, 'Downloads', 'surnames.csv');
+  if (!existsSync(surnamesPath)) return map;
+
+  const raw = readFileSync(surnamesPath, 'utf-8');
+  const rows: RawSurnameOrigin[] = parse(raw, {
+    columns: true,
+    skip_empty_lines: true,
+    relax_column_count: true,
+  });
+
+  for (const row of rows) {
+    const surnameRaw = row.Surname || row['\ufeffSurname'] || '';
+    const location = (row.Location || '').trim();
+    if (!location) continue;
+    const variants = surnameRaw
+      .split('/')
+      .map(v => normalizeSurnameKey(v))
+      .filter(Boolean);
+    for (const variant of variants) {
+      if (!map.has(variant)) map.set(variant, location);
+    }
+  }
+
+  return map;
+}
+
+function normalizeSpaces(value: string): string {
+  return value.replace(/\s+/g, ' ').trim();
+}
+
+function removeKohenMarkers(value: string): { clean: string; hasKohenMarker: boolean } {
+  if (!value) return { clean: '', hasKohenMarker: false };
+
+  const original = value;
+  let clean = value;
+
+  // Remove token variants like: Ha-Cohen / Ha Cohen / ha_cohen
+  clean = clean.replace(/\bha[-_\s]?cohen\b/gi, ' ');
+  // Remove Hebrew marker: הכהן
+  clean = clean.replace(/\bהכהן\b/g, ' ');
+
+  clean = normalizeSpaces(clean);
+  return { clean, hasKohenMarker: clean !== normalizeSpaces(original) };
+}
+
+function isHolocaustVictim(row: RawCanonical): boolean {
+  const haystack = [
+    row.full_name,
+    row.given_final,
+    row.surname,
+    row.surname_final,
+    row.titl,
+    row.note,
+    row.note_plain,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+
+  return (
+    haystack.includes('perished in the shoah') ||
+    haystack.includes('murdered in the shoah') ||
+    haystack.includes('victim of the shoah') ||
+    haystack.includes('murdered in the holocaust') ||
+    haystack.includes('holocaust victim') ||
+    haystack.includes('נספה בשואה') ||
+    haystack.includes('נרצח בשואה')
+  );
+}
+
+function extractYear(value: string | null): number | null {
+  if (!value) return null;
+  const m = value.match(/(\d{4})/);
+  if (!m) return null;
+  return parseInt(m[1], 10);
+}
+
+function isLikelyHolocaustVictimByDateAndRegion(
+  row: RawCanonical,
+  birthDate: string | null,
+  deathDate: string | null,
+  birthPlace: string | null
+): boolean {
+  const birthYear = extractYear(birthDate);
+  const deathYear = extractYear(deathDate);
+
+  const placeHaystack = [
+    birthPlace || '',
+    row.birth_place || '',
+    row.note_plain || '',
+    row.note || '',
+    row.titl || '',
+  ]
+    .join(' ')
+    .toLowerCase();
+
+  // Focus on eastern-europe Shoah geographies represented in this dataset.
+  const hasShoahRegion =
+    /kurenets|kureniets|vileyka|vilna|wilno|minsk|byelorussian|belarus|bielarus|poland|lithuania|ukraine|radoshkovichi/.test(
+      placeHaystack
+    );
+
+  if (!hasShoahRegion) return false;
+
+  // Strong signal: explicit death during core Shoah years.
+  if (deathYear !== null && deathYear >= 1941 && deathYear <= 1945) return true;
+
+  // Secondary signal: only a single wartime date exists (often imported as birthDate by source formatting).
+  if (!deathDate && birthYear !== null && birthYear >= 1941 && birthYear <= 1945) return true;
+
+  return false;
+}
+
+function isWarCasualty(row: RawCanonical): boolean {
+  const haystack = [row.titl, row.note, row.note_plain, row.full_name]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+
+  return (
+    haystack.includes('killed in battle') ||
+    haystack.includes('killed in action') ||
+    haystack.includes('fell in battle') ||
+    haystack.includes('army') ||
+    haystack.includes('military') ||
+    haystack.includes('russian army') ||
+    haystack.includes('נהרג בקרב') ||
+    haystack.includes('נפל בקרב')
+  );
+}
+
+function hasManualBooleanOverride(map: Record<string, boolean>, id: string): boolean {
+  return Object.prototype.hasOwnProperty.call(map, id);
+}
+
+function normalizePlaceForCompare(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[()]/g, ' ')
+    .replace(/[^a-z\u0590-\u05ff0-9,\s-]/g, ' ')
+    .replace(/,+/g, ',')
+    .replace(/\s*,\s*/g, ', ')
+    .replace(/\s+/g, ' ')
+    .replace(/,\s*$/g, '')
+    .trim();
+}
+
+function placeCoreTokens(value: string): Set<string> {
+  const normalized = normalizePlaceForCompare(value);
+  const stopwords = new Set([
+    'district', 'region', 'province', 'governorate', 'gubernia', 'guberniya',
+    'oblast', 'uyezd', 'empire', 'mandate', 'british', 'occupied', 'former', 'fmr',
+    'center', 'north', 'south', 'east', 'west',
+    // Hebrew generic location words
+    'מחוז', 'אזור', 'נפה', 'פלך', 'אימפריה', 'מנדט',
+  ]);
+
+  return new Set(
+    normalized
+      .split(/[,\s-]+/)
+      .map(token => token.trim())
+      .filter(token => token.length >= 3 && !stopwords.has(token))
+  );
+}
+
+function isLikelySamePlace(a: string, b: string): boolean {
+  const na = normalizePlaceForCompare(a);
+  const nb = normalizePlaceForCompare(b);
+  if (!na || !nb) return false;
+  if (na === nb) return true;
+  if (na.includes(nb) || nb.includes(na)) return true;
+
+  const ta = placeCoreTokens(a);
+  const tb = placeCoreTokens(b);
+  if (ta.size === 0 || tb.size === 0) return false;
+
+  let common = 0;
+  for (const token of ta) {
+    if (tb.has(token)) common += 1;
+  }
+  const coverageA = common / ta.size;
+  const coverageB = common / tb.size;
+  return common >= 2 && (coverageA >= 0.8 || coverageB >= 0.8);
+}
+
+function extractMigrationInfo(
+  birthPlace: string | null,
+  deathPlace: string | null,
+  notePlain: string,
+  note: string,
+  title: string
+): string | null {
+  const parts: string[] = [];
+
+  const hasPlaceTransition =
+    birthPlace &&
+    deathPlace &&
+    !isLikelySamePlace(birthPlace, deathPlace);
+  if (hasPlaceTransition) {
+    parts.push(`From ${birthPlace} to ${deathPlace}`);
+  }
+
+  const noteHaystack = [notePlain, note, title].filter(Boolean).join(' ');
+  const fragments = noteHaystack
+    .split(/[.!?]/)
+    .map(s => s.trim())
+    .filter(Boolean);
+  const migrationKeywords =
+    /(immigrat|emigrat|migrat|aliyah|aliya|moved to|arrived|settled|relocated|עלה|עלייה|היגר|היגרה|הגירה)/i;
+  const keywordHits = fragments
+    .filter(fragment => migrationKeywords.test(fragment))
+    .slice(0, 2);
+
+  for (const hit of keywordHits) {
+    if (!parts.includes(hit)) parts.push(hit);
+  }
+
+  if (parts.length === 0) return null;
+  return parts.join(' | ');
+}
+
+function hasVerifiedDnaMatchEvidence(row: RawCanonical, dnaInfo: string | null): boolean {
+  const haystack = [
+    row.full_name,
+    row.titl,
+    row.note,
+    row.note_plain,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+
+  const dnaSignal =
+    !!dnaInfo ||
+    /(?:mtdna|y-dna|autosomal dna|haplogroup|dna cluster|dna anchor|\bdna\b|דנא)/i.test(haystack);
+  if (!dnaSignal) return false;
+
+  // Keep DNA labels only when they are clearly tied to user match sources.
+  const sourceAnchors = /(?:\byael\b|\boded\b|\bassif\b|myheritage|ftdna|familytreedna|in131982|23andme|you\.23andme\.com|dna match|match list|matching)/i;
+  if (!sourceAnchors.test(haystack)) return false;
+
+  // Avoid generic educational/background genetics text that is not person-level match evidence.
+  const genericContext =
+    /(?:how it works|paternal haplogroup report|references|the genetics of|population|chromosome tree|haplogroup [a-z]-)/i;
+  const explicitPersonLink =
+    /(?:match status|in tree|relative_name|profile_url|segments_shared|percent_dna_shared|assif|oded|yael|myheritage|ftdna|in131982|you\.23andme\.com)/i;
+  if (genericContext.test(haystack) && !explicitPersonLink.test(haystack)) return false;
+
+  return true;
+}
+
+function extractTags(
+  row: RawCanonical,
+  hasVerifiedDnaEvidence: boolean,
+  supplementalPartisan: boolean,
+  migrationInfo: string | null
+): string[] {
+  const tags = new Set<string>();
+  const haystack = [
+    row.full_name,
+    row.titl,
+    row.note,
+    row.note_plain,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+
+  if (hasVerifiedDnaEvidence) {
+    tags.add('DNA');
+  }
+
+  if (haystack.includes('myheritage') || haystack.includes('heritage')) {
+    tags.add('Heritage');
+  }
+
+  if (
+    haystack.includes('partisan') ||
+    haystack.includes('partisans') ||
+    haystack.includes('resistance movement') ||
+    haystack.includes('resistance') ||
+    haystack.includes('פרטיזן') ||
+    haystack.includes('פרטיזנים') ||
+    haystack.includes('מחתרת')
+  ) {
+    tags.add('Partisan');
+  }
+
+  if (supplementalPartisan) {
+    tags.add('Partisan');
+  }
+
+  if (
+    /\brabbi\b/i.test(haystack) ||
+    /\brav\b/i.test(haystack) ||
+    /\br'\b/i.test(haystack) ||
+    haystack.includes('רבי') ||
+    haystack.includes('הרב') ||
+    haystack.includes('רב ')
+  ) {
+    tags.add('Rabbi');
+  }
+
+  const hasRabbinicLineageMarker =
+    /\babd\b/i.test(haystack) ||
+    /\bav beit din\b/i.test(haystack) ||
+    /\bav bet din\b/i.test(haystack) ||
+    /\bmaharam\b/i.test(haystack) ||
+    /\bmahara\b/i.test(haystack) ||
+    /\bmaharal\b/i.test(haystack) ||
+    /\bmaharsha\b/i.test(haystack) ||
+    /\bmaharil\b/i.test(haystack) ||
+    /\brashi\b/i.test(haystack) ||
+    /\brambam\b/i.test(haystack) ||
+    /\brashba\b/i.test(haystack) ||
+    /\brabbeinu\b/i.test(haystack) ||
+    /\bgaon\b/i.test(haystack) ||
+    haystack.includes('אב"ד') ||
+    haystack.includes('מהר');
+
+  if (hasRabbinicLineageMarker) {
+    tags.add('Famous');
+    // Mark as Rabbi when title-style rabbinic honorifics are present.
+    if (
+      /\babd\b/i.test(haystack) ||
+      /\bav beit din\b/i.test(haystack) ||
+      /\bav bet din\b/i.test(haystack) ||
+      /\bmaharam\b/i.test(haystack) ||
+      /\bmaharal\b/i.test(haystack) ||
+      /\bmaharsha\b/i.test(haystack) ||
+      /\bmaharil\b/i.test(haystack) ||
+      /\brabbeinu\b/i.test(haystack) ||
+      /\bgaon\b/i.test(haystack) ||
+      haystack.includes('אב"ד') ||
+      haystack.includes('מהר')
+    ) {
+      tags.add('Rabbi');
+    }
+  }
+
+  if (
+    haystack.includes('direct ancestor') ||
+    haystack.includes('ancestor') ||
+    haystack.includes('אב-קדמון') ||
+    haystack.includes('ייחוס')
+  ) {
+    tags.add('Lineage');
+  }
+
+  if (migrationInfo) {
+    tags.add('Migration');
+  }
+
+  const manualTags = MANUAL_TAG_OVERRIDES[row.ged_id] || [];
+  for (const tag of manualTags) {
+    if (tag) tags.add(tag);
+  }
+
+  return Array.from(tags).sort();
+}
+
+function normalizeForDedup(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[\s'".,;:()\-_/]+/g, ' ')
+    .trim();
+}
+
+function isMeaningfulPersonName(value: string): boolean {
+  const n = normalizeForDedup(value);
+  if (!n) return false;
+  if (/^child \d+/.test(n)) return false;
+  if (/^(unknown|fnu|lnu|none|n\/a)$/i.test(n)) return false;
+  return n.length >= 3;
+}
+
+function nonEmptyStringCount(values: Array<string | null | undefined>): number {
+  let count = 0;
+  for (const v of values) {
+    if (v && v.trim() !== '') count += 1;
+  }
+  return count;
+}
+
+function personQualityScore(person: Person): number {
+  return (
+    nonEmptyStringCount([
+      person.fullName,
+      person.givenName,
+      person.surnameFinal,
+      person.birthDate,
+      person.deathDate,
+      person.birthPlace,
+      person.relationToYael,
+      person.dnaInfo,
+      person.title,
+      person.hebrewName,
+      person.birthName,
+      person.fatherName,
+      person.motherName,
+      person.spouseName,
+      person.childrenNames,
+      person.jewishLineage,
+    ]) +
+    person.familiesAsSpouse.length +
+    (person.familyAsChild ? 1 : 0) +
+    person.tags.length
+  );
+}
+
+function pickPrimaryPerson(cluster: Person[]): Person {
+  const sorted = [...cluster].sort((a, b) => {
+    const byScore = personQualityScore(b) - personQualityScore(a);
+    if (byScore !== 0) return byScore;
+    return a.id.localeCompare(b.id);
+  });
+  return sorted[0];
+}
+
+function preferLonger(base: string | null, incoming: string | null): string | null {
+  if (!base && !incoming) return null;
+  if (!base) return incoming;
+  if (!incoming) return base;
+  return incoming.length > base.length ? incoming : base;
+}
+
+function mergeDnaInfo(base: string | null, incoming: string | null): string | null {
+  if (!base) return incoming;
+  if (!incoming) return base;
+  if (base === incoming) return base;
+  const parts = new Set(
+    `${base} | ${incoming}`
+      .split(' | ')
+      .map(p => p.trim())
+      .filter(Boolean)
+  );
+  return Array.from(parts).join(' | ');
+}
+
+function mergePersons(primary: Person, duplicate: Person): Person {
+  const familySet = new Set<string>([...primary.familiesAsSpouse, ...duplicate.familiesAsSpouse]);
+  const tagSet = new Set<string>([...primary.tags, ...duplicate.tags]);
+
+  return {
+    ...primary,
+    fullName: preferLonger(primary.fullName, duplicate.fullName) || primary.fullName,
+    givenName: preferLonger(primary.givenName, duplicate.givenName) || primary.givenName,
+    surname: preferLonger(primary.surname, duplicate.surname) || primary.surname,
+    surnameFinal: preferLonger(primary.surnameFinal, duplicate.surnameFinal) || primary.surnameFinal,
+    birthDate: preferLonger(primary.birthDate, duplicate.birthDate),
+    deathDate: preferLonger(primary.deathDate, duplicate.deathDate),
+    birthPlace: preferLonger(primary.birthPlace, duplicate.birthPlace),
+    generation: primary.generation ?? duplicate.generation,
+    relationToYael: preferLonger(primary.relationToYael, duplicate.relationToYael),
+    hops: primary.hops !== null && duplicate.hops !== null
+      ? Math.min(primary.hops, duplicate.hops)
+      : (primary.hops ?? duplicate.hops),
+    dnaInfo: mergeDnaInfo(primary.dnaInfo, duplicate.dnaInfo),
+    coordinates: primary.coordinates || duplicate.coordinates,
+    familiesAsSpouse: Array.from(familySet),
+    familyAsChild: primary.familyAsChild || duplicate.familyAsChild,
+    title: preferLonger(primary.title, duplicate.title),
+    hebrewName: preferLonger(primary.hebrewName, duplicate.hebrewName),
+    birthName: preferLonger(primary.birthName, duplicate.birthName),
+    fatherName: preferLonger(primary.fatherName, duplicate.fatherName),
+    motherName: preferLonger(primary.motherName, duplicate.motherName),
+    spouseName: preferLonger(primary.spouseName, duplicate.spouseName),
+    childrenNames: preferLonger(primary.childrenNames, duplicate.childrenNames),
+    jewishLineage: preferLonger(primary.jewishLineage, duplicate.jewishLineage),
+    migrationInfo: preferLonger(primary.migrationInfo, duplicate.migrationInfo),
+    holocaustVictim: primary.holocaustVictim || duplicate.holocaustVictim,
+    warCasualty: primary.warCasualty || duplicate.warCasualty,
+    connectionPathCount:
+      primary.connectionPathCount !== null && duplicate.connectionPathCount !== null
+        ? Math.max(primary.connectionPathCount, duplicate.connectionPathCount)
+        : (primary.connectionPathCount ?? duplicate.connectionPathCount),
+    doubleBloodTie: primary.doubleBloodTie || duplicate.doubleBloodTie,
+    tags: Array.from(tagSet).sort(),
+  };
+}
+
+function isMissingSurname(value: string | null | undefined): boolean {
+  if (!value) return true;
+  const normalized = normalizeForDedup(value);
+  if (!normalized) return true;
+  return /^(unknown|fnu|lnu|none|n\/a|na|-+)$/i.test(normalized);
+}
+
+function pickMostCommonSurname(candidates: string[]): string | null {
+  const counts = new Map<string, { value: string; count: number }>();
+  for (const raw of candidates) {
+    const normalized = normalizeForDedup(raw);
+    if (!normalized || isMissingSurname(raw)) continue;
+    const current = counts.get(normalized);
+    if (current) {
+      current.count += 1;
+    } else {
+      counts.set(normalized, { value: raw.trim(), count: 1 });
+    }
+  }
+  if (counts.size === 0) return null;
+  return Array.from(counts.values())
+    .sort((a, b) => {
+      if (b.count !== a.count) return b.count - a.count;
+      return b.value.length - a.value.length;
+    })[0].value;
+}
+
+function enrichMissingSurnames(persons: Person[], families: Family[]): Person[] {
+  const personById = new Map(persons.map(person => [person.id, person]));
+  const familyById = new Map(families.map(family => [family.id, family]));
+
+  return persons.map(person => {
+    const hasSurname = !isMissingSurname(person.surname);
+    const hasSurnameFinal = !isMissingSurname(person.surnameFinal);
+    if (hasSurname && hasSurnameFinal) return person;
+
+    // If one surname field exists, copy it to the missing field.
+    if (hasSurname && !hasSurnameFinal) {
+      return { ...person, surnameFinal: person.surname.trim() };
+    }
+    if (!hasSurname && hasSurnameFinal) {
+      return { ...person, surname: person.surnameFinal.trim() };
+    }
+
+    const parentCandidates: string[] = [];
+    const spouseCandidates: string[] = [];
+
+    const parentFamily = person.familyAsChild ? familyById.get(person.familyAsChild) : null;
+    if (parentFamily) {
+      for (const parentId of parentFamily.spouses) {
+        const parent = personById.get(parentId);
+        if (!parent) continue;
+        if (!isMissingSurname(parent.surnameFinal)) parentCandidates.push(parent.surnameFinal);
+        else if (!isMissingSurname(parent.surname)) parentCandidates.push(parent.surname);
+      }
+    }
+
+    for (const famId of person.familiesAsSpouse) {
+      const family = familyById.get(famId);
+      if (!family) continue;
+      for (const spouseId of family.spouses) {
+        if (spouseId === person.id) continue;
+        const spouse = personById.get(spouseId);
+        if (!spouse) continue;
+        if (!isMissingSurname(spouse.surnameFinal)) spouseCandidates.push(spouse.surnameFinal);
+        else if (!isMissingSurname(spouse.surname)) spouseCandidates.push(spouse.surname);
+      }
+    }
+
+    const inferredSurname =
+      pickMostCommonSurname(parentCandidates) ||
+      pickMostCommonSurname(spouseCandidates);
+
+    if (!inferredSurname) return person;
+    return {
+      ...person,
+      surname: inferredSurname,
+      surnameFinal: inferredSurname,
+    };
+  });
+}
+
+function enrichConnectivitySignals(persons: Person[], families: Family[], rootPersonId: string): Person[] {
+  const adjacency = new Map<string, Set<string>>();
+  for (const person of persons) {
+    adjacency.set(person.id, new Set<string>());
+  }
+
+  for (const family of families) {
+    // Use blood-line edges only (parent <-> child) for kinship-path counting.
+    // This avoids inflating path counts through spouse/sibling shortcuts.
+    for (const parentId of family.spouses) {
+      if (!adjacency.has(parentId)) continue;
+      for (const childId of family.children) {
+        if (!adjacency.has(childId)) continue;
+        adjacency.get(parentId)!.add(childId);
+        adjacency.get(childId)!.add(parentId);
+      }
+    }
+
+    // Add direct sibling blood links (same parents/family) so sibling relation
+    // is represented as one kinship step instead of two alternative parent routes.
+    const visibleChildren = family.children.filter(id => adjacency.has(id));
+    for (let i = 0; i < visibleChildren.length; i += 1) {
+      for (let j = i + 1; j < visibleChildren.length; j += 1) {
+        const a = visibleChildren[i];
+        const b = visibleChildren[j];
+        adjacency.get(a)!.add(b);
+        adjacency.get(b)!.add(a);
+      }
+    }
+  }
+
+  const dist = new Map<string, number>();
+  const shortestPathCount = new Map<string, number>();
+  const queue: string[] = [];
+  const MAX_PATHS = 99;
+
+  if (adjacency.has(rootPersonId)) {
+    dist.set(rootPersonId, 0);
+    shortestPathCount.set(rootPersonId, 1);
+    queue.push(rootPersonId);
+  }
+
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+    const currentDistance = dist.get(current)!;
+    const currentCount = shortestPathCount.get(current)!;
+    for (const neighbor of adjacency.get(current) || []) {
+      if (!dist.has(neighbor)) {
+        dist.set(neighbor, currentDistance + 1);
+        shortestPathCount.set(neighbor, currentCount);
+        queue.push(neighbor);
+        continue;
+      }
+
+      // Count additional shortest paths only.
+      if (dist.get(neighbor) === currentDistance + 1) {
+        const next = Math.min(MAX_PATHS, (shortestPathCount.get(neighbor) || 0) + currentCount);
+        shortestPathCount.set(neighbor, next);
+      }
+    }
+  }
+
+  return persons.map(person => {
+    const pathCount = shortestPathCount.get(person.id) || 0;
+    const doubleBloodTie = pathCount >= 2;
+    const tags = new Set(person.tags);
+    if (doubleBloodTie) {
+      tags.add('DoubleBloodTie');
+    } else {
+      tags.delete('DoubleBloodTie');
+    }
+    return {
+      ...person,
+      connectionPathCount: pathCount > 0 ? pathCount : null,
+      doubleBloodTie,
+      tags: Array.from(tags).sort(),
+    };
+  });
+}
+
+function deduplicatePersons(persons: Person[], families: Family[]): {
+  persons: Person[];
+  families: Family[];
+  mergedCount: number;
+} {
+  const idRemap = new Map<string, string>();
+  const mergedByPrimary = new Map<string, Person>();
+  const personByOriginalId = new Map(persons.map(p => [p.id, p]));
+
+  const resolveId = (id: string): string => {
+    let current = id;
+    while (idRemap.has(current)) {
+      current = idRemap.get(current)!;
+    }
+    return current;
+  };
+
+  const getResolvedPerson = (id: string): Person | undefined => {
+    const resolved = resolveId(id);
+    return mergedByPrimary.get(resolved) || personByOriginalId.get(resolved);
+  };
+
+  const mergeClusterByIds = (ids: string[]) => {
+    const uniqueResolvedIds = Array.from(new Set(ids.map(resolveId)));
+    if (uniqueResolvedIds.length < 2) return;
+
+    const clusterPersons = uniqueResolvedIds
+      .map(id => getResolvedPerson(id))
+      .filter(Boolean) as Person[];
+    if (clusterPersons.length < 2) return;
+
+    const primary = pickPrimaryPerson(clusterPersons);
+    let merged = primary;
+    for (const candidate of clusterPersons) {
+      if (candidate.id === primary.id) continue;
+      idRemap.set(candidate.id, primary.id);
+      merged = mergePersons(merged, candidate);
+    }
+    mergedByPrimary.set(primary.id, merged);
+  };
+
+  const runMergePass = (keyBuilder: (person: Person) => string | null) => {
+    const clusters = new Map<string, string[]>();
+
+    for (const person of persons) {
+      const resolvedId = resolveId(person.id);
+      const resolvedPerson = getResolvedPerson(resolvedId);
+      if (!resolvedPerson) continue;
+      const key = keyBuilder(resolvedPerson);
+      if (!key) continue;
+
+      if (!clusters.has(key)) clusters.set(key, []);
+      const arr = clusters.get(key)!;
+      if (!arr.includes(resolvedId)) arr.push(resolvedId);
+    }
+
+    for (const ids of clusters.values()) {
+      if (ids.length > 1) mergeClusterByIds(ids);
+    }
+  };
+
+  // Pass 1: exact full name + sex + full birth date.
+  runMergePass(person => {
+    if (!person.fullName || !person.sex || !person.birthDate) return null;
+    if (!isMeaningfulPersonName(person.fullName)) return null;
+    return [
+      normalizeForDedup(person.fullName),
+      person.sex,
+      person.birthDate,
+    ].join('|');
+  });
+
+  // Pass 2 (aggressive): exact full name + sex, even without full date.
+  runMergePass(person => {
+    if (!person.fullName || !person.sex) return null;
+    if (!isMeaningfulPersonName(person.fullName)) return null;
+    return [
+      normalizeForDedup(person.fullName),
+      person.sex,
+    ].join('|');
+  });
+
+  // Pass 3: given name + surname + sex + birth year (captures punctuation/format variants).
+  runMergePass(person => {
+    if (!person.sex) return null;
+    const given = normalizeForDedup(person.givenName || '');
+    const surname = normalizeForDedup(person.surnameFinal || person.surname || '');
+    const year = person.birthDate?.match(/\d{4}/)?.[0] || '';
+    if (!given || !surname || !year) return null;
+    if (!isMeaningfulPersonName(given) || !isMeaningfulPersonName(surname)) return null;
+    return [given, surname, person.sex, year].join('|');
+  });
+
+  // Apply explicit manual merges for known branches with fuzzy/partial identity records.
+  for (const [duplicateId, requestedPrimaryId] of Object.entries(MANUAL_MERGE_TO_PRIMARY)) {
+    const duplicateResolved = resolveId(duplicateId);
+    const primaryResolved = resolveId(requestedPrimaryId);
+    if (duplicateResolved === primaryResolved) continue;
+    if (!personByOriginalId.has(duplicateResolved) || !personByOriginalId.has(primaryResolved)) continue;
+
+    idRemap.set(duplicateResolved, primaryResolved);
+    const currentPrimary = mergedByPrimary.get(primaryResolved) || personByOriginalId.get(primaryResolved)!;
+    const incomingDuplicate = mergedByPrimary.get(duplicateResolved) || personByOriginalId.get(duplicateResolved)!;
+    mergedByPrimary.set(primaryResolved, mergePersons(currentPrimary, incomingDuplicate));
+  }
+
+  const personById = new Map<string, Person>();
+  for (const person of persons) {
+    const resolved = resolveId(person.id);
+    if (resolved !== person.id) continue;
+    personById.set(resolved, mergedByPrimary.get(resolved) || person);
+  }
+
+  const dedupedFamilies = families.map(family => {
+    const spouses = Array.from(new Set(family.spouses.map(resolveId)));
+    const children = Array.from(new Set(family.children.map(resolveId)));
+    return { ...family, spouses, children };
+  });
+
+  return {
+    persons: Array.from(personById.values()),
+    families: dedupedFamilies,
+    mergedCount: idRemap.size,
+  };
+}
+
+function buildGraph() {
+  console.log('Building family graph...');
+  const supplementalSignals = loadSupplementalSignals();
+  const surnameOrigins = loadSurnameOriginsMap();
+  if (supplementalSignals.loadedFiles.length > 0) {
+    console.log(
+      `Loaded supplemental RTF sources: ${supplementalSignals.loadedFiles.join(', ')}`
+    );
+  }
+
+  // Read canonical CSV
+  const canonicalRaw = readFileSync(join(ROOT, 'data/canonical.csv'), 'utf-8');
+  const canonicalRows: RawCanonical[] = parse(canonicalRaw, {
+    columns: true,
+    skip_empty_lines: true,
+    relax_column_count: true,
+  });
+
+  // Read curated CSV (skip title row)
+  const curatedRaw = readFileSync(join(ROOT, 'data/curated.csv'), 'utf-8');
+  const curatedAllRows = parse(curatedRaw, {
+    columns: false,
+    skip_empty_lines: true,
+    relax_column_count: true,
+  }) as string[][];
+
+  // The first row is a title, second row is headers, rest is data
+  const curatedHeaders = curatedAllRows[1];
+  const curatedData: RawCurated[] = curatedAllRows.slice(2).map(row => {
+    const obj: Record<string, string> = {};
+    curatedHeaders.forEach((h: string, i: number) => {
+      obj[h] = row[i] || '';
+    });
+    return obj as unknown as RawCurated;
+  });
+
+  // Build curated lookup by name (lowercase, trimmed)
+  const curatedByName = new Map<string, RawCurated>();
+  for (const row of curatedData) {
+    const name = row['Full Name'].toLowerCase().trim();
+    if (name) curatedByName.set(name, row);
+  }
+
+  // Build persons
+  const persons: Person[] = [];
+  const familyMap = new Map<string, Family>();
+
+  for (const row of canonicalRows) {
+    const dates = splitPipeField(row.birth_date);
+    const places = splitPipeField(row.birth_place);
+    const notes = extractFromNotes(row.note_plain || '');
+
+    const sex = row.sex === 'M' ? 'M' : row.sex === 'F' ? 'F' : 'U';
+    const famsArr = row.fams ? row.fams.split('|').map(s => s.trim()).filter(Boolean) : [];
+    const famcVal = row.famc ? row.famc.split('|')[0].trim() || null : null;
+
+    // Try to match with curated data
+    const nameLower = row.full_name.toLowerCase().trim();
+    const curated = curatedByName.get(nameLower);
+
+    const fullNameNormalized = removeKohenMarkers(row.full_name);
+    const givenNameNormalized = removeKohenMarkers(row.given_final);
+    const surnameNormalized = removeKohenMarkers(row.surname);
+    const surnameFinalNormalized = removeKohenMarkers(row.surname_final);
+
+    const hasKohenMarker =
+      fullNameNormalized.hasKohenMarker ||
+      givenNameNormalized.hasKohenMarker ||
+      surnameNormalized.hasKohenMarker ||
+      surnameFinalNormalized.hasKohenMarker;
+    const surnameOrigin =
+      surnameOrigins.get(normalizeSurnameKey(surnameFinalNormalized.clean)) ||
+      surnameOrigins.get(normalizeSurnameKey(surnameNormalized.clean)) ||
+      null;
+
+    const autoHolocaustVictim =
+      isHolocaustVictim(row) ||
+      isLikelyHolocaustVictimByDateAndRegion(
+        row,
+        parseGedcomDate(dates.birth || ''),
+        parseGedcomDate(dates.death || ''),
+        places.birth
+      ) ||
+      supplementalSignals.holocaustNames.has(normalizeNameForLookup(fullNameNormalized.clean));
+    const holocaustVictim = hasManualBooleanOverride(MANUAL_HOLOCAUST_VICTIM_OVERRIDES, row.ged_id)
+      ? MANUAL_HOLOCAUST_VICTIM_OVERRIDES[row.ged_id]
+      : autoHolocaustVictim;
+
+    const autoWarCasualty = isWarCasualty(row);
+    const warCasualty = hasManualBooleanOverride(MANUAL_WAR_CASUALTY_OVERRIDES, row.ged_id)
+      ? MANUAL_WAR_CASUALTY_OVERRIDES[row.ged_id]
+      : autoWarCasualty;
+    const autoMigrationInfo = extractMigrationInfo(
+      places.birth,
+      places.death,
+      row.note_plain || '',
+      row.note || '',
+      row.titl || ''
+    );
+    const migrationInfo = MANUAL_MIGRATION_INFO_OVERRIDES[row.ged_id] || autoMigrationInfo;
+
+    const resolvedBirthPlace = MANUAL_BIRTHPLACE_OVERRIDES[row.ged_id] || places.birth;
+    const titleAppend = MANUAL_TITLE_APPEND_OVERRIDES[row.ged_id];
+    const resolvedTitle = titleAppend
+      ? [row.titl || '', titleAppend].filter(Boolean).join(' | ')
+      : (row.titl || null);
+
+    const manualTags = MANUAL_TAG_OVERRIDES[row.ged_id] || [];
+    const manualDnaTagged = manualTags.includes('DNA');
+    const verifiedDnaEvidence = manualDnaTagged || hasVerifiedDnaMatchEvidence(row, notes.dnaInfo);
+    const resolvedDnaInfo = verifiedDnaEvidence ? notes.dnaInfo : null;
+
+    const person: Person = {
+      id: row.ged_id,
+      fullName: fullNameNormalized.clean,
+      givenName: givenNameNormalized.clean,
+      surname: surnameNormalized.clean,
+      surnameFinal: surnameFinalNormalized.clean,
+      sex,
+      birthDate: parseGedcomDate(dates.birth || ''),
+      deathDate: parseGedcomDate(dates.death || ''),
+      birthPlace: resolvedBirthPlace,
+      generation: notes.generation,
+      relationToYael: curated ? curated['Relationship to Yael'] : notes.relationToYael,
+      hops: curated ? parseInt(curated['Hops'], 10) || null : null,
+      dnaInfo: resolvedDnaInfo,
+      coordinates: notes.coordinates,
+      familiesAsSpouse: famsArr,
+      familyAsChild: famcVal,
+      title: resolvedTitle,
+      hebrewName: curated ? curated['Full Name'] : null,
+      birthName: curated ? curated['Birth Name'] || null : null,
+      fatherName: curated ? curated['Father Name'] || null : null,
+      motherName: curated ? curated['Mother Name'] || null : null,
+      spouseName: curated ? curated['Spouse Name'] || null : null,
+      childrenNames: curated ? curated['Children Names'] || null : null,
+      surnameOrigin,
+      jewishLineage: hasKohenMarker ? 'כהן' : null,
+      migrationInfo,
+      holocaustVictim,
+      warCasualty,
+      connectionPathCount: null,
+      doubleBloodTie: false,
+      tags: extractTags(
+        row,
+        verifiedDnaEvidence,
+        supplementalSignals.partisanNames.has(normalizeNameForLookup(fullNameNormalized.clean)),
+        migrationInfo
+      ),
+    };
+
+    persons.push(person);
+
+    // Build family entries from fams
+    for (const famId of famsArr) {
+      if (!familyMap.has(famId)) {
+        familyMap.set(famId, { id: famId, spouses: [], children: [] });
+      }
+      const fam = familyMap.get(famId)!;
+      if (!fam.spouses.includes(row.ged_id)) {
+        fam.spouses.push(row.ged_id);
+      }
+    }
+
+    // Build family entries from famc
+    if (famcVal) {
+      if (!familyMap.has(famcVal)) {
+        familyMap.set(famcVal, { id: famcVal, spouses: [], children: [] });
+      }
+      const fam = familyMap.get(famcVal)!;
+      if (!fam.children.includes(row.ged_id)) {
+        fam.children.push(row.ged_id);
+      }
+    }
+  }
+
+  const families = Array.from(familyMap.values());
+  const deduped = deduplicatePersons(persons, families);
+  const surnameEnriched = enrichMissingSurnames(deduped.persons, deduped.families);
+
+  const enrichedPersons = enrichConnectivitySignals(surnameEnriched, deduped.families, '@I1@')
+    .map(person => {
+      const overrides = MANUAL_PERSON_FIELD_OVERRIDES[person.id];
+      return overrides ? { ...person, ...overrides } : person;
+    });
+
+  const graph = {
+    persons: enrichedPersons,
+    families: deduped.families,
+    rootPersonId: '@I1@',
+  };
+
+  // Write output
+  mkdirSync(join(ROOT, 'public'), { recursive: true });
+  const outputPath = join(ROOT, 'public/family-graph.json');
+  writeFileSync(outputPath, JSON.stringify(graph));
+
+  console.log(
+    `Built graph: ${deduped.persons.length} persons, ${deduped.families.length} families (merged ${deduped.mergedCount} duplicates)`
+  );
+  console.log(`Output: ${outputPath}`);
+}
+
+buildGraph();

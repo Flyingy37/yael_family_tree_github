@@ -1,24 +1,83 @@
-# yael_family_tree_github
-yael_family_tree
-## March 22, 2026 - Frada Alperovich clarificatio
-Resolved a repeated identity mix-up involving two different women named Frada Alperovich across adjacent generations.
+# 🌳 אילן יוחסין — משפחת לבנת זיידמן
 
-### Canonical interpretation
+אפליקציית ווב אינטראקטיבית לצפייה באילן היוחסין של משפחת לבנת-זיידמן.
+מכילה **4,145 אנשים** לאורך **32 דורות** של היסטוריה משפחתית.
 
-#### 1. Older Frada
-Frada Alperovitz / Alperovich (born Kastrel), born about 1833 in Kurenets, was the wife of Meir Alperovich and mother of Yehuda "Yudel" Alperovich and his siblings.
+## תכונות
 
-Her canonical parents remain:
-- Shmuel Kastrel
-- Pesia Alperovitch
+### 🌳 תצוגת עץ
+- ויזואליזציה אינטראקטיבית עם גרירה, זום וניווט
+- צמתים צבעוניים לפי מין ודור
+- קישורים בין הורים, ילדים ובני זוג
+- **תצוגת עץ משנה** — לחיצה על אדם מציגה רק את העץ שלו
 
-#### 2. Later Frada
-Frada Alperovich, spouse of Yehuda "Yudel" Alperovich, belongs to the next generation and remains a separate person. Smart Match child-cluster evidence referring to Michael Alperovich and related descendants applies to this later Frada only.
+### 🗺️ מפת עולם
+- מפה אינטראקטיבית עם 977 אנשים עם קואורדינטות ידועות
+- אשכולות לפי מיקום עם popup שמציג את כל האנשים
+- צבעים לפי מין
 
-### Evidence handling decision
-Recent Smart Match and Gordon Web Site comparisons support the older Frada as wife of Meir, support the Yehuda "Yudel" household, and support the parentage of the older Frada as Shmuel Kastrel plus Pesia Alperovitch.
+### 📅 ציר זמן
+- גרף עמודות לפי עשורים (לידות ופטירות)
+- לחיצה על עשור מציגה את כל האירועים בתקופה
 
-The label "Sosha Esther" was not adopted as canonical parentage. At present it is treated as a display anomaly or unresolved alternate rendering rather than a stronger replacement for Shmuel Kastrel.
+### 🔍 חיפוש וסינון
+- חיפוש fuzzy בעברית ואנגלית (שמות, מקומות, קשר ליעל)
+- סינון לפי: טווח דורות, שם משפחה, מין, מידע גנטי, קפיצות מיעל
+- פאנל פרטים עם ניווט בין בני משפחה
 
-### Place normalization
-References such as Kurenets in Vilna Governorate versus Kurenets in modern Belarus are treated as equivalent locality descriptions across historical and modern administrative frameworks, not as contradictions.
+## התקנה
+
+```bash
+# שיבוט הריפו
+git clone https://github.com/Flyingy37/yael_family_tree_github.git
+cd yael_family_tree_github
+
+# התקנת תלויות
+npm install
+
+# הרצה בפיתוח (בונה את הנתונים ומפעיל שרת)
+npm run dev
+```
+
+האפליקציה תיפתח ב- http://localhost:5173
+
+## טכנולוגיות
+
+- **React 19** + **TypeScript** — ממשק משתמש
+- **Vite 6** — בנייה ופיתוח
+- **ReactFlow** — ויזואליזציית עץ אינטראקטיבית
+- **Leaflet** — מפה אינטראקטיבית
+- **Dagre** — אלגוריתם layout לעץ
+- **Fuse.js** — חיפוש fuzzy
+- **Tailwind CSS** — עיצוב RTL
+
+## מבנה הפרויקט
+
+```
+├── data/
+│   ├── canonical.csv       # נתונים קנוניים (4,145 רשומות)
+│   ├── curated.csv         # קרובים ישירים בעברית (351 רשומות)
+│   └── data_dictionary.md  # תיעוד העמודות
+├── scripts/
+│   └── build-graph.ts      # סקריפט עיבוד CSV → JSON
+├── src/
+│   ├── components/         # קומפוננטות React
+│   ├── hooks/              # React hooks
+│   ├── utils/              # פונקציות עזר
+│   ├── App.tsx             # קומפוננטה ראשית
+│   └── types.ts            # טיפוסי TypeScript
+└── public/
+    └── family-graph.json   # נוצר אוטומטית בבנייה
+```
+
+## נתונים
+
+הנתונים מבוססים על ייצוא גנאלוגי מבוסס GEDCOM עם:
+- זיהוי GEDCOM (`@I1@`, `@F1@`)
+- קישורי משפחה (`fams` לבני זוג, `famc` להורים)
+- מידע על דורות, קשר ליעל, DNA, ומיקומים
+- 24 אנשים עם מידע גנטי (mtDNA, Y-DNA, אוטוזומלי)
+
+## פרטיות
+
+מערך הנתונים כולל מידע אישי ומשפחתי. יש לשקול פרטיות לפני פרסום פומבי.
