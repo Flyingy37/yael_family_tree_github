@@ -1,8 +1,6 @@
 ---
-description: Save all agent-generated files to Livnat dedicated outputs folder
 alwaysApply: true
 ---
-
 # מיקום שמירה לפלטים
 
 כל קובץ חדש שאתה יוצר עבור המשתמש (ייצואי CSV, Excel, דוחות, המרות) — **שמור תחת**:
