@@ -81,7 +81,7 @@ export function computeLayout(
         });
       }
     } else if (visibleChildren.length > 0) {
-      // No visible parents, but children exist — just add children as standalone
+      // No visible parents, but children exist - just add children as standalone
     }
   }
 

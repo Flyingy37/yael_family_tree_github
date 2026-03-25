@@ -1,0 +1,616 @@
+<!-- Chosen Palette: Warm Neutrals with Muted Accents (Slate-50 background, White cards, Indigo-600/Teal-600/Orange-600 accents for data visualization) -->
+<!-- Application Structure Plan: A Dashboard-style Single Page Application (SPA) with a sidebar navigation (on desktop) / top navigation (on mobile). The structure is divided into four thematic sections based on the source report's arenas: Politics & Law, Geography (Ecological Segregation), Economy & Employment, and Education. This structure allows users to digest the complex "Religious Cleavage" topic in distinct, logical chunks rather than a linear text document. Each section uses targeted data visualizations and explanatory text to unpack the civic concepts (e.g., "Rolling Responsibility", "Overlapping Cleavage"). -->
+<!-- Visualization & Content Choices: 
+1. Geography -> Goal: Show Ecological Segregation -> Viz: Bar Chart (per-city %; donut would misrepresent non-partition data) -> Interaction: Tooltips -> Justification: Compare homogeneity across municipalities. -> Library: Chart.js.
+2. Economy -> Goal: Compare employment gaps -> Viz: Grouped Bar Chart -> Interaction: Tooltips -> Justification: Best for comparing two distinct groups (Haredi vs General) across a metric. -> Library: Chart.js.
+3. Education -> Goal: Compare educational milestones -> Viz: Bar Chart -> Interaction: Tooltips -> Justification: Clearly shows the stark contrast in Bagrut and Degree attainment. -> Library: Chart.js.
+4. Politics -> Goal: Illustrate "Rolling Responsibility" -> Viz: Big Stat Cards & simple proportion chart -> Interaction: Clickable concepts -> Justification: The disparity between 3% legislation and 2,500 petitions is best shown via stark contrast metrics. -> Library: HTML/CSS + Chart.js. 
+CONFIRMING NO SVG/Mermaid used. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>השסע הדתי בישראל - תמונת מצב 2026</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Heebo', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      background-color: #f8fafc;
+      /* slate-50 */
+      color: #334155;
+      /* slate-700 */
+    }
+
+    /* Required Chart Container Styling */
+    .chart-container {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      height: 350px;
+      max-height: 450px;
+    }
+
+    @media (max-width: 640px) {
+      .chart-container {
+        height: 250px;
+      }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    .tab-active {
+      background-color: #eff6ff;
+      /* brand-50 */
+      color: #2563eb;
+      /* brand-600 */
+      border-right: 4px solid #2563eb;
+      font-weight: 700;
+    }
+
+    .tab-inactive {
+      color: #64748b;
+      /* slate-500 */
+      border-right: 4px solid transparent;
+    }
+
+    .tab-inactive:hover {
+      background-color: #f1f5f9;
+      color: #334155;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body class="flex flex-col md:flex-row min-h-screen">
+
+  <!-- Mobile Header -->
+  <header class="md:hidden bg-white shadow-sm p-4 sticky top-0 z-20 flex justify-between items-center">
+    <h1 class="text-xl font-bold text-slate-800">השסע הדתי 2026</h1>
+    <button id="mobile-menu-btn" class="text-slate-600 text-2xl focus:outline-none">☰</button>
+  </header>
+
+  <!-- Sidebar Navigation -->
+  <nav id="sidebar" class="hidden md:flex flex-col w-full md:w-64 bg-white shadow-lg z-10 md:min-h-screen fixed md:sticky top-0 transition-all duration-300">
+    <div class="p-6 hidden md:block border-b border-slate-100">
+      <h1 class="text-2xl font-black text-slate-800 leading-tight">השסע הדתי <br><span class="text-brand-600">בישראל 2026</span></h1>
+      <p class="text-xs text-slate-500 mt-2">דוח נתונים ומגמות</p>
+    </div>
+
+    <div class="flex flex-col py-4 gap-1">
+      <button onclick="switchTab('dashboard')" id="nav-dashboard" class="tab-btn tab-active text-right px-6 py-3 transition-colors text-lg">
+        <span class="ml-2 text-xl">📊</span> סקירה כללית
+      </button>
+      <button onclick="switchTab('politics')" id="nav-politics" class="tab-btn tab-inactive text-right px-6 py-3 transition-colors text-lg">
+        <span class="ml-2 text-xl">🏛️</span> פוליטיקה ומשפט
+      </button>
+      <button onclick="switchTab('geography')" id="nav-geography" class="tab-btn tab-inactive text-right px-6 py-3 transition-colors text-lg">
+        <span class="ml-2 text-xl">🏙️</span> דמוגרפיה ומרחב
+      </button>
+      <button onclick="switchTab('economy')" id="nav-economy" class="tab-btn tab-inactive text-right px-6 py-3 transition-colors text-lg">
+        <span class="ml-2 text-xl">💼</span> כלכלה ותעסוקה
+      </button>
+      <button onclick="switchTab('education')" id="nav-education" class="tab-btn tab-inactive text-right px-6 py-3 transition-colors text-lg">
+        <span class="ml-2 text-xl">🎓</span> חינוך והשכלה
+      </button>
+    </div>
+
+    <div class="mt-auto p-6 border-t border-slate-100 hidden md:block">
+      <p class="text-xs text-slate-400">מבוסס על נתוני הלמ"ס ומחקרי המכון הישראלי לדמוקרטיה לשנים 2024-2026.</p>
+    </div>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 p-4 md:p-8 lg:p-12 overflow-x-hidden">
+
+    <!-- DASHBOARD SECTION -->
+    <section id="content-dashboard" class="content-section fade-in block">
+      <header class="mb-8">
+        <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">מבט על: השסע בין חילונים לחרדים</h2>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+          <p class="text-lg text-slate-600 leading-relaxed">
+            <strong>מטרת פרק זה:</strong> לוח המחוונים (Dashboard) מספק תמונת מצב רחבה של השסע הדתי בישראל נכון לשנת 2026. כאן תוכלו לנווט בין הזירות השונות (פוליטית, מרחבית, כלכלית וחינוכית) ולהבין כיצד המושגים האזרחיים התאורטיים – כמו "פלורליזם", "הסכמיות" ו"שסע חופף" – באים לידי ביטוי במספרים קשיחים בשטח. לחצו על הכרטיסיות כדי להעמיק בכל זירה.
+          </p>
+        </div>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Card 1 -->
+        <div onclick="switchTab('politics')" class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-slate-100 border-b-4 border-b-rose-500 group">
+          <div class="text-4xl mb-4 group-hover:scale-110 transition-transform origin-right">🏛️</div>
+          <h3 class="text-xl font-bold text-slate-800 mb-2">פוליטיקה ומשפט</h3>
+          <p class="text-slate-600 mb-4 text-sm">קיפאון חקיקתי, עתירות לבג"ץ ותופעת "גלגול האחריות".</p>
+          <span class="text-rose-500 font-medium text-sm flex items-center">העמק בנתונים &#8592;</span>
+        </div>
+        <!-- Card 2 -->
+        <div onclick="switchTab('geography')" class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-slate-100 border-b-4 border-b-teal-500 group">
+          <div class="text-4xl mb-4 group-hover:scale-110 transition-transform origin-right">🏙️</div>
+          <h3 class="text-xl font-bold text-slate-800 mb-2">דמוגרפיה ומרחב</h3>
+          <p class="text-slate-600 mb-4 text-sm">היפרדות אקולוגית, בועות חברתיות וערים הומוגניות לחלוטין.</p>
+          <span class="text-teal-500 font-medium text-sm flex items-center">העמק בנתונים &#8592;</span>
+        </div>
+        <!-- Card 3 -->
+        <div onclick="switchTab('economy')" class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-slate-100 border-b-4 border-b-amber-500 group">
+          <div class="text-4xl mb-4 group-hover:scale-110 transition-transform origin-right">💼</div>
+          <h3 class="text-xl font-bold text-slate-800 mb-2">כלכלה ותעסוקה</h3>
+          <p class="text-slate-600 mb-4 text-sm">השתתפות בכוח העבודה, פערי הכנסה והשסע החופף.</p>
+          <span class="text-amber-500 font-medium text-sm flex items-center">העמק בנתונים &#8592;</span>
+        </div>
+        <!-- Card 4 -->
+        <div onclick="switchTab('education')" class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-slate-100 border-b-4 border-b-indigo-500 group">
+          <div class="text-4xl mb-4 group-hover:scale-110 transition-transform origin-right">🎓</div>
+          <h3 class="text-xl font-bold text-slate-800 mb-2">חינוך והשכלה</h3>
+          <p class="text-slate-600 mb-4 text-sm">זכאות לבגרות, השכלה גבוהה וחסמים למוביליות חברתית.</p>
+          <span class="text-indigo-500 font-medium text-sm flex items-center">העמק בנתונים &#8592;</span>
+        </div>
+      </div>
+
+      <div class="mt-12 bg-blue-50 p-6 rounded-xl border border-blue-100">
+        <h3 class="text-lg font-bold text-blue-800 mb-2">📌 מושגי יסוד למחקר באזרחות</h3>
+        <ul class="list-disc list-inside text-blue-900 space-y-2">
+          <li><strong>שסע חופף:</strong> מצב שבו מחלוקת אחת (דתית) חופפת למחלוקות אחרות (כלכליות, חברתיות), מה שמעצים את המתח.</li>
+          <li><strong>הסכמיות:</strong> הצורך להגיע לפשרות ולכללי משחק משותפים כדי לאפשר חיים יחד למרות חילוקי הדעות.</li>
+          <li><strong>פלורליזם:</strong> הכרה בזכות קיומן של קבוצות שונות השונות זו מזו בצרכיהן, דעותיהן ואורח חייהן.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- POLITICS SECTION -->
+    <section id="content-politics" class="content-section fade-in hidden">
+      <header class="mb-8">
+        <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">🏛️ פוליטיקה ומשפט: "גלגול אחריות"</h2>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+          <p class="text-lg text-slate-600 leading-relaxed">
+            <strong>מטרת פרק זה:</strong> לבחון כיצד השסע הדתי משתקף בזירה הפוליטית והמשפטית. אנו מנתחים את המושג האזרחי <strong>"גלגול אחריות"</strong> – מצב בו הכנסת נמנעת מהכרעות (קיפאון חקיקתי) ומעבירה את נטל ההכרעה לבית המשפט העליון (בג"ץ). הנתונים המוצגים מראים את הפער הדרמטי בין יכולת החקיקה של הכנסת לבין עומס העתירות המוגשות לבג"ץ בנושאי דת ומדינה.
+          </p>
+        </div>
+      </header>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Stats -->
+        <div class="flex flex-col gap-6">
+          <div class="bg-white p-6 rounded-xl shadow-sm border-r-4 border-r-rose-500">
+            <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">חקיקה בכנסת (כנסת 20-21)</h4>
+            <div class="flex items-baseline gap-2">
+              <span class="text-5xl font-black text-rose-600">3%</span>
+              <span class="text-lg text-slate-600 font-medium">בלבד מתוך הצעות החוק אושרו</span>
+            </div>
+            <p class="mt-3 text-slate-600">רוב חוקי הדת והמדינה הם "חקיקה ישנה" או תיקונים טכניים. ישנו שימוש תדיר ב"הוראות שעה" זמניות הדוחות את ההכרעה הסופית.</p>
+          </div>
+
+          <div class="bg-white p-6 rounded-xl shadow-sm border-r-4 border-r-slate-800">
+            <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">עתירות לבג"ץ (ממוצע שנתי 2024-2025)</h4>
+            <div class="flex items-baseline gap-2">
+              <span class="text-5xl font-black text-slate-800">~2,750</span>
+              <span class="text-lg text-slate-600 font-medium">עתירות מוגשות בשנה</span>
+            </div>
+            <p class="mt-3 text-slate-600">הכרעה בהיעדר חוק קבוע: פסיקות בג"ץ קובעות את המציאות בשטח (למשל, הכרה בגיורים, גיוס חרדים), מה שמוביל לטענות על פגיעה ב<strong>הפרדת הרשויות</strong>.</p>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="bg-white p-6 rounded-xl shadow-sm">
+          <h3 class="text-xl font-bold text-slate-800 mb-4 text-center">הצעות חוק בנושאי דת ומדינה - כנסת 20</h3>
+          <div class="chart-container flex items-center justify-center">
+            <canvas id="politicsChart"></canvas>
+          </div>
+          <p class="text-center text-sm text-slate-500 mt-4">התרשים ממחיש את הקיפאון: מתוך מאות הצעות, הרוב המכריע נגנז.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- GEOGRAPHY SECTION -->
+    <section id="content-geography" class="content-section fade-in hidden">
+      <header class="mb-8">
+        <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">🏙️ דמוגרפיה ומרחב: היפרדות אקולוגית</h2>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+          <p class="text-lg text-slate-600 leading-relaxed">
+            <strong>מטרת פרק זה:</strong> להמחיש את המושג <strong>"היפרדות אקולוגית"</strong> באמצעות נתוני למ"ס מעודכנים (2025/2026). מושג זה מתאר מצב בו קבוצות שונות (חילונים וחרדים) חיים במרחבים גיאוגרפיים נפרדים לחלוטין. התרשים שלהלן (גרף עמודות) משווה את <strong>שיעור האוכלוסייה החרדית בתוך כל עיר</strong> (כל עמודה סוכמת ל־100% של אותה עיר), ומדגים "בועות" חברתיות הומוגניות לצד עיר מעורבת להשוואה - מה שמקטין את הממשק היומיומי ואת יכולת ה<strong>סובלנות</strong> ההדדית.
+          </p>
+        </div>
+      </header>
+
+      <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm mb-8">
+        <h3 class="text-2xl font-bold text-center text-slate-800 mb-6">שיעור האוכלוסייה החרדית בערים נבחרות (%)</h3>
+        <div class="chart-container">
+          <canvas id="geoChart"></canvas>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-teal-50 p-6 rounded-xl border border-teal-100">
+          <h4 class="text-xl font-bold text-teal-900 mb-3">ביטויי ההיפרדות בשטח</h4>
+          <ul class="list-disc list-inside text-teal-800 space-y-2">
+            <li><strong>מוסדות חינוך נפרדים:</strong> בערים החרדיות, כמעט 100% מהמוסדות אינם ממלכתיים-חילוניים.</li>
+            <li><strong>הסדרי תנועה בשבת:</strong> חסימת רחובות בשבתות וחגים מגדירה את המרחב לפי ההלכה.</li>
+            <li><strong>נראות ציבורית:</strong> היעדר פרסום חוצות נשי, שלטי צניעות ולוחות מודעות קהילתיים.</li>
+          </ul>
+        </div>
+        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+          <h4 class="text-xl font-bold text-slate-800 mb-3">השפעות ההיפרדות על השסע</h4>
+          <ul class="list-disc list-inside text-slate-700 space-y-2">
+            <li><strong>היעדר ממשק יומיומי:</strong> חוסר במפגשים מקריים מחזק סטריאוטיפים מבוססי-תקשורת.</li>
+            <li><strong>מאבק על משאבים עירוניים:</strong> בערים "מעורבות" יש מאבק על צביון שכונות והקצאת מבנים.</li>
+            <li><strong>פגיעה בלכידות הלאומית:</strong> הקושי ליצור "טוב משותף" כאשר החוויות היומיומיות מופרדות.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ECONOMY SECTION -->
+    <section id="content-economy" class="content-section fade-in hidden">
+      <header class="mb-8">
+        <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">💼 כלכלה ותעסוקה: השסע החופף</h2>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+          <p class="text-lg text-slate-600 leading-relaxed">
+            <strong>מטרת פרק זה:</strong> חשיפת העובדה שהשסע הדתי אינו רק תרבותי-ערכי אלא מהווה <strong>"שסע חופף"</strong>. המשמעות היא שההבדלים הדתיים מלווים בהבדלים סוציו-אקונומיים מהותיים. הנתונים כאן משווים את שיעורי ההשתתפות בכוח העבודה (לפי נתוני למ"ס 2025), ומראים כיצד אורח החיים משפיע על הכלכלה הלאומית ועל שאלות של <strong>צדק חלוקתי</strong> ו<strong>שוויון בנטל</strong> הכלכלי.
+          </p>
+        </div>
+      </header>
+
+      <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm mb-8">
+        <h3 class="text-2xl font-bold text-center text-slate-800 mb-6">השתתפות בכוח העבודה - גברים מול נשים (2025)</h3>
+        <div class="chart-container">
+          <canvas id="economyChart"></canvas>
+        </div>
+      </div>
+
+      <div class="bg-amber-50 p-6 rounded-xl border border-amber-100">
+        <h4 class="text-xl font-bold text-amber-900 mb-3">משמעות הנתונים למשק הישראלי</h4>
+        <p class="text-amber-800 leading-relaxed mb-4">
+          בעוד שבקרב נשים הפערים הצטמצמו משמעותית בשנים האחרונות, בקרב גברים קיים פער מבני עמוק (88% מול 55%). פער זה, בשילוב עם גודל משפחה ממוצע גדול יותר במגזר החרדי, מוביל למצב שבו <strong>ההכנסה החציונית לנפש</strong> בחברה החרדית נמוכה בעשרות אחוזים.
+        </p>
+        <p class="text-amber-800 leading-relaxed">
+          מצב זה מצריך תמיכה ממשלתית רחבה (תשלומי העברה, הנחות בארנונה), מה שמעורר תחושת חוסר הוגנות בקרב מעמד הביניים החילוני ומהווה מנוע מרכזי לתסכול במסגרת <strong>השסע הדתי-כלכלי</strong>.
+        </p>
+      </div>
+    </section>
+
+    <!-- EDUCATION SECTION -->
+    <section id="content-education" class="content-section fade-in hidden">
+      <header class="mb-8">
+        <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">🎓 חינוך והשכלה: חסמים למוביליות</h2>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+          <p class="text-lg text-slate-600 leading-relaxed">
+            <strong>מטרת פרק זה:</strong> לבדוק כיצד מערכות חינוך נפרדות מייצרות תוצאות שונות המשפיעות על עתיד המדינה. הנתונים מדגימים את ההבדלים העצומים בזכאות לבגרות והשכלה גבוהה. זהו דיון קלאסי במתח שבין <strong>זכויות מיעוט (תרבותיות)</strong> – זכות החרדים לשמר את צביון החינוך הייחודי להם (לימוד תורה ללא ליבה) – לבין הצורך של המדינה להבטיח מיומנויות יסוד לשילוב חברתי וכלכלי.
+          </p>
+        </div>
+      </header>
+
+      <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm mb-8">
+        <h3 class="text-2xl font-bold text-center text-slate-800 mb-6">פערי השכלה: בגרות ותואר אקדמי</h3>
+        <div class="chart-container">
+          <canvas id="educationChart"></canvas>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-indigo-50 p-6 rounded-xl border border-indigo-100">
+          <h4 class="text-xl font-bold text-indigo-900 mb-3">הזכות לתרבות מול האינטרס הכללי</h4>
+          <p class="text-indigo-800 leading-relaxed">
+            היעדר לימודי ליבה (מתמטיקה, אנגלית, מדעים) ברוב מוסדות החינוך לבנים במגזר החרדי מונע מהם לרכוש כלים בסיסיים הנדרשים בעולם המודרני. הקהילה דורשת אוטונומיה חינוכית בשם ה<strong>פלורליזם</strong>, אך המדינה חוששת מהשלכות מקרו-כלכליות.
+          </p>
+        </div>
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+          <h4 class="text-xl font-bold text-slate-800 mb-3">מוביליות חברתית כחסם</h4>
+          <p class="text-slate-600 leading-relaxed">
+            עם כ-15% בלבד בעלי תואר אקדמי, הצעיר החרדי מתקשה להשתלב במקצועות מכניסים (הייטק, הנדסה, רפואה). פער זה בהון האנושי מבטיח במידה רבה את המשך קיומו של <strong>השסע החופף</strong> גם בדורות הבאים, אלא אם יחול שינוי יסודי במדיניות ההכשרה.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- JS Logic -->
+  <script>
+    // Tab Switching Logic
+    function switchTab(tabId) {
+      // Hide all content sections
+      const sections = document.querySelectorAll('.content-section');
+      sections.forEach(section => {
+        section.classList.add('hidden');
+        section.classList.remove('block');
+      });
+      // Show target section
+      const targetSection = document.getElementById('content-' + tabId);
+      if (targetSection) {
+        targetSection.classList.remove('hidden');
+        targetSection.classList.add('block');
+      }
+      // Update tab styles
+      const tabs = document.querySelectorAll('.tab-btn');
+      tabs.forEach(tab => {
+        tab.classList.remove('tab-active');
+        tab.classList.add('tab-inactive');
+      });
+      const activeTab = document.getElementById('nav-' + tabId);
+      if (activeTab) {
+        activeTab.classList.remove('tab-inactive');
+        activeTab.classList.add('tab-active');
+      }
+      // Mobile menu behavior: close menu after selection if on mobile
+      if (window.innerWidth < 768) {
+        document.getElementById('sidebar').classList.add('hidden');
+        document.getElementById('sidebar').classList.remove('flex');
+      }
+    }
+    // Mobile Menu Toggle
+    document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+      const sidebar = document.getElementById('sidebar');
+      if (sidebar.classList.contains('hidden')) {
+        sidebar.classList.remove('hidden');
+        sidebar.classList.add('flex', 'fixed', 'inset-0', 'pt-16'); // Make it full screen
+      } else {
+        sidebar.classList.add('hidden');
+        sidebar.classList.remove('flex', 'fixed', 'inset-0', 'pt-16');
+      }
+    });
+    // Global Chart Defaults for consistent styling
+    Chart.defaults.font.family = 'Heebo, sans-serif';
+    Chart.defaults.color = '#475569'; // slate-600
+    Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(15, 23, 42, 0.9)'; // slate-900
+    Chart.defaults.plugins.tooltip.padding = 12;
+    Chart.defaults.plugins.tooltip.cornerRadius = 8;
+    Chart.defaults.plugins.tooltip.titleFont = {
+      size: 14,
+      weight: 'bold',
+      family: 'Heebo'
+    };
+    Chart.defaults.plugins.tooltip.bodyFont = {
+      size: 13,
+      family: 'Heebo'
+    };
+    Chart.defaults.maintainAspectRatio = false; // Critical for responsive containers
+    // 1. Politics Chart: Proportion of passed vs rejected bills
+    const ctxPolitics = document.getElementById('politicsChart').getContext('2d');
+    new Chart(ctxPolitics, {
+      type: 'doughnut',
+      data: {
+        labels: ['אושר לחוק (3%)', 'נגנז/נדחה (97%)'],
+        datasets: [{
+          data: [3, 97],
+          backgroundColor: ['#e11d48', '#f1f5f9'], // rose-600, slate-100
+          borderColor: ['#fff', '#e2e8f0'],
+          borderWidth: 2,
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        cutout: '70%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            rtl: true
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return ' ' + context.label;
+              }
+            }
+          }
+        }
+      }
+    });
+    // 2. Geography: % Haredi within each city - bar chart (donut slices would wrongly imply one whole)
+    const ctxGeo = document.getElementById('geoChart').getContext('2d');
+    new Chart(ctxGeo, {
+      type: 'bar',
+      data: {
+        labels: ['מודיעין עילית', 'ביתר עילית', 'בני ברק', 'אלעד', 'בית שמש', 'גבעתיים (לשם השוואה)'],
+        datasets: [{
+          label: 'שיעור חרדים בעיר (%)',
+          data: [99, 99, 95, 95, 90, 3],
+          backgroundColor: [
+            '#0f766e',
+            '#14b8a6',
+            '#3b82f6',
+            '#6366f1',
+            '#eab308',
+            '#cbd5e1'
+          ],
+          borderRadius: 6
+        }]
+      },
+      options: {
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            rtl: true,
+            callbacks: {
+              label: function(context) {
+                return ' ' + context.parsed.y + '% מהאוכלוסייה בעיר חרדים (אילוסטרציה)';
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            title: { display: true, text: 'אחוזים (%)' }
+          },
+          x: {
+            ticks: {
+              font: { size: 11 },
+              maxRotation: 45,
+              minRotation: 45
+            }
+          }
+        }
+      }
+    });
+    // 3. Economy Chart: Employment Gaps
+    const ctxEconomy = document.getElementById('economyChart').getContext('2d');
+    new Chart(ctxEconomy, {
+      type: 'bar',
+      data: {
+        labels: ['גברים', 'נשים'],
+        datasets: [{
+            label: 'אוכלוסייה כללית (%)',
+            data: [88, 84], // Sourced from prompt context implicitly, general women employment is high
+            backgroundColor: '#94a3b8', // slate-400
+            borderRadius: 6
+          },
+          {
+            label: 'אוכלוסייה חרדית (%)',
+            data: [55, 80], // Haredi men 55%, women ~80%
+            backgroundColor: '#d97706', // amber-600
+            borderRadius: 6
+          }
+        ]
+      },
+      options: {
+        plugins: {
+          legend: {
+            position: 'top',
+            rtl: true
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            title: {
+              display: true,
+              text: 'אחוז השתתפות (%)'
+            }
+          },
+          x: {
+            ticks: {
+              font: {
+                size: 16,
+                weight: 'bold'
+              }
+            }
+          }
+        }
+      }
+    });
+    // 4. Education Chart: Educational Attainment
+    const ctxEducation = document.getElementById('educationChart').getContext('2d');
+    new Chart(ctxEducation, {
+      type: 'bar',
+      data: {
+        labels: ['זכאות לבגרות', 'בעלי תואר אקדמי'],
+        datasets: [{
+            label: 'חינוך ממלכתי / אוכלוסייה כללית (%)',
+            data: [83, 50],
+            backgroundColor: '#cbd5e1', // slate-300
+            borderRadius: 6
+          },
+          {
+            label: 'חינוך חרדי / אוכלוסייה חרדית (%)',
+            data: [18, 15],
+            backgroundColor: '#4f46e5', // indigo-600
+            borderRadius: 6
+          }
+        ]
+      },
+      options: {
+        indexAxis: 'y', // Horizontal bar chart for variety and easy reading of labels
+        plugins: {
+          legend: {
+            position: 'bottom',
+            rtl: true
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            max: 100,
+            title: {
+              display: true,
+              text: 'אחוזים (%)'
+            }
+          },
+          y: {
+            ticks: {
+              font: {
+                size: 14,
+                weight: 'bold'
+              }
+            }
+          }
+        }
+      }
+    });
+    // Handle window resize for mobile menu reset
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768) {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.remove('hidden', 'fixed', 'inset-0', 'pt-16');
+        sidebar.classList.add('flex');
+      }
+    });
+  </script>
+</body>
+
+</html>

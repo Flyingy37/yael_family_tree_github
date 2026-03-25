@@ -34,7 +34,7 @@ public/family-graph.json
 *.docx
 
 # --- Public-repo safety: raw genealogy + DNA + internal reports ---
-# Master person data (contains living people, minors, DNA in notes) — keep locally or in a PRIVATE repo only.
+# Master person data (contains living people, minors, DNA in notes) - keep locally or in a PRIVATE repo only.
 /data/canonical.csv
 /data/curated.csv
 

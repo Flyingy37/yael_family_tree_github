@@ -33,8 +33,8 @@ Each identity resolution follows this structure:
 
 Two distinct people named Frada Alperovich exist in the tree and must remain separate records:
 
-1. **Older Frada (c.1833)** — Frada Kastrel, wife of Meir Alperovich (`@I198@`), daughter of Shmuel Kastrel + Pesia Alperovitch. Recorded as `@I199@` (fams=`@F35@`, famc=`@F69@`).
-2. **Later Frada (c.1870)** — Frada (Freidel) Alperovich, spouse of Yehuda "Yudel" Alperovich (`@I80@`). Recorded as `@I120@` (fams=`@F84@`, famc=`@F16@`). Note: `@I81@` (fams=`@F16@`, no famc) may be a partial duplicate referencing the same person as Yehuda's wife.
+1. **Older Frada (c.1833)** - Frada Kastrel, wife of Meir Alperovich (`@I198@`), daughter of Shmuel Kastrel + Pesia Alperovitch. Recorded as `@I199@` (fams=`@F35@`, famc=`@F69@`).
+2. **Later Frada (c.1870)** - Frada (Freidel) Alperovich, spouse of Yehuda "Yudel" Alperovich (`@I80@`). Recorded as `@I120@` (fams=`@F84@`, famc=`@F16@`). Note: `@I81@` (fams=`@F16@`, no famc) may be a partial duplicate referencing the same person as Yehuda's wife.
 
 ### Evidence
 
@@ -42,13 +42,13 @@ Two distinct people named Frada Alperovich exist in the tree and must remain sep
 |---|---------------|----------|
 | 1 | Birth dates ~37 years apart (c.1833 vs c.1870) | Separate individuals |
 | 2 | `@I199@` is parent in family `@F35@` with Meir (`@I198@`, b.1819); `@I120@` is child of family `@F16@` (Yehuda + Frada/`@I81@`) | Different generational positions |
-| 3 | `@I199@` famc=`@F69@` — children of `@F69@` carry Kastrel surname (Yehuda Leibe Kastroll, Moshe Simeon Kastrel, Yehoshua Kastrel, Aharon Kastrel, Miryam Kastroll, Noima Kastrel) | Older Frada's maiden name = Kastrel |
+| 3 | `@I199@` famc=`@F69@` - children of `@F69@` carry Kastrel surname (Yehuda Leibe Kastroll, Moshe Simeon Kastrel, Yehoshua Kastrel, Aharon Kastrel, Miryam Kastroll, Noima Kastrel) | Older Frada's maiden name = Kastrel |
 | 4 | Smart Match child-cluster evidence from MyHeritage | Constrained to later Frada (`@I120@`) only |
 | 5 | `@I120@` death c.1939 in Mandatory Palestine; `@I199@` no death date recorded | Consistent with separate lifespans |
 
 ### Confidence
 
-**High** — Generational gap, distinct spousal links, and independent family-of-origin data (`@F69@` vs `@F16@`) leave no plausible single-person interpretation.
+**High** - Generational gap, distinct spousal links, and independent family-of-origin data (`@F69@` vs `@F16@`) leave no plausible single-person interpretation.
 
 ### Unresolved Items
 
@@ -57,7 +57,7 @@ Two distinct people named Frada Alperovich exist in the tree and must remain sep
 
 ---
 
-## IR-002: Sosha Esther Kastrel — Non-canonical Status
+## IR-002: Sosha Esther Kastrel - Non-canonical Status
 
 | Field | Detail |
 |-------|--------|
@@ -67,19 +67,19 @@ Two distinct people named Frada Alperovich exist in the tree and must remain sep
 
 ### Claim
 
-"Sosha Esther" remains **non-canonical** — treated as a probable UI/display artifact (e.g. MyHeritage Smart Match concatenation or import glitch) until stronger direct evidence (vital records, yizkor book entries, or DNA-corroborated descendant lines) appears.
+"Sosha Esther" remains **non-canonical** - treated as a probable UI/display artifact (e.g. MyHeritage Smart Match concatenation or import glitch) until stronger direct evidence (vital records, yizkor book entries, or DNA-corroborated descendant lines) appears.
 
 ### Evidence
 
 | # | Evidence Item | Supports |
 |---|---------------|----------|
 | 1 | Name pattern "Sosha Esther" is unusual; may be two separate names concatenated by import | UI/display artifact hypothesis |
-| 2 | `@I362@` is listed as parent in `@F69@` alongside `@I363@` Pesia Kastrol — two female parents in the same family is structurally unusual | Possible data issue |
-| 3 | surname_final = "Alperovich" despite birth surname "Kastrel" — suggests married-name override | Potential import artifact |
+| 2 | `@I362@` is listed as parent in `@F69@` alongside `@I363@` Pesia Kastrol - two female parents in the same family is structurally unusual | Possible data issue |
+| 3 | surname_final = "Alperovich" despite birth surname "Kastrel" - suggests married-name override | Potential import artifact |
 
 ### Confidence
 
-**Low** — No independent primary-source corroboration found. Hypothesis rests on structural data anomalies.
+**Low** - No independent primary-source corroboration found. Hypothesis rests on structural data anomalies.
 
 ### Unresolved Items
 
@@ -88,7 +88,7 @@ Two distinct people named Frada Alperovich exist in the tree and must remain sep
 
 ---
 
-## IR-003: Kurenets Place-Name Variants — Normalization
+## IR-003: Kurenets Place-Name Variants - Normalization
 
 | Field | Detail |
 |-------|--------|
@@ -115,7 +115,7 @@ The following place-name variants all refer to the same location and should be t
 
 ### Confidence
 
-**High** — Geographic coordinates are identical; variants are transliteration and jurisdictional differences only.
+**High** - Geographic coordinates are identical; variants are transliteration and jurisdictional differences only.
 
 ### Unresolved Items
 

@@ -247,12 +247,40 @@ export default function FamilyExplorer() {
             {language === 'he' ? '🌳 אילן יוחסין' : '🌳 Family Tree'}
           </h1>
 
-          <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5">
+          <div
+            className="flex gap-1 bg-gray-100 rounded-lg p-0.5"
+            role="tablist"
+            aria-label={language === 'he' ? 'בחירת תצוגה' : 'View mode'}
+          >
             {viewTabs.map(tab => (
               <button
                 key={tab.id}
                 type="button"
+                role="tab"
+                aria-selected={viewMode === tab.id}
+                aria-controls="explorer-main-panel"
+                id={`explorer-tab-${tab.id}`}
+                tabIndex={viewMode === tab.id ? 0 : -1}
                 onClick={() => navigate(`/explore/${tab.id}`)}
+                onKeyDown={e => {
+                  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+                  e.preventDefault();
+                  const i = viewTabs.findIndex(t => t.id === tab.id);
+                  const delta =
+                    language === 'he'
+                      ? e.key === 'ArrowLeft'
+                        ? 1
+                        : -1
+                      : e.key === 'ArrowRight'
+                        ? 1
+                        : -1;
+                  const next = (i + delta + viewTabs.length) % viewTabs.length;
+                  const nextId = viewTabs[next].id;
+                  navigate(`/explore/${nextId}`);
+                  queueMicrotask(() => {
+                    document.getElementById(`explorer-tab-${nextId}`)?.focus({ preventScroll: true });
+                  });
+                }}
                 className={`px-3 py-1.5 rounded-md text-sm transition-colors whitespace-nowrap ${
                   viewMode === tab.id
                     ? 'bg-white shadow-sm font-medium text-gray-800'
@@ -264,7 +292,12 @@ export default function FamilyExplorer() {
             ))}
           </div>
 
-          <SearchBar searchIndex={searchIndex} onSelect={handleSelectPerson} language={language} />
+          <SearchBar
+            searchIndex={searchIndex}
+            onSelect={handleSelectPerson}
+            language={language}
+            allowedPersonIds={filteredIds}
+          />
           <div className="flex-1" />
           <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5">
             {(['en', 'he'] as const).map(lang => (
@@ -341,8 +374,9 @@ export default function FamilyExplorer() {
 
           <FilterPanel filters={filters} onChange={setFilters} personList={personList} language={language} />
           <StatsPanel
-            totalPersons={personList.length}
-            filteredCount={displayIds.size}
+            fullFilePersonCount={personList.length}
+            afterFiltersCount={filteredIds.size}
+            shownInViewCount={displayIds.size}
             familyCount={families.size}
             holocaustVictimCount={holocaustVictimCount}
             filteredHolocaustVictimCount={filteredHolocaustVictimCount}
@@ -350,7 +384,7 @@ export default function FamilyExplorer() {
           />
         </div>
 
-        <div className="flex-1">
+        <div id="explorer-main-panel" className="flex-1" role="tabpanel" aria-labelledby={`explorer-tab-${viewMode}`}>
           {viewMode === 'tree' && (
             <ReactFlowProvider>
               <TreeView

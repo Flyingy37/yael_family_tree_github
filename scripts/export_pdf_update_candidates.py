@@ -54,7 +54,7 @@ EXPLICIT_EXTRA_SOURCES = [
     "/Users/yaellivnatzaidman/Documents/LivnatGenealogyWorkspace/01-Heritage-Project/Hal_DNA_23andMe_Analysis.xlsx",
     "/Users/yaellivnatzaidman/Documents/LivnatGenealogyWorkspace/01-Heritage-Project/37_Y_Zaidman_Chrom_Autoso_20260204.csv.gz",
     "/Users/yaellivnatzaidman/Documents/LivnatGenealogyWorkspace/01-Heritage-Project/IN131982_Chromosome_Browser_Results_20260204_ALL_plus_8_9_10.csv.gz",
-    # MyHeritage site exports (Livnat Zaidman Web Site) — Chromosome Browser + DNA results PDFs
+    # MyHeritage site exports (Livnat Zaidman Web Site) - Chromosome Browser + DNA results PDFs
     "/Users/yaellivnatzaidman/Library/Application Support/Cursor/User/workspaceStorage/dc39c8d62d6cca1afa69d14726015523/pdfs/d9279bd5-e58d-4e2c-b31b-83da337e1c60/Chromosome Browser - Livnat Zaidman Web Site - MyHeritage.pdf",
     "/Users/yaellivnatzaidman/Library/Application Support/Cursor/User/workspaceStorage/dc39c8d62d6cca1afa69d14726015523/pdfs/efa35993-f6e4-4838-a27c-ce4be3f16f91/Chromosome Browser - Livnat Zaidman Web Site - MyHeritage (1).pdf",
     "/Users/yaellivnatzaidman/Library/Application Support/Cursor/User/workspaceStorage/dc39c8d62d6cca1afa69d14726015523/pdfs/795b6263-ad5f-48cb-8167-a47f71da2b55/Chromosome Browser - Livnat Zaidman Web Site - MyHeritage (2).pdf",
@@ -67,7 +67,7 @@ EXPLICIT_EXTRA_SOURCES = [
     "/Users/yaellivnatzaidman/Library/Application Support/Cursor/User/workspaceStorage/dc39c8d62d6cca1afa69d14726015523/pdfs/91ea3650-5e62-48f7-b312-69aea2125ea7/DNA results - Livnat Zaidman Web Site - MyHeritage (4).pdf",
     "/Users/yaellivnatzaidman/Library/Application Support/Cursor/User/workspaceStorage/dc39c8d62d6cca1afa69d14726015523/pdfs/7992ff97-b427-4b35-8b13-ab3a0a2ce18c/DNA results - Livnat Zaidman Web Site - MyHeritage (5).pdf",
     "/Users/yaellivnatzaidman/Library/Application Support/Cursor/User/workspaceStorage/dc39c8d62d6cca1afa69d14726015523/pdfs/de58fe01-43ad-4780-9009-2323d871e90b/DNA results - Livnat Zaidman Web Site - MyHeritage (6).pdf",
-    # Ben Zeadman — MyHeritage AutoClusters (MH-KN8886), March 2026
+    # Ben Zeadman - MyHeritage AutoClusters (MH-KN8886), March 2026
     "/Users/yaellivnatzaidman/Downloads/Ben Zeadman AutoClusters - MH-KN8886 - March 24 2026/Ben Zeadman AutoClusters - MH-KN8886 - March 24 2026.csv",
     "/Users/yaellivnatzaidman/Downloads/Ben Zeadman AutoClusters - MH-KN8886 - March 24 2026/Ben Zeadman AutoClusters - MH-KN8886 - March 24 2026.html",
     "/Users/yaellivnatzaidman/Downloads/Ben Zeadman AutoClusters - MH-KN8886 - March 24 2026/ReadMe.pdf",

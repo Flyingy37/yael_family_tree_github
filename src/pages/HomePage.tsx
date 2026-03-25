@@ -19,13 +19,13 @@ const COPY = {
         to: '/explore/timeline',
         icon: '📅',
         title: 'ציר זמן משפחתי',
-        text: 'לידות, פטירות ואירועים לאורך הדורות — בסדר כרונולוגי.',
+        text: 'לידות, פטירות ואירועים לאורך הדורות - בסדר כרונולוגי.',
       },
       {
         to: '/explore/map',
         icon: '🗺️',
         title: 'מסע על המפה',
-        text: 'איפה המשפחה חיה ונעה — נקודות מרכזיות על גבי מפה.',
+        text: 'איפה המשפחה חיה ונעה - נקודות מרכזיות על גבי מפה.',
       },
       {
         to: '/explore/stats',
@@ -41,7 +41,7 @@ const COPY = {
     title: 'Livnat–Zaidman family',
     subtitle: 'A journey across generations, places, and stories',
     lead:
-      'A family research site that brings together people, places, and branch connections — built for discovery, not spreadsheet overload.',
+      'A family research site that brings together people, places, and branch connections - built for discovery, not spreadsheet overload.',
     ctaExplore: 'Enter the explorer',
     cards: [
       {
@@ -60,7 +60,7 @@ const COPY = {
         to: '/explore/map',
         icon: '🗺️',
         title: 'Journey on the map',
-        text: 'Where the family lived and moved — key locations at a glance.',
+        text: 'Where the family lived and moved - key locations at a glance.',
       },
       {
         to: '/explore/stats',

@@ -186,7 +186,7 @@ export function TimelineView({ persons, filteredIds, onSelectPerson, language = 
         ) : (
           <div>
             <h3 className="font-bold text-sm text-gray-700 mb-2">
-              {t ? `שנות ה-${selectedDecade} — ${selectedEvents.length} אירועים` : `${selectedDecade}s — ${selectedEvents.length} events`}
+              {t ? `שנות ה-${selectedDecade} - ${selectedEvents.length} אירועים` : `${selectedDecade}s - ${selectedEvents.length} events`}
             </h3>
             <div className="space-y-1">
               {selectedEvents.map((evt, i) => (

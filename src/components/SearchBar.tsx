@@ -6,9 +6,11 @@ interface Props {
   searchIndex: Fuse<Person>;
   onSelect: (personId: string) => void;
   language?: 'en' | 'he';
+  /** When set, only people in this set appear in results (same as current graph filters). */
+  allowedPersonIds?: Set<string>;
 }
 
-export function SearchBar({ searchIndex, onSelect, language = 'en' }: Props) {
+export function SearchBar({ searchIndex, onSelect, language = 'en', allowedPersonIds }: Props) {
   const t = language === 'he';
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Person[]>([]);
@@ -23,11 +25,15 @@ export function SearchBar({ searchIndex, onSelect, language = 'en' }: Props) {
       setHighlightedIndex(-1);
       return;
     }
-    const hits = searchIndex.search(query, { limit: 10 });
-    setResults(hits.map(h => h.item));
-    setHighlightedIndex(hits.length > 0 ? 0 : -1);
+    const hits = searchIndex.search(query, { limit: 50 });
+    const items = hits
+      .map(h => h.item)
+      .filter(p => !allowedPersonIds || allowedPersonIds.has(p.id))
+      .slice(0, 10);
+    setResults(items);
+    setHighlightedIndex(items.length > 0 ? 0 : -1);
     setIsOpen(true);
-  }, [query, searchIndex]);
+  }, [query, searchIndex, allowedPersonIds]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {

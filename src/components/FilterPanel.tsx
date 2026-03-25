@@ -27,7 +27,7 @@ export const DEFAULT_FILTERS: Filters = {
   generationMax: 2,
   sex: 'all',
   surname: '',
-  connectedToYaelOnly: false,
+  connectedToYaelOnly: true,
   hasDna: false,
   holocaustVictimsOnly: false,
   hasHeritageTag: false,
@@ -168,7 +168,14 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
             {t ? 'קרבה' : 'Kinship'}
           </div>
           <div>
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label
+              className="flex items-center gap-2 cursor-pointer"
+              title={
+                t
+                  ? 'מסתיר אנשים שלא על רכיב קרבת הדם של יעל (איים נפרדים בקובץ). בטלי כדי לראות את כל המאגר.'
+                  : "Hides people not on Yael's blood-relation component (separate islands in the file). Uncheck to show everyone."
+              }
+            >
               <input
                 type="checkbox"
                 checked={filters.connectedToYaelOnly}

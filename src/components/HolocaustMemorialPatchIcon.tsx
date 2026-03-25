@@ -1,6 +1,6 @@
 /**
  * Yellow memorial patch (SVG, transparent outside the patch).
- * Original asset — not the copyrighted Flickr photograph.
+ * Original asset - not the copyrighted Flickr photograph.
  */
 
 interface Props {
