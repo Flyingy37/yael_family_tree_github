@@ -22,6 +22,8 @@ export function StatsPanel({
 }: Props) {
   const t = language === 'he';
   const subtreeNarrowed = shownInViewCount !== afterFiltersCount;
+  const filtersExcludeSome = afterFiltersCount < fullFilePersonCount;
+  const excludedByFilters = fullFilePersonCount - afterFiltersCount;
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-3 text-sm space-y-1" dir={t ? 'rtl' : 'ltr'}>
       <div className="font-bold text-gray-700 mb-2">{t ? 'סטטיסטיקות' : 'Statistics'}</div>
@@ -35,10 +37,12 @@ export function StatsPanel({
           <span className="font-medium text-blue-600">{shownInViewCount.toLocaleString()}</span>
         </div>
       )}
-      <div className="flex justify-between text-xs text-gray-400 pt-0.5 border-t border-gray-100">
-        <span>{t ? 'בקובץ המלא (ללא סינון):' : 'Full file (unfiltered):'}</span>
-        <span>{fullFilePersonCount.toLocaleString()}</span>
-      </div>
+      {filtersExcludeSome && (
+        <div className="flex justify-between text-xs text-gray-400 pt-0.5 border-t border-gray-100">
+          <span>{t ? 'לא בטווח הסינון הנוכחי:' : 'Outside current filters:'}</span>
+          <span>{excludedByFilters.toLocaleString()}</span>
+        </div>
+      )}
       <div className="flex justify-between">
         <span className="text-gray-500">{t ? 'משפחות:' : 'Families:'}</span>
         <span className="font-medium">{familyCount.toLocaleString()}</span>

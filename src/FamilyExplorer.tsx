@@ -133,10 +133,14 @@ export default function FamilyExplorer() {
   }, [filteredIds, subtreeRootId, persons, families, subtreeDepth, includeSpouseBranches]);
 
   const selectedPerson = selectedPersonId ? persons.get(selectedPersonId) : null;
-  const holocaustVictimCount = useMemo(
-    () => personList.reduce((sum, p) => sum + (p.holocaustVictim ? 1 : 0), 0),
-    [personList]
-  );
+  /** Holocaust victims within current filter scope (not full file). */
+  const holocaustVictimCountInScope = useMemo(() => {
+    let count = 0;
+    for (const id of filteredIds) {
+      if (persons.get(id)?.holocaustVictim) count += 1;
+    }
+    return count;
+  }, [filteredIds, persons]);
   const filteredHolocaustVictimCount = useMemo(() => {
     let count = 0;
     for (const id of displayIds) {
@@ -325,8 +329,11 @@ export default function FamilyExplorer() {
           >
             {language === 'he' ? 'ייצוא Web Vitals' : 'Export Web Vitals'}
           </button>
-          <div className="text-xs text-gray-400 whitespace-nowrap">
-            {displayIds.size.toLocaleString()} / {personList.length.toLocaleString()} {language === 'he' ? 'אנשים' : 'people'}
+          <div className="text-xs text-gray-400 whitespace-nowrap" title={language === 'he' ? 'בטווח הסינון והתצוגה הנוכחיים' : 'Current filter and view scope'}>
+            {displayIds.size !== filteredIds.size
+              ? `${displayIds.size.toLocaleString()} / ${filteredIds.size.toLocaleString()}`
+              : displayIds.size.toLocaleString()}{' '}
+            {language === 'he' ? 'אנשים' : 'people'}
           </div>
         </div>
       </header>

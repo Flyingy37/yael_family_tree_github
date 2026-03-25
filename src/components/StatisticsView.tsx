@@ -132,7 +132,6 @@ export function StatisticsView({ personList, filteredIds, connectedToYaelIds, on
     };
   }, [filteredPersons, connectedToYaelIds]);
 
-  const totalAll = personList.length;
   const totalConnectedAll = connectedToYaelIds.size;
   const selectedSubset = useMemo(() => {
     const predicates: Record<MetricKey, (person: Person) => boolean> = {
@@ -189,7 +188,6 @@ export function StatisticsView({ personList, filteredIds, connectedToYaelIds, on
               <div className="text-lg font-semibold text-blue-700">
                 {stats.total.toLocaleString()}
               </div>
-              <div className="text-xs text-gray-500">{t ? 'מתוך' : 'out of'} {totalAll.toLocaleString()}</div>
             </button>
             <button
               onClick={() => setSelectedMetric('connected')}
