@@ -35,8 +35,12 @@ export function computeLayout(
   });
   g.setDefaultEdgeLabel(() => ({}));
 
+  // Deterministic iteration: Map/Set order must not affect Dagre tie-breaking or output node order.
+  const sortedPersonIds = Array.from(filteredPersonIds).sort((a, b) => a.localeCompare(b));
+  const sortedFamilies = Array.from(families.entries()).sort(([a], [b]) => a.localeCompare(b));
+
   // Add person nodes
-  for (const personId of filteredPersonIds) {
+  for (const personId of sortedPersonIds) {
     const person = persons.get(personId);
     if (!person) continue;
     g.setNode(personId, { width: NODE_WIDTH, height: NODE_HEIGHT });
@@ -45,9 +49,13 @@ export function computeLayout(
   const edges: LayoutEdge[] = [];
 
   // Add edges from family relationships
-  for (const [famId, family] of families) {
-    const visibleSpouses = family.spouses.filter(id => filteredPersonIds.has(id));
-    const visibleChildren = family.children.filter(id => filteredPersonIds.has(id));
+  for (const [famId, family] of sortedFamilies) {
+    const visibleSpouses = family.spouses
+      .filter(id => filteredPersonIds.has(id))
+      .sort((a, b) => a.localeCompare(b));
+    const visibleChildren = family.children
+      .filter(id => filteredPersonIds.has(id))
+      .sort((a, b) => a.localeCompare(b));
 
     // Spouse edges (horizontal connection)
     if (visibleSpouses.length === 2) {
@@ -90,7 +98,7 @@ export function computeLayout(
 
   // Extract positioned nodes (only person nodes, skip virtual)
   const nodes: LayoutNode[] = [];
-  for (const personId of filteredPersonIds) {
+  for (const personId of sortedPersonIds) {
     const person = persons.get(personId);
     const nodeData = g.node(personId);
     if (!person || !nodeData) continue;
