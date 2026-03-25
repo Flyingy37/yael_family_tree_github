@@ -1,18 +1,22 @@
 # AGENTS.md
 
-## Cursor Cloud specific instructions
+## Repository overview
 
-This is a **data-only repository** containing genealogy/family tree CSV files. There are no applications, services, build systems, package managers, test suites, or linting configurations.
+This is a **React + Vite + TypeScript** web app for exploring a family tree. Person and family data are compiled from local CSVs into `public/family-graph.json` by `scripts/build-graph.ts` (run automatically before dev/build via `prebuild`).
 
-### Repository contents
+### Data (not in public git)
 
-- `canonical_genealogy_master_patched_manual_surnames_equivalences_2026-03-14.csv` — master genealogy dataset (~4,145 records, 13 columns)
-- `heritage_6_mar_26 - FamilyTree.csv` — MyHeritage export (~4,067 records, 43 columns)
-- `Family_Tree_Yael_Livnat.csv` — Hebrew-language family tree (~352 records, semicolon-delimited)
-- `Family_Tree_Yael_Livnat_IMPROVED.csv` — small stub/template (5 records)
+- `data/canonical.csv` and `data/curated.csv` are **gitignored** (privacy: living people, minors, DNA in notes). See `data/data_dictionary.md`.
+- Without those files, `npm run build` / `npm run dev` cannot produce a full graph; clones of the public repo need a **private copy** of the CSVs in `data/`.
+- Tree size is **data-dependent** (often thousands of people locally); the UI shows counts from the loaded JSON.
 
-### Development notes
+### Tooling
 
-- No dependencies to install; no build, lint, or test commands.
-- CSV files can be validated with Python's built-in `csv` module (no external packages required).
-- The `remove-old-app` branch on the remote contains a React/Vite web application for visualizing the tree data, but that code is not present on `main`.
+- **Package manager:** npm (`package.json`, `package-lock.json`)
+- **Dev:** `npm run dev` (runs graph build then Vite)
+- **Build:** `npm run build`
+- No automated test suite is configured in this repo.
+
+### Legacy / other branches
+
+- Remote branch `remove-old-app` may contain older app history; `main` carries the current app and scripts.

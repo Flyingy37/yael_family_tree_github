@@ -229,6 +229,44 @@ export default function FamilyExplorer() {
     );
   }
 
+  if (personList.length === 0) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gray-50 px-4" dir={language === 'he' ? 'rtl' : 'ltr'}>
+        <div className="text-center max-w-lg text-stone-700">
+          <div className="text-4xl mb-4">🌳</div>
+          <h2 className="text-lg font-bold text-stone-900 mb-2">
+            {language === 'he' ? 'אין אנשים בגרף הנתונים' : 'No people in the loaded graph'}
+          </h2>
+          <p className="text-sm text-stone-600 leading-relaxed mb-4">
+            {language === 'he'
+              ? 'קובץ family-graph.json ריק או לא קיים. העתיקי ל־data/ את canonical.csv ו־curated.csv (מקור פרטי), והריצי npm run dev או npm run build כדי לייצר את הגרף המלא.'
+              : 'family-graph.json is missing or has no persons. Copy canonical.csv and curated.csv into data/ from your private source, then run npm run dev or npm run build to generate the full graph.'}
+          </p>
+          <p className="text-xs text-stone-500 mb-4">
+            {language === 'he'
+              ? 'בריפו ציבורי אין את קבצי ה־CSV — זה מכוון; האלפים ברשומות נשארים אצלך מקומית.'
+              : 'Public clones omit the CSV files by design; thousands of records live only in your local data.'}
+          </p>
+          <div className="flex flex-wrap gap-2 justify-center">
+            <Link
+              to="/"
+              className="inline-flex px-4 py-2 text-sm bg-stone-900 text-white rounded-md hover:bg-stone-800"
+            >
+              {language === 'he' ? 'חזרה לדף הבית' : 'Back to home'}
+            </Link>
+            <button
+              type="button"
+              onClick={reload}
+              className="inline-flex px-4 py-2 text-sm border border-stone-300 rounded-md hover:bg-stone-100"
+            >
+              {language === 'he' ? 'טען מחדש' : 'Reload'}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-screen flex flex-col bg-gray-50" dir={language === 'he' ? 'rtl' : 'ltr'}>
       <header className="bg-white border-b border-gray-200 px-4 py-3 shadow-sm z-10">
