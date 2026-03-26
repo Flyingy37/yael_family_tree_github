@@ -14,7 +14,8 @@ This is a **React + Vite + TypeScript** web app for exploring a family tree. Per
 
 - **Package manager:** npm (`package.json`, `package-lock.json`)
 - **Dev:** `npm run dev` (runs graph build then Vite)
-- **Build:** `npm run build`
+- **Build:** `npm run build` (runs `prebuild` graph script, then Vite; copies `dist/404.html` for GitHub Pages SPA routing)
+- **GitHub Pages:** `.github/workflows/deploy-pages.yml` sets `VITE_BASE_PATH` to `/<repository-name>/`. For a root user site (`username.github.io`), set `VITE_BASE_PATH=/` in the workflow instead.
 - No automated test suite is configured in this repo.
 
 ### Legacy / other branches

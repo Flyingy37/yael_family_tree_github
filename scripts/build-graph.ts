@@ -1120,6 +1120,18 @@ function deduplicatePersons(persons: Person[], families: Family[]): {
 
 function buildGraph() {
   console.log('Building family graph...');
+  const canonicalPath = join(ROOT, 'data/canonical.csv');
+  const curatedPath = join(ROOT, 'data/curated.csv');
+  if (!existsSync(canonicalPath) || !existsSync(curatedPath)) {
+    mkdirSync(join(ROOT, 'public'), { recursive: true });
+    const emptyGraph = { persons: [] as Person[], families: [] as Family[], rootPersonId: '@I1@' };
+    writeFileSync(join(ROOT, 'public/family-graph.json'), JSON.stringify(emptyGraph));
+    console.warn(
+      'Missing data/canonical.csv or data/curated.csv — wrote empty public/family-graph.json (public clone / CI).'
+    );
+    return;
+  }
+
   const supplementalSignals = loadSupplementalSignals();
   const surnameOrigins = loadSurnameOriginsMap();
   if (supplementalSignals.loadedFiles.length > 0) {
@@ -1129,7 +1141,7 @@ function buildGraph() {
   }
 
   // Read canonical CSV
-  const canonicalRaw = readFileSync(join(ROOT, 'data/canonical.csv'), 'utf-8');
+  const canonicalRaw = readFileSync(canonicalPath, 'utf-8');
   const canonicalRows: RawCanonical[] = parse(canonicalRaw, {
     columns: true,
     skip_empty_lines: true,
@@ -1137,7 +1149,7 @@ function buildGraph() {
   });
 
   // Read curated CSV (skip title row)
-  const curatedRaw = readFileSync(join(ROOT, 'data/curated.csv'), 'utf-8');
+  const curatedRaw = readFileSync(curatedPath, 'utf-8');
   const curatedAllRows = parse(curatedRaw, {
     columns: false,
     skip_empty_lines: true,

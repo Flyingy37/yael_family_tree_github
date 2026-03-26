@@ -46,6 +46,14 @@ npm run dev
 
 האפליקציה תיפתח ב- http://localhost:5173
 
+## פרסום ב-GitHub Pages
+
+בקובץ `.github/workflows/deploy-pages.yml` מוגדר workflow שבונה את האתר ומפרסם אותו ל-Pages בעת דחיפה ל־`main`. ב-**Repository → Settings → Pages** יש לבחור מקור: **GitHub Actions**.
+
+- אתר פרויקט: `https://<user>.github.io/<repo>/` — ה-workflow מגדיר `VITE_BASE_PATH` ל־`/<repo>/` אוטומטית.
+- אתר משתמש בשורש (`username.github.io`): יש לערוך את ה-workflow ולהגדיר `VITE_BASE_PATH=/`.
+- ב-CI אין `canonical.csv` / `curated.csv` — נבנה גרף ריק; לאחר העתקת הנתונים מקומית והרצת `npm run build`, אפשר לפרסם ארטיפקט עם הגרף המלא (או להוסיף GitHub Environment secrets ולוגיקה נפרדת).
+
 ## טכנולוגיות
 
 - **React 19** + **TypeScript** — ממשק משתמש
