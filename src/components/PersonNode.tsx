@@ -52,12 +52,47 @@ function getInitials(givenName: string, fullName: string): string {
   return (parts[0]?.[0] ?? '?').toUpperCase();
 }
 
+interface TagBadge {
+  emoji: string;
+  labelEn: string;
+  labelHe: string;
+  color: string;
+}
+
+const TAG_CONFIG: Record<string, TagBadge> = {
+  Partisan:  { emoji: '✊', labelEn: 'Partisan',        labelHe: 'פרטיזן',      color: '#6b7280' },
+  Famous:    { emoji: '⭐', labelEn: 'Famous',           labelHe: 'מפורסם',      color: '#d97706' },
+  Rabbi:     { emoji: '✡️', labelEn: 'Rabbi',            labelHe: 'רב',          color: '#1d4ed8' },
+  Lineage:   { emoji: '📜', labelEn: 'Notable lineage',  labelHe: 'ייחוס',       color: '#7c3aed' },
+  Heritage:  { emoji: '🏛️', labelEn: 'Jewish heritage',  labelHe: 'מסורת',       color: '#059669' },
+  Migration: { emoji: '✈️', labelEn: 'Migration',        labelHe: 'הגירה',       color: '#0891b2' },
+};
+
+function buildTagBadges(person: Person, isHe: boolean): Array<{ emoji: string; title: string }> {
+  const badges: Array<{ emoji: string; title: string }> = [];
+
+  if (person.warCasualty) {
+    badges.push({ emoji: '⚔️', title: isHe ? 'נפל במלחמה' : 'War casualty' });
+  }
+  if (person.doubleBloodTie) {
+    badges.push({ emoji: '🔀', title: isHe ? 'קשר דם כפול' : 'Double blood tie' });
+  }
+  for (const tag of person.tags) {
+    const cfg = TAG_CONFIG[tag];
+    if (cfg) {
+      badges.push({ emoji: cfg.emoji, title: isHe ? cfg.labelHe : cfg.labelEn });
+    }
+  }
+  return badges;
+}
+
 export const PersonNode = memo(({ data }: PersonNodeProps) => {
   const { person, isRoot, isSelected, isCollapsed, hasChildren, isOnPath } = data;
   const t = data.language === 'he';
   const genColor = getGenerationColor(person.generation);
   const avatarColors = getAvatarColors(person.sex);
   const initials = getInitials(person.givenName, person.fullName);
+  const tagBadges = buildTagBadges(person, t);
 
   return (
     <div
@@ -121,6 +156,22 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
       {person.relationToYael && (
         <div className="text-[10px] text-gray-400 truncate mt-0.5" title={person.relationToYael}>
           {person.relationToYael}
+        </div>
+      )}
+
+      {/* Tag badges row */}
+      {tagBadges.length > 0 && (
+        <div className="flex flex-wrap gap-0.5 mt-1">
+          {tagBadges.map(badge => (
+            <span
+              key={badge.title}
+              title={badge.title}
+              style={{ fontSize: 11, lineHeight: 1.2, cursor: 'default' }}
+              aria-label={badge.title}
+            >
+              {badge.emoji}
+            </span>
+          ))}
         </div>
       )}
 
