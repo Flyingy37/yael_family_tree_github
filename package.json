@@ -1,0 +1,40 @@
+{
+  "name": "yael-family-tree",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "prebuild": "tsx scripts/build-graph.ts",
+    "report:unlinked": "tsx scripts/export-unlinked-review.ts",
+    "report:pdf-candidates": "python3 scripts/export_pdf_update_candidates.py",
+    "report:review-queue": "python3 scripts/build_review_queue.py",
+    "dev": "tsx scripts/build-graph.ts && vite",
+    "start": "npm run dev",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@dagrejs/dagre": "^1.1.4",
+    "@xyflow/react": "^12.6.0",
+    "fuse.js": "^7.1.0",
+    "leaflet": "^1.9.4",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-leaflet": "^5.0.0",
+    "react-router-dom": "^7.13.2",
+    "web-vitals": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/leaflet": "^1.9.21",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "autoprefixer": "^10.4.21",
+    "csv-parse": "^5.6.0",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17",
+    "tsx": "^4.19.4",
+    "typescript": "~5.8.3",
+    "vite": "^6.3.2"
+  }
+}
