@@ -18,8 +18,8 @@ export interface LayoutEdge {
   type: 'parent-child' | 'spouse';
 }
 
-const NODE_WIDTH = 180;
-const NODE_HEIGHT = 70;
+export const NODE_WIDTH = 180;
+export const NODE_HEIGHT = 70;
 
 export function computeLayout(
   persons: Map<string, Person>,
