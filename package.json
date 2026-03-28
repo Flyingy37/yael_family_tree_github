@@ -27,7 +27,7 @@
   },
   "overrides": {
     "micromatch": {
-      "picomatch": "2.3.4"
+      "picomatch": "2.3.2"
     },
     "vite": {
       "picomatch": "4.0.4"

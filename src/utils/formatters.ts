@@ -40,7 +40,7 @@ export function formatLifespan(
 }
 
 /**
- * Capitalise the first letter of each word in a name.
+ * Capitalize the first letter of each word in a name.
  * Handles hyphenated names (Mary-Jane) and names with apostrophes (O'Brien).
  */
 export function titleCase(name: string): string {
@@ -50,7 +50,7 @@ export function titleCase(name: string): string {
 }
 
 /**
- * Normalise a string for accent-insensitive search
+ * Normalize a string for accent-insensitive search
  * (removes diacritics, lowercases).
  */
 export function normalizeForSearch(text: string): string {
