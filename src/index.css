@@ -14,3 +14,8 @@ html, body, #root {
 .react-flow__attribution {
   direction: ltr;
 }
+
+/* Leaflet overrides for RTL */
+.leaflet-container {
+  direction: ltr;
+}

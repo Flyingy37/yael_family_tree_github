@@ -53,6 +53,14 @@ function FitBounds({ points }: { points: ClusterPoint[] }) {
   return null;
 }
 
+function MapResizer() {
+  const map = useMap();
+  useEffect(() => {
+    map.invalidateSize();
+  }, [map]);
+  return null;
+}
+
 function clusterToLocation(cluster: ClusterPoint): GeocodedLocation {
   const places = [...new Set(cluster.persons.map(p => p.birthPlace).filter(Boolean))] as string[];
   const primary =
@@ -90,7 +98,7 @@ export function MapView({ persons, filteredIds, onSelectPerson, language = 'en' 
   const totalPeople = useMemo(() => points.reduce((s, p) => s + p.persons.length, 0), [points]);
 
   return (
-    <div className="w-full h-full min-h-[400px] bg-slate-100 rounded-2xl overflow-hidden shadow-xl border border-slate-200 relative">
+    <div className="w-full flex-1 min-h-[400px] bg-slate-100 rounded-2xl overflow-hidden shadow-xl border border-slate-200 relative">
       <div
         className="absolute top-4 end-4 z-[400] bg-white/95 backdrop-blur-sm px-5 py-3 rounded-xl shadow-lg border border-slate-200 max-w-[min(20rem,calc(100%-2rem))]"
         dir={t ? 'rtl' : 'ltr'}
@@ -133,6 +141,7 @@ export function MapView({ persons, filteredIds, onSelectPerson, language = 'en' 
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <MapResizer />
         <FitBounds points={points} />
         {points.map(cluster => {
           const loc = clusterToLocation(cluster);
