@@ -385,7 +385,7 @@ export default function FamilyExplorer() {
             afterFiltersCount={filteredIds.size}
             shownInViewCount={displayIds.size}
             familyCount={families.size}
-            holocaustVictimCount={holocaustVictimCount}
+            holocaustVictimCount={holocaustVictimCountInScope}
             filteredHolocaustVictimCount={filteredHolocaustVictimCount}
             language={language}
           />

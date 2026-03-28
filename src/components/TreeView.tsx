@@ -12,6 +12,7 @@ import {
   type Node,
   type Edge,
 } from '@xyflow/react';
+import { RouteIcon, X, CheckCircle, AlertCircle } from 'lucide-react';
 import '@xyflow/react/dist/style.css';
 import { PersonNode } from './PersonNode';
 import { GenerationBandNode } from './GenerationBandNode';
@@ -291,32 +292,53 @@ export function TreeView({
 
         {/* Path-find toolbar */}
         <Panel position="top-right">
-          <div className="flex flex-col items-end gap-1">
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
             <button
-              className={`
-                px-3 py-1.5 rounded-lg text-xs font-semibold shadow transition-colors
-                ${pathMode
-                  ? 'bg-orange-500 text-white hover:bg-orange-600'
-                  : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'}
-              `}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600,
+                cursor: 'pointer', border: 'none', transition: 'background 0.15s',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
+                backgroundColor: pathMode ? '#ea580c' : '#ffffff',
+                color: pathMode ? '#ffffff' : '#374151',
+                outline: pathMode ? 'none' : '1px solid #e5e7eb',
+              }}
               onClick={togglePathMode}
               title={t ? 'מצא את הנתיב הקצר ביותר בין שני אנשים' : 'Find shortest path between two people'}
             >
+              {pathMode ? <X size={13} /> : <RouteIcon size={13} />}
               {pathMode
-                ? (t ? '✕ בטל' : '✕ Cancel')
-                : (t ? '⟷ מצא נתיב' : '⟷ Find Path')}
+                ? (t ? 'בטל' : 'Cancel')
+                : (t ? 'מצא נתיב' : 'Find Path')}
             </button>
 
             {pathStatusText && (
-              <div className="bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-gray-700 shadow max-w-xs text-right">
-                {pathStatusText}
+              <div
+                style={{
+                  backgroundColor: '#ffffff', border: '1px solid #e5e7eb',
+                  borderRadius: 8, padding: '6px 10px',
+                  fontSize: 11, color: '#374151',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+                  maxWidth: 240, display: 'flex', alignItems: 'center', gap: 6,
+                }}
+              >
+                {pathResult !== null && pathResult.length > 0
+                  ? <CheckCircle size={12} color="#16a34a" />
+                  : pathResult !== null
+                  ? <AlertCircle size={12} color="#dc2626" />
+                  : null}
+                <span style={{ flex: 1 }}>{pathStatusText}</span>
                 {!pathMode && pathResult !== null && (
                   <button
-                    className="ml-2 text-gray-400 hover:text-gray-600"
+                    style={{
+                      display: 'inline-flex', alignItems: 'center',
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      padding: 2, color: '#9ca3af',
+                    }}
                     onClick={() => setPathResult(null)}
                     title={t ? 'נקה הדגשה' : 'Clear highlight'}
                   >
-                    ×
+                    <X size={12} />
                   </button>
                 )}
               </div>

@@ -21,25 +21,30 @@ export const GenerationBandNode = memo(({ data }: GenerationBandNodeProps) => {
       style={{
         width: 10000,
         height: bandHeight,
-        backgroundColor: isEven ? '#f8fafc' : '#f1f5f9',
+        backgroundColor: isEven ? '#fafbfc' : '#f4f6f9',
         pointerEvents: 'none',
         display: 'flex',
         alignItems: 'center',
-        paddingLeft: 12,
-        borderTop: '1px solid #e2e8f0',
+        paddingLeft: 16,
+        borderTop: '1px solid #dde3ec',
         boxSizing: 'border-box',
       }}
     >
       <span
         style={{
-          fontSize: 9,
-          color: '#94a3b8',
+          fontSize: 9.5,
+          color: '#a0aec0',
           fontWeight: 700,
           userSelect: 'none',
           whiteSpace: 'nowrap',
           direction: 'ltr',
-          letterSpacing: '0.05em',
+          letterSpacing: '0.08em',
           textTransform: 'uppercase',
+          background: '#ffffff',
+          border: '1px solid #dde3ec',
+          borderRadius: 5,
+          padding: '2px 7px',
+          lineHeight: 1.6,
         }}
       >
         {label}

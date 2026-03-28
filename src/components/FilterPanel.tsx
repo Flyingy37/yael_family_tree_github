@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import type { Person } from '../types';
 import { getCanonicalSurnameLabel } from '../utils/surname';
+import { Dna, Landmark, Shield, Star, BookMarked, Scroll, PlaneTakeoff } from 'lucide-react';
+import { HolocaustMemorialPatchIcon } from './HolocaustMemorialPatchIcon';
 
 export interface Filters {
   generationMin: number;
@@ -256,7 +258,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
               onChange={e => onChange({ ...filters, hasDna: e.target.checked })}
               className="rounded"
             />
-            <span className="text-xs text-gray-600">{t ? '🧬 קשרי DNA מאומתים' : '🧬 Verified DNA links'}</span>
+            <span className="text-xs text-gray-600 flex items-center gap-1"><Dna size={11} className="text-emerald-700" />{t ? 'קשרי DNA מאומתים' : 'Verified DNA links'}</span>
           </label>
         </section>
 
@@ -271,7 +273,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
               onChange={e => onChange({ ...filters, holocaustVictimsOnly: e.target.checked })}
               className="rounded"
             />
-            <span className="text-xs text-gray-600">{t ? '🕯️ קורבנות שואה' : '🕯️ Holocaust victims'}</span>
+            <span className="text-xs text-gray-600 flex items-center gap-1"><HolocaustMemorialPatchIcon size={14} />{t ? 'קורבנות שואה' : 'Holocaust victims'}</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -280,7 +282,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
               onChange={e => onChange({ ...filters, hasHeritageTag: e.target.checked })}
               className="rounded"
             />
-            <span className="text-xs text-gray-600">{t ? '🏛️ מורשת' : '🏛️ Heritage'}</span>
+            <span className="text-xs text-gray-600 flex items-center gap-1"><Landmark size={11} className="text-emerald-700" />{t ? 'מורשת' : 'Heritage'}</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -289,7 +291,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
               onChange={e => onChange({ ...filters, hasPartisanTag: e.target.checked })}
               className="rounded"
             />
-            <span className="text-xs text-gray-600">{t ? '⚔️ פרטיזנים / מחתרת' : '⚔️ Partisans / Resistance'}</span>
+            <span className="text-xs text-gray-600 flex items-center gap-1"><Shield size={11} className="text-gray-600" />{t ? 'פרטיזנים / מחתרת' : 'Partisans / Resistance'}</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -298,7 +300,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
               onChange={e => onChange({ ...filters, hasFamousTag: e.target.checked })}
               className="rounded"
             />
-            <span className="text-xs text-gray-600">{t ? '⭐ אנשים מפורסמים' : '⭐ Famous people'}</span>
+            <span className="text-xs text-gray-600 flex items-center gap-1"><Star size={11} className="text-amber-600" />{t ? 'אנשים מפורסמים' : 'Famous people'}</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -307,7 +309,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
               onChange={e => onChange({ ...filters, hasRabbiTag: e.target.checked })}
               className="rounded"
             />
-            <span className="text-xs text-gray-600">{t ? '✡️ רבנים ידועים' : '✡️ Notable rabbis'}</span>
+            <span className="text-xs text-gray-600 flex items-center gap-1"><BookMarked size={11} className="text-blue-700" />{t ? 'רבנים ידועים' : 'Notable rabbis'}</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -316,7 +318,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
               onChange={e => onChange({ ...filters, hasLineageTag: e.target.checked })}
               className="rounded"
             />
-            <span className="text-xs text-gray-600">{t ? '🌿 ייחוס (שושלת)' : '🌿 Lineage'}</span>
+            <span className="text-xs text-gray-600 flex items-center gap-1"><Scroll size={11} className="text-violet-700" />{t ? 'ייחוס (שושלת)' : 'Lineage'}</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -325,7 +327,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
               onChange={e => onChange({ ...filters, hasMigrationTag: e.target.checked })}
               className="rounded"
             />
-            <span className="text-xs text-gray-600">{t ? '🧳 הגירה' : '🧳 Migration'}</span>
+            <span className="text-xs text-gray-600 flex items-center gap-1"><PlaneTakeoff size={11} className="text-cyan-700" />{t ? 'הגירה' : 'Migration'}</span>
           </label>
         </section>
       </div>

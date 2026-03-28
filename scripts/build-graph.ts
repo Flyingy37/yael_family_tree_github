@@ -103,6 +103,30 @@ const MANUAL_TAG_OVERRIDES: Record<string, string[]> = {
   '@I830@': ['DNA'], // Abraham E/abe Gozansky/Gordon
 };
 
+// IDs where the note mentions DNA data but the person is NOT a verified DNA match to Yael.
+const MANUAL_DNA_TAG_EXCLUDE = new Set<string>([
+  '@I27@', // Ben Zeidman — has MyHeritage raw data but not a DNA match to Yael
+]);
+
+// People whose doubleBloodTie cannot be detected by the path-count algorithm alone,
+// because the cousin marriage converges the two branches BEFORE they diverge again to Yael.
+// Confirmed: Pesya Kostrell (@I35@) and Michael Alperovich (@I34@) are second cousins once
+// removed (both descend from Leyb Alperovitch via Reuven→Yitzhak→Rose Lillian→Pesya
+// and Meir→Yehuda→Michael) AND married each other.  Their children therefore carry
+// double Alperovich blood from both parents.
+const MANUAL_DOUBLE_BLOOD_TIE = new Set<string>([
+  '@I34@', // Michael Alperovich — married his cousin Pesya Kostrell
+  '@I35@', // Pesya Kostrell — married her cousin Michael; mother Rose Lillian was Alperovich
+  '@I83@', // Rose Lillian Rocha Leah — born Alperovich (daughter of Yitzhak), married into Kastrel
+  '@I201@', // Yitzhak Alperovich — his daughter Rose Lillian married into Kastrel, grandchild married back into Alperovich
+  '@I11@', // Nachum (Nochim) Alperovich — son of Michael+Pesya cousin marriage, double Alperovich
+  '@I53@', // Chana Knepf/Vulis — child of Michael+Pesya
+  '@I54@', // Rachel Alperovitz — child of Michael+Pesya
+  '@I55@', // Dvora Doba Alperovich — child of Michael+Pesya
+  '@I56@', // Henia Alperovitch — child of Michael+Pesya
+  '@I57@', // Rashka Alperovitch — child of Michael+Pesya
+]);
+
 const MANUAL_HOLOCAUST_VICTIM_OVERRIDES: Record<string, boolean> = {
   // User-confirmed branch examples around Nochim/Nachum Alperovich family.
   '@I34@': true, // Michael Alperovich (father)
@@ -123,9 +147,17 @@ const MANUAL_BIRTHPLACE_OVERRIDES: Record<string, string> = {
   '@I30@': 'Belarus or Ukraine (Guzhinsky origin)',
   // User-confirmed: Cilia Sara was born in Haifa during the British Mandate period.
   '@I12@': 'Haifa, British Mandate for Palestine',
+  // Source: Geni profile + Congress for Jewish Culture lexicon (PDF, 2026-03-27)
+  // Born October 19, 1890, Kuraniec (Kurenets), Vileyka District, Minsk Region, Belarus
+  '@I4149@': 'Kuraniec (Kurenets), Vileyka District, Minsk Region, Belarus',
 };
 
 const MANUAL_TITLE_APPEND_OVERRIDES: Record<string, string> = {
+  // Source: Congress for Jewish Culture lexicon + Geni profile (PDFs, 2026-03-27)
+  // Hyman Y. Kastrel/Costrell: journalist, co-founder of Frayhayt (NY Yiddish daily), communist.
+  // Also known as Jack Robbins. Born 19 Oct 1890, Kuraniec Belarus. Died 25 Feb 1956.
+  // Second great-uncle of Yael Zaidman-Livnat (Geni confirmed).
+  '@I4149@': 'Journalist; co-founder of Frayhayt (NY Yiddish daily, 1922); edited Funken 1933–1935; Communist Party candidate NY 8th District 1934; AKA Jack Robbins. Source: Congress for Jewish Culture + Geni.',
   '@I6@': 'DNA matches note: Abraham Guzhinsky appears in Oded match lists (paternal branch evidence).',
   '@I618@': 'Music note: Kevin Mark DuBrow, associated with the heavy metal band Riot.',
   '@I30@': 'Research note: family origin linked to Abraham Guzhinsky; likely Belarus/Ukraine.',
@@ -146,6 +178,8 @@ const MANUAL_MIGRATION_INFO_OVERRIDES: Record<string, string> = {
 const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullName' | 'surname' | 'surnameFinal'>>> = {
   // Requested display naming: include both Livnat and Zaidman on Yael.
   '@I1@': { fullName: 'Yael Livnat Zaidman' },
+  // User-confirmed: Arie Livnat's birth name was Liviu Leib Lanzman (Romanized) before Hebraization to Livnat.
+  '@I4@': { surname: 'Lanzman', surnameFinal: 'Livnat' }, // Arie (Liviu) Livnat, born Lanzman
   // User-confirmed surname history in close family branch.
   '@I22@': { surname: 'Lanzmann', surnameFinal: 'Amiron' }, // Mirriam Mali Amiron (nee Lanzmann)
   '@I47@': { surname: 'Amiron', surnameFinal: 'Kfir' }, // Hava Kfir (nee Amiron)
@@ -976,7 +1010,7 @@ function enrichConnectivitySignals(persons: Person[], families: Family[], rootPe
 
   return persons.map(person => {
     const pathCount = shortestPathCount.get(person.id) || 0;
-    const doubleBloodTie = pathCount >= 2;
+    const doubleBloodTie = pathCount >= 2 || MANUAL_DOUBLE_BLOOD_TIE.has(person.id);
     const tags = new Set(person.tags);
     if (doubleBloodTie) {
       tags.add('DoubleBloodTie');
@@ -1136,29 +1170,34 @@ function buildGraph() {
     relax_column_count: true,
   });
 
-  // Read curated CSV (skip title row)
-  const curatedRaw = readFileSync(join(ROOT, 'data/curated.csv'), 'utf-8');
-  const curatedAllRows = parse(curatedRaw, {
-    columns: false,
-    skip_empty_lines: true,
-    relax_column_count: true,
-  }) as string[][];
-
-  // The first row is a title, second row is headers, rest is data
-  const curatedHeaders = curatedAllRows[1];
-  const curatedData: RawCurated[] = curatedAllRows.slice(2).map(row => {
-    const obj: Record<string, string> = {};
-    curatedHeaders.forEach((h: string, i: number) => {
-      obj[h] = row[i] || '';
-    });
-    return obj as unknown as RawCurated;
-  });
-
-  // Build curated lookup by name (lowercase, trimmed)
+  // Read curated CSV (optional — enriches hops, generation, Hebrew names, relationships)
   const curatedByName = new Map<string, RawCurated>();
-  for (const row of curatedData) {
-    const name = row['Full Name'].toLowerCase().trim();
-    if (name) curatedByName.set(name, row);
+  const curatedPath = join(ROOT, 'data/curated.csv');
+  if (existsSync(curatedPath)) {
+    const curatedRaw = readFileSync(curatedPath, 'utf-8');
+    const curatedAllRows = parse(curatedRaw, {
+      columns: false,
+      skip_empty_lines: true,
+      relax_column_count: true,
+    }) as string[][];
+
+    // The first row is a title, second row is headers, rest is data
+    const curatedHeaders = curatedAllRows[1];
+    const curatedData: RawCurated[] = curatedAllRows.slice(2).map(row => {
+      const obj: Record<string, string> = {};
+      curatedHeaders.forEach((h: string, i: number) => {
+        obj[h] = row[i] || '';
+      });
+      return obj as unknown as RawCurated;
+    });
+
+    for (const row of curatedData) {
+      const name = row['Full Name'].toLowerCase().trim();
+      if (name) curatedByName.set(name, row);
+    }
+    console.log(`Loaded curated.csv: ${curatedByName.size} enriched records`);
+  } else {
+    console.log('curated.csv not found — skipping enrichment (hops, generation, Hebrew names will be null)');
   }
 
   // Build persons
@@ -1227,7 +1266,9 @@ function buildGraph() {
 
     const manualTags = MANUAL_TAG_OVERRIDES[row.ged_id] || [];
     const manualDnaTagged = manualTags.includes('DNA');
-    const verifiedDnaEvidence = manualDnaTagged || hasVerifiedDnaMatchEvidence(row, notes.dnaInfo);
+    const verifiedDnaEvidence =
+      !MANUAL_DNA_TAG_EXCLUDE.has(row.ged_id) &&
+      (manualDnaTagged || hasVerifiedDnaMatchEvidence(row, notes.dnaInfo));
     const resolvedDnaInfo = verifiedDnaEvidence ? notes.dnaInfo : null;
 
     const person: Person = {

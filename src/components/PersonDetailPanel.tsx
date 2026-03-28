@@ -3,6 +3,22 @@ import type { Person, Family } from '../types';
 import { DEFAULT_FILTERS, isUnknownPlaceholderPerson, type Filters } from './FilterPanel';
 import { getCanonicalSurnameLabel } from '../utils/surname';
 import { HolocaustMemorialPatchIcon } from './HolocaustMemorialPatchIcon';
+import {
+  Dna, Swords, GitMerge, Shield, Star, BookMarked, Scroll, Landmark, PlaneTakeoff,
+  type LucideIcon,
+} from 'lucide-react';
+
+const TAG_ICONS: Record<string, { Icon: LucideIcon; color: string; bg: string; labelEn: string; labelHe: string }> = {
+  DNA:       { Icon: Dna,          color: '#065f46', bg: '#d1fae5', labelEn: 'DNA',             labelHe: 'DNA' },
+  Partisan:  { Icon: Shield,       color: '#374151', bg: '#f3f4f6', labelEn: 'Partisan',         labelHe: 'פרטיזן' },
+  Famous:    { Icon: Star,         color: '#92400e', bg: '#fef3c7', labelEn: 'Notable',           labelHe: 'מפורסם' },
+  Rabbi:     { Icon: BookMarked,   color: '#1e40af', bg: '#dbeafe', labelEn: 'Rabbi',             labelHe: 'רב' },
+  Lineage:   { Icon: Scroll,       color: '#5b21b6', bg: '#ede9fe', labelEn: 'Notable lineage',   labelHe: 'ייחוס' },
+  Heritage:  { Icon: Landmark,     color: '#065f46', bg: '#d1fae5', labelEn: 'Jewish heritage',   labelHe: 'מסורת' },
+  Migration: { Icon: PlaneTakeoff, color: '#0e7490', bg: '#cffafe', labelEn: 'Migration',         labelHe: 'הגירה' },
+  warCasualty:    { Icon: Swords,    color: '#991b1b', bg: '#fee2e2', labelEn: 'War casualty',    labelHe: 'נפל במלחמה' },
+  doubleBloodTie: { Icon: GitMerge, color: '#6d28d9', bg: '#ede9fe', labelEn: 'Double blood tie', labelHe: 'קשר דם כפול' },
+};
 
 interface Props {
   person: Person;
@@ -484,18 +500,47 @@ export function PersonDetailPanel({
         </div>
       )}
 
-      {person.tags.length > 0 && (
+      {(person.tags.length > 0 || person.warCasualty || person.doubleBloodTie) && (
         <div className="mt-3">
           <div className="text-xs text-gray-500 mb-1">{t ? 'תגיות' : 'Tags'}</div>
-          <div className="flex flex-wrap gap-1">
-            {person.tags.map(tag => (
-              <span
-                key={tag}
-                className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200"
-              >
-                {tag}
-              </span>
-            ))}
+          <div className="flex flex-wrap gap-1.5">
+            {person.warCasualty && (() => {
+              const cfg = TAG_ICONS['warCasualty'];
+              return (
+                <span key="warCasualty" className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full font-medium border"
+                  style={{ backgroundColor: cfg.bg, color: cfg.color, borderColor: cfg.color + '33' }}>
+                  <cfg.Icon size={10} strokeWidth={2} />
+                  {t ? cfg.labelHe : cfg.labelEn}
+                </span>
+              );
+            })()}
+            {person.doubleBloodTie && (() => {
+              const cfg = TAG_ICONS['doubleBloodTie'];
+              return (
+                <span key="doubleBloodTie" className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full font-medium border"
+                  style={{ backgroundColor: cfg.bg, color: cfg.color, borderColor: cfg.color + '33' }}>
+                  <cfg.Icon size={10} strokeWidth={2} />
+                  {t ? cfg.labelHe : cfg.labelEn}
+                </span>
+              );
+            })()}
+            {person.tags.map(tag => {
+              const cfg = TAG_ICONS[tag];
+              if (cfg) {
+                return (
+                  <span key={tag} className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full font-medium border"
+                    style={{ backgroundColor: cfg.bg, color: cfg.color, borderColor: cfg.color + '33' }}>
+                    <cfg.Icon size={10} strokeWidth={2} />
+                    {t ? cfg.labelHe : cfg.labelEn}
+                  </span>
+                );
+              }
+              return (
+                <span key={tag} className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                  {tag}
+                </span>
+              );
+            })}
           </div>
         </div>
       )}
@@ -590,7 +635,10 @@ export function PersonDetailPanel({
 
       {(person.dnaInfo || person.tags.includes('DNA')) && (
         <div className="mt-4 p-2 bg-purple-50 rounded text-xs">
-          <div className="font-bold text-purple-700 mb-1">{t ? '🧬 קשרי DNA מאומתים' : '🧬 Verified DNA links'}</div>
+          <div className="font-bold text-purple-700 mb-1 flex items-center gap-1.5">
+            <Dna size={13} />
+            {t ? 'קשרי DNA מאומתים' : 'Verified DNA links'}
+          </div>
           {person.dnaInfo ? (
             <div className="text-purple-600 whitespace-pre-wrap">{person.dnaInfo}</div>
           ) : (
