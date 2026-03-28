@@ -152,6 +152,126 @@ const MANUAL_BIRTHPLACE_OVERRIDES: Record<string, string> = {
   '@I4149@': 'Kuraniec (Kurenets), Vileyka District, Minsk Region, Belarus',
 };
 
+// ── Birth-place normalisation ──────────────────────────────────────────────
+// Maps raw CSV values (or prefix substrings) → canonical "City, Country" form.
+// Keys are matched case-insensitively; first match wins (longest-key-first order).
+const BIRTHPLACE_NORM: Array<[string, string]> = [
+  // ── Kurenets variants ──────────────────────────────────────────────────
+  ['kurenets, vileyka',           'Kurenets, Belarus'],
+  ['kuraniec',                    'Kurenets, Belarus'],
+  ['kureniets',                   'Kurenets, Belarus'],
+  ['kurenets',                    'Kurenets, Belarus'],
+  // ── Other Belarus towns ────────────────────────────────────────────────
+  ['radoshkovichi',               'Radoshkovichi, Belarus'],
+  ['dolginovo',                   'Dolginovo, Belarus'],
+  ['pleshchanitsy',               'Pleshchanitsy, Belarus'],
+  ['pleshchenitsy',               'Pleshchanitsy, Belarus'],
+  ['danilovichi',                 'Danilovichi, Belarus'],
+  ['sosenka',                     'Sosenka, Belarus'],
+  ['mikashevichy',                'Mikashevichy, Belarus'],
+  ['krivitz',                     'Krivitz, Belarus'],
+  ['krivichi',                    'Krivichi, Belarus'],
+  ['pinsk',                       'Pinsk, Belarus'],
+  ['minsk',                       'Minsk, Belarus'],
+  ['Lenin',                       'Lenin, Belarus'],  // village in Brest Oblast
+  // ── Russia / Soviet variants ───────────────────────────────────────────
+  ['russian federation',          'Russia'],
+  ['russian empire',              'Russia'],
+  ['russia, russian empire',      'Russia'],
+  ['russia poland',               'Russia / Poland'],
+  ['רוסיה',                       'Russia'],
+  // ── Lithuania ─────────────────────────────────────────────────────────
+  ['birze, lithuania',            'Birzai, Lithuania'],
+  ['birzai',                      'Birzai, Lithuania'],
+  ['birze',                       'Birzai, Lithuania'],
+  ['adutiskis',                   'Adutiškis, Lithuania'],
+  ['pasvalys',                    'Pasvalys, Lithuania'],
+  ['vilnius',                     'Vilnius, Lithuania'],
+  ['vilna',                       'Vilnius, Lithuania'],
+  ['kaunas',                      'Kaunas, Lithuania'],
+  // ── Latvia ────────────────────────────────────────────────────────────
+  ['riga',                        'Riga, Latvia'],
+  // ── Poland ────────────────────────────────────────────────────────────
+  ['sochaczew, warsaw',           'Sochaczew, Poland'],
+  ['sochaczew',                   'Sochaczew, Poland'],
+  ['poznan',                      'Poznań, Poland'],
+  ['lublin',                      'Lublin, Poland'],
+  ['warsaw',                      'Warsaw, Poland'],
+  ['polin',                       'Poland'],
+  // ── Ukraine ───────────────────────────────────────────────────────────
+  ['vinnytsia',                   'Vinnytsia, Ukraine'],
+  ['chernobyl',                   'Chernobyl, Ukraine'],
+  ['korostyshiv',                 'Korostyshiv, Ukraine'],
+  ['makariv',                     'Makariv, Ukraine'],
+  // ── Romania ───────────────────────────────────────────────────────────
+  ['bucuresti',                   'Bucharest, Romania'],
+  ['bucharest',                   'Bucharest, Romania'],
+  // ── Austria ───────────────────────────────────────────────────────────
+  ['vienna',                      'Vienna, Austria'],
+  // ── Germany ───────────────────────────────────────────────────────────
+  ['worms',                       'Worms, Germany'],
+  ['mainz',                       'Mainz, Germany'],
+  // ── France ────────────────────────────────────────────────────────────
+  ['troyes',                      'Troyes, France'],
+  // ── Sweden ────────────────────────────────────────────────────────────
+  ['sweden',                      'Sweden'],
+  // ── UK ────────────────────────────────────────────────────────────────
+  ['northumberland',              'Northumberland, UK'],
+  // ── Israel ────────────────────────────────────────────────────────────
+  ['kfar saba',                   'Kfar Saba, Israel'],
+  ['kefar sava',                  'Kfar Saba, Israel'],
+  ['kefar saba',                  'Kfar Saba, Israel'],
+  ['petah tikva',                 'Petah Tikva, Israel'],
+  ['petach tikva',                'Petah Tikva, Israel'],
+  ['tel aviv',                    'Tel Aviv, Israel'],
+  ['rehovot',                     'Rehovot, Israel'],
+  ['afikim',                      'Afikim, Israel'],
+  ['hadera',                      'Hadera, Israel'],
+  ['haifa',                       'Haifa, Israel'],
+  ['jerusalem',                   'Jerusalem, Israel'],
+  ['netanya',                     'Netanya, Israel'],
+  // ── USA: cities ───────────────────────────────────────────────────────
+  ['bangor, maine',               'Bangor, Maine, USA'],
+  ['bangor',                      'Bangor, Maine, USA'],   // only Bangor in this dataset
+  ['new york city',               'New York, USA'],
+  ['new york, united states',     'New York, USA'],
+  ['new york',                    'New York, USA'],
+  ['new haven, connecticut',      'New Haven, Connecticut, USA'],
+  ['new haven',                   'New Haven, Connecticut, USA'],
+  ['brooklyn',                    'Brooklyn, New York, USA'],
+  ['bridgeport',                  'Bridgeport, Connecticut, USA'],
+  ['hartford',                    'Hartford, Connecticut, USA'],
+  ['waterbury',                   'Waterbury, Connecticut, USA'],
+  ['louisville',                  'Louisville, Kentucky, USA'],
+  ['detroit',                     'Detroit, Michigan, USA'],
+  ['chicago',                     'Chicago, Illinois, USA'],
+  ['houston',                     'Houston, Texas, USA'],
+  ['boston',                      'Boston, Massachusetts, USA'],
+  ['los angeles',                 'Los Angeles, California, USA'],
+  ['baltimore',                   'Baltimore, Maryland, USA'],
+  ['washington, d.c',             'Washington D.C., USA'],
+  ['district of columbia',        'Washington D.C., USA'],
+  ['washington',                  'Washington D.C., USA'],  // in this dataset = DC branch
+  // ── USA: states ───────────────────────────────────────────────────────
+  ['connecticut, united states',  'Connecticut, USA'],
+  ['connecticut',                 'Connecticut, USA'],
+  ['new jersey',                  'New Jersey, USA'],
+  ['michigan',                    'Michigan, USA'],
+  ['maryland',                    'Maryland, USA'],
+  ['kentucky',                    'Kentucky, USA'],
+  ['united states',               'USA'],
+];
+
+function normalizeBirthPlace(raw: string | null): string | null {
+  if (!raw) return raw;
+  const lower = raw.toLowerCase().trim();
+  // Sort by key length descending so longest (most specific) match wins
+  for (const [key, canonical] of BIRTHPLACE_NORM) {
+    if (lower.includes(key.toLowerCase())) return canonical;
+  }
+  return raw.trim() || null;
+}
+
 const MANUAL_TITLE_APPEND_OVERRIDES: Record<string, string> = {
   // Source: Congress for Jewish Culture lexicon + Geni profile (PDFs, 2026-03-27)
   // Hyman Y. Kastrel/Costrell: journalist, co-founder of Frayhayt (NY Yiddish daily), communist.
@@ -175,7 +295,7 @@ const MANUAL_MIGRATION_INFO_OVERRIDES: Record<string, string> = {
   '@I12@': 'Born in Haifa (British Mandate). Family origin in Belarus (Pleshchenitsy area), with return to Belarus around 1930.',
 };
 
-const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullName' | 'surname' | 'surnameFinal'>>> = {
+const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullName' | 'surname' | 'surnameFinal' | 'relationToYael'>>> = {
   // Requested display naming: include both Livnat and Zaidman on Yael.
   '@I1@': { fullName: 'Yael Livnat Zaidman' },
   // User-confirmed: Arie Livnat's birth name was Liviu Leib Lanzman (Romanized) before Hebraization to Livnat.
@@ -192,6 +312,17 @@ const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullNa
   '@I77@': { fullName: 'Mordechay Amiron', surname: 'Tekotzino', surnameFinal: 'Amiron' }, // Mordechay Amiron (formerly Tekotzino)
   // User-confirmed: Avrum should be in Vulis surname cluster.
   '@I1240@': { surname: 'Vulis', surnameFinal: 'Vulis' },
+  // ── Relations to Yael: Nachum Alperovich's siblings (Yael's great-aunts/uncles) ──
+  // Nachum (@I11@) = Yael's maternal grandfather; his siblings are Yael's great-aunts/uncles
+  '@I53@': { relationToYael: 'דודה רבה (אחות של סבא נחום)' },   // Chana Knepf/Vulis
+  '@I54@': { relationToYael: 'דודה רבה (אחות של סבא נחום)' },   // Rachel Alperovitz
+  '@I55@': { relationToYael: 'דודה רבה (אחות של סבא נחום)' },   // Dvora Doba Alperovich
+  '@I56@': { relationToYael: 'דודה רבה (אחות של סבא נחום)' },   // Henia Alperovitch
+  '@I57@': { relationToYael: 'דודה רבה (אחות של סבא נחום)' },   // Rashka Alperovitch
+  '@I11@': { relationToYael: 'סבא מטעם אמא (נחום אלפרוביץ׳)' },   // Nachum Alperovich = Yael's maternal grandfather
+  // Michael & Pesya (Nachum's parents = Yael's great-great-grandparents)
+  '@I34@': { relationToYael: 'סבא רבא (אבי סבא נחום)' },         // Michael Alperovich
+  '@I35@': { relationToYael: 'סבתא רבא (אמא של סבא נחום)' },     // Pesya Kostrell/Alperovich
 };
 
 const MANUAL_MERGE_TO_PRIMARY: Record<string, string> = {
@@ -1258,7 +1389,7 @@ function buildGraph() {
     );
     const migrationInfo = MANUAL_MIGRATION_INFO_OVERRIDES[row.ged_id] || autoMigrationInfo;
 
-    const resolvedBirthPlace = MANUAL_BIRTHPLACE_OVERRIDES[row.ged_id] || places.birth;
+    const resolvedBirthPlace = MANUAL_BIRTHPLACE_OVERRIDES[row.ged_id] || normalizeBirthPlace(places.birth);
     const titleAppend = MANUAL_TITLE_APPEND_OVERRIDES[row.ged_id];
     const resolvedTitle = titleAppend
       ? [row.titl || '', titleAppend].filter(Boolean).join(' | ')
