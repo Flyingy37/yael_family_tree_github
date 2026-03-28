@@ -69,7 +69,7 @@ export default function LangLayout() {
             to={`/${lang}/tree`}
             className="text-lg font-bold text-gray-800 whitespace-nowrap hover:text-amber-700 transition-colors"
           >
-            🌳 {t('משפחת לבנת–זיידמן', 'Livnat–Zaidman Family Tree')}
+            🌳 {t('משפחת ליבנת–זיידמן', 'Livnat–Zaidman Family Tree')}
           </Link>
 
           <div className="flex items-center gap-1 text-sm text-gray-500 mx-2">
