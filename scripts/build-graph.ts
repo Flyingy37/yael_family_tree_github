@@ -96,6 +96,7 @@ const MANUAL_TAG_OVERRIDES: Record<string, string[]> = {
   '@I619@': ['Famous'], // Terry J. Dubrow
   '@I1085@': ['Famous'], // Terry J. Dubrow (second profile)
   '@I618@': ['Famous'], // Kevin Mark Dubrow (Riot)
+  '@I124@': ['Famous'], // Hyman Isidor Kastrel — co-founder of Yiddish daily Frayhayt; editor of Funken
   // Requested: mark key ancestor as lineage/yichus.
   '@I3465@': ['Lineage'], // Zvulen Eliezer Heilprin
   // User-confirmed MyHeritage DNA-match profile cluster (Oded paternal-side matches).
@@ -318,6 +319,9 @@ const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullNa
   // Yehudit was born Bialik (parents: Israel Dov Ber Bialik & Michal Mania Bialik, niece of Chaim Nachman Bialik).
   // GEDCOM incorrectly stores her married name (Kastrel) as birth surname.
   '@I1392@': { fullName: 'Yehudit Bialik', surname: 'Bialik', surnameFinal: 'Kastrel' },
+  // Hyman Isidor Kastrel (born Costrell/Kastrol): GEDCOM has shortened name and misspelled surname.
+  // Known as Chaim Hyman; also Jack Robbins, Herman. Co-founder of Yiddish daily Frayhayt.
+  '@I124@': { fullName: 'Hyman Isidor Kastrel', surname: 'Kastrel', surnameFinal: 'Kastrel' },
   // Children of Oded Livnat-Tal: GEDCOM has surname "Livnat" but their family name is Livnat-Tal.
   '@I13@': { fullName: 'Liri Livnat-Tal', surname: 'Livnat-Tal', surnameFinal: 'Livnat-Tal' },
   '@I14@': { fullName: 'Dylan Livnat-Tal', surname: 'Livnat-Tal', surnameFinal: 'Livnat-Tal' },
