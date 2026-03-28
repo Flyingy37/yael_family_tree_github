@@ -54,6 +54,7 @@ interface Props {
   rootPersonId: string;
   selectedPersonId: string | null;
   onSelectPerson: (id: string) => void;
+  onFocusSubtree?: (id: string) => void;
   language?: 'en' | 'he';
 }
 
@@ -64,6 +65,7 @@ export function TreeView({
   rootPersonId,
   selectedPersonId,
   onSelectPerson,
+  onFocusSubtree,
   language = 'en',
 }: Props) {
   const { fitView } = useReactFlow();
@@ -227,6 +229,7 @@ export function TreeView({
           hasChildren: hasChildrenMap.get(n.id) ?? false,
           isOnPath: pathHighlightIds.has(n.id),
           isPathStart: n.id === pathPersonA,
+          onFocusSubtree,
         },
       })),
     [
@@ -240,6 +243,7 @@ export function TreeView({
       hasChildrenMap,
       pathHighlightIds,
       pathPersonA,
+      onFocusSubtree,
     ]
   );
 
@@ -291,7 +295,9 @@ export function TreeView({
       : null;
 
   return (
-    <div className="w-full h-full" dir="ltr">
+    // dir="ltr" is intentional: ReactFlow canvas coordinate system is always LTR.
+    // RTL is handled per-node inside PersonNode (dir="ltr" on card, Hebrew text renders fine).
+    <div className="w-full h-full" dir="ltr" style={{ touchAction: 'none' }}>
       <ReactFlow
         nodes={allNodes}
         edges={allEdges}
@@ -299,10 +305,16 @@ export function TreeView({
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
         fitView
-        fitViewOptions={{ padding: 0.2 }}
-        minZoom={0.05}
-        maxZoom={2}
+        fitViewOptions={{ padding: 0.15, includeHiddenNodes: false }}
+        minZoom={0.03}   /* allow zooming out further on mobile */
+        maxZoom={2.5}
+        zoomOnPinch      /* pinch-to-zoom on mobile */
+        panOnDrag
+        panOnScroll={false}
+        zoomOnScroll
+        preventScrolling
         defaultEdgeOptions={{ type: 'smoothstep' }}
+        proOptions={{ hideAttribution: true }}
       >
         <Controls position="bottom-left" />
         <MiniMap

@@ -1,6 +1,42 @@
 import type { Person, Family } from '../types';
 
 /**
+ * Walks upward from targetId via familyAsChild, collecting the direct
+ * ancestor chain: [oldest-known, ..., grandparent, parent, targetId].
+ *
+ * Uses the first spouse in each family as the "primary parent" for the
+ * breadcrumb. Stops after maxDepth steps to prevent infinite loops.
+ */
+export function getAncestorChain(
+  targetId: string,
+  personsMap: Map<string, Person>,
+  familiesMap: Map<string, Family>,
+  maxDepth = 10
+): string[] {
+  const chain: string[] = [targetId];
+  const seen = new Set<string>([targetId]);
+  let currentId = targetId;
+
+  for (let i = 0; i < maxDepth; i++) {
+    const person = personsMap.get(currentId);
+    if (!person?.familyAsChild) break;
+
+    const family = familiesMap.get(person.familyAsChild);
+    if (!family || family.spouses.length === 0) break;
+
+    // Primary parent = first spouse listed in the family
+    const parentId = family.spouses[0];
+    if (seen.has(parentId)) break; // cycle guard
+
+    chain.unshift(parentId);
+    seen.add(parentId);
+    currentId = parentId;
+  }
+
+  return chain;
+}
+
+/**
  * Returns all descendant person IDs of the given person (not including startId itself).
  * Traverses through familiesAsSpouse → children recursively.
  */

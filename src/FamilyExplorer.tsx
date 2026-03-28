@@ -8,6 +8,7 @@ import { SearchBar } from './components/SearchBar';
 import { FilterPanel, applyFilters, DEFAULT_FILTERS, type Filters } from './components/FilterPanel';
 import { StatsPanel } from './components/StatsPanel';
 import { TreeView } from './components/TreeView';
+import { Breadcrumb } from './components/Breadcrumb';
 import { MapView } from './components/MapView';
 import { TimelineView } from './components/TimelineView';
 import { StatisticsView } from './components/StatisticsView';
@@ -363,7 +364,18 @@ export default function FamilyExplorer() {
           />
         </div>
 
-        <div id="explorer-main-panel" className="flex-1" role="tabpanel" aria-labelledby={`explorer-tab-${viewMode}`}>
+        <div id="explorer-main-panel" className="flex-1 flex flex-col overflow-hidden" role="tabpanel" aria-labelledby={`explorer-tab-${viewMode}`}>
+          {/* Breadcrumb — only visible when a person is selected in tree view */}
+          {viewMode === 'tree' && (
+            <Breadcrumb
+              selectedPersonId={selectedPersonId}
+              persons={persons}
+              families={families}
+              onSelectPerson={handleSelectPerson}
+              language={language}
+            />
+          )}
+
           {viewMode === 'tree' && (
             <ReactFlowProvider>
               <TreeView
@@ -373,6 +385,7 @@ export default function FamilyExplorer() {
                 rootPersonId={subtreeRootId || rootPersonId}
                 selectedPersonId={selectedPersonId}
                 onSelectPerson={handleSelectPerson}
+                onFocusSubtree={handleShowSubtree}
                 language={language}
               />
             </ReactFlowProvider>

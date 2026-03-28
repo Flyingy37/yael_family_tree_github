@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState, useCallback } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import {
   Swords,
@@ -10,6 +10,8 @@ import {
   Landmark,
   PlaneTakeoff,
   Dna,
+  MapPin,
+  Focus,
   type LucideIcon,
 } from 'lucide-react';
 import type { Person } from '../types';
@@ -27,7 +29,25 @@ interface PersonNodeProps {
     hasChildren?: boolean;
     isOnPath?: boolean;
     isPathStart?: boolean;
+    onFocusSubtree?: (id: string) => void;
   };
+}
+
+/** Extract a 4-digit year from a date string like "13 AUG 1923" → 1923 */
+function extractYear(dateStr: string | null): number | null {
+  if (!dateStr) return null;
+  const m = dateStr.match(/\b(\d{4})\b/);
+  return m ? parseInt(m[1], 10) : null;
+}
+
+/** Build "1923 – 1996" or "b. 1923" or "d. 1996" */
+function lifeSpan(person: Person): string | null {
+  const b = extractYear(person.birthDate);
+  const d = extractYear(person.deathDate);
+  if (b && d) return `${b} – ${d}`;
+  if (b) return `b. ${b}`;
+  if (d) return `d. ${d}`;
+  return null;
 }
 
 function getGenerationColor(generation: number | null): string {
@@ -118,6 +138,9 @@ function buildTagBadges(person: Person, isHe: boolean): BadgeEntry[] {
 export const PersonNode = memo(({ data }: PersonNodeProps) => {
   const { person, isRoot, isSelected, isCollapsed, hasChildren, isOnPath, isPathStart } = data;
   const isHe = data.language === 'he';
+  const [hovered, setHovered] = useState(false);
+  const handleMouseEnter = useCallback(() => setHovered(true), []);
+  const handleMouseLeave = useCallback(() => setHovered(false), []);
   const genColor = getGenerationColor(person.generation);
   const avatarColors = getAvatarColors(person.sex);
   const accent = getSexAccent(person.sex);
@@ -145,21 +168,127 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
     ? '0 0 0 2px #f59e0b, 0 4px 12px rgba(245,158,11,0.2)'
     : '0 2px 6px rgba(0,0,0,0.08)';
 
+  const span = lifeSpan(person);
+
   return (
     <div
       style={{
         width: 200,
-        backgroundColor: '#ffffff',
-        border: `2px solid ${borderColor}`,
-        borderRadius: 10,
-        boxShadow: shadowStyle,
-        cursor: 'pointer',
-        overflow: 'hidden',
+        position: 'relative', // needed for tooltip positioning
         fontFamily: 'system-ui, -apple-system, sans-serif',
       }}
-      onClick={() => data.onClick(person.id)}
-      dir="ltr"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
+      {/* ── Quick View Tooltip ─────────────────────────────────────── */}
+      {hovered && (span || person.birthPlace || data.onFocusSubtree) && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 'calc(100% + 8px)',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 9999,
+            pointerEvents: 'auto',
+            minWidth: 180,
+            maxWidth: 240,
+          }}
+          dir={isHe ? 'rtl' : 'ltr'}
+          onClick={e => e.stopPropagation()}
+        >
+          <div
+            style={{
+              backgroundColor: '#1e293b',
+              borderRadius: 8,
+              padding: '8px 10px',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
+              fontSize: 11,
+              color: '#f1f5f9',
+              lineHeight: 1.6,
+            }}
+          >
+            {/* Name */}
+            <div style={{ fontWeight: 700, marginBottom: 4, color: '#ffffff' }}>
+              {person.fullName}
+            </div>
+            {/* Life span */}
+            {span && (
+              <div style={{ color: '#94a3b8', marginBottom: 2 }}>
+                🕰 {span}
+              </div>
+            )}
+            {/* Birthplace */}
+            {person.birthPlace && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#94a3b8', marginBottom: 2 }}>
+                <MapPin size={10} />
+                <span style={{ flex: 1 }}>{person.birthPlace}</span>
+              </div>
+            )}
+            {/* Relation */}
+            {person.relationToYael && (
+              <div style={{ color: '#fbbf24', marginTop: 2, fontSize: 10 }}>
+                {person.relationToYael}
+              </div>
+            )}
+            {/* Focus button */}
+            {data.onFocusSubtree && (
+              <button
+                style={{
+                  marginTop: 6,
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 4,
+                  padding: '4px 0',
+                  borderRadius: 5,
+                  border: 'none',
+                  backgroundColor: '#334155',
+                  color: '#e2e8f0',
+                  fontSize: 10,
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#475569')}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#334155')}
+                onClick={e => {
+                  e.stopPropagation();
+                  data.onFocusSubtree!(person.id);
+                }}
+              >
+                <Focus size={10} />
+                {isHe ? 'התמקד בענף זה' : 'Focus on this branch'}
+              </button>
+            )}
+          </div>
+          {/* Arrow pointer */}
+          <div style={{
+            position: 'absolute',
+            top: '100%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: 0,
+            height: 0,
+            borderLeft: '6px solid transparent',
+            borderRight: '6px solid transparent',
+            borderTop: '6px solid #1e293b',
+          }} />
+        </div>
+      )}
+
+      {/* ── Card ───────────────────────────────────────────────────── */}
+      <div
+        style={{
+          width: 200,
+          backgroundColor: '#ffffff',
+          border: `2px solid ${borderColor}`,
+          borderRadius: 10,
+          boxShadow: shadowStyle,
+          cursor: 'pointer',
+          overflow: 'hidden',
+        }}
+        onClick={() => data.onClick(person.id)}
+        dir="ltr"
+      >
       <Handle type="target" position={Position.Top} style={{ background: '#cbd5e1', width: 8, height: 8 }} />
 
       {/* Generation stripe at top */}
@@ -313,6 +442,7 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
       </div>
 
       <Handle type="source" position={Position.Bottom} style={{ background: '#cbd5e1', width: 8, height: 8 }} />
+      </div>
     </div>
   );
 });
