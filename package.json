@@ -25,6 +25,17 @@
     "react-router-dom": "^7.13.2",
     "web-vitals": "^5.1.0"
   },
+  "overrides": {
+    "micromatch": {
+      "picomatch": "2.3.2"
+    },
+    "vite": {
+      "picomatch": "4.0.4"
+    },
+    "tinyglobby": {
+      "picomatch": "4.0.4"
+    }
+  },
   "devDependencies": {
     "@types/leaflet": "^1.9.21",
     "@types/react": "^19.1.2",
