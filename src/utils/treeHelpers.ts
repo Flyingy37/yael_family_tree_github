@@ -36,14 +36,14 @@ export function getDescendantIds(
  * BFS shortest path between two people through the family graph.
  * Neighbors of a person = spouses, parents, siblings, and children
  * (all relationships reachable through familyAsChild and familiesAsSpouse).
- * Returns ordered array of person IDs on the path, or null if no path found.
+ * Returns ordered array of person IDs on the path, or an empty array if no path exists.
  */
 export function findPathBFS(
   startId: string,
   endId: string,
   personsMap: Map<string, Person>,
   familiesMap: Map<string, Family>
-): string[] | null {
+): string[] {
   if (startId === endId) return [startId];
 
   const visited = new Set<string>([startId]);
@@ -82,5 +82,5 @@ export function findPathBFS(
     }
   }
 
-  return null;
+  return [];
 }

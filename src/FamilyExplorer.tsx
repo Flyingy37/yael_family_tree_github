@@ -1,8 +1,8 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ReactFlowProvider } from '@xyflow/react';
 import { useFamilyData } from './hooks/useFamilyData';
-import { useUiLanguage } from './hooks/useUiLanguage';
+import { useLang } from './app/[lang]/layout';
 import { PersonDetailPanel } from './components/PersonDetailPanel';
 import { SearchBar } from './components/SearchBar';
 import { FilterPanel, applyFilters, DEFAULT_FILTERS, type Filters } from './components/FilterPanel';
@@ -69,7 +69,8 @@ function buildBloodAdjacency(
 }
 
 export default function FamilyExplorer() {
-  const { view: viewParam } = useParams<{ view: string }>();
+  const { lang: langParam } = useParams<{ lang: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { persons, families, rootPersonId, personList, searchIndex, loading, error, reload } = useFamilyData();
   const [selectedPersonId, setSelectedPersonId] = useState<string | null>(null);
@@ -77,20 +78,19 @@ export default function FamilyExplorer() {
   const [subtreeRootId, setSubtreeRootId] = useState<string | null>(null);
   const [subtreeDepth, setSubtreeDepth] = useState(4);
   const [includeSpouseBranches, setIncludeSpouseBranches] = useState(true);
-  const [language, setLanguage] = useUiLanguage();
+  const { lang: language, setLang: setLanguage } = useLang();
   const [hasVitalsSnapshot, setHasVitalsSnapshot] = useState(false);
   const viewTabs = VIEW_TABS[language];
+  const basePath = `/${langParam || language}`;
 
-  const viewMode: ViewMode = useMemo(() => {
-    if (viewParam && VALID_VIEWS.includes(viewParam as ViewMode)) return viewParam as ViewMode;
-    return 'tree';
-  }, [viewParam]);
-
-  useEffect(() => {
-    if (viewParam && !VALID_VIEWS.includes(viewParam as ViewMode)) {
-      navigate('/explore/tree', { replace: true });
-    }
-  }, [viewParam, navigate]);
+  // View mode via ?view= query param (defaults to 'tree')
+  const rawViewParam = searchParams.get('view');
+  const viewMode: ViewMode = (rawViewParam && VALID_VIEWS.includes(rawViewParam as ViewMode))
+    ? (rawViewParam as ViewMode)
+    : 'tree';
+  const setViewMode = useCallback((v: string) => {
+    setSearchParams(prev => { prev.set('view', v); return prev; }, { replace: true });
+  }, [setSearchParams]);
 
   const connectedToYaelIds = useMemo(() => {
     const adjacency = buildBloodAdjacency(persons.keys(), families);
@@ -171,7 +171,7 @@ export default function FamilyExplorer() {
   const handleShowSubtree = useCallback(
     (id: string) => {
       setSubtreeRootId(id);
-      navigate('/explore/tree');
+      navigate(`${basePath}/tree`);
     },
     [navigate]
   );
@@ -207,7 +207,7 @@ export default function FamilyExplorer() {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-gray-50" dir={language === 'he' ? 'rtl' : 'ltr'}>
+      <div className="h-full flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="text-4xl mb-4">🌳</div>
           <div className="text-lg text-gray-600">{language === 'he' ? 'טוען את אילן היוחסין...' : 'Loading family tree...'}</div>
@@ -218,7 +218,7 @@ export default function FamilyExplorer() {
 
   if (error) {
     return (
-      <div className="h-screen flex items-center justify-center bg-gray-50" dir={language === 'he' ? 'rtl' : 'ltr'}>
+      <div className="h-full flex items-center justify-center bg-gray-50">
         <div className="text-center text-red-600 max-w-md px-4">
           <div className="text-lg font-bold">{language === 'he' ? 'שגיאה בטעינת הנתונים' : 'Data loading error'}</div>
           <div className="text-sm mt-2 break-words">{error}</div>
@@ -234,23 +234,9 @@ export default function FamilyExplorer() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50" dir={language === 'he' ? 'rtl' : 'ltr'}>
-      <header className="bg-white border-b border-gray-200 px-4 py-3 shadow-sm z-10">
+    <div className="h-full flex flex-col bg-gray-50">
+      <header className="bg-white border-b border-gray-200 px-4 py-2 z-10 flex-shrink-0">
         <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex items-center gap-2 text-sm shrink-0">
-            <Link to="/" className="text-amber-900/90 hover:text-amber-950 font-medium whitespace-nowrap">
-              {language === 'he' ? 'בית' : 'Home'}
-            </Link>
-            <span className="text-gray-300">|</span>
-            <Link to="/about" className="text-stone-600 hover:text-stone-900 whitespace-nowrap">
-              {language === 'he' ? 'אודות' : 'About'}
-            </Link>
-          </div>
-
-          <h1 className="text-lg font-bold text-gray-800 whitespace-nowrap">
-            {language === 'he' ? '🌳 משפחת לבנת–זיידמן' : '🌳 Livnat–Zaidman Family Tree'}
-          </h1>
-
           <div
             className="flex gap-1 bg-gray-100 rounded-lg p-0.5"
             role="tablist"
@@ -265,7 +251,7 @@ export default function FamilyExplorer() {
                 aria-controls="explorer-main-panel"
                 id={`explorer-tab-${tab.id}`}
                 tabIndex={viewMode === tab.id ? 0 : -1}
-                onClick={() => navigate(`/explore/${tab.id}`)}
+                onClick={() => setViewMode(tab.id)}
                 onKeyDown={e => {
                   if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
                   e.preventDefault();
@@ -280,7 +266,7 @@ export default function FamilyExplorer() {
                         : -1;
                   const next = (i + delta + viewTabs.length) % viewTabs.length;
                   const nextId = viewTabs[next].id;
-                  navigate(`/explore/${nextId}`);
+                  setViewMode(nextId);
                   queueMicrotask(() => {
                     document.getElementById(`explorer-tab-${nextId}`)?.focus({ preventScroll: true });
                   });
@@ -303,20 +289,6 @@ export default function FamilyExplorer() {
             allowedPersonIds={filteredIds}
           />
           <div className="flex-1" />
-          <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5">
-            {(['en', 'he'] as const).map(lang => (
-              <button
-                key={lang}
-                type="button"
-                onClick={() => setLanguage(lang)}
-                className={`px-2 py-1 rounded text-xs transition-colors ${
-                  language === lang ? 'bg-white shadow-sm font-medium text-gray-800' : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                {lang.toUpperCase()}
-              </button>
-            ))}
-          </div>
           <button
             type="button"
             onClick={handleExportVitals}

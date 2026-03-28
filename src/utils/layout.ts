@@ -16,6 +16,8 @@ export interface LayoutEdge {
   source: string;
   target: string;
   type: 'parent-child' | 'spouse';
+  /** Parent–child edges only: family id so path highlighting can match any visible spouse on the path */
+  familyId?: string;
 }
 
 export const NODE_WIDTH = 180;
@@ -86,6 +88,7 @@ export function computeLayout(
           source: visibleSpouses[0],
           target: childId,
           type: 'parent-child',
+          familyId: famId,
         });
       }
     } else if (visibleChildren.length > 0) {
