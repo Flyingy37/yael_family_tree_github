@@ -34,6 +34,7 @@ interface ClusterPoint {
   lng: number;
   persons: Person[];
   key: string;
+  birthplace: string | null;
 }
 
 function FitBounds({ points }: { points: ClusterPoint[] }) {
@@ -53,15 +54,13 @@ function FitBounds({ points }: { points: ClusterPoint[] }) {
   return null;
 }
 
-function clusterToLocation(cluster: ClusterPoint): GeocodedLocation {
-  const places = [...new Set(cluster.persons.map(p => p.birthPlace).filter(Boolean))] as string[];
-  const primary =
-    places[0] ?? `${cluster.lat.toFixed(2)}, ${cluster.lng.toFixed(2)}`;
+function birthplaceToLocation(cluster: ClusterPoint): GeocodedLocation {
+  const primary = cluster.birthplace ?? `${cluster.lat.toFixed(2)}, ${cluster.lng.toFixed(2)}`;
   return {
     original_location: primary,
     lat: cluster.lat,
     lon: cluster.lng,
-    resolved_name: places.length > 1 ? places.join(' · ') : primary,
+    resolved_name: primary,
     peopleCount: cluster.persons.length,
   };
 }
@@ -70,19 +69,29 @@ export function MapView({ persons, filteredIds, onSelectPerson, language = 'en' 
   const t = language === 'he';
 
   const points = useMemo(() => {
-    const locationMap = new Map<string, Person[]>();
+    const locationMap = new Map<string, { persons: Person[]; coordinates: [number, number] | null; birthplace: string | null }>();
     for (const id of filteredIds) {
       const person = persons.get(id);
-      if (!person?.coordinates) continue;
-      const key = `${person.coordinates[0].toFixed(2)},${person.coordinates[1].toFixed(2)}`;
-      if (!locationMap.has(key)) locationMap.set(key, []);
-      locationMap.get(key)!.push(person);
+      if (!person) continue;
+      const personCoords = person.birthplaceCoordinates ?? person.coordinates ?? null;
+      // Group by birthplace name; fall back to coordinate-based key for persons without one
+      const key = person.birthPlace
+        ?? (personCoords ? `${personCoords[0].toFixed(2)},${personCoords[1].toFixed(2)}` : null);
+      if (!key) continue; // No birthplace and no coordinates — cannot place on map
+      if (!locationMap.has(key)) {
+        locationMap.set(key, { persons: [], coordinates: personCoords, birthplace: person.birthPlace });
+      }
+      const entry = locationMap.get(key)!;
+      // Prefer the first available coordinates for this birthplace cluster
+      if (!entry.coordinates && personCoords) entry.coordinates = personCoords;
+      entry.persons.push(person);
     }
     const clusters: ClusterPoint[] = [];
-    for (const [key, personList] of locationMap) {
-      const [lat, lng] = key.split(',').map(Number);
+    for (const [key, { persons: clusterPersons, coordinates, birthplace }] of locationMap) {
+      if (!coordinates) continue; // Cannot render marker without coordinates
+      const [lat, lng] = coordinates;
       if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
-      clusters.push({ lat, lng, persons: personList, key });
+      clusters.push({ lat, lng, persons: clusterPersons, key, birthplace });
     }
     return clusters;
   }, [persons, filteredIds]);
@@ -135,18 +144,12 @@ export function MapView({ persons, filteredIds, onSelectPerson, language = 'en' 
         />
         <FitBounds points={points} />
         {points.map(cluster => {
-          const loc = clusterToLocation(cluster);
-          const distinctPlaces = new Set(
-            cluster.persons.map(p => p.birthPlace).filter(Boolean)
-          );
+          const loc = birthplaceToLocation(cluster);
           return (
             <Marker key={cluster.key} position={[cluster.lat, cluster.lng]}>
               <Popup>
                 <div className={t ? 'text-right' : 'text-left'} dir={t ? 'rtl' : 'ltr'}>
                   <strong className="block text-[15px] text-slate-800 mb-1">{loc.original_location}</strong>
-                  {distinctPlaces.size > 1 && (
-                    <span className="block text-xs text-slate-500 mb-2 leading-relaxed">{loc.resolved_name}</span>
-                  )}
                   {loc.peopleCount != null && loc.peopleCount > 0 && (
                     <div className="inline-block bg-blue-50 text-blue-700 text-xs font-semibold px-2 py-1 rounded-md mb-2">
                       {t

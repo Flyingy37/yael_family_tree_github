@@ -78,11 +78,15 @@ interface Person {
   birthDate: string | null; // GEDCOM date string
   deathDate: string | null;
   birthPlace: string | null;
+  deathPlace: string | null;
   generation: number | null;
   relationToYael: string | null;
   hops: number | null;
   dnaInfo: string | null;
-  coordinates: [number, number] | null;  // [lat, lng]
+  /** GPS [lat, lng] derived from the normalised birthplace name via the built-in BIRTHPLACE_COORD_MAP. */
+  birthplaceCoordinates: [number, number] | null;
+  /** GPS [lat, lng] from an explicit Epithet field in GEDCOM notes (may differ from birthplaceCoordinates). */
+  coordinates: [number, number] | null;
   familiesAsSpouse: string[];            // FAM xref IDs
   familyAsChild: string | null;          // FAM xref ID
   title: string | null;
@@ -107,6 +111,19 @@ interface Person {
 }
 ```
 
+### BirthplaceLocation object
+
+Used by `useMap` and `MapView` to group people by their named birthplace.
+
+```typescript
+interface BirthplaceLocation {
+  birthplace: string;                  // Canonical normalised birthplace name
+  coordinates: [number, number] | null; // [lat, lng] for map rendering
+  persons: Person[];                   // All persons born at this place
+  personCount: number;
+}
+```
+
 ### Family object
 
 ```typescript
@@ -121,7 +138,12 @@ interface Family {
 
 ## Coordinates Resolution
 
-`scripts/build-graph.ts` resolves birth places to GPS coordinates using a built-in place-name lookup table. Entries without a match have `coordinates: null`.
+`scripts/build-graph.ts` resolves birth places to GPS coordinates using two mechanisms:
+
+1. **`birthplaceCoordinates`** — derived automatically from the normalised birthplace name via the built-in `BIRTHPLACE_COORD_MAP` table. This covers all entries in the `BIRTHPLACE_NORM` canonical place list. Persons with a recognised birthplace always receive a non-null `birthplaceCoordinates` value.
+2. **`coordinates`** — extracted from an explicit `Epithet: [lat, lng]` field embedded in GEDCOM notes. This field is more precise but only populated when the source data includes the pattern.
+
+The map view (`MapView.tsx`) uses `birthplaceCoordinates` first, then falls back to `coordinates`.  Entries without either field cannot be placed on the map.
 
 ---
 

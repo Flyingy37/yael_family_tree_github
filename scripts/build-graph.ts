@@ -59,10 +59,12 @@ interface Person {
   birthDate: string | null;
   deathDate: string | null;
   birthPlace: string | null;
+  deathPlace: string | null;
   generation: number | null;
   relationToYael: string | null;
   hops: number | null;
   dnaInfo: string | null;
+  birthplaceCoordinates: [number, number] | null;
   coordinates: [number, number] | null;
   familiesAsSpouse: string[];
   familyAsChild: string | null;
@@ -273,6 +275,100 @@ function normalizeBirthPlace(raw: string | null): string | null {
     if (lower.includes(key.toLowerCase())) return canonical;
   }
   return raw.trim() || null;
+}
+
+// ── Birthplace → GPS coordinate lookup ────────────────────────────────────
+// Maps canonical "City, Country" names (output of normalizeBirthPlace) to
+// [latitude, longitude] pairs for map rendering.
+const BIRTHPLACE_COORD_MAP: Record<string, [number, number]> = {
+  // ── Belarus ───────────────────────────────────────────────────────────
+  'Kurenets, Belarus':           [54.4833,  27.0167],
+  'Radoshkovichi, Belarus':      [54.1000,  27.2300],
+  'Dolginovo, Belarus':          [54.6700,  27.4800],
+  'Pleshchanitsy, Belarus':      [54.2000,  27.7800],
+  'Danilovichi, Belarus':        [54.2700,  27.5500],
+  'Sosenka, Belarus':            [53.5100,  28.1800],
+  'Mikashevichy, Belarus':       [52.2200,  27.4700],
+  'Krivitz, Belarus':            [53.6700,  27.3800],
+  'Krivichi, Belarus':           [54.4700,  27.1200],
+  'Pinsk, Belarus':              [52.1200,  26.0900],
+  'Minsk, Belarus':              [53.9000,  27.5700],
+  'Lenin, Belarus':              [52.3700,  26.4800],
+  // ── Russia / Soviet ───────────────────────────────────────────────────
+  'Russia':                      [55.7500,  37.6200],
+  'Russia / Poland':             [52.0000,  20.0000],
+  // ── Lithuania ─────────────────────────────────────────────────────────
+  'Birzai, Lithuania':           [56.2000,  24.7500],
+  'Adutiškis, Lithuania':        [55.2800,  26.5100],
+  'Pasvalys, Lithuania':         [56.0600,  24.4000],
+  'Vilnius, Lithuania':          [54.6800,  25.2800],
+  'Kaunas, Lithuania':           [54.9000,  23.9000],
+  // ── Latvia ────────────────────────────────────────────────────────────
+  'Riga, Latvia':                [56.9500,  24.1000],
+  // ── Poland ────────────────────────────────────────────────────────────
+  'Sochaczew, Poland':           [52.2300,  20.2300],
+  'Poznań, Poland':              [52.4000,  16.9300],
+  'Lublin, Poland':              [51.2500,  22.5700],
+  'Warsaw, Poland':              [52.2300,  21.0000],
+  'Poland':                      [52.0600,  19.2500],
+  // ── Ukraine ───────────────────────────────────────────────────────────
+  'Vinnytsia, Ukraine':          [49.2300,  28.4700],
+  'Chernobyl, Ukraine':          [51.2700,  30.2200],
+  'Korostyshiv, Ukraine':        [50.3200,  29.0600],
+  'Makariv, Ukraine':            [50.4600,  29.8000],
+  // ── Romania ───────────────────────────────────────────────────────────
+  'Bucharest, Romania':          [44.4300,  26.1000],
+  // ── Austria ───────────────────────────────────────────────────────────
+  'Vienna, Austria':             [48.2100,  16.3700],
+  // ── Germany ───────────────────────────────────────────────────────────
+  'Worms, Germany':              [49.6300,   8.3600],
+  'Mainz, Germany':              [49.9900,   8.2700],
+  // ── France ────────────────────────────────────────────────────────────
+  'Troyes, France':              [48.3000,   4.0800],
+  // ── Sweden ────────────────────────────────────────────────────────────
+  'Sweden':                      [59.3300,  18.0700],
+  // ── UK ────────────────────────────────────────────────────────────────
+  'Northumberland, UK':          [55.2000,  -1.9000],
+  // ── Israel ────────────────────────────────────────────────────────────
+  'Kfar Saba, Israel':           [32.1800,  34.9100],
+  'Petah Tikva, Israel':         [32.0900,  34.8800],
+  'Tel Aviv, Israel':            [32.0700,  34.7800],
+  'Rehovot, Israel':             [31.9000,  34.8100],
+  'Afikim, Israel':              [32.6600,  35.5600],
+  'Hadera, Israel':              [32.4400,  34.9200],
+  'Haifa, Israel':               [32.8200,  34.9900],
+  'Jerusalem, Israel':           [31.7700,  35.2200],
+  'Netanya, Israel':             [32.3300,  34.8600],
+  'Haifa, British Mandate for Palestine': [32.8200, 34.9900],
+  // ── USA: cities ───────────────────────────────────────────────────────
+  'Bangor, Maine, USA':          [44.8000, -68.7700],
+  'New York, USA':               [40.7100, -74.0000],
+  'New Haven, Connecticut, USA': [41.3100, -72.9300],
+  'Brooklyn, New York, USA':     [40.6500, -73.9500],
+  'Bridgeport, Connecticut, USA':[41.1900, -73.2000],
+  'Hartford, Connecticut, USA':  [41.7600, -72.6800],
+  'Waterbury, Connecticut, USA': [41.5600, -73.0400],
+  'Louisville, Kentucky, USA':   [38.2500, -85.7600],
+  'Detroit, Michigan, USA':      [42.3300, -83.0500],
+  'Chicago, Illinois, USA':      [41.8500, -87.6500],
+  'Houston, Texas, USA':         [29.7600, -95.3700],
+  'Boston, Massachusetts, USA':  [42.3600, -71.0600],
+  'Los Angeles, California, USA':[34.0500,-118.2400],
+  'Baltimore, Maryland, USA':    [39.2900, -76.6100],
+  'Washington D.C., USA':        [38.9100, -77.0200],
+  // ── USA: states / country ─────────────────────────────────────────────
+  'Connecticut, USA':            [41.6000, -72.6900],
+  'New Jersey, USA':             [40.2200, -74.7600],
+  'Michigan, USA':               [44.1800, -84.5100],
+  'Maryland, USA':               [39.0500, -76.6400],
+  'Kentucky, USA':               [37.6700, -84.6700],
+  'USA':                         [38.8900, -77.0300],
+};
+
+/** Look up GPS coordinates for a canonical birthplace name. */
+function geocodeBirthplace(canonicalPlace: string | null): [number, number] | null {
+  if (!canonicalPlace) return null;
+  return BIRTHPLACE_COORD_MAP[canonicalPlace] ?? null;
 }
 
 const MANUAL_TITLE_APPEND_OVERRIDES: Record<string, string> = {
@@ -969,13 +1065,15 @@ function mergePersons(primary: Person, duplicate: Person): Person {
     birthDate: preferLonger(primary.birthDate, duplicate.birthDate),
     deathDate: preferLonger(primary.deathDate, duplicate.deathDate),
     birthPlace: preferLonger(primary.birthPlace, duplicate.birthPlace),
+    deathPlace: preferLonger(primary.deathPlace, duplicate.deathPlace),
     generation: primary.generation ?? duplicate.generation,
     relationToYael: preferLonger(primary.relationToYael, duplicate.relationToYael),
     hops: primary.hops !== null && duplicate.hops !== null
       ? Math.min(primary.hops, duplicate.hops)
       : (primary.hops ?? duplicate.hops),
     dnaInfo: mergeDnaInfo(primary.dnaInfo, duplicate.dnaInfo),
-    coordinates: primary.coordinates || duplicate.coordinates,
+    birthplaceCoordinates: primary.birthplaceCoordinates ?? duplicate.birthplaceCoordinates,
+    coordinates: primary.coordinates ?? duplicate.coordinates,
     familiesAsSpouse: Array.from(familySet),
     familyAsChild: primary.familyAsChild || duplicate.familyAsChild,
     title: preferLonger(primary.title, duplicate.title),
@@ -1418,10 +1516,12 @@ function buildGraph() {
       note_plain: row.note_plain?.trim() || null,
       photoUrl: null,
       birthPlace: resolvedBirthPlace,
+      deathPlace: normalizeBirthPlace(places.death),
       generation: notes.generation,
       relationToYael: curated ? curated['Relationship to Yael'] : notes.relationToYael,
       hops: curated ? parseInt(curated['Hops'], 10) || null : null,
       dnaInfo: resolvedDnaInfo,
+      birthplaceCoordinates: geocodeBirthplace(resolvedBirthPlace),
       coordinates: notes.coordinates,
       familiesAsSpouse: famsArr,
       familyAsChild: famcVal,

@@ -3,11 +3,13 @@
  */
 import { useMemo } from 'react';
 import { useFamilyData } from './useFamilyData';
-import type { Person } from '../types';
+import type { Person, BirthplaceLocation } from '../types';
 
 export interface MapData {
   /** Persons that have valid lat/lng coordinates */
   mappablePersons: Person[];
+  /** Persons organised by birthplace for birthplace-centric map rendering */
+  birthplaceLocations: BirthplaceLocation[];
   loading: boolean;
   error: string | null;
 }
@@ -27,5 +29,27 @@ export function useMap(): MapData {
     [personList]
   );
 
-  return { mappablePersons, loading, error };
+  const birthplaceLocations = useMemo(() => {
+    const locationMap = new Map<string, BirthplaceLocation>();
+    for (const person of personList) {
+      if (!person.birthPlace) continue;
+      const personCoords = person.birthplaceCoordinates ?? person.coordinates ?? null;
+      if (!locationMap.has(person.birthPlace)) {
+        locationMap.set(person.birthPlace, {
+          birthplace: person.birthPlace,
+          coordinates: personCoords,
+          persons: [],
+          personCount: 0,
+        });
+      }
+      const loc = locationMap.get(person.birthPlace)!;
+      // Update coordinates if we now have them for this birthplace
+      if (!loc.coordinates) loc.coordinates = personCoords;
+      loc.persons.push(person);
+      loc.personCount++;
+    }
+    return Array.from(locationMap.values());
+  }, [personList]);
+
+  return { mappablePersons, birthplaceLocations, loading, error };
 }

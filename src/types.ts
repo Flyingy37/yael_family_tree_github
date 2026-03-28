@@ -8,10 +8,13 @@ export interface Person {
   birthDate: string | null;
   deathDate: string | null;
   birthPlace: string | null;
+  deathPlace: string | null;
   generation: number | null;
   relationToYael: string | null;
   hops: number | null;
   dnaInfo: string | null;
+  /** GPS coordinates derived specifically from the normalised birthplace name. */
+  birthplaceCoordinates: [number, number] | null;
   coordinates: [number, number] | null;
   familiesAsSpouse: string[];
   familyAsChild: string | null;
@@ -51,4 +54,12 @@ export interface FamilyGraph {
   persons: Person[];
   families: Family[];
   rootPersonId: string;
+}
+
+/** Groups people by their named birthplace for birthplace-centric map rendering. */
+export interface BirthplaceLocation {
+  birthplace: string;
+  coordinates: [number, number] | null;
+  persons: Person[];
+  personCount: number;
 }
