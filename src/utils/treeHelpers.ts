@@ -151,3 +151,131 @@ export function findPathBFS(
 
   return [];
 }
+
+/**
+ * All graph neighbors of a person: parents, siblings, children, spouses
+ * (same adjacency as findPathBFS).
+ */
+export function getNeighborPersonIds(
+  personId: string,
+  personsMap: Map<string, Person>,
+  familiesMap: Map<string, Family>
+): Set<string> {
+  const out = new Set<string>();
+  const person = personsMap.get(personId);
+  if (!person) return out;
+
+  if (person.familyAsChild) {
+    const family = familiesMap.get(person.familyAsChild);
+    if (family) {
+      for (const id of family.spouses) {
+        if (id !== personId) out.add(id);
+      }
+      for (const id of family.children) {
+        if (id !== personId) out.add(id);
+      }
+    }
+  }
+
+  for (const famId of person.familiesAsSpouse) {
+    const family = familiesMap.get(famId);
+    if (!family) continue;
+    for (const id of family.spouses) {
+      if (id !== personId) out.add(id);
+    }
+    for (const id of family.children) {
+      if (id !== personId) out.add(id);
+    }
+  }
+
+  return out;
+}
+
+/**
+ * Mutates `visible`: adds any spouse (same family unit) that appears in `allowed`.
+ * Repeats until closure stable so both partners of a marriage stay visible together.
+ */
+export function addSpousesForVisibleSet(
+  visible: Set<string>,
+  personsMap: Map<string, Person>,
+  familiesMap: Map<string, Family>,
+  allowed: Set<string>
+): void {
+  let changed = true;
+  while (changed) {
+    changed = false;
+    const snapshot = [...visible];
+    for (const id of snapshot) {
+      const p = personsMap.get(id);
+      if (!p) continue;
+      for (const famId of p.familiesAsSpouse) {
+        const fam = familiesMap.get(famId);
+        if (!fam) continue;
+        for (const sid of fam.spouses) {
+          if (sid !== id && allowed.has(sid) && !visible.has(sid)) {
+            visible.add(sid);
+            changed = true;
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Starting subset for lazy tree: root, up to `ancestorGens` parent generations,
+ * up to `descendantGens` child generations, then spouse closure within `allowed`.
+ */
+export function computeInitialLazyVisibleIds(
+  rootId: string,
+  personsMap: Map<string, Person>,
+  familiesMap: Map<string, Family>,
+  allowed: Set<string>,
+  ancestorGens: number,
+  descendantGens: number
+): Set<string> {
+  const out = new Set<string>();
+  if (!allowed.has(rootId) || !personsMap.has(rootId)) return out;
+  out.add(rootId);
+
+  let frontier = [rootId];
+  for (let g = 0; g < ancestorGens; g++) {
+    const next: string[] = [];
+    for (const id of frontier) {
+      const p = personsMap.get(id);
+      if (!p?.familyAsChild) continue;
+      const fam = familiesMap.get(p.familyAsChild);
+      if (!fam) continue;
+      for (const pid of fam.spouses) {
+        if (allowed.has(pid) && !out.has(pid)) {
+          out.add(pid);
+          next.push(pid);
+        }
+      }
+    }
+    frontier = next;
+  }
+
+  frontier = [rootId];
+  for (let g = 0; g < descendantGens; g++) {
+    const next: string[] = [];
+    for (const id of frontier) {
+      const p = personsMap.get(id);
+      if (!p) continue;
+      for (const famId of p.familiesAsSpouse) {
+        const fam = familiesMap.get(famId);
+        if (!fam) continue;
+        for (const cid of fam.children) {
+          if (allowed.has(cid) && !out.has(cid)) {
+            out.add(cid);
+            next.push(cid);
+          }
+        }
+      }
+    }
+    frontier = next;
+  }
+
+  addSpousesForVisibleSet(out, personsMap, familiesMap, allowed);
+  return out;
+}

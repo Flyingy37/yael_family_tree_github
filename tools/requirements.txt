@@ -1,0 +1,5 @@
+# Genealogy / entity-resolution tooling (pip install -r tools/requirements.txt)
+pandas>=2.0
+rapidfuzz>=3.0
+abydos>=0.5
+dedupe>=3.0

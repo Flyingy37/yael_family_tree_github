@@ -18,6 +18,7 @@ import { PersonNode } from './PersonNode';
 import { GenerationBandNode } from './GenerationBandNode';
 import { computeLayout, NODE_HEIGHT, type LayoutEdge } from '../utils/layout';
 import { getDescendantIds, findPathBFS, countDescendantsMap } from '../utils/treeHelpers';
+import { useExpandCollapse } from '../hooks/useExpandCollapse';
 import type { Person, Family } from '../types';
 
 const BAND_HEIGHT = NODE_HEIGHT + 100; // node height + ranksep gap
@@ -71,6 +72,34 @@ export function TreeView({
   const { fitView } = useReactFlow();
   const t = language === 'he';
 
+  // ── Lazy load (large graphs): initial neighborhood around root, expand by hop ──
+  const {
+    graphVisibleIds,
+    expandBranch,
+    expandTick,
+    isLazyMode,
+    hasHiddenRelatives,
+    hiddenRelativeCount,
+  } = useExpandCollapse(rootPersonId, filteredIds, persons, families);
+
+  // After expanding a branch, re-center the viewport (double rAF: layout then measure)
+  useEffect(() => {
+    if (expandTick === 0) return;
+    const outer = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        fitView({ duration: 480, padding: 0.15, includeHiddenNodes: false });
+      });
+    });
+    return () => cancelAnimationFrame(outer);
+  }, [expandTick, fitView]);
+
+  const handleExpandBranch = useCallback(
+    (id: string) => {
+      expandBranch(id);
+    },
+    [expandBranch]
+  );
+
   // ── Collapse state ────────────────────────────────────────────────────────
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
 
@@ -88,17 +117,18 @@ export function TreeView({
     });
   }, []);
 
-  // Effective display IDs: filteredIds minus descendants of collapsed nodes
+  // Effective display: lazy-visible ∩ filter, then hide collapsed subtrees
   const effectiveDisplayIds = useMemo(() => {
-    if (collapsedIds.size === 0) return filteredIds;
-    const result = new Set(filteredIds);
+    const base = graphVisibleIds;
+    if (collapsedIds.size === 0) return base;
+    const result = new Set(base);
     for (const cId of collapsedIds) {
       if (!result.has(cId)) continue;
       const descendants = getDescendantIds(cId, persons, families);
       for (const dId of descendants) result.delete(dId);
     }
     return result;
-  }, [filteredIds, collapsedIds, persons, families]);
+  }, [graphVisibleIds, collapsedIds, persons, families]);
 
   // Total descendant counts per person (all generations, full dataset)
   const descendantCountMap = useMemo(
@@ -158,10 +188,46 @@ export function TreeView({
   }, []);
 
   // ── Layout ────────────────────────────────────────────────────────────────
-  const { layoutNodes, layoutEdges } = useMemo(() => {
-    const result = computeLayout(persons, families, effectiveDisplayIds);
-    return { layoutNodes: result.nodes, layoutEdges: result.edges };
-  }, [persons, families, effectiveDisplayIds]);
+  /**
+   * Lazy mode: one Dagre pass over the full filtered set; visibility is toggled with
+   * React Flow `node.hidden` / `edge.hidden` so expand/collapse does not re-run Dagre.
+   * Non-lazy: Dagre only on the visible subset (small graphs).
+   */
+  const fullLazyLayout = useMemo(() => {
+    if (!isLazyMode || filteredIds.size === 0) return null;
+    return computeLayout(persons, families, filteredIds);
+  }, [isLazyMode, persons, families, filteredIds]);
+
+  const visibleOnlyLayout = useMemo(() => {
+    if (isLazyMode) return null;
+    if (effectiveDisplayIds.size === 0) return null;
+    return computeLayout(persons, families, effectiveDisplayIds);
+  }, [isLazyMode, persons, families, effectiveDisplayIds]);
+
+  const layoutResult = fullLazyLayout ?? visibleOnlyLayout;
+  const layoutNodes = layoutResult?.nodes ?? [];
+  const layoutEdges = layoutResult?.edges ?? [];
+
+  const layoutNodeById = useMemo(() => {
+    const m = new Map<string, (typeof layoutNodes)[number]>();
+    for (const n of layoutNodes) m.set(n.id, n);
+    return m;
+  }, [layoutNodes]);
+
+  /** Bands only from people who are actually shown (not `hidden`) */
+  const layoutNodesForBands = useMemo(() => {
+    if (fullLazyLayout) {
+      return layoutNodes.filter(n => effectiveDisplayIds.has(n.id));
+    }
+    return layoutNodes;
+  }, [fullLazyLayout, layoutNodes, effectiveDisplayIds]);
+
+  const rfPersonIds = useMemo(() => {
+    if (fullLazyLayout) {
+      return Array.from(filteredIds).sort((a, b) => a.localeCompare(b));
+    }
+    return layoutNodes.map(n => n.id);
+  }, [fullLazyLayout, filteredIds, layoutNodes]);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
   const handleNodeClick = useCallback(
@@ -187,7 +253,7 @@ export function TreeView({
   // ── Generation band nodes ─────────────────────────────────────────────────
   const generationBandNodes: Node[] = useMemo(() => {
     const genYMap = new Map<number, number[]>();
-    for (const node of layoutNodes) {
+    for (const node of layoutNodesForBands) {
       const gen = node.data.generation;
       if (gen === null) continue;
       if (!genYMap.has(gen)) genYMap.set(gen, []);
@@ -215,45 +281,65 @@ export function TreeView({
         },
       } as Node;
     });
-  }, [layoutNodes, language]);
+  }, [layoutNodesForBands, language]);
 
   // ── ReactFlow nodes & edges ───────────────────────────────────────────────
-  const personNodes: Node[] = useMemo(
-    () =>
-      layoutNodes.map(n => ({
-        id: n.id,
+  const personNodes: Node[] = useMemo(() => {
+    const nodes: Node[] = [];
+    for (const id of rfPersonIds) {
+      const ln = layoutNodeById.get(id);
+      const person = persons.get(id);
+      if (!ln || !person) continue;
+
+      const hidden = Boolean(fullLazyLayout && !effectiveDisplayIds.has(id));
+
+      nodes.push({
+        id,
         type: 'person',
-        position: { x: n.x, y: n.y },
+        position: { x: ln.x, y: ln.y },
+        hidden,
         data: {
-          person: n.data,
-          isRoot: n.id === rootPersonId,
-          isSelected: n.id === selectedPersonId,
+          person,
+          isRoot: id === rootPersonId,
+          isSelected: id === selectedPersonId,
           onClick: handleNodeClick,
           language,
           onToggleCollapse: handleToggleCollapse,
-          isCollapsed: collapsedIds.has(n.id),
-          hasChildren: hasChildrenMap.get(n.id) ?? false,
-          isOnPath: pathHighlightIds.has(n.id),
-          isPathStart: n.id === pathPersonA,
+          isCollapsed: collapsedIds.has(id),
+          hasChildren: hasChildrenMap.get(id) ?? false,
+          isOnPath: pathHighlightIds.has(id),
+          isPathStart: id === pathPersonA,
           onFocusSubtree,
-          descendantCount: descendantCountMap.get(n.id) ?? 0,
+          descendantCount: descendantCountMap.get(id) ?? 0,
+          hasLazyExpand: isLazyMode && hasHiddenRelatives(id),
+          lazyHiddenCount: hiddenRelativeCount(id),
+          onExpandBranch: handleExpandBranch,
         },
-      })),
-    [
-      layoutNodes,
-      rootPersonId,
-      selectedPersonId,
-      handleNodeClick,
-      language,
-      handleToggleCollapse,
-      collapsedIds,
-      hasChildrenMap,
-      pathHighlightIds,
-      pathPersonA,
-      onFocusSubtree,
-      descendantCountMap,
-    ]
-  );
+      });
+    }
+    return nodes;
+  }, [
+    rfPersonIds,
+    layoutNodeById,
+    persons,
+    fullLazyLayout,
+    effectiveDisplayIds,
+    rootPersonId,
+    selectedPersonId,
+    handleNodeClick,
+    language,
+    handleToggleCollapse,
+    collapsedIds,
+    hasChildrenMap,
+    pathHighlightIds,
+    pathPersonA,
+    onFocusSubtree,
+    descendantCountMap,
+    isLazyMode,
+    hasHiddenRelatives,
+    hiddenRelativeCount,
+    handleExpandBranch,
+  ]);
 
   const allNodes: Node[] = useMemo(
     () => [...generationBandNodes, ...personNodes],
@@ -265,19 +351,23 @@ export function TreeView({
       layoutEdges.map(e => {
         const onPath = isPathHighlightedEdge(e, pathEdgePairs, families, effectiveDisplayIds);
         const isSpouse = e.type === 'spouse';
+        const srcOk = effectiveDisplayIds.has(e.source);
+        const tgtOk = effectiveDisplayIds.has(e.target);
+        const hidden = Boolean(fullLazyLayout && (!srcOk || !tgtOk));
         return {
           id: e.id,
           source: e.source,
           target: e.target,
           type: 'smoothstep',
-          animated: isSpouse && !onPath,
+          hidden,
+          animated: isSpouse && !onPath && !hidden,
           style: {
             stroke: onPath ? '#f97316' : isSpouse ? '#ec4899' : '#94a3b8',
             strokeWidth: onPath ? 3 : isSpouse ? 2 : 1.5,
           },
         };
       }),
-    [layoutEdges, pathEdgePairs, families, effectiveDisplayIds]
+    [layoutEdges, pathEdgePairs, families, effectiveDisplayIds, fullLazyLayout]
   );
 
   const [, , onNodesChange] = useNodesState(allNodes);
@@ -336,6 +426,19 @@ export function TreeView({
           zoomable
         />
         <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#e2e8f0" />
+
+        {isLazyMode && (
+          <Panel position="top-left">
+            <div
+              className="max-w-[220px] rounded-lg border border-slate-200/80 bg-white/95 px-3 py-2 text-[11px] leading-snug text-slate-600 shadow-md backdrop-blur-sm transition-opacity duration-300"
+              dir={t ? 'rtl' : 'ltr'}
+            >
+              {t
+                ? 'עץ גדול: Dagre פעם אחת לכל הסינון; מוצגים שורש ו־2 דורות הורים/ילדים. לחץ + כדי לחשוף קרובים (מבטל hidden).'
+                : 'Large tree: one layout for the full filter; root ±2 ancestor/descendant gens shown. + reveals relatives (toggles hidden).'}
+            </div>
+          </Panel>
+        )}
 
         {/* Path-find toolbar */}
         <Panel position="top-right">

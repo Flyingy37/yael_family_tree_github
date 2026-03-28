@@ -16,6 +16,12 @@ export interface Person {
   familiesAsSpouse: string[];
   familyAsChild: string | null;
   title: string | null;
+  /** Research notes (may contain HTML); prefer `note_plain` for display when set */
+  note?: string | null;
+  /** Plain-text notes from GEDCOM / CSV */
+  note_plain?: string | null;
+  /** Profile or portrait image URL when available */
+  photoUrl?: string | null;
   // Hebrew fields from curated CSV
   hebrewName: string | null;
   birthName: string | null;

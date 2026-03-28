@@ -20,8 +20,9 @@ export interface LayoutEdge {
   familyId?: string;
 }
 
-export const NODE_WIDTH = 180;
-export const NODE_HEIGHT = 70;
+/** Must match `PersonNode` outer box so dagre spacing aligns with React Flow handles */
+export const NODE_WIDTH = 200;
+export const NODE_HEIGHT = 200;
 
 export function computeLayout(
   persons: Map<string, Person>,

@@ -67,6 +67,9 @@ interface Person {
   familiesAsSpouse: string[];
   familyAsChild: string | null;
   title: string | null;
+  note: string | null;
+  note_plain: string | null;
+  photoUrl: string | null;
   hebrewName: string | null;
   birthName: string | null;
   fatherName: string | null;
@@ -1411,6 +1414,9 @@ function buildGraph() {
       sex,
       birthDate: parseGedcomDate(dates.birth || ''),
       deathDate: parseGedcomDate(dates.death || ''),
+      note: row.note?.trim() || null,
+      note_plain: row.note_plain?.trim() || null,
+      photoUrl: null,
       birthPlace: resolvedBirthPlace,
       generation: notes.generation,
       relationToYael: curated ? curated['Relationship to Yael'] : notes.relationToYael,
