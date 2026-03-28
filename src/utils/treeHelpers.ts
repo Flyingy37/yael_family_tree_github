@@ -69,6 +69,37 @@ export function getDescendantIds(
 }
 
 /**
+ * Counts total descendants (all generations) for every person in the map.
+ * Returns Map<personId, count>. Memoised via DFS so each node is visited once.
+ */
+export function countDescendantsMap(
+  personsMap: Map<string, Person>,
+  familiesMap: Map<string, Family>
+): Map<string, number> {
+  const memo = new Map<string, number>();
+
+  function dfs(id: string): number {
+    if (memo.has(id)) return memo.get(id)!;
+    memo.set(id, 0); // guard against cycles
+    const person = personsMap.get(id);
+    if (!person) return 0;
+    let total = 0;
+    for (const famId of person.familiesAsSpouse) {
+      const fam = familiesMap.get(famId);
+      if (!fam) continue;
+      for (const childId of fam.children) {
+        total += 1 + dfs(childId);
+      }
+    }
+    memo.set(id, total);
+    return total;
+  }
+
+  for (const id of personsMap.keys()) dfs(id);
+  return memo;
+}
+
+/**
  * BFS shortest path between two people through the family graph.
  * Neighbors of a person = spouses, parents, siblings, and children
  * (all relationships reachable through familyAsChild and familiesAsSpouse).

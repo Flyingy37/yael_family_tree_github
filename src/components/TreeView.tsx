@@ -17,7 +17,7 @@ import '@xyflow/react/dist/style.css';
 import { PersonNode } from './PersonNode';
 import { GenerationBandNode } from './GenerationBandNode';
 import { computeLayout, NODE_HEIGHT, type LayoutEdge } from '../utils/layout';
-import { getDescendantIds, findPathBFS } from '../utils/treeHelpers';
+import { getDescendantIds, findPathBFS, countDescendantsMap } from '../utils/treeHelpers';
 import type { Person, Family } from '../types';
 
 const BAND_HEIGHT = NODE_HEIGHT + 100; // node height + ranksep gap
@@ -99,6 +99,12 @@ export function TreeView({
     }
     return result;
   }, [filteredIds, collapsedIds, persons, families]);
+
+  // Total descendant counts per person (all generations, full dataset)
+  const descendantCountMap = useMemo(
+    () => countDescendantsMap(persons, families),
+    [persons, families]
+  );
 
   // Which nodes have visible children (used to show collapse button)
   const hasChildrenMap = useMemo(() => {
@@ -230,6 +236,7 @@ export function TreeView({
           isOnPath: pathHighlightIds.has(n.id),
           isPathStart: n.id === pathPersonA,
           onFocusSubtree,
+          descendantCount: descendantCountMap.get(n.id) ?? 0,
         },
       })),
     [
@@ -244,6 +251,7 @@ export function TreeView({
       pathHighlightIds,
       pathPersonA,
       onFocusSubtree,
+      descendantCountMap,
     ]
   );
 
@@ -331,13 +339,13 @@ export function TreeView({
 
         {/* Path-find toolbar */}
         <Panel position="top-right">
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, maxWidth: 280 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, maxWidth: 290 }}>
 
             {/* Main toggle button */}
             <button
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6,
-                padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600,
+                padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600,
                 cursor: 'pointer', border: 'none', transition: 'background 0.15s',
                 boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
                 backgroundColor: pathMode ? '#ea580c' : '#ffffff',
@@ -345,13 +353,25 @@ export function TreeView({
                 outline: pathMode ? 'none' : '1px solid #e5e7eb',
               }}
               onClick={togglePathMode}
-              title={t ? 'מצא את הנתיב הקצר ביותר בין שני אנשים' : 'Find shortest path between two people'}
+              title={t ? 'בחר שני אנשים כדי לבדוק מה הקשר ביניהם' : 'Select two people to see how they are related'}
             >
               {pathMode ? <X size={13} /> : <RouteIcon size={13} />}
               {pathMode
                 ? (t ? 'בטל' : 'Cancel')
-                : (t ? 'מצא נתיב' : 'Find Path')}
+                : (t ? 'בדוק קשר בין אנשים' : 'Check relationship')}
             </button>
+
+            {/* Hint shown when idle */}
+            {!pathMode && pathResult === null && (
+              <div style={{
+                fontSize: 10, color: '#6b7280', textAlign: 'right',
+                padding: '3px 6px', lineHeight: 1.5,
+              }}>
+                {t
+                  ? 'לחץ כדי לגלות כיצד שני אנשים קשורים'
+                  : 'Click to discover how two people are related'}
+              </div>
+            )}
 
             {/* Instructions while selecting */}
             {pathInstructions && (

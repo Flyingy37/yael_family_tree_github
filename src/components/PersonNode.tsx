@@ -30,6 +30,7 @@ interface PersonNodeProps {
     isOnPath?: boolean;
     isPathStart?: boolean;
     onFocusSubtree?: (id: string) => void;
+    descendantCount?: number;
   };
 }
 
@@ -136,7 +137,7 @@ function buildTagBadges(person: Person, isHe: boolean): BadgeEntry[] {
 }
 
 export const PersonNode = memo(({ data }: PersonNodeProps) => {
-  const { person, isRoot, isSelected, isCollapsed, hasChildren, isOnPath, isPathStart } = data;
+  const { person, isRoot, isSelected, isCollapsed, hasChildren, isOnPath, isPathStart, descendantCount } = data;
   const isHe = data.language === 'he';
   const [hovered, setHovered] = useState(false);
   const handleMouseEnter = useCallback(() => setHovered(true), []);
@@ -437,6 +438,16 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
               ? (isHe ? 'פרוס' : 'Expand')
               : (isHe ? 'קפל' : 'Collapse')}
             </span>
+            {(descendantCount !== undefined && descendantCount > 0) && (
+              <span style={{
+                marginRight: 2, marginLeft: 2,
+                backgroundColor: '#e0f2fe', color: '#0369a1',
+                borderRadius: 3, padding: '0px 4px',
+                fontSize: 8.5, fontWeight: 700,
+              }}>
+                {descendantCount}
+              </span>
+            )}
           </button>
         )}
       </div>
