@@ -12,6 +12,7 @@ import { Breadcrumb } from './components/Breadcrumb';
 import { MapView } from './components/MapView';
 import { TimelineView } from './components/TimelineView';
 import { StatisticsView } from './components/StatisticsView';
+import { WelcomeModal } from './components/WelcomeModal';
 import { getSubtreeIds } from './utils/subtree';
 import {
   downloadLastWebVitalsSnapshot,
@@ -236,6 +237,7 @@ export default function FamilyExplorer() {
 
   return (
     <div className="h-full flex flex-col bg-gray-50">
+      <WelcomeModal language={language} />
       <header className="bg-white border-b border-gray-200 px-4 py-2 z-10 flex-shrink-0">
         <div className="flex items-center gap-3 flex-wrap">
           <div
