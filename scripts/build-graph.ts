@@ -314,11 +314,11 @@ const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullNa
   '@I1240@': { surname: 'Vulis', surnameFinal: 'Vulis' },
   // ── Relations to Yael: Nachum Alperovich's siblings (Yael's great-aunts/uncles) ──
   // Nachum (@I11@) = Yael's maternal grandfather; his siblings are Yael's great-aunts/uncles
-  '@I53@': { relationToYael: 'דודה רבה (אחות של סבא נחום)' },   // Chana Knepf/Vulis
-  '@I54@': { relationToYael: 'דודה רבה (אחות של סבא נחום)' },   // Rachel Alperovitz
-  '@I55@': { relationToYael: 'דודה רבה (אחות של סבא נחום)' },   // Dvora Doba Alperovich
-  '@I56@': { relationToYael: 'דודה רבה (אחות של סבא נחום)' },   // Henia Alperovitch
-  '@I57@': { relationToYael: 'דודה רבה (אחות של סבא נחום)' },   // Rashka Alperovitch
+  '@I53@': { relationToYael: 'דודה רבא (אחות של סבא נחום)' },   // Chana Knepf/Vulis
+  '@I54@': { relationToYael: 'דודה רבא (אחות של סבא נחום)' },   // Rachel Alperovitz
+  '@I55@': { relationToYael: 'דודה רבא (אחות של סבא נחום)' },   // Dvora Doba Alperovich
+  '@I56@': { relationToYael: 'דודה רבא (אחות של סבא נחום)' },   // Henia Alperovitch
+  '@I57@': { relationToYael: 'דודה רבא (אחות של סבא נחום)' },   // Rashka Alperovitch
   '@I11@': { relationToYael: 'סבא מטעם אמא (נחום אלפרוביץ׳)' },   // Nachum Alperovich = Yael's maternal grandfather
   // Michael & Pesya (Nachum's parents = Yael's great-great-grandparents)
   '@I34@': { relationToYael: 'סבא רבא (אבי סבא נחום)' },         // Michael Alperovich
