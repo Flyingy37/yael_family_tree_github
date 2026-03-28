@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import type { Person } from '../types';
 import { getCanonicalSurnameLabel } from '../utils/surname';
-import { Dna, Landmark, Shield, Star, BookMarked, Scroll, PlaneTakeoff } from 'lucide-react';
+import { Dna, Landmark, Shield, Star, BookMarked, Scroll, Ship } from 'lucide-react';
 import { HolocaustMemorialPatchIcon } from './HolocaustMemorialPatchIcon';
 
 export interface Filters {
@@ -170,24 +170,6 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
             {t ? 'קרבה' : 'Kinship'}
           </div>
           <div>
-            <label
-              className="flex items-center gap-2 cursor-pointer"
-              title={
-                t
-                  ? 'מסתיר אנשים שלא על רכיב קרבת הדם של יעל (איים נפרדים בקובץ). בטלי כדי לראות את כל המאגר.'
-                  : "Hides people not on Yael's blood-relation component (separate islands in the file). Uncheck to show everyone."
-              }
-            >
-              <input
-                type="checkbox"
-                checked={filters.connectedToYaelOnly}
-                onChange={e => onChange({ ...filters, connectedToYaelOnly: e.target.checked })}
-                className="rounded"
-              />
-              <span className="text-xs text-gray-600">{t ? '🔗 מחוברים ליעל בלבד' : '🔗 Connected to Yael only'}</span>
-            </label>
-          </div>
-          <div>
             <label className="text-xs text-gray-500">{t ? 'קפיצות מיעל (מקסימום)' : 'Hops from Yael (max)'}</label>
             <div className="flex gap-2 items-center mt-1">
               <input
@@ -327,7 +309,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
               onChange={e => onChange({ ...filters, hasMigrationTag: e.target.checked })}
               className="rounded"
             />
-            <span className="text-xs text-gray-600 flex items-center gap-1"><PlaneTakeoff size={11} className="text-cyan-700" />{t ? 'הגירה' : 'Migration'}</span>
+            <span className="text-xs text-gray-600 flex items-center gap-1"><Ship size={11} className="text-cyan-700" />{t ? 'הגירה' : 'Migration'}</span>
           </label>
         </section>
       </div>

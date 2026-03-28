@@ -318,6 +318,9 @@ const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullNa
   // Yehudit was born Bialik (parents: Israel Dov Ber Bialik & Michal Mania Bialik, niece of Chaim Nachman Bialik).
   // GEDCOM incorrectly stores her married name (Kastrel) as birth surname.
   '@I1392@': { fullName: 'Yehudit Bialik', surname: 'Bialik', surnameFinal: 'Kastrel' },
+  // Children of Oded Livnat-Tal: GEDCOM has surname "Livnat" but their family name is Livnat-Tal.
+  '@I13@': { fullName: 'Liri Livnat-Tal', surname: 'Livnat-Tal', surnameFinal: 'Livnat-Tal' },
+  '@I14@': { fullName: 'Dylan Livnat-Tal', surname: 'Livnat-Tal', surnameFinal: 'Livnat-Tal' },
   // ── Relations to Yael: Nachum Alperovich's siblings (Yael's great-aunts/uncles) ──
   // Nachum (@I11@) = Yael's maternal grandfather; his siblings are Yael's great-aunts/uncles
   '@I53@': { relationToYael: 'דודה רבא (אחות של סבא נחום)' },   // Chana Knepf/Vulis
