@@ -249,6 +249,13 @@ function parseGed(content: string): { individuals: GedIndi[]; families: GedFam[]
           if (noteLines.length > 0) noteLines[noteLines.length - 1] += gl.value;
           else noteLines.push(gl.value);
           break;
+        case 'NAME/_MARNM': {
+          // MyHeritage married-name extension: "2 _MARNM Livnat (Lanzman)"
+          // Strip any parenthetical old-name qualifier and take the leading token(s) only.
+          const marnm = gl.value.replace(/\s*\(.*$/, '').trim();
+          if (marnm) curIndi.surnameFinal = marnm;
+          break;
+        }
         case 'BURI/DATE':
         case 'BURI/PLAC':
         case 'CHR/DATE':
