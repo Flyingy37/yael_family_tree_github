@@ -23,7 +23,7 @@ export function parseGedcomLines(raw: string): GedcomLine[] {
   for (const rawLine of raw.split(/\r?\n/)) {
     const line = rawLine.trim();
     if (!line) continue;
-    const match = line.match(/^(\d+)\s+(@[^@]+@)?\s*(\w+)\s*(.*)?$/);
+    const match = line.match(/^(\d+)\s+(@[^@]+@)?\s*([A-Z_][A-Z0-9_]*)\s*(.*)?$/i);
     if (!match) continue;
     const [, level, xref, tag, value] = match;
     results.push({

@@ -41,11 +41,12 @@ export function formatLifespan(
 
 /**
  * Capitalise the first letter of each word in a name.
+ * Handles hyphenated names (Mary-Jane) and names with apostrophes (O'Brien).
  */
 export function titleCase(name: string): string {
   return name
     .toLowerCase()
-    .replace(/\b\w/g, c => c.toUpperCase());
+    .replace(/(?:^|[\s\-'])(\w)/g, (_, c) => _.slice(0, -1) + c.toUpperCase());
 }
 
 /**

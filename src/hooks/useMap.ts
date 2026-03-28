@@ -20,7 +20,9 @@ export function useMap(): MapData {
       Array.isArray(p.coordinates) &&
       p.coordinates.length === 2 &&
       typeof p.coordinates[0] === 'number' &&
-      typeof p.coordinates[1] === 'number'
+      typeof p.coordinates[1] === 'number' &&
+      p.coordinates[0] >= -90 && p.coordinates[0] <= 90 &&
+      p.coordinates[1] >= -180 && p.coordinates[1] <= 180
     ),
     [personList]
   );

@@ -69,7 +69,7 @@ function validateCanonical(rows: Record<string, string>[], headers: string[]) {
     }
 
     const sex = row['sex']?.trim();
-    if (sex && !['M', 'F', 'U', ''].includes(sex)) {
+    if (sex && !['M', 'F', 'U'].includes(sex)) {
       warn(`canonical.csv row ${rowIndex}: unexpected sex value "${sex}"`);
     }
 
