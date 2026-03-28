@@ -248,7 +248,7 @@ export default function FamilyExplorer() {
           </div>
 
           <h1 className="text-lg font-bold text-gray-800 whitespace-nowrap">
-            {language === 'he' ? '🌳 אילן יוחסין' : '🌳 Family Tree'}
+            {language === 'he' ? '🌳 משפחת לבנת–זיידמן' : '🌳 Livnat–Zaidman Family Tree'}
           </h1>
 
           <div
