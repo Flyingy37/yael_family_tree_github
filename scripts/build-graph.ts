@@ -1296,8 +1296,21 @@ function buildGraph() {
     );
   }
 
-  // Read canonical CSV
-  const canonicalRaw = readFileSync(join(ROOT, 'data/canonical.csv'), 'utf-8');
+  // Read canonical CSV — fall back to sample data when the private file is absent
+  const canonicalPath = join(ROOT, 'data/canonical.csv');
+  const canonicalFallbackPath = join(ROOT, 'data/sample/canonical.sample.csv');
+  let canonicalRaw: string;
+  if (existsSync(canonicalPath)) {
+    canonicalRaw = readFileSync(canonicalPath, 'utf-8');
+  } else if (existsSync(canonicalFallbackPath)) {
+    console.log('data/canonical.csv not found — using sample data from data/sample/canonical.sample.csv');
+    canonicalRaw = readFileSync(canonicalFallbackPath, 'utf-8');
+  } else {
+    console.log('Neither data/canonical.csv nor data/sample/canonical.sample.csv found — writing empty graph');
+    mkdirSync(join(ROOT, 'public'), { recursive: true });
+    writeFileSync(join(ROOT, 'public/family-graph.json'), JSON.stringify({ persons: [], families: [], rootPersonId: '' }));
+    return;
+  }
   const canonicalRows: RawCanonical[] = parse(canonicalRaw, {
     columns: true,
     skip_empty_lines: true,

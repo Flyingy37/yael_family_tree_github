@@ -7,9 +7,13 @@ import { initWebVitalsTracking } from './performance/webVitals';
 
 initWebVitalsTracking();
 
+// import.meta.env.BASE_URL is set by Vite from the `base` config option
+// (populated by VITE_BASE_PATH in CI). Falls back to '/' in local dev.
+const basename = import.meta.env.BASE_URL;
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <App />
     </BrowserRouter>
   </StrictMode>
