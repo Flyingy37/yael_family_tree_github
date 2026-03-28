@@ -12,11 +12,11 @@ import {
   type Node,
   type Edge,
 } from '@xyflow/react';
-import { RouteIcon, X, CheckCircle, AlertCircle } from 'lucide-react';
+import { RouteIcon, X, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import '@xyflow/react/dist/style.css';
 import { PersonNode } from './PersonNode';
 import { GenerationBandNode } from './GenerationBandNode';
-import { computeLayout, NODE_HEIGHT } from '../utils/layout';
+import { computeLayout, NODE_HEIGHT, type LayoutEdge } from '../utils/layout';
 import { getDescendantIds, findPathBFS } from '../utils/treeHelpers';
 import type { Person, Family } from '../types';
 
@@ -27,6 +27,25 @@ const nodeTypes = {
   person: PersonNode,
   generationBand: GenerationBandNode,
 };
+
+/** Parent–child layout edges use the first visible spouse as `source`; BFS may traverse another spouse. */
+function isPathHighlightedEdge(
+  edge: LayoutEdge,
+  pathEdgePairs: Set<string>,
+  familiesMap: Map<string, Family>,
+  visiblePersonIds: Set<string>
+): boolean {
+  if (pathEdgePairs.has(`${edge.source}:${edge.target}`)) return true;
+  if (edge.type !== 'parent-child' || !edge.familyId) return false;
+  const family = familiesMap.get(edge.familyId);
+  if (!family) return false;
+  const childId = edge.target;
+  for (const spouseId of family.spouses) {
+    if (!visiblePersonIds.has(spouseId)) continue;
+    if (pathEdgePairs.has(`${spouseId}:${childId}`)) return true;
+  }
+  return false;
+}
 
 interface Props {
   persons: Map<string, Person>;
@@ -148,7 +167,7 @@ export function TreeView({
           const path = findPathBFS(pathPersonA, id, persons, families);
           setPathResult(path);
           setPathPersonA(null);
-          setPathMode(false);
+          // keep pathMode open so user can search again
         }
         return;
       }
@@ -207,6 +226,7 @@ export function TreeView({
           isCollapsed: collapsedIds.has(n.id),
           hasChildren: hasChildrenMap.get(n.id) ?? false,
           isOnPath: pathHighlightIds.has(n.id),
+          isPathStart: n.id === pathPersonA,
         },
       })),
     [
@@ -219,6 +239,7 @@ export function TreeView({
       collapsedIds,
       hasChildrenMap,
       pathHighlightIds,
+      pathPersonA,
     ]
   );
 
@@ -230,7 +251,7 @@ export function TreeView({
   const allEdges: Edge[] = useMemo(
     () =>
       layoutEdges.map(e => {
-        const onPath = pathEdgePairs.has(`${e.source}:${e.target}`);
+        const onPath = isPathHighlightedEdge(e, pathEdgePairs, families, effectiveDisplayIds);
         const isSpouse = e.type === 'spouse';
         return {
           id: e.id,
@@ -244,22 +265,28 @@ export function TreeView({
           },
         };
       }),
-    [layoutEdges, pathEdgePairs]
+    [layoutEdges, pathEdgePairs, families, effectiveDisplayIds]
   );
 
   const [, , onNodesChange] = useNodesState(allNodes);
   const [, , onEdgesChange] = useEdgesState(allEdges);
 
   // ── Path mode status label ────────────────────────────────────────────────
-  const pathStatusText = pathMode
+  const pathInstructions = pathMode
     ? pathPersonA === null
-      ? t ? 'בחר אדם ראשון' : 'Select first person'
+      ? t ? 'בחר אדם ראשון' : 'Click first person'
       : t
-        ? `נבחר: ${persons.get(pathPersonA)?.fullName ?? pathPersonA} — בחר אדם שני`
-        : `Selected: ${persons.get(pathPersonA)?.fullName ?? pathPersonA} — select second person`
-    : pathResult !== null
+        ? `✓ ${persons.get(pathPersonA)?.fullName ?? pathPersonA} — כעת בחר אדם שני`
+        : `✓ ${persons.get(pathPersonA)?.fullName ?? pathPersonA} — now click second person`
+    : null;
+
+  const pathFoundText = pathResult !== null && !pathMode
+    ? pathResult.length > 0
+      ? t ? `נתיב: ${pathResult.length - 1} צעדים` : `Path: ${pathResult.length - 1} step(s)`
+      : t ? 'לא נמצא נתיב' : 'No path found'
+    : pathResult !== null && pathMode
       ? pathResult.length > 0
-        ? t ? `נתיב: ${pathResult.length - 1} צעדים` : `Path: ${pathResult.length - 1} step(s)`
+        ? t ? `נתיב אחרון: ${pathResult.length - 1} צעדים` : `Last: ${pathResult.length - 1} step(s)`
         : t ? 'לא נמצא נתיב' : 'No path found'
       : null;
 
@@ -292,7 +319,9 @@ export function TreeView({
 
         {/* Path-find toolbar */}
         <Panel position="top-right">
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, maxWidth: 280 }}>
+
+            {/* Main toggle button */}
             <button
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -312,34 +341,93 @@ export function TreeView({
                 : (t ? 'מצא נתיב' : 'Find Path')}
             </button>
 
-            {pathStatusText && (
-              <div
-                style={{
-                  backgroundColor: '#ffffff', border: '1px solid #e5e7eb',
-                  borderRadius: 8, padding: '6px 10px',
-                  fontSize: 11, color: '#374151',
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
-                  maxWidth: 240, display: 'flex', alignItems: 'center', gap: 6,
-                }}
-              >
-                {pathResult !== null && pathResult.length > 0
-                  ? <CheckCircle size={12} color="#16a34a" />
-                  : pathResult !== null
-                  ? <AlertCircle size={12} color="#dc2626" />
-                  : null}
-                <span style={{ flex: 1 }}>{pathStatusText}</span>
-                {!pathMode && pathResult !== null && (
-                  <button
-                    style={{
-                      display: 'inline-flex', alignItems: 'center',
-                      background: 'none', border: 'none', cursor: 'pointer',
-                      padding: 2, color: '#9ca3af',
-                    }}
-                    onClick={() => setPathResult(null)}
-                    title={t ? 'נקה הדגשה' : 'Clear highlight'}
-                  >
-                    <X size={12} />
-                  </button>
+            {/* Instructions while selecting */}
+            {pathInstructions && (
+              <div style={{
+                backgroundColor: '#eff6ff', border: '1px solid #bfdbfe',
+                borderRadius: 8, padding: '6px 10px',
+                fontSize: 11, color: '#1e40af',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+                width: '100%',
+              }}>
+                {pathInstructions}
+              </div>
+            )}
+
+            {/* Result panel */}
+            {pathResult !== null && (
+              <div style={{
+                backgroundColor: '#ffffff', border: '1px solid #e5e7eb',
+                borderRadius: 8, padding: '8px 10px',
+                fontSize: 11, color: '#374151',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+                width: '100%',
+              }}>
+                {/* Result header */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: pathResult.length > 0 ? 6 : 0 }}>
+                  {pathResult.length > 0
+                    ? <CheckCircle size={12} color="#16a34a" />
+                    : <AlertCircle size={12} color="#dc2626" />}
+                  <span style={{ flex: 1, fontWeight: 600 }}>
+                    {pathFoundText}
+                  </span>
+                  <div style={{ display: 'flex', gap: 4 }}>
+                    {/* Search again button */}
+                    <button
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 3,
+                        background: '#f0fdf4', border: '1px solid #bbf7d0',
+                        borderRadius: 5, cursor: 'pointer',
+                        padding: '2px 6px', color: '#15803d', fontSize: 10, fontWeight: 600,
+                      }}
+                      onClick={() => {
+                        setPathResult(null);
+                        setPathPersonA(null);
+                        setPathMode(true);
+                      }}
+                      title={t ? 'חיפוש חדש' : 'New search'}
+                    >
+                      <RefreshCw size={10} />
+                      {t ? 'חדש' : 'New'}
+                    </button>
+                    {/* Clear button */}
+                    <button
+                      style={{
+                        display: 'inline-flex', alignItems: 'center',
+                        background: 'none', border: 'none', cursor: 'pointer',
+                        padding: 2, color: '#9ca3af',
+                      }}
+                      onClick={() => { setPathResult(null); setPathMode(false); }}
+                      title={t ? 'נקה הדגשה' : 'Clear highlight'}
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Scrollable path list */}
+                {pathResult.length > 0 && (
+                  <ol style={{
+                    margin: 0, padding: '0 0 0 16px',
+                    maxHeight: 200, overflowY: 'auto',
+                    listStyle: 'decimal',
+                    fontSize: 10.5, color: '#374151',
+                    lineHeight: 1.7,
+                  }}>
+                    {pathResult.map((personId, idx) => {
+                      const p = persons.get(personId);
+                      return (
+                        <li key={personId} style={{
+                          paddingLeft: 2,
+                          fontWeight: idx === 0 || idx === pathResult.length - 1 ? 700 : 400,
+                          color: idx === 0 || idx === pathResult.length - 1 ? '#111827' : '#374151',
+                        }}>
+                          {p?.fullName ?? personId}
+                          {p?.birthDate ? <span style={{ color: '#9ca3af', marginLeft: 4 }}>{p.birthDate}</span> : null}
+                        </li>
+                      );
+                    })}
+                  </ol>
                 )}
               </div>
             )}

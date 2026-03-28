@@ -26,6 +26,7 @@ interface PersonNodeProps {
     isCollapsed?: boolean;
     hasChildren?: boolean;
     isOnPath?: boolean;
+    isPathStart?: boolean;
   };
 }
 
@@ -115,7 +116,7 @@ function buildTagBadges(person: Person, isHe: boolean): BadgeEntry[] {
 }
 
 export const PersonNode = memo(({ data }: PersonNodeProps) => {
-  const { person, isRoot, isSelected, isCollapsed, hasChildren, isOnPath } = data;
+  const { person, isRoot, isSelected, isCollapsed, hasChildren, isOnPath, isPathStart } = data;
   const isHe = data.language === 'he';
   const genColor = getGenerationColor(person.generation);
   const avatarColors = getAvatarColors(person.sex);
@@ -126,6 +127,8 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
 
   const borderColor = isRoot
     ? '#f59e0b'
+    : isPathStart
+    ? '#6366f1'
     : isOnPath
     ? '#f97316'
     : isSelected
@@ -134,6 +137,8 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
 
   const shadowStyle = isSelected
     ? '0 0 0 2px #facc15, 0 4px 12px rgba(0,0,0,0.12)'
+    : isPathStart
+    ? '0 0 0 3px #6366f1, 0 0 12px rgba(99,102,241,0.4)'
     : isOnPath
     ? '0 0 0 2px #f97316, 0 4px 12px rgba(249,115,22,0.2)'
     : isRoot
