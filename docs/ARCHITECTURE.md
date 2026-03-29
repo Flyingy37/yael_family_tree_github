@@ -124,16 +124,19 @@ The app uses **React hooks** for all state; there is no Redux or Zustand store.
 
 ## Routing
 
-Routing is handled by **React Router v6** with a language prefix segment:
+Routing is handled by **React Router v6**. Marketing pages sit at the root; the explorer and related views sit under `/:lang` (`he` | `en`) inside `LangLayout`.
 
-| Path | Component |
-|------|-----------|
+| Path | Component / behaviour |
+|------|------------------------|
 | `/` | `HomePage` |
 | `/about` | `AboutPage` |
-| `/explore/tree` | `TreeView` |
-| `/explore/map` | `MapView` |
-| `/explore/timeline` | `TimelineView` |
-| `/explore/statistics` | `StatisticsView` |
+| `/:lang/tree` | `FamilyExplorer` (default tab: tree). `?view=map` \| `timeline` \| `stats` switches tabs. |
+| `/:lang/insights` | `InsightsPage` (statistics / analytics layout) |
+| `/:lang/archive` | `ArchivePage` (`FamilyArchiveApp` narrative archive) |
+| `/:lang/person/:id` | `PersonPage` |
+| `/explore/*` | Legacy redirects to `/he/tree` or `/he/insights` (`App.tsx`) |
+
+`TreeView`, `MapView`, `TimelineView`, and `StatisticsView` are children of `FamilyExplorer`, not standalone routes.
 
 ---
 
