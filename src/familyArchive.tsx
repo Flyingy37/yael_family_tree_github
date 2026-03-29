@@ -4,9 +4,9 @@ import { Search } from 'lucide-react';
 import type { ArchiveTreeNode } from './archiveTreeNode';
 import { familyData } from './familyArchiveData';
 
-/** Primary genealogy narrative: Jehoshua / Joshua Kastrel’s letters (typed spellings vary by letter). */
+/** Primary genealogy narrative: Joshua Kastroll (signed at times Joshua Kastrel in letters). */
 export const STORY_SOURCE_FOOTER =
-  '(מקור עיקרי: מכתבי Joshua Kastrel ל-Robert Costrell, 27 במאי 1987 ו-25 ביוני 1988; ול-Michael Castroll, 11 בדצמבר 1983.)';
+  '(מקור עיקרי: מכתבי Joshua Kastroll ל-Robert Costrell, 27 במאי 1987 ו-25 ביוני 1988; ול-Michael Castroll, 11 בדצמבר 1983; חתימות במקור לעיתים Kastrel.)';
 
 export const STORY_SOURCE_SECONDARY = 'מקור משלים: AlpertsAndCohens31 (מסמך ב-Google Drive).';
 
@@ -55,20 +55,24 @@ export const SMART_ALIAS_SEARCH: Record<string, string[]> = {
     'michael castroll',
     'Joshua Kastrel',
     'joshua kastrel',
+    'Joshua Kastroll',
+    'joshua kastroll',
+    'Gurevich',
+    'gurevich',
     'Jehoshua',
     'jehoshua',
   ],
-  /** Heilprin + Lantsman / Lanzman / Landesman spellings */
+  /** Heilprin + Lanzman (unified English) / Lantsman legacy spellings */
   heilprin_lantsman: [
     'Heilprin',
     'heilprin',
     'היילפרין',
     'הלפרין',
     'היילפרוביץ',
-    'Lantsman',
-    'lantsman',
     'Lanzman',
     'lanzman',
+    'Lantsman',
+    'lantsman',
     'Lanzmann',
     'lanzmann',
     'Landesman',

@@ -393,7 +393,12 @@ export default function FamilyExplorer() {
           />
         </div>
 
-        <div id="explorer-main-panel" className="flex-1 flex flex-col overflow-hidden" role="tabpanel" aria-labelledby={`explorer-tab-${viewMode}`}>
+        <div
+          id="explorer-main-panel"
+          className="flex-1 flex flex-col overflow-hidden min-h-0"
+          role="tabpanel"
+          aria-labelledby={`explorer-tab-${viewMode}`}
+        >
           {/* Breadcrumb — only visible when a person is selected in tree view */}
           {viewMode === 'tree' && (
             <Breadcrumb
@@ -406,43 +411,51 @@ export default function FamilyExplorer() {
           )}
 
           {viewMode === 'tree' && (
-            <ReactFlowProvider>
-              <TreeView
-                persons={persons}
-                families={families}
-                filteredIds={displayIds}
-                rootPersonId={subtreeRootId || rootPersonId}
-                selectedPersonId={selectedPersonId}
-                onSelectPerson={handleSelectPerson}
-                onFocusSubtree={handleShowSubtree}
-                language={language}
-              />
-            </ReactFlowProvider>
+            <div className="flex-1 min-h-0 flex flex-col">
+              <ReactFlowProvider>
+                <TreeView
+                  persons={persons}
+                  families={families}
+                  filteredIds={displayIds}
+                  rootPersonId={subtreeRootId || rootPersonId}
+                  selectedPersonId={selectedPersonId}
+                  onSelectPerson={handleSelectPerson}
+                  onFocusSubtree={handleShowSubtree}
+                  language={language}
+                />
+              </ReactFlowProvider>
+            </div>
           )}
           {viewMode === 'map' && (
-            <MapView
-              persons={persons}
-              filteredIds={displayIds}
-              onSelectPerson={handleSelectPerson}
-              language={language}
-            />
+            <div className="flex-1 min-h-0 flex flex-col p-2">
+              <MapView
+                persons={persons}
+                filteredIds={displayIds}
+                onSelectPerson={handleSelectPerson}
+                language={language}
+              />
+            </div>
           )}
           {viewMode === 'timeline' && (
-            <TimelineView
-              persons={persons}
-              filteredIds={displayIds}
-              onSelectPerson={handleSelectPerson}
-              language={language}
-            />
+            <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+              <TimelineView
+                persons={persons}
+                filteredIds={displayIds}
+                onSelectPerson={handleSelectPerson}
+                language={language}
+              />
+            </div>
           )}
           {viewMode === 'stats' && (
-            <StatisticsView
-              personList={personList}
-              filteredIds={displayIds}
-              connectedToYaelIds={connectedToYaelIds}
-              onSelectPerson={handleSelectPerson}
-              language={language}
-            />
+            <div className="flex-1 min-h-0 overflow-auto">
+              <StatisticsView
+                personList={personList}
+                filteredIds={displayIds}
+                connectedToYaelIds={connectedToYaelIds}
+                onSelectPerson={handleSelectPerson}
+                language={language}
+              />
+            </div>
           )}
         </div>
 

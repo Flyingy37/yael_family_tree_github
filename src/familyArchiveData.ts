@@ -2,8 +2,8 @@
 import type { ArchiveTreeNode } from './archiveTreeNode';
 
 const BRANCH_NOTE =
-  "הדגשה: התפתחות Castro → Kastrel/Costrell → אלפרוביץ'. ממיגל קסטרו (שורש ספרדי-צרפתי) השם התגלגל לקסטרול/קסטרל בליטא; בארצות הברית מופיע לעיתים Costrell כענף מאותו שורש קסטרל. " +
-  "שושלת עתיקה ששורשיה בעיר היילבורן (Heilbronn) שבגרמניה. לאורך הדורות והנדודים למזרח אירופה, השם התגלגל לגרסאות שונות: הלפרין (Halperin), היילפרוביץ', אלפרוביץ', אלפרט (Alpert) והיילפרט. במאה ה-19 פוצל השם מ'קסטרל' ל'אלפרוביץ' ו'גורביץ' כדי להתחמק מגיוס לצבא הצאר.";
+  "הדגשה: התפתחות Castro → Kastroll (ליטא) → Alperovitz / Gurevich; בארה\"ב ענף Costrell מאותו שורש. ממיגל קסטרו (שורש ספרדי-צרפתי) השם התגלגל ל-Kastroll בליטא; צורות היסטוריות (Kastrel, Kastrell, Castrell) בצומת האיות. " +
+  "שושלת עתיקה ששורשיה בעיר היילבורן (Heilbronn) שבגרמניה. לאורך הדורות והנדודים למזרח אירופה, השם התגלגל לגרסאות שונות: הלפרין (Halperin), היילפרוביץ', אלפרוביץ', אלפרט (Alpert) והיילפרט. במאה ה-19 פוצל השם מקו Kastroll ל-Alperovitz ול-Gurevich כדי להתחמק מגיוס לצבא הצאר.";
 
 const ETYMOLOGY_LINE =
   'Halperin ו־Alperovitz (ואלפרט/היילפרט) הן התפתחויות פונטיות מאותו שורש משפחתי מגרמניה.';
@@ -29,16 +29,16 @@ const ENTITY_RESOLUTION_STORY =
   "משפחת אלפרוביץ' מתוארת כשורת כהונה במקורות שונים; אנדוגמיה בשבט יכולה להסביר חלק מריכוז ה-DNA המשותף. שינוי שמות אסטרטגי (כדי שלא יירשמו כבנים לאותה משפחה אחת ויימנע גיוס ארוך לצבא הצאר) יוצר אתגר של Entity Resolution: אותה משפחה ביולוגית תחת מזהים שונים - קסטרל, אלפרוביץ', גורביץ'. החיפוש החכם בארכיון מאחד כינויים.";
 
 const NAME_SPLIT_STORY =
-  "לפי מכתב יהושע קסטרל: לסבו היו אחים ששינו את שם המשפחה ל-Gurevitsch ול-Alperovitz מהסיבה שלא לשרת את הצאר שנים עשר שנה. זה אותו שורש ביולוגי, שמות שונים ברישום.";
+  "לפי מכתב יהושע קסטרל: לסבו היו אחים ששינו את שם המשפחה ל-Gurevich ול-Alperovitz מהסיבה שלא לשרת את הצאר שנים עשר שנה. (במקור לעיתים Gurevitsch.) זה אותו שורש ביולוגי, שמות שונים ברישום.";
 
 const JEHOSHUA_GRANDSON_STORY =
-  "יהושע קסטרל (Joshua Kastrel), הנכד, כתב ממקלטו את המכתבים ל-Michael Castroll (11 בדצמבר 1983) ול-Robert Costrell (27 במאי 1987 ו-25 ביוני 1988). בהם הוא מסכם את מסלול השם Castro/Kastrol/Kastroll/Kastrell/Castrell, את דבורה וספר הרש\"י, ואת נדידת יהודה; אלה מקור עיקרי לנרטיב כאן. מסמך AlpertsAndCohens31 בדרייב משלים.";
+  "יהושע קסטרל (Joshua Kastroll; בחתימות במכתבים לעיתים Kastrel), הנכד, כתב ממקלטו את המכתבים ל-Michael Castroll (11 בדצמבר 1983) ול-Robert Costrell (27 במאי 1987 ו-25 ביוני 1988). בהם הוא מסכם את מסלול השם Castro / Kastroll / Castrell / Costrell, את דבורה וספר הרש\"י, ואת נדידת יהודה; אלה מקור עיקרי לנרטיב כאן. מסמך AlpertsAndCohens31 בדרייב משלים.";
 
 const ORTHOGRAPHY_KASTREL_STORY =
-  "לפי מכתב יהושע קסטרל ל-Robert Costrell (יוני 1988): כשמשפחת Castro הראשונה התיישבה במחוז וילנה הרשויות המקומיות הוסיפו אות L לשם והחליפו C ב-K (כי C ברוסית נהגית ts), וכך נוצר Kastroll או Kastrol. לאחד הדודים שחי בלונדון שנים רבות היה האיות Castrell עם C. סבו של הכותב, יהושע, שינה את השם ל-Kastrell עם e במקום o; הכותב אינו בטוח למה, אך משער שמטרת הייתה להתחמק משנים עשר שנה שירות בצבא צאר רוסיה.";
+  "לפי מכתב יהושע קסטרל ל-Robert Costrell (יוני 1988): כשמשפחת Castro הראשונה התיישבה במחוז וילנה הרשויות המקומיות הוסיפו אות L לשם והחליפו C ב-K (כי C ברוסית נהגית ts), וכך נוצר Kastroll (לעיתים Kastrol באיות ישן). לאחד הדודים שחי בלונדון שנים רבות היה האיות Castrell עם C. סבו של הכותב, יהושע, שינה לעיתים לאיות עם e (Kastrell). הכותב אינו בטוח למה, אך משער שמטרת הייתה להתחמק משנים עשר שנה שירות בצבא צאר רוסיה. בארכיון: שם משפחה אחיד באנגלית לענף זה - Kastroll, למעט ציטוטים היסטוריים.";
 
 const JOSHUA_KASTREL_LETTERS_COMPENDIUM_STORY =
-  "תמצית ממכתבי Joshua Kastrel (איות השם משתנה במכתבים): (1) הוא אינו זוכר את כל שמות צאצאי מיגל שהשאירו הערות בדפי ספר עתיק, אך זוכר שבנו יהודה גר בפראג ואז עבר למחוז וילנה; בהקדשה ציין שהגיע לאחר מלחמות נפוליאון, כנראה סביב 1820. (2) לדעתו, אבי סבו היה Samuel Kastroll; לו עשרה אחים ואחיות (שמותיהם לא נזכרו). (3) אחים של הסב שינו שם ל-Gurevitsch ול-Alperovitz כדי לא לשרת את הצאר שנים עשר שנה. (4) ספר ההקדשה של מיגל נשמר אצל סבתו דבורה, אלמנת יהושע, נולדה בקורנץ - יהושע תיק במכתב מאוחר ל-Sosenka - כ-Alperovitz; ראה את הספר רק בנוכחותה, פעמיים. (5) פירוט איות Kastrol/Kastroll/Castrell/Kastrell והסבר הרשויות - ראו צומת נפרד. [הערות 5-7 במקורות משפחתיים: מכתבים ל-Michael Castroll 11.12.1983; ל-Robert Costrell 27.5.1987 ו-25.6.1988.]";
+  "תמצית ממכתבי Joshua Kastroll (במקור לעיתים Kastrel): (1) הוא אינו זוכר את כל שמות צאצאי מיגל שהשאירו הערות בדפי ספר עתיק, אך זוכר שבנו יהודה גר בפראג ואז עבר למחוז וילנה; בהקדשה ציין שהגיע לאחר מלחמות נפוליאון, כנראה סביב 1820. (2) לדעתו, אבי סבו היה Samuel Kastroll; לו עשרה אחים ואחיות (שמותיהם לא נזכרו). (3) אחים של הסב שינו שם ל-Gurevich ול-Alperovitz כדי לא לשרת את הצאר שנים עשר שנה (במקור לעיתים Gurevitsch). (4) ספר ההקדשה של מיגל נשמר אצל סבתו דבורה, אלמנת יהושע, נולדה בקורנץ - יהושע תיק במכתב מאוחר ל-Sosenka - כ-Alperovitz; ראה את הספר רק בנוכחותה, פעמיים. (5) פירוט איות היסטוריים - ראו צומת \"איות\". [הערות 5-7 במקורות משפחתיים: מכתבים ל-Michael Castroll 11.12.1983; ל-Robert Costrell 27.5.1987 ו-25.6.1988.]";
 
 const MOSHE_AHARON_STORY =
   'משה-אהרן אלפרוביץ\', אחיו של יהושע קסטרל (הזקן), היה קומוניסט. נרצח בבלגיה ב-1925 על ידי מהגר רוסי מהמחנה ה"לבן" (אנטי-בולשביקי), לפי המסמך המשפחתי.';
@@ -82,14 +82,14 @@ export const familyData: ArchiveTreeNode = {
             },
             {
               id: 'shlioma_lantsman',
-              name: 'Shlioma Lantsman / שלומיא לנצמן',
+              name: 'Shlioma Lanzman / שלומיא לנצמן',
               birth: '1804',
               birthPlace: 'Boguslavishki',
               note: 'אב קדמון בקו הלנצמן; קישור לדורות היילפרין דרך הצאצאים.',
               children: [
                 {
                   id: 'abram_lantsman',
-                  name: 'Abram Lantsman / אברהם לנצמן',
+                  name: 'Abram Lanzman / אברהם לנצמן',
                   birth: '1748',
                   birthPlace: 'Vilna',
                   note: 'נפטר ב-1832. וילנה.',
@@ -117,7 +117,7 @@ export const familyData: ArchiveTreeNode = {
               id: 'nahum_alperovitz',
               name: "נחום אלפרוביץ' / Nahum Alperovitz",
               note:
-                "סבא מצד אמא; אביהם של פולה וזאב. מאומת ב-DNA: התאמה ל-Robert M. Costrell (157 cM). שורת כהונה (כהנים) מאימו דבורה. ענף Castro–Kastrol–אלפרוביץ' מפורט בצאצאים.",
+                "סבא מצד אמא; אביהם של פולה וזאב. מאומת ב-DNA: התאמה ל-Robert M. Costrell (157 cM). שורת כהונה (כהנים) מאימו דבורה. ענף Castro–Kastroll–אלפרוביץ' מפורט בצאצאים.",
               isDNAVerified: true,
               children: [
                 {
@@ -128,11 +128,11 @@ export const familyData: ArchiveTreeNode = {
                   children: [
                     {
                       id: 'yehuda_kastrol_vilna',
-                      name: 'Yehuda Kastrol / יהודה קסטרול',
+                      name: 'Yehuda Kastroll / יהודה קסטרול',
                       birth: '1820',
                       birthPlace: 'Vilna',
                       note:
-                        'בנו של מיגל. לפי מכתבי Joshua Kastrel: פראג, אחר כך מחוז וילנה אחרי מלחמות נפוליאון (~1820). שינוי איות Castro→Kastrol/Kastroll - ראו צומת "איות" בארכיון הנרטיבי.',
+                        'בנו של מיגל. לפי מכתבי Joshua Kastroll: פראג, אחר כך מחוז וילנה אחרי מלחמות נפוליאון (~1820). שינוי איות Castro→Kastroll - ראו צומת "איות" בארכיון הנרטיבי.',
                       children: [
                         {
                           id: 'miguel_castro_spain',
@@ -217,11 +217,11 @@ export const familyData: ArchiveTreeNode = {
           id: 'doc_section_1_castro_kastrel',
           name: '1. שושלת קסטרו-קסטרל (השורש הספרדי והנדידה)',
           note:
-            'לפי מכתבי Joshua Kastrel (1983, 1987, 1988) ומסמכים משלימים: ספר עתיק והקדשות, פראג ומחוז וילנה אחרי נפוליאון, שינויי איות מול הצאר. AlpertsAndCohens31 בדרייב משלים.',
+            'לפי מכתבי Joshua Kastroll (1983, 1987, 1988; במקור לעיתים Kastrel) ומסמכים משלימים: ספר עתיק והקדשות, פראג ומחוז וילנה אחרי נפוליאון, שינויי איות מול הצאר. AlpertsAndCohens31 בדרייב משלים.',
           children: [
             {
               id: 'doc_joshua_kastrel_letters_compendium',
-              name: 'מכתבי Joshua Kastrel: תמצית (1983-1988)',
+              name: 'מכתבי Joshua Kastroll: תמצית (1983-1988)',
               note:
                 'ציטוטים וסיכום ממכתבים ל-Michael Castroll (11.12.1983) ול-Robert Costrell (27.5.1987, 25.6.1988). הערות 5-7 במקורות משפחתיים מתייחסות אליהם.',
               story: JOSHUA_KASTREL_LETTERS_COMPENDIUM_STORY,
@@ -237,7 +237,7 @@ export const familyData: ArchiveTreeNode = {
             },
             {
               id: 'doc_yehuda_kastrol_narrative',
-              name: 'Yehuda Kastrol / יהודה קסטרול',
+              name: 'Yehuda Kastroll / יהודה קסטרול',
               birth: '~1820 (הגעה לאזור וילנה)',
               note:
                 'בנו של מיגל. במכתב: גר בפראג, אחר כך עבר למחוז וילנה; בהקדשה בדפי הספר ציין שהגיע למחוז אחרי מלחמות נפוליאון, כנראה סביב 1820. פרטים נוספים על שאר ההקדשות לא נזכרו בזיכרון הכותב.',
@@ -252,7 +252,7 @@ export const familyData: ArchiveTreeNode = {
               id: 'doc_name_split_gurevitsch',
               name: "הפיצול: גורביץ' ואלפרוביץ' (12 שנה לצאר)",
               note:
-                "לפי המכתב: אחים של הסב שינו ל-Gurevitsch ול-Alperovitz כדי לא לשרת את הצאר שנים עשר שנה.",
+                "לפי המכתב: אחים של הסב שינו ל-Gurevich ול-Alperovitz כדי לא לשרת את הצאר שנים עשר שנה (במקור לעיתים Gurevitsch).",
               story: NAME_SPLIT_STORY,
             },
             {
@@ -263,18 +263,18 @@ export const familyData: ArchiveTreeNode = {
             },
             {
               id: 'doc_yehoshua_kastrel_elder',
-              name: 'יהושע קסטרל (הזקן) / Yehoshua Kastrell',
+              name: 'יהושע קסטרל (הזקן) / Yehoshua Kastroll',
               note:
-                'סבו של הכותב; שינה את השם ל-Kastrell עם e במקום o (אולי כדי להתחמק משנים עשר שנה שירות בצבא הצאר). נשוי לדבורה אלפרוביץ\'. דוד בלונדון: Castrell עם C.',
+                'סבו של הכותב; לעיתים איות Kastrell עם e (אולי כדי להתחמק משנים עשר שנה שירות בצבא הצאר). בארכיון: Yehoshua Kastroll. נשוי לדבורה אלפרוביץ\'. דוד בלונדון: Castrell עם C.',
             },
             {
               id: 'doc_yehuda_leib_kastrel',
-              name: 'יהודה-לייב קסטרל',
+              name: 'Yehuda Leib Kastroll / יהודה-לייב קסטרל',
               note: 'בנו של יהושע קסטרל (הזקן).',
             },
             {
               id: 'jehoshua_costrell',
-              name: 'יהושע קסטרל (הנכד, כותב המכתב)',
+              name: 'Joshua Kastroll / יהושע קסטרל (הנכד, כותב המכתב)',
               birth: '~1905',
               birthPlace: 'תל אביב (מכתב 1988)',
               note:
@@ -528,9 +528,9 @@ export const familyData: ArchiveTreeNode = {
             },
             {
               id: 'nachum_robert_costrell_ged',
-              name: 'Nachum Costrell, קורנץ, ו-DNA (GEDCOM)',
+              name: 'Nahum Costrell, קורנץ, ו-DNA (GEDCOM)',
               note:
-                '@I82@ Nachum Costrell, קורנץ; Batch3: שוחט בקורנץ סביב 1900, אב ל-Solomon Costrell לפי סיכום משפחת Costrell. התאמת ענף ל-Robert M. Costrell @I385@ (FTDNA FF 2026-02-02): ~157.33 cM, בלוק ארוך ~47.61 cM, טווח 2C-3C; שמות אבות-קדמון: Costrell/Castroll/de Castro/Kastrul/Kastrel.',
+                '@I82@ ב-GEDCOM: Nachum Costrell; בארכיון: Nahum Costrell. קורנץ; Batch3: שוחט בקורנץ סביב 1900, אב ל-Solomon Costrell לפי סיכום משפחת Costrell. התאמת ענף ל-Robert M. Costrell @I385@ (FTDNA FF 2026-02-02): ~157.33 cM, בלוק ארוך ~47.61 cM, טווח 2C-3C; שמות אבות-קדמון: Costrell/Castroll/de Castro/Kastrul/Kastroll.',
               isDNAVerified: true,
             },
             {
@@ -590,7 +590,7 @@ export const familyData: ArchiveTreeNode = {
         },
         {
           id: 'yosef_binyamin_hannah_alperovich',
-          name: "יוסף בנימין וחנה אלפרוביץ'",
+          name: "Yosef, Binyamin & Hannah Alperovitz / יוסף בנימין וחנה אלפרוביץ'",
           birth: '1845',
           birthPlace: 'Dolhinov',
           note:
@@ -612,7 +612,7 @@ export const familyData: ArchiveTreeNode = {
         },
         {
           id: 'nechama_alperovich_engl',
-          name: "נחמה אלפרוביץ' (אנגל)",
+          name: "Nechama Alperovitz (Engel) / נחמה אלפרוביץ' (אנגל)",
           birth: '1883',
           birthPlace: 'Dunilovichi',
           note:
