@@ -147,13 +147,13 @@ Routing is handled by **React Router v6**. Marketing pages sit at the root; the 
 1. `tsx scripts/build-graph.ts` — reads CSV source files, resolves coordinates via place-name lookup, merges curated metadata, and writes `public/family-graph.json`.
 2. `vite` — starts the dev server on `http://localhost:5173`.
 
-`npm run build` produces a static bundle in `dist/`.
+`npm run build` runs `prebuild` (`scripts/prebuild-graph.ts`): if `data/canonical.csv` is missing (e.g. on Vercel), the committed `public/family-graph.json` is kept; otherwise the graph is regenerated. Then Vite produces `dist/`.
 
 ---
 
 ## Internationalisation
 
-The UI supports **Hebrew (RTL) and English (LTR)** via the `useUiLanguage` hook. The language is stored in `localStorage` and applied as a `dir` attribute on the root element.
+The UI supports **Hebrew (RTL) and English (LTR)** via the `useUiLanguage` hook and the `/:lang` URL segment under `LangLayout`. Preference is synced with `localStorage`; `dir` follows the active language.
 
 ---
 

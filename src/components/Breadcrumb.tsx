@@ -5,7 +5,7 @@
  * Data source: JSON graph (familyAsChild), NOT ReactFlow edges.
  * This avoids spouse-edges and collapsed-branch issues.
  *
- * Visual: Home > Leyb Alperovitch > Meir > Yehuda > [Michael Alperovich]
+ * Visual example: … > Yehuda > [Michael Alperovitz] (names from graph data)
  */
 import { useMemo } from 'react';
 import { ChevronRight, ChevronLeft, Home } from 'lucide-react';
