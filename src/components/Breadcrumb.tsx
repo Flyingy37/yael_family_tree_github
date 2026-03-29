@@ -11,6 +11,7 @@ import { useMemo } from 'react';
 import { ChevronRight, ChevronLeft, Home } from 'lucide-react';
 import { getAncestorChain } from '../utils/treeHelpers';
 import type { Person, Family } from '../types';
+import { displayFullNameForUi } from '../utils/personUiText';
 
 interface Props {
   selectedPersonId: string | null;

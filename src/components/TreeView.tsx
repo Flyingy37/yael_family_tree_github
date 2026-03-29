@@ -20,6 +20,7 @@ import { computeLayout, NODE_HEIGHT, type LayoutEdge } from '../utils/layout';
 import { getDescendantIds, findPathBFS, countDescendantsMap } from '../utils/treeHelpers';
 import { useExpandCollapse } from '../hooks/useExpandCollapse';
 import type { Person, Family } from '../types';
+import { displayFullNameForUi, gedcomDatePrimary } from '../utils/personUiText';
 
 const BAND_HEIGHT = NODE_HEIGHT + 100; // node height + ranksep gap
 const BAND_X_OFFSET = -5000;           // far left so band spans full viewport
@@ -71,6 +72,7 @@ export function TreeView({
 }: Props) {
   const { fitView } = useReactFlow();
   const t = language === 'he';
+  const uiLang = t ? 'he' : 'en';
 
   // ── Lazy load (large graphs): initial neighborhood around root, expand by hop ──
   const {
@@ -378,8 +380,8 @@ export function TreeView({
     ? pathPersonA === null
       ? t ? 'בחר אדם ראשון' : 'Click first person'
       : t
-        ? `✓ ${persons.get(pathPersonA)?.fullName ?? pathPersonA} — כעת בחר אדם שני`
-        : `✓ ${persons.get(pathPersonA)?.fullName ?? pathPersonA} — now click second person`
+        ? `✓ ${(pathPersonA && persons.get(pathPersonA) ? displayFullNameForUi(persons.get(pathPersonA)!, 'he') : pathPersonA)} — כעת בחר אדם שני`
+        : `✓ ${(pathPersonA && persons.get(pathPersonA) ? displayFullNameForUi(persons.get(pathPersonA)!, 'en') : pathPersonA)} — now click second person`
     : null;
 
   const pathFoundText = pathResult !== null && !pathMode
@@ -557,8 +559,10 @@ export function TreeView({
                           fontWeight: idx === 0 || idx === pathResult.length - 1 ? 700 : 400,
                           color: idx === 0 || idx === pathResult.length - 1 ? '#111827' : '#374151',
                         }}>
-                          {p?.fullName ?? personId}
-                          {p?.birthDate ? <span style={{ color: '#9ca3af', marginLeft: 4 }}>{p.birthDate}</span> : null}
+                          {p ? displayFullNameForUi(p, uiLang) : personId}
+                          {p && gedcomDatePrimary(p.birthDate) ? (
+                            <span style={{ color: '#9ca3af', marginLeft: 4 }}>{gedcomDatePrimary(p.birthDate)}</span>
+                          ) : null}
                         </li>
                       );
                     })}
