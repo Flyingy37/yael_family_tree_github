@@ -345,7 +345,7 @@ const MANUAL_TITLE_APPEND_OVERRIDES: Record<string, string> = {
   // Aviva Weiss 50.77 cM with Daskal/Dascal variants. David Twersky (Nadvorna Hasidic dynasty connection).
   '@I33@': 'DNA (IN131982): 6 matches with Dascalu/Daskal surname cluster. Strongest: Sergiu Peltz (69.71 cM, 3rd-5th cousin, R-L1029) with Davidescu/Dascalu/Peltz surnames from Romania. Also: Aviva Weiss (50.77 cM), Reem Descalo (32.81 cM). Dascalu = Romanian Jewish family name, Moldova/Panciu area. Source: autosomal DNA 2026.',
   // Rabbi Dascaalu (father of Mina) — Dascalu branch
-  '@I32@': 'Surname Dascalu confirmed by DNA: 6 autosomal matches (IN131982) with Dascalu/Daskal/Descalo variants. Highest match Sergiu Peltz (69.71 cM). Romanian Jewish family, Moldova region. Source: DNA analysis 2026.',
+  '@I32@': 'שם אמיתי לא ידוע. "Dascaalu/Dascalu" = תואר ברומנית: dascăl = מורה/מלמד/חזן — כינוי שניתן לאנשי דת בקהילות יהודיות ברומניה. DNA (IN131982): 6 התאמות עם Dascalu/Daskal/Descalo; Sergiu Peltz (69.71 cM, R-L1029) — משפחות יהודיות רומניות, אזור מולדובה. Source: DNA 2026.',
   // Glanzman/Lanzmann connection — IMPORTANT: Y-DNA mismatch means connection is via female line
   // Steven Glanzman (76.96 cM, J-FGC9941) + David Glanzman (72.12 cM, J-FGC9941) — Vinnitsky/Vinnytsia, Ukraine
   // Oded Y-DNA = R-FGC8601 ≠ J-FGC9941 → connection is NOT direct paternal line
