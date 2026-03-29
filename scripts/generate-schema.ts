@@ -29,6 +29,7 @@ const personSchema = {
     birthPlace:          { type: ['string', 'null'] },
     generation:          { type: ['number', 'null'] },
     relationToYael:      { type: ['string', 'null'] },
+    relationToYaelEn:    { type: ['string', 'null'] },
     hops:                { type: ['number', 'null'] },
     dnaInfo:             { type: ['string', 'null'] },
     coordinates: {

@@ -57,7 +57,7 @@ export function useFamilyData(): FamilyData {
     if (!graph) return new Map<string, Person>();
     const map = new Map<string, Person>();
     for (const p of graph.persons) {
-      map.set(p.id, normalizeGraphPerson(p));
+      map.set(p.id, p);
     }
     return map;
   }, [graph]);
@@ -71,10 +71,7 @@ export function useFamilyData(): FamilyData {
     return map;
   }, [graph]);
 
-  const personList = useMemo(
-    () => (graph?.persons || []).map(normalizeGraphPerson),
-    [graph]
-  );
+  const personList = useMemo(() => graph?.persons || [], [graph]);
 
   const searchablePeople = useMemo(() => {
     const normalize = (value: string): string => {
@@ -94,6 +91,7 @@ export function useFamilyData(): FamilyData {
         person.hebrewName,
         person.title,
         person.relationToYael,
+        person.relationToYaelEn,
         person.birthName,
         person.fatherName,
         person.motherName,
@@ -125,6 +123,7 @@ export function useFamilyData(): FamilyData {
         { name: 'migrationInfo', weight: 1 },
         { name: 'tags', weight: 0.7 },
         { name: 'relationToYael', weight: 0.5 },
+        { name: 'relationToYaelEn', weight: 0.5 },
         { name: 'searchNormalized', weight: 2.2 },
       ],
       threshold: 0.3,
