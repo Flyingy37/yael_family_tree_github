@@ -96,8 +96,14 @@ const MANUAL_TAG_OVERRIDES: Record<string, string[]> = {
   '@I619@': ['Famous'], // Terry J. Dubrow
   '@I1085@': ['Famous'], // Terry J. Dubrow (second profile)
   '@I618@': ['Famous'], // Kevin Mark Dubrow (Riot)
-  // Requested: mark key ancestor as lineage/yichus.
-  '@I3465@': ['Lineage'], // Zvulen Eliezer Heilprin
+  // Hyman Isidor Kastrel (Costrell): Yiddish press, Congress for Jewish Culture lexicon.
+  '@I124@': ['Famous'],
+  // Heilprin rabbinic line (correct GEDCOM IDs; @I3465@ was a stale ID not in canonical.csv).
+  '@I3167@': ['Rabbi', 'Lineage'], // Zvulen Heilprin, Brisk
+  '@I3032@': ['Rabbi', 'Lineage'], // R' Moshe Ashkenazi ben Eliezer (Zikhron-Moshe)
+  '@I2855@': ['Rabbi', 'Lineage'], // Rabbi Heilprin, Tarnogrod
+  '@I2617@': ['Rabbi', 'Lineage'], // Rabbi Heilprin, Poznan
+  '@I1746@': ['Lineage'], // Abram Heilprin, Kurenets (Alperovich branch progenitor)
   // User-confirmed MyHeritage DNA-match profile cluster (Oded paternal-side matches).
   '@I721@': ['DNA'], // Joseph/yushua Kaszinsky
   '@I724@': ['DNA'], // Gordon (mother)
@@ -150,9 +156,8 @@ const MANUAL_BIRTHPLACE_OVERRIDES: Record<string, string> = {
   '@I30@': 'Belarus or Ukraine (Guzhinsky origin)',
   // User-confirmed: Cilia Sara was born in Haifa during the British Mandate period.
   '@I12@': 'Haifa, British Mandate for Palestine',
-  // Source: Geni profile + Congress for Jewish Culture lexicon (PDF, 2026-03-27)
-  // Born October 19, 1890, Kuraniec (Kurenets), Vileyka District, Minsk Region, Belarus
-  '@I4149@': 'Kuraniec (Kurenets), Vileyka District, Minsk Region, Belarus',
+  // Hyman Isidor Kastrel (@I124@): Geni + Congress for Jewish Culture lexicon (PDF, 2026-03-27)
+  '@I124@': 'Kuraniec (Kurenets), Vileyka District, Minsk Region, Belarus',
 };
 
 // ── Birth-place normalisation ──────────────────────────────────────────────
@@ -276,12 +281,18 @@ function normalizeBirthPlace(raw: string | null): string | null {
 }
 
 const MANUAL_TITLE_APPEND_OVERRIDES: Record<string, string> = {
-  // Source: Congress for Jewish Culture lexicon + Geni profile (PDFs, 2026-03-27)
-  // Hyman Y. Kastrel/Costrell: journalist, co-founder of Frayhayt (NY Yiddish daily), communist.
-  // Also known as Jack Robbins. Born 19 Oct 1890, Kuraniec Belarus. Died 25 Feb 1956.
-  // Second great-uncle of Yael Zaidman-Livnat (Geni confirmed).
-  '@I4149@': 'Journalist; co-founder of Frayhayt (NY Yiddish daily, 1922); edited Funken 1933–1935; Communist Party candidate NY 8th District 1934; AKA Jack Robbins. Source: Congress for Jewish Culture + Geni.',
-  '@I6@': 'DNA matches note: Abraham Guzhinsky appears in Oded match lists (paternal branch evidence).',
+  // Hyman Isidor Kastrel (@I124@): Congress for Jewish Culture + Geni (PDFs, 2026-03-27).
+  '@I124@':
+    'Journalist; co-founder of Frayhayt (NY Yiddish daily, 1922); edited Funken 1933–1935; Communist Party candidate NY 8th District 1934; AKA Jack Robbins. Died 25 Feb 1956, New York. Source: Congress for Jewish Culture + Geni.',
+  // Heilprin chain (MyHeritage mh identifiers in research notes).
+  '@I3167@':
+    'Gen 15: Zvulen Eliezer Ashkenazi-Heilprin (Brisk). mh_identifier ~1504849 in family research export.',
+  '@I3032@':
+    "Gen 14: R' Moshe Ashkenazi ben Eliezer Heilprin (Zikhron-Moshe). mh_identifier ~1504833.",
+  '@I2855@': 'Gen 13: Rabbi Eliezer Lipman Lazar Heilprin (Tarnogrod). mh_identifier ~1504732.',
+  '@I2617@': 'Gen 12: Rabbi Moshe Yehuda Selki Heilprin (Poznan). mh_identifier ~1504730.',
+  '@I1746@':
+    'Gen 10: Abram Avraham Alperovich Heilprin, Kurenets; ca. 1660-ca. 1740. mh_identifier ~1503373. Surname Alperovich from patronymic (son of Alper).',
   '@I618@': 'Music note: Kevin Mark DuBrow, associated with the heavy metal band Riot.',
   '@I30@': 'Research note: family origin linked to Abraham Guzhinsky; likely Belarus/Ukraine.',
   '@I721@': 'MyHeritage profile note: Joseph/Yushua Kaszinsky. Birth: Poland. Family context includes Gordon maternal line.',
@@ -300,9 +311,9 @@ const MANUAL_MIGRATION_INFO_OVERRIDES: Record<string, string> = {
 
 const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullName' | 'surname' | 'surnameFinal' | 'relationToYael'>>> = {
   // Requested display naming: include both Livnat and Zaidman on Yael.
-  '@I1@': { fullName: 'Yael Livnat Zaidman' },
+  '@I1@': { fullName: 'Yael Livnat Zaidman', surname: 'Livnat', surnameFinal: 'Zaidman' },
   // User-confirmed: Arie Livnat's birth name was Liviu Leib Lanzman (Romanized) before Hebraization to Livnat.
-  '@I4@': { surname: 'Lanzman', surnameFinal: 'Livnat' }, // Arie (Liviu) Livnat, born Lanzman
+  '@I4@': { surname: 'Lanzmann', surnameFinal: 'Livnat', relationToYael: 'אבא (אריה ליבנת)' }, // Arie (Liviu) Livnat, birth name Liviu Leib Lanzmann
   // User-confirmed surname history in close family branch.
   '@I22@': { surname: 'Lanzmann', surnameFinal: 'Amiron' }, // Mirriam Mali Amiron (nee Lanzmann)
   '@I47@': { surname: 'Amiron', surnameFinal: 'Kfir' }, // Hava Kfir (nee Amiron)
@@ -326,6 +337,39 @@ const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullNa
   // Michael & Pesya (Nachum's parents = Yael's great-great-grandparents)
   '@I34@': { relationToYael: 'סבא רבא (אבי סבא נחום)' },         // Michael Alperovich
   '@I35@': { relationToYael: 'סבתא רבא (אמא של סבא נחום)' },     // Pesya Kostrell/Alperovich
+  // ── Yael: parents, siblings, maternal uncle Zeev + his son Assif (user-confirmed) ──
+  '@I5@': { relationToYael: 'אמא (פולה ליבנת לבית אלפרוביץ׳)' },
+  '@I6@': { relationToYael: 'אח (עודד ליבנת-טל)' },
+  '@I7@': { relationToYael: 'אחות (עירית ליבנת)' },
+  '@I23@': { relationToYael: 'דוד (אח של אמא; בן נחום אלפרוביץ׳)' },
+  '@I50@': { relationToYael: 'בן דוד (בן זאב אלפרוביץ׳)' },
+  // GEDCOM errors: married surname stored as birth surname, or children listed under wrong surname.
+  '@I1392@': { fullName: 'Yehudit Bialik', surname: 'Bialik', surnameFinal: 'Kastrel' },
+  '@I13@': { fullName: 'Liri Livnat-Tal', surname: 'Livnat-Tal', surnameFinal: 'Livnat-Tal' },
+  '@I14@': { fullName: 'Dylan Livnat-Tal', surname: 'Livnat-Tal', surnameFinal: 'Livnat-Tal' },
+  // Standardize Lanzman/Lantzman spellings to Lanzmann (canonical form in this tree).
+  '@I9@': { fullName: 'Mordekhai Marcu Lanzmann', surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I18@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I19@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I20@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I30@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I31@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I38@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I39@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I40@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I41@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I73@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I74@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I88@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I89@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I90@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I91@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I92@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I94@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I162@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I164@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  // Hyman Isidor Kastrel: fix GEDCOM surname Kastrol and display name.
+  '@I124@': { fullName: 'Hyman Isidor Kastrel', surname: 'Kastrel', surnameFinal: 'Kastrel' },
 };
 
 const MANUAL_MERGE_TO_PRIMARY: Record<string, string> = {
@@ -603,6 +647,15 @@ function isLikelyHolocaustVictimByDateAndRegion(
   const birthYear = extractYear(birthDate);
   const deathYear = extractYear(deathDate);
 
+  // Canonical.csv often uses "BIRTH|DEATH" with no spaces around |; splitPipeField only splits " | ".
+  let embeddedDeathYear: number | null = null;
+  const rawBd = row.birth_date || '';
+  const pipeIdx = rawBd.indexOf('|');
+  if (pipeIdx >= 0) {
+    embeddedDeathYear = extractYear(rawBd.slice(pipeIdx + 1));
+  }
+  const effectiveDeathYear = deathYear ?? embeddedDeathYear;
+
   const placeHaystack = [
     birthPlace || '',
     row.birth_place || '',
@@ -613,19 +666,23 @@ function isLikelyHolocaustVictimByDateAndRegion(
     .join(' ')
     .toLowerCase();
 
-  // Focus on eastern-europe Shoah geographies represented in this dataset.
   const hasShoahRegion =
-    /kurenets|kureniets|vileyka|vilna|wilno|minsk|byelorussian|belarus|bielarus|poland|lithuania|ukraine|radoshkovichi/.test(
+    /kurenets|kureniets|vileyka|vilna|wilno|minsk|byelorussian|belarus|bielarus|poland|lithuania|ukraine|radoshkovichi|latvia|riga|romania|transnistria|auschwitz|treblinka|sobibor|belzec|majdanek|chelmno|ghetto|warsaw|lodz|krakow|lviv|lwow|lww|vilnius|kaunas|dvinsk|daugavpils|birzai|ostland|reichskommissariat/.test(
       placeHaystack
     );
 
   if (!hasShoahRegion) return false;
 
-  // Strong signal: explicit death during core Shoah years.
-  if (deathYear !== null && deathYear >= 1941 && deathYear <= 1945) return true;
+  if (effectiveDeathYear !== null && effectiveDeathYear >= 1939 && effectiveDeathYear <= 1945) return true;
 
-  // Secondary signal: only a single wartime date exists (often imported as birthDate by source formatting).
-  if (!deathDate && birthYear !== null && birthYear >= 1941 && birthYear <= 1945) return true;
+  if (
+    !deathDate &&
+    embeddedDeathYear === null &&
+    birthYear !== null &&
+    birthYear >= 1939 &&
+    birthYear <= 1945
+  )
+    return true;
 
   return false;
 }

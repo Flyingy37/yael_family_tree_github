@@ -70,4 +70,10 @@ public/family-graph.json
 *DNA_Match*
 *DNA_results*
 *dna_relatives*
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+
 .vercel

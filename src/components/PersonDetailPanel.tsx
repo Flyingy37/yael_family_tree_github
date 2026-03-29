@@ -4,7 +4,7 @@ import { DEFAULT_FILTERS, isUnknownPlaceholderPerson, type Filters } from './Fil
 import { getCanonicalSurnameLabel } from '../utils/surname';
 import { HolocaustMemorialPatchIcon } from './HolocaustMemorialPatchIcon';
 import {
-  Dna, Swords, GitMerge, Shield, Star, BookMarked, Scroll, Landmark, PlaneTakeoff,
+  Dna, Swords, GitMerge, Shield, Star, BookMarked, Scroll, Landmark, Ship,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -15,7 +15,7 @@ const TAG_ICONS: Record<string, { Icon: LucideIcon; color: string; bg: string; l
   Rabbi:     { Icon: BookMarked,   color: '#1e40af', bg: '#dbeafe', labelEn: 'Rabbi',             labelHe: 'רב' },
   Lineage:   { Icon: Scroll,       color: '#5b21b6', bg: '#ede9fe', labelEn: 'Notable lineage',   labelHe: 'ייחוס' },
   Heritage:  { Icon: Landmark,     color: '#065f46', bg: '#d1fae5', labelEn: 'Jewish heritage',   labelHe: 'מסורת' },
-  Migration: { Icon: PlaneTakeoff, color: '#0e7490', bg: '#cffafe', labelEn: 'Migration',         labelHe: 'הגירה' },
+  Migration: { Icon: Ship, color: '#0e7490', bg: '#cffafe', labelEn: 'Migration', labelHe: 'הגירה' },
   warCasualty:    { Icon: Swords,    color: '#991b1b', bg: '#fee2e2', labelEn: 'War casualty',    labelHe: 'נפל במלחמה' },
   doubleBloodTie: { Icon: GitMerge, color: '#6d28d9', bg: '#ede9fe', labelEn: 'Double blood tie', labelHe: 'קשר דם כפול' },
 };
@@ -308,11 +308,14 @@ export function PersonDetailPanel({
     currentSurname.length > 0 &&
     baseSurname.toLowerCase() !== currentSurname.toLowerCase();
   const hasAnySpouseFamily = person.familiesAsSpouse.length > 0;
-  const marriedSurname = marriedSurnameFromSpouse || (
-    currentSurname.length > 0 && (hasSurnameChange || hasAnySpouseFamily)
-      ? currentSurname
-      : null
-  );
+  const marriedSurnameRaw =
+    marriedSurnameFromSpouse ||
+    (currentSurname.length > 0 && (hasSurnameChange || hasAnySpouseFamily) ? currentSurname : null);
+  // Do not repeat "Current/Married surname" when it matches the Surname row (surnameFinal).
+  const marriedSurname =
+    marriedSurnameRaw && marriedSurnameRaw.toLowerCase() !== currentSurname.toLowerCase()
+      ? marriedSurnameRaw
+      : null;
   const originalSurname = hasSurnameChange ? baseSurname : null;
   const formerSurnameInline =
     originalSurname
