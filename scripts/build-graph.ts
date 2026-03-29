@@ -314,7 +314,7 @@ const MANUAL_TITLE_APPEND_OVERRIDES: Record<string, string> = {
   // Source: user-confirmed lineage data, mh_identifier #1503373.
   '@I1746@': 'Patriarch of the Alperovich branch. "Alperovich" = son of Alper (patronymic of Eliezer Heilprin). Born ~1660, Kurenets, Vileyka District, Grand Duchy of Lithuania; died ~1740, Kurenets. Direct ancestor: gen 10 to Yael. mh#1503373.',
   // Heilprin rabbinical dynasty titles
-  '@I3167@': 'Zvulen Eliezer Ashkenazi-Heilprin. mh#1504849. Gen 15. Father of R\' Moshe (gen 14).',
+  '@I3167@': 'Zvulen Eliezer Ashkenazi-Heilprin. mh#1504849. Gen 15. Father of R\' Moshe (gen 14). Y-DNA note: Leon Hillman (FTDNA IN139620, 4 Steps, R-L47) lists "Zevulun Eliezer Heilprin b. before 1554" as his paternal ancestor — possible independent Y-line connection from Lanzmann branch to Heilprin.',
   '@I3032@': 'R\' Moshe Ashkenazi ben Eliezer Heilprin. mh#1504833. Gen 14. Poznań area.',
   '@I2855@': 'Rabbi Eliezer Lipman Lazar Heilprin. mh#1504732. Gen 13. Tarnogród.',
   '@I2617@': 'Rabbi Moshe Yehuda Selki Heilprin. mh#1504730. Gen 12. Poznań.',
@@ -339,7 +339,7 @@ const MANUAL_TITLE_APPEND_OVERRIDES: Record<string, string> = {
   '@I724@': 'MyHeritage profile note: Gordon (mother line linked to Joseph/Yushua Kaszinsky profile).',
   '@I500@': 'MyHeritage profile note: Joseph Gordon identified as sibling in the Kaszinsky/Gordon profile cluster.',
   '@I831@': 'MyHeritage profile note: Albert Gordon (b. 1911, Poland) identified as sibling in the Kaszinsky/Gordon profile cluster.',
-  '@I830@': 'MyHeritage profile note: Abraham E/abe Gozansky/Gordon. Military service marker: Gozansky/Gordon.',
+  '@I830@': 'MyHeritage profile note: Abraham E/abe Gozansky/Gordon. Military service marker: Gozansky/Gordon. Y-DNA: Bradley Gordon (FTDNA IN139620, 3 Steps, R-FGC61409) lists "Abraham Gozansky 1800s (Y)" as earliest known paternal ancestor — directly confirming Gozansky/Lanzmann paternal line origin in Belarus.',
 };
 
 const MANUAL_MIGRATION_INFO_OVERRIDES: Record<string, string> = {
