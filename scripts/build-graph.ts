@@ -37,6 +37,9 @@ interface RawCurated {
   'ID': string;
   /** Optional English kinship line (same row as Hebrew `Relationship to Yael`) */
   'Relationship to Yael (EN)'?: string;
+  'Birth place (EN)'?: string;
+  'Migration (EN)'?: string;
+  'Title (EN)'?: string;
 }
 
 interface RawSurnameOrigin {
@@ -61,6 +64,7 @@ interface Person {
   birthDate: string | null;
   deathDate: string | null;
   birthPlace: string | null;
+  birthPlaceEn: string | null;
   generation: number | null;
   relationToYael: string | null;
   relationToYaelEn: string | null;
@@ -70,6 +74,7 @@ interface Person {
   familiesAsSpouse: string[];
   familyAsChild: string | null;
   title: string | null;
+  titleEn: string | null;
   note: string | null;
   note_plain: string | null;
   photoUrl: string | null;
@@ -82,6 +87,7 @@ interface Person {
   surnameOrigin: string | null;
   jewishLineage: string | null;
   migrationInfo: string | null;
+  migrationInfoEn: string | null;
   holocaustVictim: boolean;
   warCasualty: boolean;
   connectionPathCount: number | null;
@@ -1045,10 +1051,12 @@ function personQualityScore(person: Person): number {
       person.birthDate,
       person.deathDate,
       person.birthPlace,
+      person.birthPlaceEn,
       person.relationToYael,
       person.relationToYaelEn,
       person.dnaInfo,
       person.title,
+      person.titleEn,
       person.hebrewName,
       person.birthName,
       person.fatherName,
@@ -1056,6 +1064,8 @@ function personQualityScore(person: Person): number {
       person.spouseName,
       person.childrenNames,
       person.jewishLineage,
+      person.migrationInfo,
+      person.migrationInfoEn,
     ]) +
     person.familiesAsSpouse.length +
     (person.familyAsChild ? 1 : 0) +
@@ -1124,6 +1134,9 @@ function mergePersons(primary: Person, duplicate: Person): Person {
     childrenNames: preferLonger(primary.childrenNames, duplicate.childrenNames),
     jewishLineage: preferLonger(primary.jewishLineage, duplicate.jewishLineage),
     migrationInfo: preferLonger(primary.migrationInfo, duplicate.migrationInfo),
+    migrationInfoEn: preferLonger(primary.migrationInfoEn, duplicate.migrationInfoEn),
+    birthPlaceEn: preferLonger(primary.birthPlaceEn, duplicate.birthPlaceEn),
+    titleEn: preferLonger(primary.titleEn, duplicate.titleEn),
     holocaustVictim: primary.holocaustVictim || duplicate.holocaustVictim,
     warCasualty: primary.warCasualty || duplicate.warCasualty,
     connectionPathCount:
@@ -1568,6 +1581,7 @@ function buildGraph() {
       note_plain: row.note_plain?.trim() || null,
       photoUrl: null,
       birthPlace: resolvedBirthPlace,
+      birthPlaceEn: curated?.['Birth place (EN)']?.trim() || null,
       generation: notes.generation,
       relationToYael: curated ? curated['Relationship to Yael'] : notes.relationToYael,
       relationToYaelEn: curated?.['Relationship to Yael (EN)']?.trim() || null,
@@ -1577,6 +1591,7 @@ function buildGraph() {
       familiesAsSpouse: famsArr,
       familyAsChild: famcVal,
       title: resolvedTitle,
+      titleEn: curated?.['Title (EN)']?.trim() || null,
       hebrewName: curated ? curated['Full Name'] : null,
       birthName: curated ? curated['Birth Name'] || null : null,
       fatherName: curated ? curated['Father Name'] || null : null,
@@ -1586,6 +1601,7 @@ function buildGraph() {
       surnameOrigin,
       jewishLineage: hasKohenMarker ? 'כהן' : null,
       migrationInfo,
+      migrationInfoEn: curated?.['Migration (EN)']?.trim() || null,
       holocaustVictim,
       warCasualty,
       connectionPathCount: null,

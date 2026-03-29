@@ -85,8 +85,30 @@ export default function FamilyExplorer() {
   const [includeSpouseBranches, setIncludeSpouseBranches] = useState(true);
   const { lang: language, setLang: setLanguage } = useLang();
   const [hasVitalsSnapshot, setHasVitalsSnapshot] = useState(false);
+  const [pathCompareSeedId, setPathCompareSeedId] = useState<string | null>(null);
   const viewTabs = VIEW_TABS[language];
   const basePath = `/${langParam || language}`;
+
+  const pathFromQuery = searchParams.get('pathFrom');
+  useEffect(() => {
+    if (!pathFromQuery || persons.size === 0) return;
+    let id = pathFromQuery;
+    try {
+      id = decodeURIComponent(pathFromQuery);
+    } catch {
+      /* keep raw */
+    }
+    if (!persons.has(id)) return;
+    setPathCompareSeedId(id);
+    setSearchParams(
+      prev => {
+        const n = new URLSearchParams(prev);
+        n.delete('pathFrom');
+        return n;
+      },
+      { replace: true }
+    );
+  }, [pathFromQuery, persons, setSearchParams]);
 
   // View mode via ?view= query param (defaults to 'tree')
   const rawViewParam = searchParams.get('view');
@@ -180,6 +202,22 @@ export default function FamilyExplorer() {
     },
     [navigate]
   );
+
+  const handleRequestPathCompare = useCallback(
+    (id: string) => {
+      setPathCompareSeedId(id);
+      setSearchParams(prev => {
+        const n = new URLSearchParams(prev);
+        n.set('view', 'tree');
+        return n;
+      }, { replace: true });
+    },
+    [setSearchParams]
+  );
+
+  const handlePathCompareSeedConsumed = useCallback(() => {
+    setPathCompareSeedId(null);
+  }, []);
 
   const handleExportVitals = useCallback(() => {
     const ok = downloadLastWebVitalsSnapshot();
@@ -371,13 +409,11 @@ export default function FamilyExplorer() {
                   ? `נטענו רק ${personList.length.toLocaleString()} אנשים מ־family-graph.json. העץ המלא הוא אלפי רשומות. אם את רואה רק משפחה קטנה, כנראה שב־Vercel (או בדיפלוי) חסר הקובץ המלא מתיקיית public/. ודאי commit של public/family-graph.json אחרי npm run build (או prebuild מקומי), merge לענף שמחובר ל־Vercel, ובדקי שהפרויקט הנכון נבנה.`
                   : `Only ${personList.length.toLocaleString()} people were loaded from family-graph.json; the full tree has thousands of records. If you expected the whole family here, the deployed site is probably missing the large file under public/. Commit public/family-graph.json after a local build (with your private CSV), merge the branch Vercel builds, and confirm the correct project is deployed.`}
               </p>
-              {filters.connectedToYaelOnly && filteredIds.size < personList.length && (
-                <p className="mt-2 text-amber-800/90">
-                  {language === 'he'
-                    ? 'בינתיים אפשר לבטל את "מחובר ליעל בלבד" בפאנל הסינון כדי להציג את כל מי שבקובץ.'
-                    : 'You can also turn off "Connected to Yael only" in the filter panel to show everyone in this file.'}
-                </p>
-              )}
+              <p className="mt-2 text-amber-800/90">
+                {language === 'he'
+                  ? 'טיפ: אם בקובץ יש גם רשומות מנותקות, הפעילי "רק מחוברים ליעל" בפאנל הסינון.'
+                  : 'Tip: if this file also has unlinked records, turn on "Connected to Yael only" in Filters.'}
+              </p>
             </div>
           )}
 
@@ -422,6 +458,8 @@ export default function FamilyExplorer() {
                   onSelectPerson={handleSelectPerson}
                   onFocusSubtree={handleShowSubtree}
                   language={language}
+                  pathCompareSeedId={pathCompareSeedId}
+                  onPathCompareSeedConsumed={handlePathCompareSeedConsumed}
                 />
               </ReactFlowProvider>
             </div>
@@ -470,6 +508,7 @@ export default function FamilyExplorer() {
             onNavigate={handleNavigate}
             onClose={() => setSelectedPersonId(null)}
             onShowSubtree={handleShowSubtree}
+            onRequestPathCompare={handleRequestPathCompare}
             language={language}
           />
         )}

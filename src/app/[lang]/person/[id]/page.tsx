@@ -59,12 +59,26 @@ export default function PersonPage() {
         </Link>
         <span className="mx-1">›</span>
         <span className="text-gray-800 font-medium">{person.fullName}</span>
-        <button
-          className="ms-auto text-xs text-blue-600 hover:underline"
-          onClick={() => navigate(`/${lang}/tree?focus=${encodeURIComponent(decodedId)}`)}
-        >
-          {t('הצג בעץ', 'Show in tree')}
-        </button>
+        <div className="ms-auto flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            className="text-xs text-blue-600 hover:underline"
+            onClick={() => navigate(`/${lang}/tree?focus=${encodeURIComponent(decodedId)}`)}
+          >
+            {t('הצג בעץ', 'Show in tree')}
+          </button>
+          <button
+            type="button"
+            className="text-xs text-sky-700 hover:underline"
+            onClick={() =>
+              navigate(
+                `/${lang}/tree?view=tree&pathFrom=${encodeURIComponent(decodedId)}`
+              )
+            }
+          >
+            {t('השוואת קשר לאדם אחר', 'Compare relationship to another person')}
+          </button>
+        </div>
       </div>
 
       {/* Person detail */}
@@ -79,6 +93,9 @@ export default function PersonPage() {
           onNavigate={(newId) => navigate(`/${lang}/person/${encodeURIComponent(newId)}`)}
           onClose={() => navigate(`/${lang}/tree`)}
           onShowSubtree={(subtreeId) => navigate(`/${lang}/tree?focus=${encodeURIComponent(subtreeId)}`)}
+          onRequestPathCompare={(pid) =>
+            navigate(`/${lang}/tree?view=tree&pathFrom=${encodeURIComponent(pid)}`)
+          }
           language={lang}
         />
       </div>

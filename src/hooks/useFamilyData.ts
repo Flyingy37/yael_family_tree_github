@@ -88,6 +88,7 @@ export function useFamilyData(): FamilyData {
         person.surname,
         person.surnameFinal,
         person.birthPlace,
+        person.birthPlaceEn,
         person.hebrewName,
         person.title,
         person.relationToYael,
@@ -98,6 +99,8 @@ export function useFamilyData(): FamilyData {
         person.spouseName,
         person.childrenNames,
         person.migrationInfo,
+        person.migrationInfoEn,
+        person.titleEn,
         ...(person.tags || []),
       ]
         .filter(Boolean)
@@ -121,6 +124,9 @@ export function useFamilyData(): FamilyData {
         { name: 'hebrewName', weight: 2 },
         { name: 'title', weight: 1 },
         { name: 'migrationInfo', weight: 1 },
+        { name: 'birthPlaceEn', weight: 0.5 },
+        { name: 'migrationInfoEn', weight: 0.4 },
+        { name: 'titleEn', weight: 0.4 },
         { name: 'tags', weight: 0.7 },
         { name: 'relationToYael', weight: 0.5 },
         { name: 'relationToYaelEn', weight: 0.5 },

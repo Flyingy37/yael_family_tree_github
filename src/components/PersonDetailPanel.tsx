@@ -5,6 +5,7 @@ import { getCanonicalSurnameLabel } from '../utils/surname';
 import { coerceConnectionPathCount } from '../utils/coerceGraphPerson';
 import {
   displayFullNameForUi,
+  dualLangText,
   formatCompoundFieldDisplay,
   formatPathCountDisplay,
   gedcomDatePrimary,
@@ -39,6 +40,8 @@ interface Props {
   onNavigate: (personId: string) => void;
   onClose: () => void;
   onShowSubtree?: (personId: string) => void;
+  /** Opens tree "relationship between two people" mode with this person as the first pick */
+  onRequestPathCompare?: (personId: string) => void;
   language?: 'en' | 'he';
 }
 
@@ -278,6 +281,7 @@ export function PersonDetailPanel({
   onNavigate,
   onClose,
   onShowSubtree,
+  onRequestPathCompare,
   language = 'en',
 }: Props) {
   const t = language === 'he';
@@ -483,6 +487,15 @@ export function PersonDetailPanel({
             : `🌿 Show subtree of ${displayFullNameForUi(person, 'en').split(/\s+/)[0] ?? ''}`}
         </button>
       )}
+      {onRequestPathCompare && (
+        <button
+          type="button"
+          onClick={() => onRequestPathCompare(person.id)}
+          className="w-full mb-3 py-1.5 px-3 text-xs bg-sky-50 text-sky-800 border border-sky-200 rounded-lg hover:bg-sky-100 transition-colors"
+        >
+          {t ? '🔗 מצא קשר לאדם אחר (בחר שני אנשים בעץ)' : '🔗 Compare with another person (pick two on tree)'}
+        </button>
+      )}
 
       <div className="space-y-0">
         <InfoRow label={t ? 'קרבה ליעל' : 'Relation to Yael'} value={relationTextForUi(person, uiLang)} />
@@ -490,7 +503,10 @@ export function PersonDetailPanel({
         <InfoRow label={t ? 'קפיצות' : 'Hops'} value={person.hops?.toString()} />
         <InfoRow label={t ? 'מין' : 'Sex'} value={person.sex === 'M' ? (t ? 'זכר' : 'Male') : person.sex === 'F' ? (t ? 'נקבה' : 'Female') : (t ? 'לא ידוע' : 'Unknown')} />
         <InfoRow label={t ? 'תאריך לידה' : 'Birth date'} value={gedcomDatePrimary(person.birthDate)} />
-        <InfoRow label={t ? 'מקום לידה' : 'Birth place'} value={person.birthPlace} />
+        <InfoRow
+          label={t ? 'מקום לידה' : 'Birth place'}
+          value={dualLangText(person.birthPlace, person.birthPlaceEn, uiLang)}
+        />
         {person.deathDate && (
           <InfoRow label={t ? 'תאריך פטירה' : 'Death date'} value={gedcomDatePrimary(person.deathDate)} />
         )}
@@ -512,9 +528,14 @@ export function PersonDetailPanel({
           label={t ? 'ייחוס יהודי' : 'Jewish lineage'}
           value={jewishLineageForUi(person.jewishLineage, uiLang)}
         />
-        <InfoRow label={t ? 'הגירה' : 'Migration'} value={person.migrationInfo} />
+        <InfoRow
+          label={t ? 'הגירה' : 'Migration'}
+          value={dualLangText(person.migrationInfo, person.migrationInfoEn, uiLang)}
+        />
         <InfoRow label={t ? 'מסלולי קרבה ליעל' : 'Connection paths to Yael'} value={kinshipPathCountLabel} />
-        {person.title && <InfoRow label={t ? 'תיאור' : 'Title'} value={person.title} />}
+        {(person.title || person.titleEn) && (
+          <InfoRow label={t ? 'תיאור' : 'Title'} value={dualLangText(person.title, person.titleEn, uiLang)} />
+        )}
       </div>
 
       {activeFilterReasons.length > 0 && (

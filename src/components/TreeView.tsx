@@ -492,7 +492,11 @@ export function TreeView({
                 outline: pathMode ? 'none' : '1px solid #e5e7eb',
               }}
               onClick={togglePathMode}
-              title={t ? 'בחר שני אנשים כדי לבדוק מה הקשר ביניהם' : 'Select two people to see how they are related'}
+              title={
+                t
+                  ? 'בחר שני אנשים. Esc לביטול.'
+                  : 'Pick two people in the tree. Press Esc to cancel.'
+              }
             >
               {pathMode ? <X size={13} /> : <RouteIcon size={13} />}
               {pathMode
@@ -500,15 +504,42 @@ export function TreeView({
                 : (t ? 'בדוק קשר בין אנשים' : 'Check relationship')}
             </button>
 
+            {pathMode && selectedPersonId && persons.has(selectedPersonId) && (
+              <button
+                type="button"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '6px 10px',
+                  borderRadius: 8,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  border: '1px solid #bae6fd',
+                  background: '#f0f9ff',
+                  color: '#0369a1',
+                }}
+                onClick={() => {
+                  setPathPersonA(selectedPersonId);
+                  setPathResult(null);
+                  setPathEndpoints(null);
+                }}
+              >
+                <UserRound size={12} />
+                {t ? 'התחל מהנבחר בחלון' : 'Start from selected person'}
+              </button>
+            )}
+
             {/* Hint shown when idle */}
             {!pathMode && pathResult === null && (
               <div style={{
-                fontSize: 10, color: '#6b7280', textAlign: 'right',
+                fontSize: 10, color: '#6b7280', textAlign: t ? 'right' : 'left',
                 padding: '3px 6px', lineHeight: 1.5,
               }}>
                 {t
-                  ? 'לחץ כדי לגלות כיצד שני אנשים קשורים'
-                  : 'Click to discover how two people are related'}
+                  ? 'לחץ כדי לגלות כיצד שני אנשים קשורים (או מהכרטיס: "מצא קשר לאדם אחר")'
+                  : 'Find the shortest chain between two people (or use the profile panel link)'}
               </div>
             )}
 
@@ -542,9 +573,38 @@ export function TreeView({
                   <span style={{ flex: 1, fontWeight: 600 }}>
                     {pathFoundText}
                   </span>
-                  <div style={{ display: 'flex', gap: 4 }}>
+                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                    {pathEndpoints && pathResult && pathResult.length > 0 && (
+                      <button
+                        type="button"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 3,
+                          background: '#faf5ff',
+                          border: '1px solid #e9d5ff',
+                          borderRadius: 5,
+                          cursor: 'pointer',
+                          padding: '2px 6px',
+                          color: '#6b21a8',
+                          fontSize: 10,
+                          fontWeight: 600,
+                        }}
+                        onClick={() => {
+                          const { from, to } = pathEndpoints;
+                          const rev = findPathBFS(to, from, persons, families);
+                          setPathResult(rev);
+                          setPathEndpoints({ from: to, to: from });
+                        }}
+                        title={t ? 'הפוך כיוון' : 'Reverse direction'}
+                      >
+                        <ArrowLeftRight size={10} />
+                        {t ? 'הפוך' : 'Reverse'}
+                      </button>
+                    )}
                     {/* Search again button */}
                     <button
+                      type="button"
                       style={{
                         display: 'inline-flex', alignItems: 'center', gap: 3,
                         background: '#f0fdf4', border: '1px solid #bbf7d0',
@@ -554,6 +614,7 @@ export function TreeView({
                       onClick={() => {
                         setPathResult(null);
                         setPathPersonA(null);
+                        setPathEndpoints(null);
                         setPathMode(true);
                       }}
                       title={t ? 'חיפוש חדש' : 'New search'}
@@ -563,12 +624,18 @@ export function TreeView({
                     </button>
                     {/* Clear button */}
                     <button
+                      type="button"
                       style={{
                         display: 'inline-flex', alignItems: 'center',
                         background: 'none', border: 'none', cursor: 'pointer',
                         padding: 2, color: '#9ca3af',
                       }}
-                      onClick={() => { setPathResult(null); setPathMode(false); }}
+                      onClick={() => {
+                        setPathResult(null);
+                        setPathEndpoints(null);
+                        setPathMode(false);
+                        setPathPersonA(null);
+                      }}
                       title={t ? 'נקה הדגשה' : 'Clear highlight'}
                     >
                       <X size={12} />
@@ -593,10 +660,29 @@ export function TreeView({
                           fontWeight: idx === 0 || idx === pathResult.length - 1 ? 700 : 400,
                           color: idx === 0 || idx === pathResult.length - 1 ? '#111827' : '#374151',
                         }}>
-                          {p ? displayFullNameForUi(p, uiLang) : personId}
-                          {p && gedcomDatePrimary(p.birthDate) ? (
-                            <span style={{ color: '#9ca3af', marginLeft: 4 }}>{gedcomDatePrimary(p.birthDate)}</span>
-                          ) : null}
+                          <button
+                            type="button"
+                            onClick={e => {
+                              e.stopPropagation();
+                              onSelectPerson(personId);
+                            }}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              padding: 0,
+                              cursor: 'pointer',
+                              textAlign: 'inherit',
+                              font: 'inherit',
+                              color: 'inherit',
+                              textDecoration: 'underline',
+                              textDecorationColor: '#cbd5e1',
+                            }}
+                          >
+                            {p ? displayFullNameForUi(p, uiLang) : personId}
+                            {p && gedcomDatePrimary(p.birthDate) ? (
+                              <span style={{ color: '#9ca3af', marginLeft: 4 }}>{gedcomDatePrimary(p.birthDate)}</span>
+                            ) : null}
+                          </button>
                         </li>
                       );
                     })}

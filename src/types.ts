@@ -34,6 +34,10 @@ export interface Person {
   surnameOrigin: string | null;
   jewishLineage: string | null;
   migrationInfo: string | null;
+  /** Optional English lines for English UI (from curated columns when present) */
+  birthPlaceEn: string | null;
+  migrationInfoEn: string | null;
+  titleEn: string | null;
   holocaustVictim: boolean;
   warCasualty: boolean;
   connectionPathCount: number | null;

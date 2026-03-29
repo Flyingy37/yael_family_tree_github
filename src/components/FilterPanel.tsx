@@ -30,7 +30,7 @@ export const DEFAULT_FILTERS: Filters = {
   generationMax: 2,
   sex: 'all',
   surname: '',
-  connectedToYaelOnly: true,
+  connectedToYaelOnly: false,
   hasDna: false,
   holocaustVictimsOnly: false,
   hasHeritageTag: false,
@@ -227,6 +227,24 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
               </div>
             )}
           </div>
+          <label className="flex items-start gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={filters.connectedToYaelOnly}
+              onChange={e => onChange({ ...filters, connectedToYaelOnly: e.target.checked })}
+              className="rounded mt-0.5"
+            />
+            <span className="text-xs text-gray-600 leading-snug">
+              <span className="font-medium block">
+                {t ? 'רק מחוברים ליעל (BFS)' : 'Connected to Yael only (BFS)'}
+              </span>
+              <span className="text-[10px] text-gray-500 block mt-0.5">
+                {t
+                  ? 'שימושי כשיש בקובץ גם רשומות מנותקות. אם כל האנשים בעץ כבר באותה רשת קרבה, אפשר להשאיר כבוי.'
+                  : 'Useful when the file also has unlinked people. If everyone in the graph is already one family network, you can leave this off.'}
+              </span>
+            </span>
+          </label>
         </section>
 
         <section className="border border-gray-100 rounded-md p-2 space-y-2">

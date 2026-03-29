@@ -48,3 +48,20 @@ export function formatPathCountDisplay(raw: unknown): string | null {
   const n = coerceConnectionPathCount(raw);
   return n == null ? null : String(n);
 }
+
+/**
+ * Primary field is usually the main pipeline language (often Hebrew in curated);
+ * `en` is optional English. English UI prefers `en`, then Latin-only primary.
+ */
+export function dualLangText(
+  primary: string | null | undefined,
+  en: string | null | undefined,
+  lang: 'en' | 'he'
+): string | null {
+  const p = primary?.trim() || null;
+  const e = en?.trim() || null;
+  if (lang === 'he') return p || e || null;
+  if (e) return e;
+  if (p && !HEBREW.test(p)) return p;
+  return null;
+}

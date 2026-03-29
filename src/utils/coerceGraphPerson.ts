@@ -26,5 +26,8 @@ export function normalizeGraphPerson(person: Person): Person {
     ...person,
     connectionPathCount: coerceConnectionPathCount(person.connectionPathCount as unknown),
     relationToYaelEn: person.relationToYaelEn ?? null,
+    birthPlaceEn: person.birthPlaceEn ?? null,
+    migrationInfoEn: person.migrationInfoEn ?? null,
+    titleEn: person.titleEn ?? null,
   };
 }
