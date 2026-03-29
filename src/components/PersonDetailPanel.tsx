@@ -145,6 +145,14 @@ function normalizeSurnameToken(value: string | null | undefined): string {
     .replace(/[^a-z\u0590-\u05ff]/g, '');
 }
 
+/** Strip HTML tags and collapse whitespace to produce a plain-text string.
+ *  Output is used as React text content (not via dangerouslySetInnerHTML)
+ *  so XSS is not a concern.
+ */
+function stripHtmlToText(html: string): string {
+  return html.replace(/<[^>]+>/g, ' ').replace(/\s{2,}/g, ' ').trim();
+}
+
 function isAlperovichKastrolCluster(person: Person): boolean {
   const hay = [
     person.surnameFinal,
@@ -420,10 +428,19 @@ export function PersonDetailPanel({
   return (
     <div className="w-80 bg-white border-r border-gray-200 h-full overflow-y-auto p-4 shadow-lg" dir={t ? 'rtl' : 'ltr'}>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold">{personDisplayName}</h2>
+        <div className="flex items-center gap-3 min-w-0">
+          {person.photoUrl && (
+            <img
+              src={person.photoUrl}
+              alt={personDisplayName}
+              className="w-12 h-12 rounded-full object-cover flex-shrink-0 border border-gray-200"
+            />
+          )}
+          <h2 className="text-lg font-bold truncate">{personDisplayName}</h2>
+        </div>
         <button
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 text-xl leading-none"
+          className="text-gray-400 hover:text-gray-600 text-xl leading-none flex-shrink-0 ms-2"
         >
           ✕
         </button>
@@ -711,6 +728,15 @@ export function PersonDetailPanel({
           <h3 className="text-sm font-bold text-gray-700 mb-1">{t ? 'הורים (מהנתונים)' : 'Parents (from data)'}</h3>
           {person.fatherName && <div className="text-sm">{t ? 'אב:' : 'Father:'} {person.fatherName}</div>}
           {person.motherName && <div className="text-sm">{t ? 'אם:' : 'Mother:'} {person.motherName}</div>}
+        </div>
+      )}
+
+      {(person.note_plain || person.note) && (
+        <div className="mt-4">
+          <h3 className="text-sm font-bold text-gray-700 mb-1">{t ? 'הערות מחקר' : 'Research notes'}</h3>
+          <div className="text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded p-2 whitespace-pre-wrap max-h-48 overflow-y-auto leading-relaxed">
+            {person.note_plain || stripHtmlToText(person.note!)}
+          </div>
         </div>
       )}
     </div>

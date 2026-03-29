@@ -1,7 +1,8 @@
 /**
  * /[lang]/insights — family analytics & statistics standalone page.
  */
-import { Link } from 'react-router-dom';
+import { useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useFamilyData } from '../../../hooks/useFamilyData';
 import { StatisticsView } from '../../../components/StatisticsView';
 import { TimelineView } from '../../../components/TimelineView';
@@ -9,7 +10,15 @@ import { useLang } from '../layout';
 
 export default function InsightsPage() {
   const { lang, t } = useLang();
-  const { persons, families, personList, loading, error } = useFamilyData();
+  const navigate = useNavigate();
+  const { persons, personList, loading, error } = useFamilyData();
+
+  const handleSelectPerson = useCallback(
+    (id: string) => {
+      navigate(`/${lang}/person/${encodeURIComponent(id)}`);
+    },
+    [navigate, lang]
+  );
 
   if (loading) {
     return (
@@ -68,7 +77,7 @@ export default function InsightsPage() {
             personList={personList}
             filteredIds={allIds}
             connectedToYaelIds={connectedIds}
-            onSelectPerson={() => {}}
+            onSelectPerson={handleSelectPerson}
             language={lang}
           />
         </section>
@@ -78,12 +87,14 @@ export default function InsightsPage() {
           <h2 className="text-lg font-semibold text-gray-700 mb-3">
             {t('ציר זמן', 'Timeline')}
           </h2>
-          <TimelineView
-            persons={persons}
-            filteredIds={allIds}
-            onSelectPerson={() => {}}
-            language={lang}
-          />
+          <div className="h-[600px] border border-gray-200 rounded-xl overflow-hidden bg-white">
+            <TimelineView
+              persons={persons}
+              filteredIds={allIds}
+              onSelectPerson={handleSelectPerson}
+              language={lang}
+            />
+          </div>
         </section>
       </div>
     </div>
