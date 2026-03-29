@@ -78,10 +78,10 @@ export function Breadcrumb({
                   ? 'font-semibold text-amber-900 bg-amber-100 cursor-default'
                   : 'text-amber-700 hover:text-amber-950 hover:bg-amber-100 cursor-pointer',
               ].join(' ')}
-              title={person.fullName}
+              title={displayFullNameForUi(person, isHe ? 'he' : 'en')}
               aria-current={isLast ? 'page' : undefined}
             >
-              {person.fullName}
+              {displayFullNameForUi(person, isHe ? 'he' : 'en')}
             </button>
           </span>
         );
