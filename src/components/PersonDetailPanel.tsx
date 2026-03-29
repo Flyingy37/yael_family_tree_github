@@ -471,7 +471,7 @@ export function PersonDetailPanel({
         {person.deathDate && <InfoRow label={t ? 'תאריך פטירה' : 'Death date'} value={person.deathDate} />}
         <InfoRow label={t ? 'שם בלידה' : 'Birth name'} value={person.birthName} />
         <InfoRow label={t ? 'שם משפחה' : 'Surname'} value={person.surnameFinal} />
-        <InfoRow label={t ? 'שם משפחה קודם' : 'Former surname'} value={originalSurname} />
+        <InfoRow label={t ? 'שם משפחה קודם' : 'Maiden surname'} value={originalSurname} />
         <InfoRow
           label={t ? 'שם משפחה נוכחי/נישואין' : 'Current/Married surname'}
           value={marriedSurname}
