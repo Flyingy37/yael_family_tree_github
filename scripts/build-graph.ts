@@ -332,6 +332,24 @@ const MANUAL_TITLE_APPEND_OVERRIDES: Record<string, string> = {
   '@I80@':  'Yehuda "Yudel" Alperovich (~1850–1917). אב-קדמון 4 דורות. MyHeritage 12 SmartMatches — מידע חדש: אחים.',
   '@I198@': 'Meir Alperovich (10 Nov 1819–17 Mar 1900). אב-קדמון 5 דורות. MyHeritage 15 SmartMatches — מידע חדש: מקום פטירה, מקום מגורים.',
   '@I349@': 'Reuven Alperovitch (~1823–~1890). אב-קדמון 6 דורות. MyHeritage 5 SmartMatches — מידע חדש: תמונה, עיסוק, מקום מגורים, השכלה.',
+  // ── Lanzmann paternal branch DNA findings (IN131982) ───────────────────
+  // Mina Lanzmann née Shvartz: 629 autosomal matches with Schwartz surname cluster.
+  // Strongest: Nelson D. Schwartz 80.47 cM (3rd-5th cousin), T-CTS6507.
+  // Schwartz variants in matches: Schwartz / Shvartz / Szwarc / Schwarz — Romania/Poland/Ukraine/Hungary.
+  '@I10@': 'DNA (IN131982): 629 matches with Schwartz/Shvartz surname cluster. Strongest match: Nelson D. Schwartz (80.47 cM, 3rd-5th cousin, T-CTS6507). Confirms Shvartz maiden name and Ashkenazi Schwartz family network. Source: autosomal DNA analysis 2026.',
+  // Khava Svartz (mother of Mina) — Dascalu branch: 6 matches.
+  // Strongest: Sergiu Peltz 69.71 cM (3rd-5th cousin, R-L1029) with Davidescu/Dascalu/Peltz (Romania).
+  // Aviva Weiss 50.77 cM with Daskal/Dascal variants. David Twersky (Nadvorna Hasidic dynasty connection).
+  '@I33@': 'DNA (IN131982): 6 matches with Dascalu/Daskal surname cluster. Strongest: Sergiu Peltz (69.71 cM, 3rd-5th cousin, R-L1029) with Davidescu/Dascalu/Peltz surnames from Romania. Also: Aviva Weiss (50.77 cM), Reem Descalo (32.81 cM). Dascalu = Romanian Jewish family name, Moldova/Panciu area. Source: autosomal DNA 2026.',
+  // Rabbi Dascaalu (father of Mina) — Dascalu branch
+  '@I32@': 'Surname Dascalu confirmed by DNA: 6 autosomal matches (IN131982) with Dascalu/Daskal/Descalo variants. Highest match Sergiu Peltz (69.71 cM). Romanian Jewish family, Moldova region. Source: DNA analysis 2026.',
+  // Glanzman/Lanzmann connection — IMPORTANT: Y-DNA mismatch means connection is via female line
+  // Steven Glanzman (76.96 cM, J-FGC9941) + David Glanzman (72.12 cM, J-FGC9941) — Vinnitsky/Vinnytsia, Ukraine
+  // Oded Y-DNA = R-FGC8601 ≠ J-FGC9941 → connection is NOT direct paternal line
+  // Conclusion: a Glanzman woman married into Lanzmann (or vice versa), or "Lanzmann" is a variant spelling only
+  '@I9@': 'DNA (IN131982): Steven Glanzman (76.96 cM) + David Glanzman (72.12 cM) share surname Glanzman with ancestry in Vinnytsia, Ukraine. Both Y-DNA J-FGC9941 ≠ Oded Y-DNA R-FGC8601 → connection via female line (Glanzman woman married into Lanzmann family, or shared maternal ancestor). Also 7 matches with Vinnitsky/Vinnytsia surname, suggesting Lanzmann family origin in Vinnytsia area, Ukraine. Source: DNA analysis IN131982, 2026.',
+  // Shlomo Lanzman (father of Mordekhai) — Vinnitsky geographic cluster
+  '@I30@': 'Research note: family origin linked to Abraham Guzhinsky; likely Belarus/Ukraine. DNA support: 7 Vinnitsky/Vinnytsia matches in IN131982 autosomal analysis, plus Steven Glanzman (Vinnytsia ancestry, 76.96 cM) — points to Vinnytsia, Ukraine as probable region of origin for the Lanzmann/Glanzman family. Source: DNA analysis 2026.',
   // mtDNA HV5a — Sofia Duberstein (bat Bashet Ginzburg) is Yael's earliest known maternal mt ancestor per MyHeritage tree.
   // Source: Adam Cherson email Aug 2024. Adam's grandmother (Zoila Benyakonski) also HV5a, difference of 1.
   // Adam's earliest mt ancestor: Miriam Khrszn (bat Itteh), Dieveniskes, SW Vilna — related but connection unclear.
