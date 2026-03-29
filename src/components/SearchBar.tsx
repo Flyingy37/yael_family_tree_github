@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, type KeyboardEvent } from 'react';
 import { Search, X } from 'lucide-react';
 import type Fuse from 'fuse.js';
 import type { Person } from '../types';
+import { displayFullNameForUi, gedcomDatePrimary, relationTextForUi } from '../utils/personUiText';
 
 interface Props {
   searchIndex: Fuse<Person>;
@@ -15,6 +16,7 @@ const VISIBLE_RESULTS = 8;
 
 export function SearchBar({ searchIndex, onSelect, language = 'en', allowedPersonIds }: Props) {
   const t = language === 'he';
+  const uiLang = t ? 'he' : 'en';
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Person[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -149,15 +151,17 @@ export function SearchBar({ searchIndex, onSelect, language = 'en', allowedPerso
               onMouseEnter={() => setHighlightedIndex(index)}
               onClick={() => handleSelect(person)}
             >
-              <span className="font-semibold text-slate-800 text-sm">{person.fullName}</span>
-              {person.birthDate ? (
+              <span className="font-semibold text-slate-800 text-sm">
+                {displayFullNameForUi(person, uiLang)}
+              </span>
+              {gedcomDatePrimary(person.birthDate) ? (
                 <span className="text-xs text-slate-500">
-                  {t ? 'יליד/ה:' : 'Born:'} {person.birthDate}
+                  {t ? 'יליד/ה:' : 'Born:'} {gedcomDatePrimary(person.birthDate)}
                 </span>
               ) : null}
-              {(person.birthPlace || person.relationToYael) && (
+              {(person.birthPlace || relationTextForUi(person, uiLang)) && (
                 <span className="text-xs text-slate-400">
-                  {[person.birthPlace, person.relationToYael].filter(Boolean).join(' · ')}
+                  {[person.birthPlace, relationTextForUi(person, uiLang)].filter(Boolean).join(' · ')}
                 </span>
               )}
             </button>

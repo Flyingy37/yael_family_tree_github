@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { Person } from '../types';
 import { getCanonicalSurnameLabel } from '../utils/surname';
+import { displayFullNameForUi, gedcomDatePrimary, relationTextForUi } from '../utils/personUiText';
 
 interface Props {
   personList: Person[];
@@ -73,6 +74,7 @@ function topCounts(values: string[], limit: number): Array<{ label: string; coun
 
 export function StatisticsView({ personList, filteredIds, connectedToYaelIds, onSelectPerson, language = 'en' }: Props) {
   const t = language === 'he';
+  const uiLang = t ? 'he' : 'en';
   const [selectedMetric, setSelectedMetric] = useState<MetricKey>('holocaustVictims');
   const metricLabel = t ? METRIC_LABELS_HE[selectedMetric] : METRIC_LABELS_EN[selectedMetric];
 
@@ -350,9 +352,12 @@ export function StatisticsView({ personList, filteredIds, connectedToYaelIds, on
                 className="w-full py-2 text-left hover:bg-gray-50 px-1 transition-colors"
                 onClick={() => onSelectPerson(person.id)}
               >
-                <div className="text-sm font-medium text-gray-800">{person.fullName}</div>
+                <div className="text-sm font-medium text-gray-800">
+                  {displayFullNameForUi(person, uiLang)}
+                </div>
                 <div className="text-xs text-gray-500">
-                  {person.relationToYael || (t ? 'ללא טקסט קרבה' : 'No relation text')}{person.birthDate ? ` | ${person.birthDate}` : ''}
+                  {relationTextForUi(person, uiLang) || (t ? 'ללא טקסט קרבה' : 'No relation text')}
+                  {gedcomDatePrimary(person.birthDate) ? ` | ${gedcomDatePrimary(person.birthDate)}` : ''}
                 </div>
               </button>
             ))}

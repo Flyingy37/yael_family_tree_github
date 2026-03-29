@@ -25,5 +25,6 @@ export function normalizeGraphPerson(person: Person): Person {
   return {
     ...person,
     connectionPathCount: coerceConnectionPathCount(person.connectionPathCount as unknown),
+    relationToYaelEn: person.relationToYaelEn ?? null,
   };
 }

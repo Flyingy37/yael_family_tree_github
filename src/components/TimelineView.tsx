@@ -1,5 +1,6 @@
 import { useMemo, useState, useRef, useEffect } from 'react';
 import type { Person } from '../types';
+import { displayFullNameForUi } from '../utils/personUiText';
 
 interface Props {
   persons: Map<string, Person>;
@@ -26,6 +27,7 @@ function getDecade(year: number): number {
 
 export function TimelineView({ persons, filteredIds, onSelectPerson, language = 'en' }: Props) {
   const t = language === 'he';
+  const uiLang = t ? 'he' : 'en';
   const [selectedDecade, setSelectedDecade] = useState<number | null>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
 
@@ -199,7 +201,9 @@ export function TimelineView({ persons, filteredIds, onSelectPerson, language = 
                     evt.type === 'birth' ? 'bg-blue-400' : 'bg-red-400'
                   }`} />
                   <span className="text-xs text-gray-400 w-10 flex-shrink-0">{evt.year}</span>
-                  <span className="text-sm font-medium truncate">{evt.person.fullName}</span>
+                  <span className="text-sm font-medium truncate">
+                    {displayFullNameForUi(evt.person, uiLang)}
+                  </span>
                   <span className="text-xs text-gray-400 flex-shrink-0">
                     {evt.type === 'birth' ? (t ? 'לידה' : 'Birth') : (t ? 'פטירה' : 'Death')}
                   </span>

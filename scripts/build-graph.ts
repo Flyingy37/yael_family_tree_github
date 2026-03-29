@@ -35,6 +35,8 @@ interface RawCurated {
   'Spouse Name': string;
   'Children Names': string;
   'ID': string;
+  /** Optional English kinship line (same row as Hebrew `Relationship to Yael`) */
+  'Relationship to Yael (EN)'?: string;
 }
 
 interface RawSurnameOrigin {
@@ -61,6 +63,7 @@ interface Person {
   birthPlace: string | null;
   generation: number | null;
   relationToYael: string | null;
+  relationToYaelEn: string | null;
   hops: number | null;
   dnaInfo: string | null;
   coordinates: [number, number] | null;
@@ -328,13 +331,24 @@ const MANUAL_MIGRATION_INFO_OVERRIDES: Record<string, string> = {
   '@I4154@': 'Immigrated to Israel in 1962 after surviving the Shoah and partisan activity.',
 };
 
-const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullName' | 'surname' | 'surnameFinal' | 'relationToYael'>>> = {
+const MANUAL_PERSON_FIELD_OVERRIDES: Record<
+  string,
+  Partial<Pick<Person, 'fullName' | 'surname' | 'surnameFinal' | 'relationToYael' | 'relationToYaelEn'>>
+> = {
   // Requested display naming: include both Livnat and Zaidman on Yael.
   '@I1@': { fullName: 'Yael Livnat Zaidman', surname: 'Livnat', surnameFinal: 'Zaidman' },
   // User-confirmed: Arie Livnat's birth name was Liviu Leib Lanzman (Romanized) before Hebraization to Livnat.
-  '@I4@': { surname: 'Lanzmann', surnameFinal: 'Livnat', relationToYael: 'אבא (אריה ליבנת)' }, // Arie (Liviu) Livnat, birth name Liviu Leib Lanzmann
+  '@I4@': {
+    surname: 'Lanzmann',
+    surnameFinal: 'Livnat',
+    relationToYael: 'אבא (אריה ליבנת)',
+    relationToYaelEn: 'Father (Arie Livnat)',
+  }, // Arie (Liviu) Livnat, birth name Liviu Leib Lanzmann
   // Sister of Arie (@I4@); same parents @F3@ (Mordekhai Marcu + Mina Lanzmann).
-  '@I21@': { relationToYael: 'דודה מצד האבא (אחות של אריה ליבנת)' }, // Shulamit Shula Wirth
+  '@I21@': {
+    relationToYael: 'דודה מצד האבא (אחות של אריה ליבנת)',
+    relationToYaelEn: "Aunt on father's side (Arie Livnat's sister)",
+  }, // Shulamit Shula Wirth
   // User-confirmed surname history in close family branch.
   '@I22@': { surname: 'Lanzmann', surnameFinal: 'Amiron' }, // Mirriam Mali Amiron (nee Lanzmann)
   '@I47@': { surname: 'Amiron', surnameFinal: 'Kfir' }, // Hava Kfir (nee Amiron)
@@ -349,21 +363,60 @@ const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullNa
   '@I1240@': { surname: 'Vulis', surnameFinal: 'Vulis' },
   // ── Relations to Yael: Nachum Alperovich's siblings (Yael's great-aunts/uncles) ──
   // Nachum (@I11@) = Yael's maternal grandfather; his siblings are Yael's great-aunts/uncles
-  '@I53@': { relationToYael: 'דודה רבא (אחות של סבא נחום)' },   // Chana Knepf/Vulis
-  '@I54@': { relationToYael: 'דודה רבא (אחות של סבא נחום)' },   // Rachel Alperovitz
-  '@I55@': { relationToYael: 'דודה רבא (אחות של סבא נחום)' },   // Dvora Doba Alperovich
-  '@I56@': { relationToYael: 'דודה רבא (אחות של סבא נחום)' },   // Henia Alperovitch
-  '@I57@': { relationToYael: 'דודה רבא (אחות של סבא נחום)' },   // Rashka Alperovitch
-  '@I11@': { relationToYael: 'סבא מטעם אמא (נחום אלפרוביץ׳)' },   // Nachum Alperovich = Yael's maternal grandfather
+  '@I53@': {
+    relationToYael: 'דודה רבא (אחות של סבא נחום)',
+    relationToYaelEn: 'Great-aunt (sister of grandfather Nachum)',
+  }, // Chana Knepf/Vulis
+  '@I54@': {
+    relationToYael: 'דודה רבא (אחות של סבא נחום)',
+    relationToYaelEn: 'Great-aunt (sister of grandfather Nachum)',
+  }, // Rachel Alperovitz
+  '@I55@': {
+    relationToYael: 'דודה רבא (אחות של סבא נחום)',
+    relationToYaelEn: 'Great-aunt (sister of grandfather Nachum)',
+  }, // Dvora Doba Alperovich
+  '@I56@': {
+    relationToYael: 'דודה רבא (אחות של סבא נחום)',
+    relationToYaelEn: 'Great-aunt (sister of grandfather Nachum)',
+  }, // Henia Alperovitch
+  '@I57@': {
+    relationToYael: 'דודה רבא (אחות של סבא נחום)',
+    relationToYaelEn: 'Great-aunt (sister of grandfather Nachum)',
+  }, // Rashka Alperovitch
+  '@I11@': {
+    relationToYael: 'סבא מטעם אמא (נחום אלפרוביץ׳)',
+    relationToYaelEn: 'Maternal grandfather (Nachum Alperovich)',
+  }, // Nachum Alperovich = Yael's maternal grandfather
   // Michael & Pesya (Nachum's parents = Yael's great-great-grandparents)
-  '@I34@': { relationToYael: 'סבא רבא (אבי סבא נחום)' },         // Michael Alperovich
-  '@I35@': { relationToYael: 'סבתא רבא (אמא של סבא נחום)' },     // Pesya Kostrell/Alperovich
+  '@I34@': {
+    relationToYael: 'סבא רבא (אבי סבא נחום)',
+    relationToYaelEn: "Great-grandfather (Nachum's father)",
+  }, // Michael Alperovich
+  '@I35@': {
+    relationToYael: 'סבתא רבא (אמא של סבא נחום)',
+    relationToYaelEn: "Great-grandmother (Nachum's mother)",
+  }, // Pesya Kostrell/Alperovich
   // ── Yael: parents, siblings, maternal uncle Zeev + his son Assif (user-confirmed) ──
-  '@I5@': { relationToYael: 'אמא (פולה ליבנת לבית אלפרוביץ׳)' },
-  '@I6@': { relationToYael: 'אח (עודד ליבנת-טל)' },
-  '@I7@': { relationToYael: 'אחות (עירית ליבנת)' },
-  '@I23@': { relationToYael: 'דוד (אח של אמא; בן נחום אלפרוביץ׳)' },
-  '@I50@': { relationToYael: 'בן דוד (בן זאב אלפרוביץ׳)' },
+  '@I5@': {
+    relationToYael: 'אמא (פולה ליבנת לבית אלפרוביץ׳)',
+    relationToYaelEn: 'Mother (Polah Livnat, née Alperovich)',
+  },
+  '@I6@': {
+    relationToYael: 'אח (עודד ליבנת-טל)',
+    relationToYaelEn: 'Brother (Oded Livnat-Tal)',
+  },
+  '@I7@': {
+    relationToYael: 'אחות (עירית ליבנת)',
+    relationToYaelEn: 'Sister (Irit Livnat)',
+  },
+  '@I23@': {
+    relationToYael: 'דוד (אח של אמא; בן נחום אלפרוביץ׳)',
+    relationToYaelEn: "Uncle (mother's brother; son of Nachum Alperovich)",
+  },
+  '@I50@': {
+    relationToYael: 'בן דוד (בן זאב אלפרוביץ׳)',
+    relationToYaelEn: 'First cousin (son of Zeev Alperovich)',
+  },
   // GEDCOM errors: married surname stored as birth surname, or children listed under wrong surname.
   '@I1392@': { fullName: 'Yehudit Bialik', surname: 'Bialik', surnameFinal: 'Kastrel' },
   '@I13@': { fullName: 'Liri Livnat-Tal', surname: 'Livnat-Tal', surnameFinal: 'Livnat-Tal' },
@@ -993,6 +1046,7 @@ function personQualityScore(person: Person): number {
       person.deathDate,
       person.birthPlace,
       person.relationToYael,
+      person.relationToYaelEn,
       person.dnaInfo,
       person.title,
       person.hebrewName,
@@ -1053,6 +1107,7 @@ function mergePersons(primary: Person, duplicate: Person): Person {
     birthPlace: preferLonger(primary.birthPlace, duplicate.birthPlace),
     generation: primary.generation ?? duplicate.generation,
     relationToYael: preferLonger(primary.relationToYael, duplicate.relationToYael),
+    relationToYaelEn: preferLonger(primary.relationToYaelEn, duplicate.relationToYaelEn),
     hops: primary.hops !== null && duplicate.hops !== null
       ? Math.min(primary.hops, duplicate.hops)
       : (primary.hops ?? duplicate.hops),
@@ -1515,6 +1570,7 @@ function buildGraph() {
       birthPlace: resolvedBirthPlace,
       generation: notes.generation,
       relationToYael: curated ? curated['Relationship to Yael'] : notes.relationToYael,
+      relationToYaelEn: curated?.['Relationship to Yael (EN)']?.trim() || null,
       hops: curated ? parseInt(curated['Hops'], 10) || null : null,
       dnaInfo: resolvedDnaInfo,
       coordinates: notes.coordinates,

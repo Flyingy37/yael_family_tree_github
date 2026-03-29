@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import type { Person } from '../types';
 import { getCanonicalSurnameLabel } from '../utils/surname';
+import { coerceConnectionPathCount } from '../utils/coerceGraphPerson';
 import { Dna, Landmark, Shield, Star, BookMarked, Scroll, Ship } from 'lucide-react';
 import { HolocaustMemorialPatchIcon } from './HolocaustMemorialPatchIcon';
 
@@ -351,7 +352,7 @@ export function applyFilters(
     if (filters.hasLineageTag && !p.tags.includes('Lineage')) continue;
     if (filters.hasMigrationTag && !p.tags.includes('Migration')) continue;
     if (filters.hasDoubleBloodTieTag) {
-      const pathCount = p.connectionPathCount || 0;
+      const pathCount = coerceConnectionPathCount(p.connectionPathCount) || 0;
       if (!p.tags.includes('DoubleBloodTie')) continue;
       if (pathCount < filters.doubleBloodTieMinPaths) continue;
     }

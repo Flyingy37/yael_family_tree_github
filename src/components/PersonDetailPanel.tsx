@@ -2,6 +2,15 @@ import { useMemo, useState } from 'react';
 import type { Person, Family } from '../types';
 import { DEFAULT_FILTERS, isUnknownPlaceholderPerson, type Filters } from './FilterPanel';
 import { getCanonicalSurnameLabel } from '../utils/surname';
+import { coerceConnectionPathCount } from '../utils/coerceGraphPerson';
+import {
+  displayFullNameForUi,
+  formatCompoundFieldDisplay,
+  formatPathCountDisplay,
+  gedcomDatePrimary,
+  jewishLineageForUi,
+  relationTextForUi,
+} from '../utils/personUiText';
 import { HolocaustMemorialPatchIcon } from './HolocaustMemorialPatchIcon';
 import {
   Dna, Swords, GitMerge, Shield, Star, BookMarked, Scroll, Landmark, Ship,
@@ -275,9 +284,11 @@ export function PersonDetailPanel({
   const [showPathDetails, setShowPathDetails] = useState(false);
   const [showWhyShown, setShowWhyShown] = useState(false);
   const isUnknownPlaceholder = isUnknownPlaceholderPerson(person);
+  const uiLang = t ? 'he' : 'en';
+  const kinshipPathCountLabel = formatPathCountDisplay(person.connectionPathCount);
   const personDisplayName = isUnknownPlaceholder
     ? (t ? 'אדם לא מזוהה' : 'Unknown person')
-    : person.fullName;
+    : displayFullNameForUi(person, uiLang);
 
   // Find parents
   const parentFamily = person.familyAsChild ? families.get(person.familyAsChild) : null;
@@ -319,7 +330,9 @@ export function PersonDetailPanel({
   const originalSurname = hasSurnameChange ? baseSurname : null;
   const formerSurnameInline =
     originalSurname
-      ? (t ? `לשעבר: ${originalSurname}` : `Formerly: ${originalSurname}`)
+      ? (t
+          ? `שם נעורים: ${formatCompoundFieldDisplay(originalSurname, 'he')}`
+          : `Maiden name: ${formatCompoundFieldDisplay(originalSurname, 'en')}`)
       : null;
   const spouseRelationFlags = new Map<string, boolean>();
   const spouseClusterMarriageFlags = new Map<string, boolean>();
@@ -403,7 +416,8 @@ export function PersonDetailPanel({
     if (f.hasMigrationTag && person.tags.includes('Migration')) {
       reasons.push(t ? 'כולל תג הגירה' : 'Includes Migration tag');
     }
-    if (f.hasDoubleBloodTieTag && person.tags.includes('DoubleBloodTie') && (person.connectionPathCount || 0) >= f.doubleBloodTieMinPaths) {
+    const pathCountSafe = coerceConnectionPathCount(person.connectionPathCount) || 0;
+    if (f.hasDoubleBloodTieTag && person.tags.includes('DoubleBloodTie') && pathCountSafe >= f.doubleBloodTieMinPaths) {
       reasons.push(
         t
           ? `קשרי דם כפולים (מינימום ${f.doubleBloodTieMinPaths})`
@@ -429,9 +443,16 @@ export function PersonDetailPanel({
         </button>
       </div>
 
-      {person.hebrewName && person.hebrewName !== person.fullName && (
-        <div className="text-sm text-gray-600 mb-2">{person.hebrewName}</div>
-      )}
+      {t &&
+        person.hebrewName?.trim() &&
+        person.hebrewName.trim() !== person.fullName && (
+          <div className="text-sm text-gray-600 mb-2">{person.fullName}</div>
+        )}
+      {!t &&
+        person.hebrewName?.trim() &&
+        person.hebrewName.trim() !== person.fullName && (
+          <div className="text-sm text-gray-600 mb-2">{person.hebrewName}</div>
+        )}
       {isUnknownPlaceholder && (
         <div className="text-xs text-gray-500 mb-2">
           {t ? 'רשומת מקור לא מזוהה (Unknown/FNU).' : 'Unidentified source placeholder record (Unknown/FNU).'}
@@ -457,29 +478,42 @@ export function PersonDetailPanel({
           onClick={() => onShowSubtree(person.id)}
           className="w-full mb-3 py-1.5 px-3 text-xs bg-amber-50 text-amber-700 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors"
         >
-          {t ? `🌿 הצגת עץ משנה של ${person.givenName}` : `🌿 Show subtree of ${person.givenName}`}
+          {t
+            ? `🌿 הצגת עץ משנה של ${displayFullNameForUi(person, 'he').split(/\s+/)[0] ?? ''}`
+            : `🌿 Show subtree of ${displayFullNameForUi(person, 'en').split(/\s+/)[0] ?? ''}`}
         </button>
       )}
 
       <div className="space-y-0">
-        <InfoRow label={t ? 'קרבה ליעל' : 'Relation to Yael'} value={person.relationToYael} />
+        <InfoRow label={t ? 'קרבה ליעל' : 'Relation to Yael'} value={relationTextForUi(person, uiLang)} />
         <InfoRow label={t ? 'דור' : 'Generation'} value={person.generation?.toString()} />
         <InfoRow label={t ? 'קפיצות' : 'Hops'} value={person.hops?.toString()} />
         <InfoRow label={t ? 'מין' : 'Sex'} value={person.sex === 'M' ? (t ? 'זכר' : 'Male') : person.sex === 'F' ? (t ? 'נקבה' : 'Female') : (t ? 'לא ידוע' : 'Unknown')} />
-        <InfoRow label={t ? 'תאריך לידה' : 'Birth date'} value={person.birthDate} />
+        <InfoRow label={t ? 'תאריך לידה' : 'Birth date'} value={gedcomDatePrimary(person.birthDate)} />
         <InfoRow label={t ? 'מקום לידה' : 'Birth place'} value={person.birthPlace} />
-        {person.deathDate && <InfoRow label={t ? 'תאריך פטירה' : 'Death date'} value={person.deathDate} />}
+        {person.deathDate && (
+          <InfoRow label={t ? 'תאריך פטירה' : 'Death date'} value={gedcomDatePrimary(person.deathDate)} />
+        )}
         <InfoRow label={t ? 'שם בלידה' : 'Birth name'} value={person.birthName} />
-        <InfoRow label={t ? 'שם משפחה' : 'Surname'} value={person.surnameFinal} />
-        <InfoRow label={t ? 'שם משפחה קודם' : 'Maiden surname'} value={originalSurname} />
+        <InfoRow
+          label={t ? 'שם משפחה' : 'Surname'}
+          value={formatCompoundFieldDisplay(person.surnameFinal, uiLang)}
+        />
+        <InfoRow
+          label={t ? 'שם משפחה קודם' : 'Maiden surname'}
+          value={originalSurname ? formatCompoundFieldDisplay(originalSurname, uiLang) : null}
+        />
         <InfoRow
           label={t ? 'שם משפחה נוכחי/נישואין' : 'Current/Married surname'}
-          value={marriedSurname}
+          value={marriedSurname ? formatCompoundFieldDisplay(marriedSurname, uiLang) : null}
         />
         <InfoRow label={t ? 'מוצא משפחתי היסטורי' : 'Family heritage origin'} value={person.surnameOrigin} />
-        <InfoRow label={t ? 'ייחוס יהודי' : 'Jewish lineage'} value={person.jewishLineage} />
+        <InfoRow
+          label={t ? 'ייחוס יהודי' : 'Jewish lineage'}
+          value={jewishLineageForUi(person.jewishLineage, uiLang)}
+        />
         <InfoRow label={t ? 'הגירה' : 'Migration'} value={person.migrationInfo} />
-        <InfoRow label={t ? 'מסלולי קרבה ליעל' : 'Connection paths to Yael'} value={person.connectionPathCount?.toString()} />
+        <InfoRow label={t ? 'מסלולי קרבה ליעל' : 'Connection paths to Yael'} value={kinshipPathCountLabel} />
         {person.title && <InfoRow label={t ? 'תיאור' : 'Title'} value={person.title} />}
       </div>
 
@@ -586,7 +620,7 @@ export function PersonDetailPanel({
           <div className="font-semibold">{t ? 'קשר דם כפול' : 'Double blood tie'}</div>
           <div>
             {t ? 'לאדם זה יש כמה מסלולי קרבה קצרים ליעל' : 'This person has multiple shortest kinship paths to Yael'}
-            {person.connectionPathCount ? ` (${person.connectionPathCount})` : ''}.
+            {kinshipPathCountLabel ? ` (${kinshipPathCountLabel})` : ''}.
           </div>
           {shortestPathExamples.length > 0 && (
             <>

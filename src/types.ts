@@ -10,6 +10,8 @@ export interface Person {
   birthPlace: string | null;
   generation: number | null;
   relationToYael: string | null;
+  /** English kinship line for English UI (optional; Hebrew stays in `relationToYael`) */
+  relationToYaelEn: string | null;
   hops: number | null;
   dnaInfo: string | null;
   coordinates: [number, number] | null;
