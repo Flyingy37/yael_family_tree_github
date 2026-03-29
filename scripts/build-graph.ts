@@ -1377,6 +1377,7 @@ function buildGraph() {
   // Read curated CSV (optional — enriches hops, generation, Hebrew names, relationships)
   const curatedByName = new Map<string, RawCurated>();
   const curatedPath = join(ROOT, 'data/curated.csv');
+  const curatedFallbackPath = join(ROOT, 'data/sample/curated.sample.csv');
   if (existsSync(curatedPath)) {
     const curatedRaw = readFileSync(curatedPath, 'utf-8');
     const curatedAllRows = parse(curatedRaw, {
@@ -1400,6 +1401,30 @@ function buildGraph() {
       if (name) curatedByName.set(name, row);
     }
     console.log(`Loaded curated.csv: ${curatedByName.size} enriched records`);
+  } else if (existsSync(curatedFallbackPath)) {
+    console.log('data/curated.csv not found — using sample data from data/sample/curated.sample.csv');
+    const curatedRaw = readFileSync(curatedFallbackPath, 'utf-8');
+    const curatedAllRows = parse(curatedRaw, {
+      columns: false,
+      skip_empty_lines: true,
+      relax_column_count: true,
+    }) as string[][];
+
+    // Sample file: first row is headers, rest is data
+    const curatedHeaders = curatedAllRows[0];
+    const curatedData: RawCurated[] = curatedAllRows.slice(1).map(row => {
+      const obj: Record<string, string> = {};
+      curatedHeaders.forEach((h: string, i: number) => {
+        obj[h] = row[i] || '';
+      });
+      return obj as unknown as RawCurated;
+    });
+
+    for (const row of curatedData) {
+      const name = row['Full Name'].toLowerCase().trim();
+      if (name) curatedByName.set(name, row);
+    }
+    console.log(`Loaded curated sample: ${curatedByName.size} enriched records`);
   } else {
     console.log('curated.csv not found — skipping enrichment (hops, generation, Hebrew names will be null)');
   }

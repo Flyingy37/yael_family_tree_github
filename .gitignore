@@ -15,8 +15,8 @@ __pycache__/
 # Build output
 dist/
 
-# Generated data
-public/family-graph.json
+# Generated data (tracked when built from sample data)
+# public/family-graph.json
 
 # Environment
 .env
@@ -35,8 +35,9 @@ public/family-graph.json
 
 # --- Public-repo safety: raw genealogy + DNA + internal reports ---
 # Master person data (contains living people, minors, DNA in notes) - keep locally or in a PRIVATE repo only.
-/data/canonical.csv
-/data/curated.csv
+# canonical.csv and curated.csv are tracked when populated from sample data only.
+# /data/canonical.csv
+# /data/curated.csv
 
 # Pipeline outputs / review dumps (names, DNA hints)
 /reports/
