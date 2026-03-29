@@ -19,6 +19,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import type { Person } from '../types';
+import { displayFullNameForUi, relationTextForUi } from '../utils/personUiText';
 import { HolocaustMemorialPatchIcon } from './HolocaustMemorialPatchIcon';
 import { NODE_WIDTH, NODE_HEIGHT } from '../utils/layout';
 
@@ -175,6 +176,8 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
     lazyHiddenCount,
   } = data;
   const isHe = data.language === 'he';
+  const relationLine = relationTextForUi(person, isHe ? 'he' : 'en');
+  const cardTitle = displayFullNameForUi(person, isHe ? 'he' : 'en');
   const [hovered, setHovered] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
   const [imgFailed, setImgFailed] = useState(false);
@@ -239,7 +242,7 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
           onClick={e => e.stopPropagation()}
         >
           <div className="rounded-lg bg-slate-800 px-2.5 py-2 text-[11px] leading-relaxed text-slate-100 shadow-xl shadow-slate-900/40">
-            <div className="mb-1 font-bold text-white">{person.fullName}</div>
+            <div className="mb-1 font-bold text-white">{cardTitle}</div>
             {span && <div className="mb-0.5 text-slate-400">🕰 {span}</div>}
             {person.birthPlace && (
               <div className="mb-0.5 flex items-center gap-1 text-slate-400">
@@ -247,9 +250,7 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
                 <span className="min-w-0 flex-1">{person.birthPlace}</span>
               </div>
             )}
-            {person.relationToYael && (
-              <div className="mt-0.5 text-[10px] text-amber-300">{person.relationToYael}</div>
-            )}
+            {relationLine && <div className="mt-0.5 text-[10px] text-amber-300">{relationLine}</div>}
             {data.onFocusSubtree && (
               <button
                 type="button"
@@ -331,9 +332,9 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
             <div className="flex min-w-0 items-start justify-between gap-1">
               <h2
                 className="line-clamp-2 min-w-0 flex-1 text-left text-[11px] font-semibold leading-snug text-slate-800"
-                title={person.fullName}
+                title={cardTitle}
               >
-                {person.fullName}
+                {cardTitle}
               </h2>
               {hasDNA && (
                 <span
@@ -373,9 +374,9 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
               {birthY != null && deathY == null && <span className="text-[10px] text-slate-400">—</span>}
             </div>
 
-            {person.relationToYael && (
-              <p className="truncate text-[9px] text-slate-400" title={person.relationToYael}>
-                {person.relationToYael}
+            {relationLine && (
+              <p className="truncate text-[9px] text-slate-400" title={relationLine}>
+                {relationLine}
               </p>
             )}
 
