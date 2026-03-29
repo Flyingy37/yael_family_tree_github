@@ -15,7 +15,7 @@ const TAG_ICONS: Record<string, { Icon: LucideIcon; color: string; bg: string; l
   Rabbi:     { Icon: BookMarked,   color: '#1e40af', bg: '#dbeafe', labelEn: 'Rabbi',             labelHe: 'רב' },
   Lineage:   { Icon: Scroll,       color: '#5b21b6', bg: '#ede9fe', labelEn: 'Notable lineage',   labelHe: 'ייחוס' },
   Heritage:  { Icon: Landmark,     color: '#065f46', bg: '#d1fae5', labelEn: 'Jewish heritage',   labelHe: 'מסורת' },
-  Migration: { Icon: Ship, color: '#0e7490', bg: '#cffafe', labelEn: 'Migration',         labelHe: 'הגירה' },
+  Migration: { Icon: Ship, color: '#0e7490', bg: '#cffafe', labelEn: 'Migration', labelHe: 'הגירה' },
   warCasualty:    { Icon: Swords,    color: '#991b1b', bg: '#fee2e2', labelEn: 'War casualty',    labelHe: 'נפל במלחמה' },
   doubleBloodTie: { Icon: GitMerge, color: '#6d28d9', bg: '#ede9fe', labelEn: 'Double blood tie', labelHe: 'קשר דם כפול' },
 };
@@ -308,11 +308,10 @@ export function PersonDetailPanel({
     currentSurname.length > 0 &&
     baseSurname.toLowerCase() !== currentSurname.toLowerCase();
   const hasAnySpouseFamily = person.familiesAsSpouse.length > 0;
-  const marriedSurnameRaw = marriedSurnameFromSpouse || (
-    currentSurname.length > 0 && (hasSurnameChange || hasAnySpouseFamily)
-      ? currentSurname
-      : null
-  );
+  const marriedSurnameRaw =
+    marriedSurnameFromSpouse ||
+    (currentSurname.length > 0 && (hasSurnameChange || hasAnySpouseFamily) ? currentSurname : null);
+  // Do not repeat "Current/Married surname" when it matches the Surname row (surnameFinal).
   // Don't show "Current/Married surname" when it's identical to surnameFinal —
   // that field is already displayed as "Surname" above, so it would be a duplicate.
   const marriedSurname =

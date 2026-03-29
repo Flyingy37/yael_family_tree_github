@@ -166,9 +166,8 @@ const MANUAL_BIRTHPLACE_OVERRIDES: Record<string, string> = {
   '@I30@': 'Belarus or Ukraine (Guzhinsky origin)',
   // User-confirmed: Cilia Sara was born in Haifa during the British Mandate period.
   '@I12@': 'Haifa, British Mandate for Palestine',
-  // Source: Geni profile + Congress for Jewish Culture lexicon (PDF, 2026-03-27)
-  // Born October 19, 1890, Kuraniec (Kurenets), Vileyka District, Minsk Region, Belarus
-  '@I4149@': 'Kuraniec (Kurenets), Vileyka District, Minsk Region, Belarus',
+  // Hyman Isidor Kastrel (@I124@): Geni + Congress for Jewish Culture lexicon (PDF, 2026-03-27)
+  '@I124@': 'Kuraniec (Kurenets), Vileyka District, Minsk Region, Belarus',
 };
 
 // ── Birth-place normalisation ──────────────────────────────────────────────
@@ -381,9 +380,9 @@ const MANUAL_MIGRATION_INFO_OVERRIDES: Record<string, string> = {
 
 const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullName' | 'surname' | 'surnameFinal' | 'relationToYael'>>> = {
   // Requested display naming: include both Livnat and Zaidman on Yael.
-  '@I1@': { fullName: 'Yael Livnat Zaidman' },
+  '@I1@': { fullName: 'Yael Livnat Zaidman', surname: 'Livnat', surnameFinal: 'Zaidman' },
   // User-confirmed: Arie Livnat's birth name was Liviu Leib Lanzmann (canonical spelling) before Hebraization to Livnat.
-  '@I4@': { surname: 'Lanzmann', surnameFinal: 'Livnat' }, // Arie (Liviu) Livnat, born Lanzmann
+  '@I4@': { surname: 'Lanzmann', surnameFinal: 'Livnat', relationToYael: 'אבא (אריה ליבנת)' }, // Arie (Liviu) Livnat, born Lanzmann
   // ── Lanzmann surname standardisation ─────────────────────────────────────
   // CSV has "Lanzman" or "Lantzman" variants; canonical spelling is "Lanzmann".
   '@I9@':   { fullName: 'Mordekhai Marcu Lanzmann', surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Mordekhai 'Marcu' Lanzmann (1889–1969) — MyHeritage confirms Romanian given name 'Marcu'
@@ -445,6 +444,39 @@ const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullNa
   // Michael & Pesya (Nachum's parents = Yael's great-great-grandparents)
   '@I34@': { relationToYael: 'סבא רבא (אבי סבא נחום)' },         // Michael Alperovich
   '@I35@': { relationToYael: 'סבתא רבא (אמא של סבא נחום)' },     // Pesya Kostrell/Alperovich
+  // ── Yael: parents, siblings, maternal uncle Zeev + his son Assif (user-confirmed) ──
+  '@I5@': { relationToYael: 'אמא (פולה ליבנת לבית אלפרוביץ׳)' },
+  '@I6@': { relationToYael: 'אח (עודד ליבנת-טל)' },
+  '@I7@': { relationToYael: 'אחות (עירית ליבנת)' },
+  '@I23@': { relationToYael: 'דוד (אח של אמא; בן נחום אלפרוביץ׳)' },
+  '@I50@': { relationToYael: 'בן דוד (בן זאב אלפרוביץ׳)' },
+  // GEDCOM errors: married surname stored as birth surname, or children listed under wrong surname.
+  '@I1392@': { fullName: 'Yehudit Bialik', surname: 'Bialik', surnameFinal: 'Kastrel' },
+  '@I13@': { fullName: 'Liri Livnat-Tal', surname: 'Livnat-Tal', surnameFinal: 'Livnat-Tal' },
+  '@I14@': { fullName: 'Dylan Livnat-Tal', surname: 'Livnat-Tal', surnameFinal: 'Livnat-Tal' },
+  // Standardize Lanzman/Lantzman spellings to Lanzmann (canonical form in this tree).
+  '@I9@': { fullName: 'Mordekhai Marcu Lanzmann', surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I18@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I19@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I20@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I30@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I31@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I38@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I39@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I40@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I41@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I73@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I74@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I88@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I89@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I90@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I91@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I92@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I94@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I162@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  '@I164@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
+  // Hyman Isidor Kastrel: fix GEDCOM surname Kastrol and display name.
+  '@I124@': { fullName: 'Hyman Isidor Kastrel', surname: 'Kastrel', surnameFinal: 'Kastrel' },
 };
 
 const MANUAL_MERGE_TO_PRIMARY: Record<string, string> = {
@@ -747,7 +779,7 @@ function isLikelyHolocaustVictimByDateAndRegion(
   // Eastern-Europe and major Shoah geographies represented in this dataset.
   // Excludes Western allied countries (USA, UK, Canada, Australia) to avoid false positives.
   const hasShoahRegion =
-    /kurenets|kureniets|vileyka|vilna|wilno|minsk|byelorussian|belarus|bielarus|poland|lithuania|ukraine|radoshkovichi|latvia|riga|romania|transnistria|auschwitz|treblinka|sobibor|belzec|majdanek|chelmno|ghetto|warsaw|lodz|krakow|lviv|lwow|vilnius|kaunas|dvinsk|daugavpils|birzai/.test(
+    /kurenets|kureniets|vileyka|vilna|wilno|minsk|byelorussian|belarus|bielarus|poland|lithuania|ukraine|radoshkovichi|latvia|riga|romania|transnistria|auschwitz|treblinka|sobibor|belzec|majdanek|chelmno|ghetto|warsaw|lodz|krakow|lviv|lwow|lww|vilnius|kaunas|dvinsk|daugavpils|birzai|ostland|reichskommissariat/.test(
       placeHaystack
     );
 
@@ -757,7 +789,14 @@ function isLikelyHolocaustVictimByDateAndRegion(
   if (effectiveDeathYear !== null && effectiveDeathYear >= 1939 && effectiveDeathYear <= 1945) return true;
 
   // Secondary signal: only a single wartime date exists (often imported as birthDate by source formatting).
-  if (!deathDate && !embeddedDeathYear && birthYear !== null && birthYear >= 1939 && birthYear <= 1945) return true;
+  if (
+    !deathDate &&
+    embeddedDeathYear === null &&
+    birthYear !== null &&
+    birthYear >= 1939 &&
+    birthYear <= 1945
+  )
+    return true;
 
   return false;
 }
@@ -1428,8 +1467,21 @@ function buildGraph() {
     );
   }
 
-  // Read canonical CSV
-  const canonicalRaw = readFileSync(join(ROOT, 'data/canonical.csv'), 'utf-8');
+  // Read canonical CSV — fall back to sample data when the private file is absent (e.g. Vercel / CI)
+  const canonicalPath = join(ROOT, 'data/canonical.csv');
+  const canonicalFallbackPath = join(ROOT, 'data/sample/canonical.sample.csv');
+  let canonicalRaw: string;
+  if (existsSync(canonicalPath)) {
+    canonicalRaw = readFileSync(canonicalPath, 'utf-8');
+  } else if (existsSync(canonicalFallbackPath)) {
+    console.log('data/canonical.csv not found — using sample data from data/sample/canonical.sample.csv');
+    canonicalRaw = readFileSync(canonicalFallbackPath, 'utf-8');
+  } else {
+    console.log('Neither data/canonical.csv nor data/sample/canonical.sample.csv found — writing empty graph');
+    mkdirSync(join(ROOT, 'public'), { recursive: true });
+    writeFileSync(join(ROOT, 'public/family-graph.json'), JSON.stringify({ persons: [], families: [], rootPersonId: '' }));
+    return;
+  }
   const canonicalRows: RawCanonical[] = parse(canonicalRaw, {
     columns: true,
     skip_empty_lines: true,

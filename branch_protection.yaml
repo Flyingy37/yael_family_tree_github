@@ -1,0 +1,16 @@
+# Branch Protection Configuration for main Branch
+
+This script configures branch protection rules for the `main` branch.
+
+```yaml
+version: 2
+
+branch_protection:
+  rules:
+    - pattern: main
+      required_approving_review_count: 1
+      dismiss_stale_reviews_on_push: true
+      enforce_admins: true
+      restrict_force_pushes: true
+      allow_deletion: false
+```
