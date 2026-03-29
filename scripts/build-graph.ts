@@ -363,7 +363,7 @@ const MANUAL_TITLE_APPEND_OVERRIDES: Record<string, string> = {
   // Adam Cherson recommends upgrading to BY700 for deeper research.
   // Possible connection to R' Judah Aryeh Leib Maggid of Vilna (Q-FT340368, below M242).
   // FTDNA project: Alperovich of Kurenets — admin: Jenny Rappaport.
-  '@I23@': 'Y-DNA: Q-M242 (as of Aug 2024; FTDNA). Adam Cherson recommends upgrade to BY700 for deeper Alperovich research. Possible connection to R\' Judah Aryeh Leib Maggid of Vilna (Q-FT340368). FTDNA project "Alperovich of Kurenets" — admin: Jenny Rappaport. Source: Adam Cherson email Aug 2024.',
+  '@I23@': 'Y-DNA: Q-Y2197 (sub-clade of Q-M242; FTDNA IN131982 match list 2025 confirms Q-Y2197). Adam Cherson recommends upgrade to BY700 for deeper Alperovich research. Possible connection to R\' Judah Aryeh Leib Maggid of Vilna (Q-FT340368). FTDNA project "Alperovich of Kurenets" — admin: Jenny Rappaport. ✅ Confirmed: Fred Harber (108 cM, 3rd-5th cousin) shares Q-Y2197 — independent confirmation of Alperovich Y-haplogroup. Source: Adam Cherson email Aug 2024 + IN131982 match list 2025.',
   '@I6@': 'DNA matches note: Abraham Guzhinsky appears in Oded match lists (paternal branch evidence).',
   '@I618@': 'Music note: Kevin Mark DuBrow, associated with the heavy metal band Riot.',
   '@I30@': 'Research note: family origin linked to Abraham Guzhinsky; likely Belarus/Ukraine.',
