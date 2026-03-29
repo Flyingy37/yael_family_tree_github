@@ -146,7 +146,7 @@ function normalizeSurnameToken(value: string | null | undefined): string {
     .replace(/[^a-z\u0590-\u05ff]/g, '');
 }
 
-function isAlperovichKastrolCluster(person: Person): boolean {
+function isAlperovitzKastrollCluster(person: Person): boolean {
   const hay = [
     person.surnameFinal,
     person.surname,
@@ -157,7 +157,7 @@ function isAlperovichKastrolCluster(person: Person): boolean {
     .join(' ');
   return (
     /alperov|alperovitch|alperowitz|halperov/.test(hay) ||
-    /kastrol|kastrel|kostrel|costrel|castro|kestrel/.test(hay)
+    /kastroll|kastrol|kastrel|kostrel|costrel|castro|kestrel|gurev/.test(hay)
   );
 }
 
@@ -335,7 +335,7 @@ export function PersonDetailPanel({
     );
     spouseClusterMarriageFlags.set(
       spouseId,
-      !!spouse && isAlperovichKastrolCluster(person) && isAlperovichKastrolCluster(spouse)
+      !!spouse && isAlperovitzKastrollCluster(person) && isAlperovitzKastrollCluster(spouse)
     );
   }
   const hasClusterMarriageSignal = Array.from(spouseClusterMarriageFlags.values()).some(Boolean);
@@ -630,12 +630,12 @@ export function PersonDetailPanel({
       {hasClusterMarriageSignal && (
         <div className="mt-3 p-2 bg-fuchsia-50 border border-fuchsia-200 rounded text-xs text-fuchsia-700">
           <div className="font-semibold">
-            {t ? 'קשרי נישואין ברשת אלפרוביץ׳/קסטרול' : 'Alperovich/Kastrol marriage-network signal'}
+            {t ? 'קשרי נישואין ברשת אלפרוביץ׳/קסטרל' : 'Alperovitz/Kastroll marriage-network signal'}
           </div>
           <div>
             {t
               ? 'זוהו נישואין עם בן/בת זוג מאותה רשת משפחות (אלפרוביץ׳/קסטרול), כולל נישואין בין-ענפיים ובתוך הענף.'
-              : 'Detected spouse links within the Alperovich/Kastrol family network (cross-branch and within-branch marriages).'}
+              : 'Detected spouse links within the Alperovitz/Kastroll family network (cross-branch and within-branch marriages).'}
           </div>
         </div>
       )}
@@ -679,7 +679,7 @@ export function PersonDetailPanel({
                 )}
                 {spouseClusterMarriageFlags.get(id) && (
                   <div className="text-[11px] text-fuchsia-700 bg-fuchsia-50 border border-fuchsia-200 rounded px-2 py-0.5 inline-block">
-                    {t ? 'רשת אלפרוביץ׳/קסטרול' : 'Alperovich/Kastrol network'}
+                    {t ? 'רשת אלפרוביץ׳/קסטרל' : 'Alperovitz/Kastroll network'}
                   </div>
                 )}
               </div>

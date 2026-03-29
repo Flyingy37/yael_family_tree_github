@@ -39,6 +39,9 @@ const VIEW_TABS: Record<'en' | 'he', { id: ViewMode; label: string; icon: string
 const VALID_VIEWS: ViewMode[] = ['tree', 'map', 'timeline', 'stats'];
 const INCLUDE_SPOUSE_BRANCHES_STORAGE_KEY = 'includeSpouseBranches';
 
+/** Below this count, the loaded graph is almost certainly a dev sample, not the full export. */
+const FULL_DATASET_EXPECTED_MIN = 100;
+
 function buildBloodAdjacency(
   personIds: Iterable<string>,
   families: Map<string, { spouses: string[]; children: string[] }>
@@ -354,6 +357,30 @@ export default function FamilyExplorer() {
             </div>
           )}
 
+          {personList.length > 0 && personList.length < FULL_DATASET_EXPECTED_MIN && (
+            <div
+              className="rounded-lg border border-amber-400 bg-amber-50 p-3 text-xs text-amber-950 shadow-sm"
+              dir={language === 'he' ? 'rtl' : 'ltr'}
+              role="status"
+            >
+              <p className="font-semibold text-amber-900 mb-1">
+                {language === 'he' ? 'נתונים חלקיים בלבד' : 'Partial dataset loaded'}
+              </p>
+              <p className="text-amber-900/90 leading-relaxed">
+                {language === 'he'
+                  ? `נטענו רק ${personList.length.toLocaleString()} אנשים מ־family-graph.json. העץ המלא הוא אלפי רשומות. אם את רואה רק משפחה קטנה, כנראה שב־Vercel (או בדיפלוי) חסר הקובץ המלא מתיקיית public/. ודאי commit של public/family-graph.json אחרי npm run build (או prebuild מקומי), merge לענף שמחובר ל־Vercel, ובדקי שהפרויקט הנכון נבנה.`
+                  : `Only ${personList.length.toLocaleString()} people were loaded from family-graph.json; the full tree has thousands of records. If you expected the whole family here, the deployed site is probably missing the large file under public/. Commit public/family-graph.json after a local build (with your private CSV), merge the branch Vercel builds, and confirm the correct project is deployed.`}
+              </p>
+              {filters.connectedToYaelOnly && filteredIds.size < personList.length && (
+                <p className="mt-2 text-amber-800/90">
+                  {language === 'he'
+                    ? 'בינתיים אפשר לבטל את "מחובר ליעל בלבד" בפאנל הסינון כדי להציג את כל מי שבקובץ.'
+                    : 'You can also turn off "Connected to Yael only" in the filter panel to show everyone in this file.'}
+                </p>
+              )}
+            </div>
+          )}
+
           <FilterPanel filters={filters} onChange={setFilters} personList={personList} language={language} />
           <StatsPanel
             fullFilePersonCount={personList.length}
@@ -366,7 +393,12 @@ export default function FamilyExplorer() {
           />
         </div>
 
-        <div id="explorer-main-panel" className="flex-1 flex flex-col overflow-hidden" role="tabpanel" aria-labelledby={`explorer-tab-${viewMode}`}>
+        <div
+          id="explorer-main-panel"
+          className="flex-1 flex flex-col overflow-hidden min-h-0"
+          role="tabpanel"
+          aria-labelledby={`explorer-tab-${viewMode}`}
+        >
           {/* Breadcrumb — only visible when a person is selected in tree view */}
           {viewMode === 'tree' && (
             <Breadcrumb
@@ -379,43 +411,51 @@ export default function FamilyExplorer() {
           )}
 
           {viewMode === 'tree' && (
-            <ReactFlowProvider>
-              <TreeView
-                persons={persons}
-                families={families}
-                filteredIds={displayIds}
-                rootPersonId={subtreeRootId || rootPersonId}
-                selectedPersonId={selectedPersonId}
-                onSelectPerson={handleSelectPerson}
-                onFocusSubtree={handleShowSubtree}
-                language={language}
-              />
-            </ReactFlowProvider>
+            <div className="flex-1 min-h-0 flex flex-col">
+              <ReactFlowProvider>
+                <TreeView
+                  persons={persons}
+                  families={families}
+                  filteredIds={displayIds}
+                  rootPersonId={subtreeRootId || rootPersonId}
+                  selectedPersonId={selectedPersonId}
+                  onSelectPerson={handleSelectPerson}
+                  onFocusSubtree={handleShowSubtree}
+                  language={language}
+                />
+              </ReactFlowProvider>
+            </div>
           )}
           {viewMode === 'map' && (
-            <MapView
-              persons={persons}
-              filteredIds={displayIds}
-              onSelectPerson={handleSelectPerson}
-              language={language}
-            />
+            <div className="flex-1 min-h-0 flex flex-col p-2">
+              <MapView
+                persons={persons}
+                filteredIds={displayIds}
+                onSelectPerson={handleSelectPerson}
+                language={language}
+              />
+            </div>
           )}
           {viewMode === 'timeline' && (
-            <TimelineView
-              persons={persons}
-              filteredIds={displayIds}
-              onSelectPerson={handleSelectPerson}
-              language={language}
-            />
+            <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+              <TimelineView
+                persons={persons}
+                filteredIds={displayIds}
+                onSelectPerson={handleSelectPerson}
+                language={language}
+              />
+            </div>
           )}
           {viewMode === 'stats' && (
-            <StatisticsView
-              personList={personList}
-              filteredIds={displayIds}
-              connectedToYaelIds={connectedToYaelIds}
-              onSelectPerson={handleSelectPerson}
-              language={language}
-            />
+            <div className="flex-1 min-h-0 overflow-auto">
+              <StatisticsView
+                personList={personList}
+                filteredIds={displayIds}
+                connectedToYaelIds={connectedToYaelIds}
+                onSelectPerson={handleSelectPerson}
+                language={language}
+              />
+            </div>
           )}
         </div>
 

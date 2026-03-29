@@ -117,6 +117,14 @@ const MANUAL_TAG_OVERRIDES: Record<string, string[]> = {
   '@I830@': ['DNA'], // Abraham E/abe Gozansky/Gordon
   // Vulis branch rabbinical ancestor.
   '@I1240@': ['Rabbi'], // R' Avrum Gershkov Vulis (1789) — confirmed by merged profiles @I1128@/@I1653@/@I4069@
+  // Castro/Kastrel Sephardic root — Michael Castro (Spain, ~1660): story confirmed + Heritage tag
+  '@I1296@': ['Heritage', 'Lineage'], // Michael Castro, Spain — Converso root, fled to S. France
+  // Wolf Alperovitch: killed as partisan (text lives in birth_place pipe field; see extractTags haystack)
+  '@I1081@': ['Partisan'],
+  // Extended / unconnected rows (Krasne ghetto, Dolginovo) — apply when merged into data/canonical.csv
+  '@I4154@': ['Partisan', 'Migration'], // Joseph Sosinski: Shoah survivor, partisan, aliya 1962
+  '@I4151@': ['Heritage'], // Kopel Alperovits, Krasne ghetto (victim — see MANUAL_HOLOCAUST_VICTIM_OVERRIDES)
+  '@I4150@': ['Heritage'], // Rashka, Krasne ghetto
 };
 
 // IDs where the note mentions DNA data but the person is NOT a verified DNA match to Yael.
@@ -152,6 +160,10 @@ const MANUAL_HOLOCAUST_VICTIM_OVERRIDES: Record<string, boolean> = {
   '@I57@': true, // Rashka Alperovitch (sister)
   '@I58@': false, // Ruven Duberstein - killed in battle (Russian army), not Shoah victim
   '@I59@': false, // Michael Duberstein - died as an infant, before Shoah
+  // Krasne ghetto (enrich_family_tree / extended rows when merged into canonical)
+  '@I4151@': true, // Kopel Alperovits
+  '@I4150@': true, // Rashka (Krasne)
+  '@I4154@': false, // Joseph Sosinski: survivor, partisan, aliya
 };
 
 const MANUAL_WAR_CASUALTY_OVERRIDES: Record<string, boolean> = {
@@ -379,6 +391,8 @@ const MANUAL_MIGRATION_INFO_OVERRIDES: Record<string, string> = {
   // family migrated from Belarus (Pleshchenitsy area), she was born in Haifa,
   // then the family returned to Belarus around 1930.
   '@I12@': 'Born in Haifa (British Mandate). Family origin in Belarus (Pleshchenitsy area), with return to Belarus around 1930.',
+  // Joseph Sosinski: aliya after Shoah (enrich note)
+  '@I4154@': 'Immigrated to Israel in 1962 after surviving the Shoah and partisan activity.',
 };
 
 /**
@@ -998,6 +1012,8 @@ function extractTags(
     row.titl,
     row.note,
     row.note_plain,
+    row.birth_place,
+    row.birth_date,
   ]
     .filter(Boolean)
     .join(' ')
@@ -1018,7 +1034,9 @@ function extractTags(
     haystack.includes('resistance') ||
     haystack.includes('פרטיזן') ||
     haystack.includes('פרטיזנים') ||
-    haystack.includes('מחתרת')
+    haystack.includes('מחתרת') ||
+    haystack.includes('הצטרף לפרטיזנים') ||
+    haystack.includes('ניצול שואה ופרטיזן')
   ) {
     tags.add('Partisan');
   }
