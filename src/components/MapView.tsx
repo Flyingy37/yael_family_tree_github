@@ -6,6 +6,7 @@ import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 import type { Person } from '../types';
+import { formatPersonLifespanLine } from '../utils/formatters';
 
 L.Icon.Default.mergeOptions({
   iconRetinaUrl,
@@ -79,12 +80,7 @@ function plainTextSnippet(raw: string | null | undefined, maxLen: number): strin
 }
 
 function lifespanLabel(p: Person): string | null {
-  const b = p.birthDate?.trim();
-  const d = p.deathDate?.trim();
-  if (b && d) return `${b} – ${d}`;
-  if (b) return b;
-  if (d) return d;
-  return null;
+  return formatPersonLifespanLine(p);
 }
 
 interface MapPersonBlockProps {
@@ -115,7 +111,7 @@ function MapPersonBlock({ person: p, onSelect, t }: MapPersonBlockProps) {
         <span className="block text-[11px] text-slate-600 mt-0.5 leading-snug">{hebrewAlt}</span>
       )}
       {life && (
-        <span className="block text-[11px] text-slate-500 mt-0.5">
+        <span className="block text-[11px] text-slate-500 mt-0.5" dir="ltr">
           {t ? 'תאריכים: ' : ''}
           {life}
         </span>

@@ -123,6 +123,8 @@ const MANUAL_TAG_OVERRIDES: Record<string, string[]> = {
   '@I_ANDERS_1@': ['Famous', 'Heritage'], // Edward Anders: Holocaust survivor, academic (NASA meteoritics)
   '@I_PARTISAN_1@': ['Partisan', 'Heritage'], // Leizer Alperovitz child survivor / partisan
   '@I_PARTISAN_2@': ['Partisan', 'Heritage'], // Eliyahu Alperovitz partisan, fell in combat
+  // Meir of Rothenburg: Maharam is honorific (מהר״ם), not a modern surname; tags set explicitly.
+  '@I3426@': ['Rabbi', 'Famous', 'Lineage'],
 };
 
 // IDs where the note mentions DNA data but the person is NOT a verified DNA match to Yael.
@@ -132,10 +134,14 @@ const MANUAL_DNA_TAG_EXCLUDE = new Set<string>([
 
 // People whose doubleBloodTie cannot be detected by the path-count algorithm alone,
 // because the cousin marriage converges the two branches BEFORE they diverge again to Yael.
-// Confirmed: Pesya Kostrell (@I35@) and Michael Alperovich (@I34@) are second cousins once
-// removed (both descend from Leyb Alperovitch via Reuven→Yitzhak→Rose Lillian→Pesya
-// and Meir→Yehuda→Michael) AND married each other.  Their children therefore carry
-// double Alperovich blood from both parents.
+//
+// Documented kinship (family research / tree logic, distinct from e.g. @I3426@ where multiple
+// shortest paths are medieval-graph artefacts only): Pesya Kostrell (@I35@) and Michael
+// Alperovich (@I34@) are second cousins once removed, both descending from Leyb Alperovitch
+// (Lieb): Pesya via Reuven → Yitzhak → Rose Lillian Alperovich (married into Kastrel) → Pesya;
+// Michael via Meir → Yehuda → Michael. They married each other (@F8@). Their children
+// (Nachum @I11@, etc.) therefore inherit Alperovich ancestry from both parents — hence
+// MANUAL_DOUBLE_BLOOD_TIE and the DoubleBloodTie tag for that branch.
 const MANUAL_DOUBLE_BLOOD_TIE = new Set<string>([
   '@I34@', // Michael Alperovich — married his cousin Pesya Kostrell
   '@I35@', // Pesya Kostrell — married her cousin Michael; mother Rose Lillian was Alperovich
@@ -148,6 +154,9 @@ const MANUAL_DOUBLE_BLOOD_TIE = new Set<string>([
   '@I56@', // Henia Alperovitch — child of Michael+Pesya
   '@I57@', // Rashka Alperovitch — child of Michael+Pesya
 ]);
+
+// Multiple shortest paths in a deep medieval graph do not always mean a documented cousin-marriage double tie.
+const MANUAL_DOUBLE_BLOOD_EXCLUDE = new Set<string>(['@I3426@']);
 
 const MANUAL_HOLOCAUST_VICTIM_OVERRIDES: Record<string, boolean> = {
   // User-confirmed branch examples around Nochim/Nachum Alperovich family.
@@ -317,6 +326,8 @@ const MANUAL_TITLE_APPEND_OVERRIDES: Record<string, string> = {
   '@I500@': 'MyHeritage profile note: Joseph Gordon identified as sibling in the Kaszinsky/Gordon profile cluster.',
   '@I831@': 'MyHeritage profile note: Albert Gordon (b. 1911, Poland) identified as sibling in the Kaszinsky/Gordon profile cluster.',
   '@I830@': 'MyHeritage profile note: Abraham E/abe Gozansky/Gordon. Military service marker: Gozansky/Gordon.',
+  '@I3426@':
+    'Maharam (מהר״ם) is a rabbinic honorific acronym (not a family surname). This profile is Meir ben Baruch of Rothenburg (d. 1293), major Ashkenazi posek of the Tosafist period. Many different rabbis share the label Maharam; disambiguation is by city or patronymic.',
 };
 
 const MANUAL_MIGRATION_INFO_OVERRIDES: Record<string, string> = {
@@ -328,7 +339,10 @@ const MANUAL_MIGRATION_INFO_OVERRIDES: Record<string, string> = {
   '@I4154@': 'Immigrated to Israel in 1962 after surviving the Shoah and partisan activity.',
 };
 
-const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullName' | 'surname' | 'surnameFinal' | 'relationToYael'>>> = {
+const MANUAL_PERSON_FIELD_OVERRIDES: Record<
+  string,
+  Partial<Pick<Person, 'fullName' | 'surname' | 'surnameFinal' | 'relationToYael' | 'birthName'>>
+> = {
   // Requested display naming: include both Livnat and Zaidman on Yael.
   '@I1@': { fullName: 'Yael Livnat Zaidman', surname: 'Livnat', surnameFinal: 'Zaidman' },
   // User-confirmed: Arie Livnat's birth name was Liviu Leib Lanzman (Romanized) before Hebraization to Livnat.
@@ -353,9 +367,15 @@ const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullNa
   '@I56@': { relationToYael: 'דודה רבא (אחות של סבא נחום)' },   // Henia Alperovitch
   '@I57@': { relationToYael: 'דודה רבא (אחות של סבא נחום)' },   // Rashka Alperovitch
   '@I11@': { relationToYael: 'סבא מטעם אמא (נחום אלפרוביץ׳)' },   // Nachum Alperovich = Yael's maternal grandfather
-  // Michael & Pesya (Nachum's parents = Yael's great-great-grandparents)
-  '@I34@': { relationToYael: 'סבא רבא (אבי סבא נחום)' },         // Michael Alperovich
-  '@I35@': { relationToYael: 'סבתא רבא (אמא של סבא נחום)' },     // Pesya Kostrell/Alperovich
+  // Michael & Pesya (Nachum's parents = Yael's great-great-grandparents); cousin marriage documented in MANUAL_DOUBLE_BLOOD_TIE comment above.
+  '@I34@': {
+    relationToYael:
+      "סבא רבא (אבי סבא נחום). נישא לפסיה קוסטרל - בני דודים מדור שני פעם אחת לאותו שורש אלפרוביץ' (לייב): מסלולו מאיר→יהודה→מיכאל; מסלולה ראובן→יצחק→רוז ליליאן אלפרוביץ' (נישאה לקסטרל)→פסיה.",
+  },
+  '@I35@': {
+    relationToYael:
+      "סבתא רבא (אמא של סבא נחום). נישאה למיכאל אלפרוביץ' - בני דודים מדור שני פעם אחת לאותו שורש אלפרוביץ' (לייב): אמה רוז ליליאן נולדה אלפרוביץ'; מסלולו של מיכאל מאיר→יהודה→מיכאל.",
+  },
   // ── Yael: parents, siblings, maternal uncle Zeev + his son Assif (user-confirmed) ──
   '@I5@': { relationToYael: 'אמא (פולה ליבנת לבית אלפרוביץ׳)' },
   '@I6@': { relationToYael: 'אח (עודד ליבנת-טל)' },
@@ -389,6 +409,54 @@ const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullNa
   '@I164@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' },
   // Hyman Isidor Kastrel: fix GEDCOM surname Kastrol and display name.
   '@I124@': { fullName: 'Hyman Isidor Kastrel', surname: 'Kastrel', surnameFinal: 'Kastrel' },
+  // Wirth / Gamliel branch (Shulamit Wirth = sister of Arie Livnat's father line): user-corrected display + kinship.
+  '@I46@': {
+    fullName: 'Trudi Gamliel',
+    surname: 'Wirth',
+    surnameFinal: 'Gamliel',
+    birthName: 'Trudi Wirth',
+    relationToYael: 'בת דודה מצד האבא (בת של שולמית שולה וירט, אחות של אריה ליבנת)',
+  },
+  '@I173@': {
+    relationToYael: 'בן זוג של בת דודה (בעל טרודי גמליאל)',
+  },
+  '@I100@': {
+    relationToYael: 'בן דודה מצד האבא (בן של טרודי גמליאל)',
+  },
+  '@I103@': {
+    fullName: 'Alexandra Gamliel',
+    surname: 'Gamliel',
+    surnameFinal: 'Gamliel',
+    relationToYael: 'בת דוד ראשון מוסר מצד האבא (בת של טרודי גמליאל)',
+  },
+  '@I104@': {
+    fullName: 'Gaelle Gamliel',
+    surname: 'Gamliel',
+    surnameFinal: 'Gamliel',
+    relationToYael: 'בת דוד ראשון מוסר מצד האבא (בת של טרודי גמליאל)',
+  },
+  // Shulamit Wirth: sister of Arie Livnat (F3); Trudi's mother.
+  '@I21@': {
+    relationToYael: 'דודה מצד האבא (אחות של אריה ליבנת; לבית וירט)',
+  },
+  // GEDCOM used "Maharam" as surname; correct identity + toponym for display.
+  '@I3426@': {
+    fullName: 'Meir ben Baruch (Maharam of Rothenburg)',
+    surname: 'Rothenburg',
+    surnameFinal: 'Rothenburg',
+    relationToYael: 'אב קדמון רבני (ראשוני אשכנז; מהר״ם מרוטנבורג)',
+  },
+  '@I3436@': {
+    fullName: 'Baruch (father of Meir of Rothenburg)',
+    surname: 'Baruch',
+    surnameFinal: 'Baruch',
+  },
+  '@I3437@': {
+    fullName: 'Unnamed mother (of Meir of Rothenburg)',
+  },
+  '@I3440@': {
+    fullName: 'Unnamed spouse (GEDCOM stub)',
+  },
 };
 
 const MANUAL_MERGE_TO_PRIMARY: Record<string, string> = {
@@ -484,10 +552,15 @@ function extractFromNotes(notePlain: string) {
   };
 }
 
-// Split pipe-separated date/place fields (birth | death | burial)
+// Split pipe-separated date/place fields (birth | death | burial).
+// Exports often use "birth | death" (spaces) or tight "birth|death" (no spaces).
 function splitPipeField(value: string): { birth: string | null; death: string | null } {
   if (!value) return { birth: null, death: null };
-  const parts = value.split(' | ').map(s => s.trim());
+  const trimmed = value.trim();
+  let parts = trimmed.split(' | ').map(s => s.trim()).filter(Boolean);
+  if (parts.length < 2 && trimmed.includes('|')) {
+    parts = trimmed.split('|').map(s => s.trim()).filter(Boolean);
+  }
   return {
     birth: parts[0] || null,
     death: parts[1] || null,
@@ -913,7 +986,9 @@ function extractTags(
     /\babd\b/i.test(haystack) ||
     /\bav beit din\b/i.test(haystack) ||
     /\bav bet din\b/i.test(haystack) ||
-    /\bmaharam\b/i.test(haystack) ||
+    /\bmaharam\s+of\b/i.test(haystack) ||
+    /\bmaharam\s+mi\b/i.test(haystack) ||
+    /\bmahar[ae]m\b.*\brothenburg\b/i.test(haystack) ||
     /\bmahara\b/i.test(haystack) ||
     /\bmaharal\b/i.test(haystack) ||
     /\bmaharsha\b/i.test(haystack) ||
@@ -933,7 +1008,9 @@ function extractTags(
       /\babd\b/i.test(haystack) ||
       /\bav beit din\b/i.test(haystack) ||
       /\bav bet din\b/i.test(haystack) ||
-      /\bmaharam\b/i.test(haystack) ||
+      /\bmaharam\s+of\b/i.test(haystack) ||
+      /\bmaharam\s+mi\b/i.test(haystack) ||
+      /\bmahar[ae]m\b.*\brothenburg\b/i.test(haystack) ||
       /\bmaharal\b/i.test(haystack) ||
       /\bmaharsha\b/i.test(haystack) ||
       /\bmaharil\b/i.test(haystack) ||
@@ -1237,7 +1314,9 @@ function enrichConnectivitySignals(persons: Person[], families: Family[], rootPe
 
   return persons.map(person => {
     const pathCount = shortestPathCount.get(person.id) || 0;
-    const doubleBloodTie = pathCount >= 2 || MANUAL_DOUBLE_BLOOD_TIE.has(person.id);
+    const doubleBloodTie =
+      !MANUAL_DOUBLE_BLOOD_EXCLUDE.has(person.id) &&
+      (pathCount >= 2 || MANUAL_DOUBLE_BLOOD_TIE.has(person.id));
     const tags = new Set(person.tags);
     if (doubleBloodTie) {
       tags.add('DoubleBloodTie');

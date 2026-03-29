@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
@@ -5,6 +6,8 @@ import LangLayout from './app/[lang]/layout';
 import TreePage from './app/[lang]/tree/page';
 import PersonPage from './app/[lang]/person/[id]/page';
 import InsightsPage from './app/[lang]/insights/page';
+
+const FamilyArchivePage = lazy(() => import('./pages/FamilyArchivePage'));
 
 export default function App() {
   return (
@@ -19,6 +22,20 @@ export default function App() {
         <Route path="tree" element={<TreePage />} />
         <Route path="person/:id" element={<PersonPage />} />
         <Route path="insights" element={<InsightsPage />} />
+        <Route
+          path="archive"
+          element={
+            <Suspense
+              fallback={
+                <div className="flex min-h-[40vh] items-center justify-center bg-stone-50 text-sm text-stone-500">
+                  טוען ארכיון…
+                </div>
+              }
+            >
+              <FamilyArchivePage />
+            </Suspense>
+          }
+        />
       </Route>
 
       {/* Legacy /explore/* redirects */}

@@ -9,6 +9,7 @@ const COPY = {
     ctaExplore: 'כניסה לחקר',
     cards: [
       { view: 'tree',      icon: '🌳', title: 'חפשו אדם או ענף',    text: 'עץ אינטראקטיבי, תתי־עצים וחיפוש חכם בשמות ובמקומות.' },
+      { view: 'archive',   icon: '📜', title: 'ארכיון נרטיבי',      text: 'סיפורי שורשים (קסטרו, קסטרל, אלפרוביץ) עם חיפוש חכם לפי כינויים היסטוריים.' },
       { view: 'timeline',  icon: '📅', title: 'ציר זמן משפחתי',     text: 'לידות, פטירות ואירועים לאורך הדורות - בסדר כרונולוגי.' },
       { view: 'map',       icon: '🗺️', title: 'מסע על המפה',         text: 'איפה המשפחה חיה ונעה - נקודות מרכזיות על גבי מפה.' },
       { view: 'insights',  icon: '📊', title: 'תמונת עומק',          text: 'סטטיסטיקות וסינונים מתקדמים למי שרוצה לחקור לעומק.' },
@@ -23,6 +24,7 @@ const COPY = {
     ctaExplore: 'Enter the explorer',
     cards: [
       { view: 'tree',      icon: '🌳', title: 'Find a person or branch', text: 'Interactive tree, subtrees, and smart search across names and places.' },
+      { view: 'archive',   icon: '📜', title: 'Narrative archive',       text: 'Branch stories (Castro, Kastrel, Alperovitz) with smart alias search across historical spellings.' },
       { view: 'timeline',  icon: '📅', title: 'Family timeline',          text: 'Births, deaths, and events in chronological order.' },
       { view: 'map',       icon: '🗺️', title: 'Journey on the map',       text: 'Where the family lived and moved - key locations at a glance.' },
       { view: 'insights',  icon: '📊', title: 'Deeper picture',           text: 'Statistics and filters for researchers who want more detail.' },
@@ -36,6 +38,7 @@ const COPY = {
 function viewHref(lang: 'he' | 'en', view: string): string {
   if (view === 'insights') return `/${lang}/insights`;
   if (view === 'tree') return `/${lang}/tree`;
+  if (view === 'archive') return `/${lang}/archive`;
   return `/${lang}/tree?view=${view}`;
 }
 

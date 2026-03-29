@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { Person } from '../types';
+import { formatPersonLifespanLine } from '../utils/formatters';
 import { getCanonicalSurnameLabel } from '../utils/surname';
 
 interface Props {
@@ -352,7 +353,18 @@ export function StatisticsView({ personList, filteredIds, connectedToYaelIds, on
               >
                 <div className="text-sm font-medium text-gray-800">{person.fullName}</div>
                 <div className="text-xs text-gray-500">
-                  {person.relationToYael || (t ? 'ללא טקסט קרבה' : 'No relation text')}{person.birthDate ? ` | ${person.birthDate}` : ''}
+                  {person.relationToYael || (t ? 'ללא טקסט קרבה' : 'No relation text')}
+                  {(() => {
+                    const life = formatPersonLifespanLine(person);
+                    return life ? (
+                      <>
+                        {' '}
+                        <span dir="ltr" className="tabular-nums">
+                          · {life}
+                        </span>
+                      </>
+                    ) : null;
+                  })()}
                 </div>
               </button>
             ))}

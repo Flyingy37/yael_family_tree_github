@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import type { Person, Family } from '../types';
 import { DEFAULT_FILTERS, isUnknownPlaceholderPerson, type Filters } from './FilterPanel';
 import { getCanonicalSurnameLabel } from '../utils/surname';
+import { formatGedcomDateForDisplay, resolvePersonDateFields } from '../utils/formatters';
 import { HolocaustMemorialPatchIcon } from './HolocaustMemorialPatchIcon';
 import {
   Dna, Swords, GitMerge, Shield, Star, BookMarked, Scroll, Landmark, Ship, Sparkles,
@@ -467,9 +468,24 @@ export function PersonDetailPanel({
         <InfoRow label={t ? 'דור' : 'Generation'} value={person.generation?.toString()} />
         <InfoRow label={t ? 'קפיצות' : 'Hops'} value={person.hops?.toString()} />
         <InfoRow label={t ? 'מין' : 'Sex'} value={person.sex === 'M' ? (t ? 'זכר' : 'Male') : person.sex === 'F' ? (t ? 'נקבה' : 'Female') : (t ? 'לא ידוע' : 'Unknown')} />
-        <InfoRow label={t ? 'תאריך לידה' : 'Birth date'} value={person.birthDate} />
-        <InfoRow label={t ? 'מקום לידה' : 'Birth place'} value={person.birthPlace} />
-        {person.deathDate && <InfoRow label={t ? 'תאריך פטירה' : 'Death date'} value={person.deathDate} />}
+        {(() => {
+          const { birth, death } = resolvePersonDateFields(person);
+          return (
+            <>
+              <InfoRow
+                label={t ? 'תאריך לידה' : 'Birth date'}
+                value={birth ? formatGedcomDateForDisplay(birth) : null}
+              />
+              <InfoRow label={t ? 'מקום לידה' : 'Birth place'} value={person.birthPlace} />
+              {death ? (
+                <InfoRow
+                  label={t ? 'תאריך פטירה' : 'Death date'}
+                  value={formatGedcomDateForDisplay(death)}
+                />
+              ) : null}
+            </>
+          );
+        })()}
         <InfoRow label={t ? 'שם בלידה' : 'Birth name'} value={person.birthName} />
         <InfoRow label={t ? 'שם משפחה' : 'Surname'} value={person.surnameFinal} />
         <InfoRow label={t ? 'שם משפחה קודם' : 'Former surname'} value={originalSurname} />

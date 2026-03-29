@@ -4,7 +4,9 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "prebuild": "tsx scripts/build-graph.ts",
+    "prebuild": "tsx scripts/prebuild-graph.ts",
+    "parse-ged": "tsx scripts/parse-ged.ts",
+    "build-graph": "tsx scripts/build-graph.ts",
     "report:unlinked": "tsx scripts/export-unlinked-review.ts",
     "report:pdf-candidates": "python3 scripts/export_pdf_update_candidates.py",
     "report:review-queue": "python3 scripts/build_review_queue.py",

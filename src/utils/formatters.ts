@@ -2,6 +2,8 @@
  * formatters — date, name, and place formatting helpers.
  */
 
+const GEDCOM_PLACEHOLDER_DAY = /^0?1\s+JAN\s+(\d{4})$/i;
+
 /**
  * Extract a 4-digit year from a GEDCOM-style date string.
  * Handles formats like "1 JAN 1920", "ABT 1920", "BEF 1945", "1920".
@@ -14,14 +16,70 @@ export function extractYear(dateStr: string | null | undefined): number | null {
 }
 
 /**
+ * Split a value that incorrectly contains both birth and death separated by "|"
+ * (e.g. legacy graph rows before splitPipeField handled tight pipes).
+ */
+export function splitPipedDateValue(raw: string | null | undefined): {
+  birth: string | null;
+  death: string | null;
+} {
+  if (!raw?.trim()) return { birth: null, death: null };
+  const t = raw.trim();
+  if (t.includes(' | ')) {
+    const [a, ...rest] = t.split(' | ');
+    const b = rest.join(' | ').trim();
+    return { birth: a.trim() || null, death: b || null };
+  }
+  if (t.includes('|')) {
+    const parts = t.split('|').map(s => s.trim()).filter(Boolean);
+    return {
+      birth: parts[0] || null,
+      death: parts[1] || null,
+    };
+  }
+  return { birth: t, death: null };
+}
+
+/**
+ * Resolve birth/death strings for display when death leaked into birthDate.
+ */
+export function resolvePersonDateFields(person: {
+  birthDate: string | null;
+  deathDate: string | null;
+}): { birth: string | null; death: string | null } {
+  let birth = person.birthDate?.trim() || null;
+  let death = person.deathDate?.trim() || null;
+  if (birth?.includes('|') && !death) {
+    const s = splitPipedDateValue(birth);
+    birth = s.birth;
+    death = s.death;
+  }
+  return { birth, death };
+}
+
+/**
+ * Format a GEDCOM date string for display: strip qualifiers, collapse 1 JAN YYYY to year,
+ * title-case standard month abbreviations.
+ */
+export function formatGedcomDateForDisplay(dateStr: string | null | undefined): string {
+  if (!dateStr?.trim()) return '';
+  let v = dateStr.trim().replace(/^(ABT|BEF|AFT|CAL|EST)\s+/i, '').trim();
+  const ph = v.match(GEDCOM_PLACEHOLDER_DAY);
+  if (ph) return ph[1];
+  v = v.replace(
+    /\b(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\b/gi,
+    m => m.charAt(0) + m.slice(1).toLowerCase()
+  );
+  return v;
+}
+
+/**
  * Format a GEDCOM date string for display.
  * Strips GEDCOM prefixes (ABT, BEF, AFT, CAL, EST) and returns a readable string.
  */
 export function formatDate(dateStr: string | null | undefined): string {
   if (!dateStr) return '';
-  return dateStr
-    .replace(/^(ABT|BEF|AFT|CAL|EST)\s+/i, '')
-    .trim();
+  return formatGedcomDateForDisplay(dateStr);
 }
 
 /**
@@ -37,6 +95,20 @@ export function formatLifespan(
   if (by) return `b. ${by}`;
   if (dy) return `d. ${dy}`;
   return '';
+}
+
+/** Lifespan line for cards (uses en-dash, optional Hebrew could wrap at call site). */
+export function formatPersonLifespanLine(person: {
+  birthDate: string | null;
+  deathDate: string | null;
+}): string | null {
+  const { birth, death } = resolvePersonDateFields(person);
+  const by = extractYear(birth);
+  const dy = extractYear(death);
+  if (by != null && dy != null) return `${by} – ${dy}`;
+  if (by != null) return `b. ${by}`;
+  if (dy != null) return `d. ${dy}`;
+  return null;
 }
 
 /**

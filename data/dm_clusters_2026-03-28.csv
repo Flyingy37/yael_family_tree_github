@@ -1,4 +1,4 @@
-﻿ged_id,full_name,given_final,surname,surname_final,sex,birth_date,birth_place,fams,famc,titl,note,note_plain,dm_code,dm_key
+ged_id,full_name,given_final,surname,surname_final,sex,birth_date,birth_place,fams,famc,titl,note,note_plain,dm_code,dm_key
 @I1@,Yael Livnat,Yael,Livnat,Livnat,F,13 FEB 1973,Kfar Saba,@F2@,@F1@,,,,876300,8763
 @I2@,Ido Zaidman,Ido,Zaidman,Zaidman,M,12 AUG 2005,Kfar Saba,,@F2@,,,,436000,4360
 @I3@,Netta Zaidman,Netta,Zaidman,Zaidman,F,15 OCT 2000,Petah Tikva,,@F2@,,,,436000,4360
@@ -100,8 +100,8 @@
 @I100@,Ben Gamliel,Ben,Gamliel,Gamliel,M,,,,@F45@,,,,568000,5680
 @I101@,Liat,Liat,,,F,,,@F75@,@F44@,,,,000000,0000
 @I102@,Michal Horvitz,Michal,Horvitz,Horvitz,F,,,@F500001@,@F44@,,,,597400,5974
-@I103@,Alexandra,Alexandra,,,F,,,,@F45@,,,,000000,0000
-@I104@,Gaelle,Gaelle,,,F,,,,@F45@,,,,000000,0000
+@I103@,Alexandra Gamliel,Alexandra,Gamliel,Gamliel,F,,,,@F45@,,,,000000,0000
+@I104@,Gaelle Gamliel,Gaelle,Gamliel,Gamliel,F,,,,@F45@,,,,000000,0000
 @I105@,Yosef Pinhas,Yosef,Pinhas,Pinhas,M,,,@F76@,@F46@,,,,765400,7654
 @I106@,Kraft,Kraft,,,F,,,,@F46@,,,,000000,0000
 @I107@,Noam Eilon,Noam,Eilon,Eilon,M,,,,@F47@,,,,086000,0860
@@ -1513,7 +1513,7 @@
 @I1832@,Abraham Hirsch,Abraham,Hirsch,Hirsch,M,1 JAN 1750|Y,Korostyshiv,@F454@,,,<p>&nbsp;</p> Status updated to Deceased (Born &lt; 1920).,<p>&nbsp;</p> Status updated to Deceased (Born &lt; 1920).,594000,5940
 @I1833@,Malka Hirsch,Malka,Hirsch,Hirsch,F,,Ukraine,@F454@,@F569@,,,,594000,5940
 @I1834@,Aharon Gd.Child,Aharon,Gd.Child,Gd.Child,M,,Medzhybizh,@F455@,@F570@,,,,535830,5358
-@I1836@,Garik Perished,Garik,Perished,Perished,M,1 JAN 1935|1 JAN 1942,"Riga|Riga, Riga, Latvia",,@F572@,,,,794300,7943
+@I1836@,Garik Gordon,Garik,Gordon,Gordon,M,1 JAN 1935|1 JAN 1942,"Riga|Riga, Riga, Latvia",,@F572@,,,,794300,7943
 @I1837@,Maya Gordin,Maya,Gordin,Gordin,F,1 JAN 1939|1 JAN 1942,"Riga, Rīgas pilsēta, Rīgas pilsēta, Latvia",,@F572@,,,,593600,5936
 @I1838@,Itamar Hayut,Itamar,Hayut,Hayut,M,,Tel Aviv,@F681@,@F573@,,,,513000,5130
 @I1839@,Lee Leon,Lee,Leon,Leon,M,23 APR 1919|Y,Baltimore,@F683@,@F574@,,<p>&nbsp;</p> Status updated to Deceased (Born &lt; 1920).,<p>&nbsp;</p> Status updated to Deceased (Born &lt; 1920).,860000,8600

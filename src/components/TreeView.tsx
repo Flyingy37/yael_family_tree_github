@@ -20,6 +20,7 @@ import { computeLayout, NODE_HEIGHT, type LayoutEdge } from '../utils/layout';
 import { getDescendantIds, findPathBFS, countDescendantsMap } from '../utils/treeHelpers';
 import { useExpandCollapse } from '../hooks/useExpandCollapse';
 import type { Person, Family } from '../types';
+import { formatPersonLifespanLine } from '../utils/formatters';
 
 const BAND_HEIGHT = NODE_HEIGHT + 100; // node height + ranksep gap
 const BAND_X_OFFSET = -5000;           // far left so band spans full viewport
@@ -551,6 +552,7 @@ export function TreeView({
                   }}>
                     {pathResult.map((personId, idx) => {
                       const p = persons.get(personId);
+                      const life = p ? formatPersonLifespanLine(p) : null;
                       return (
                         <li key={personId} style={{
                           paddingLeft: 2,
@@ -558,7 +560,11 @@ export function TreeView({
                           color: idx === 0 || idx === pathResult.length - 1 ? '#111827' : '#374151',
                         }}>
                           {p?.fullName ?? personId}
-                          {p?.birthDate ? <span style={{ color: '#9ca3af', marginLeft: 4 }}>{p.birthDate}</span> : null}
+                          {life ? (
+                            <span style={{ color: '#9ca3af', marginLeft: 4 }} dir="ltr">
+                              {life}
+                            </span>
+                          ) : null}
                         </li>
                       );
                     })}

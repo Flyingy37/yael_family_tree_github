@@ -1,5 +1,5 @@
 ged_id,full_name,given_final,surname,surname_final,sex,birth_date,birth_place,fams,famc,titl,note,note_plain
-@I1@,Yael Livnat,Yael,Livnat,Livnat,F,1985,Tel Aviv, Israel,@F1@,,,,
+@I1@,Yael Livnat,Yael,Livnat,Livnat,F,13 FEB 1973,Kfar Saba,@F1@,,,,
 @I2@,David Livnat,David,Livnat,Livnat,M,1955,Haifa, Israel,@F1@,@F2@,,,
 @I3@,Ruth Cohen,Ruth,Cohen,Livnat,F,1958,Jerusalem, Israel,@F1@,@F3@,,,
 @I4@,Moshe Livnat,Moshe,Livnat,Livnat,M,ABT 1920,Minsk, Belarus,,@F2@,,Holocaust survivor,Holocaust survivor

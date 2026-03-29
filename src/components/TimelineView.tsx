@@ -1,5 +1,6 @@
 import { useMemo, useState, useRef, useEffect } from 'react';
 import type { Person } from '../types';
+import { extractYear, resolvePersonDateFields } from '../utils/formatters';
 
 interface Props {
   persons: Map<string, Person>;
@@ -12,12 +13,6 @@ interface TimelineEvent {
   year: number;
   person: Person;
   type: 'birth' | 'death';
-}
-
-function parseYear(dateStr: string | null): number | null {
-  if (!dateStr) return null;
-  const m = dateStr.match(/(\d{4})/);
-  return m ? parseInt(m[1], 10) : null;
 }
 
 function getDecade(year: number): number {
@@ -34,11 +29,12 @@ export function TimelineView({ persons, filteredIds, onSelectPerson, language = 
     for (const id of filteredIds) {
       const person = persons.get(id);
       if (!person) continue;
-      const birthYear = parseYear(person.birthDate);
+      const { birth, death } = resolvePersonDateFields(person);
+      const birthYear = extractYear(birth);
       if (birthYear && birthYear > 1400 && birthYear < 2030) {
         evts.push({ year: birthYear, person, type: 'birth' });
       }
-      const deathYear = parseYear(person.deathDate);
+      const deathYear = extractYear(death);
       if (deathYear && deathYear > 1400 && deathYear < 2030) {
         evts.push({ year: deathYear, person, type: 'death' });
       }

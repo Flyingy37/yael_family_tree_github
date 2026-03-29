@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, type KeyboardEvent } from 'react';
 import { Search, X } from 'lucide-react';
 import type Fuse from 'fuse.js';
 import type { Person } from '../types';
+import { formatGedcomDateForDisplay, formatPersonLifespanLine, resolvePersonDateFields } from '../utils/formatters';
 
 interface Props {
   searchIndex: Fuse<Person>;
@@ -146,11 +147,15 @@ export function SearchBar({ searchIndex, onSelect, language = 'en', allowedPerso
               onClick={() => handleSelect(person)}
             >
               <span className="font-semibold text-slate-800 text-sm">{person.fullName}</span>
-              {person.birthDate ? (
-                <span className="text-xs text-slate-500">
-                  {t ? 'יליד/ה:' : 'Born:'} {person.birthDate}
-                </span>
-              ) : null}
+              {(() => {
+                const span = formatPersonLifespanLine(person);
+                const { birth } = resolvePersonDateFields(person);
+                const birthFmt = birth ? formatGedcomDateForDisplay(birth) : null;
+                const line = span ?? (birthFmt ? `${t ? 'נולד/ה' : 'b.'} ${birthFmt}` : null);
+                return line ? (
+                  <span className="text-xs text-slate-500">{line}</span>
+                ) : null;
+              })()}
               {(person.birthPlace || person.relationToYael) && (
                 <span className="text-xs text-slate-400">
                   {[person.birthPlace, person.relationToYael].filter(Boolean).join(' · ')}

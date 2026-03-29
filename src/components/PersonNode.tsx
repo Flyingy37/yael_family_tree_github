@@ -20,6 +20,11 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import type { Person } from '../types';
+import {
+  extractYear,
+  formatPersonLifespanLine,
+  resolvePersonDateFields,
+} from '../utils/formatters';
 import { HolocaustMemorialPatchIcon } from './HolocaustMemorialPatchIcon';
 import { NODE_WIDTH, NODE_HEIGHT } from '../utils/layout';
 
@@ -42,23 +47,6 @@ interface PersonNodeProps {
     lazyHiddenCount?: number;
     onExpandBranch?: (id: string) => void;
   };
-}
-
-/** Extract a 4-digit year from a date string like "13 AUG 1923" → 1923 */
-function extractYear(dateStr: string | null): number | null {
-  if (!dateStr) return null;
-  const m = dateStr.match(/\b(\d{4})\b/);
-  return m ? parseInt(m[1], 10) : null;
-}
-
-/** Build "1923 – 1996" or "b. 1923" or "d. 1996" */
-function lifeSpan(person: Person): string | null {
-  const b = extractYear(person.birthDate);
-  const d = extractYear(person.deathDate);
-  if (b && d) return `${b} – ${d}`;
-  if (b) return `b. ${b}`;
-  if (d) return `d. ${d}`;
-  return null;
 }
 
 /** Prefer plain note; fall back to HTML-stripped `note` */
@@ -190,10 +178,11 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
   const initials = getInitials(person.givenName, person.fullName);
   const tagBadges = buildTagBadges(person, isHe);
   const hasDNA = person.tags.includes('DNA');
-  const span = lifeSpan(person);
+  const span = formatPersonLifespanLine(person);
   const noteBody = researchNoteText(person);
-  const birthY = extractYear(person.birthDate);
-  const deathY = extractYear(person.deathDate);
+  const { birth: birthForYear, death: deathForYear } = resolvePersonDateFields(person);
+  const birthY = extractYear(birthForYear);
+  const deathY = extractYear(deathForYear);
   const photoSrc = person.photoUrl?.trim();
   const showPhoto = Boolean(photoSrc && !imgFailed);
 
