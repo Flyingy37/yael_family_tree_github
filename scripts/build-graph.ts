@@ -97,14 +97,25 @@ const MANUAL_TAG_OVERRIDES: Record<string, string[]> = {
   '@I1085@': ['Famous'], // Terry J. Dubrow (second profile)
   '@I618@': ['Famous'], // Kevin Mark Dubrow (Riot)
   '@I124@': ['Famous'], // Hyman Isidor Kastrel — co-founder of Yiddish daily Frayhayt; editor of Funken
-  // Requested: mark key ancestor as lineage/yichus.
-  '@I3465@': ['Lineage'], // Zvulen Eliezer Heilprin
+  // Heilprin rabbinical dynasty — direct ancestors of the Alperovich branch.
+  // Source: user-confirmed chain (mh_identifiers #1504849 / #1504833 / #1504732 / #1504730 / #1503373)
+  '@I3167@': ['Rabbi', 'Lineage'], // Zvulen Eliezer Ashkenazi-Heilprin (gen 15, Brisk) mh#1504849
+  '@I3032@': ['Rabbi', 'Lineage'], // R' Moshe Ashkenazi ben Eliezer Heilprin (gen 14) mh#1504833
+  '@I2855@': ['Rabbi', 'Lineage'], // Rabbi Eliezer Lipman Lazar Heilprin (gen 13, Tarnogrod) mh#1504732
+  '@I2617@': ['Rabbi', 'Lineage'], // Rabbi Moshe Yehuda Selki Heilprin (gen 12, Poznań) mh#1504730
+  '@I1746@': ['Lineage'],          // Abram Avraham Alperovich Heilprin (gen 10, Kurenets) mh#1503373
+  // Confirmed DNA matches — FTDNA + Assif 23andMe Father's side (Alperovich/Kastrel pool).
+  '@I376@': ['DNA'], // Chaim Herbert — Assif 23andMe Father's side confirmed
+  '@I578@': ['DNA'], // Jonathan Herbert — FTDNA 150.8 cM ("Jonathan Sinai Herbert")
+  '@I385@': ['DNA'], // Robert Michael Costrell — FTDNA 157.33 cM, J-FTF95213
   // User-confirmed MyHeritage DNA-match profile cluster (Oded paternal-side matches).
   '@I721@': ['DNA'], // Joseph/yushua Kaszinsky
   '@I724@': ['DNA'], // Gordon (mother)
   '@I500@': ['DNA'], // Joseph Gordon (brother)
   '@I831@': ['DNA'], // Albert Gordon (brother)
   '@I830@': ['DNA'], // Abraham E/abe Gozansky/Gordon
+  // Vulis branch rabbinical ancestor.
+  '@I1240@': ['Rabbi'], // R' Avrum Gershkov Vulis (1789) — confirmed by merged profiles @I1128@/@I1653@/@I4069@
 };
 
 // IDs where the note mentions DNA data but the person is NOT a verified DNA match to Yael.
@@ -147,6 +158,10 @@ const MANUAL_WAR_CASUALTY_OVERRIDES: Record<string, boolean> = {
 };
 
 const MANUAL_BIRTHPLACE_OVERRIDES: Record<string, string> = {
+  // Heilprin chain — birthplaces from mh_identifier data
+  '@I3167@': 'Brisk (Brest-Litovsk), Grand Duchy of Lithuania',
+  '@I2855@': 'Tarnogród, Poland',
+  '@I2617@': 'Poznań, Poland',
   // User research note: likely origin from Belarus/Ukraine (Guzhinsky), while descendants are in Romania branch.
   '@I30@': 'Belarus or Ukraine (Guzhinsky origin)',
   // User-confirmed: Cilia Sara was born in Haifa during the British Mandate period.
@@ -199,6 +214,18 @@ const BIRTHPLACE_NORM: Array<[string, string]> = [
   ['sochaczew, warsaw',           'Sochaczew, Poland'],
   ['sochaczew',                   'Sochaczew, Poland'],
   ['poznan',                      'Poznań, Poland'],
+  ['tarnogrod',                   'Tarnogród, Poland'],
+  ['brest-litovsk',               'Brest, Belarus'],
+  ['brisk',                       'Brest, Belarus'],    // Brisk = Brest-Litovsk
+  ['grodno',                      'Hrodna, Belarus'],
+  ['mogilev',                     'Mogilev, Belarus'],
+  ['vitebsk',                     'Vitebsk, Belarus'],
+  ['bialystok',                   'Białystok, Poland'],
+  ['lodz',                        'Łódź, Poland'],
+  ['krakow',                      'Kraków, Poland'],
+  ['lviv',                        'Lviv, Ukraine'],
+  ['odessa',                      'Odesa, Ukraine'],
+  ['kherson',                     'Kherson, Ukraine'],
   ['lublin',                      'Lublin, Poland'],
   ['warsaw',                      'Warsaw, Poland'],
   ['polin',                       'Poland'],
@@ -282,6 +309,29 @@ const MANUAL_TITLE_APPEND_OVERRIDES: Record<string, string> = {
   // Also known as Jack Robbins. Born 19 Oct 1890, Kuraniec Belarus. Died 25 Feb 1956.
   // Second great-uncle of Yael Zaidman-Livnat (Geni confirmed).
   '@I4149@': 'Journalist; co-founder of Frayhayt (NY Yiddish daily, 1922); edited Funken 1933–1935; Communist Party candidate NY 8th District 1934; AKA Jack Robbins. Source: Congress for Jewish Culture + Geni.',
+  // Heilprin patriarchal ancestor: Abram Avraham Alperovich Heilprin.
+  // His surname "Alperovich" = son of Alper/Eliezer Heilprin — the patronymic origin of the entire Alperovich branch.
+  // Source: user-confirmed lineage data, mh_identifier #1503373.
+  '@I1746@': 'Patriarch of the Alperovich branch. "Alperovich" = son of Alper (patronymic of Eliezer Heilprin). Born ~1660, Kurenets, Vileyka District, Grand Duchy of Lithuania; died ~1740, Kurenets. Direct ancestor: gen 10 to Yael. mh#1503373.',
+  // Heilprin rabbinical dynasty titles
+  '@I3167@': 'Zvulen Eliezer Ashkenazi-Heilprin. mh#1504849. Gen 15. Father of R\' Moshe (gen 14).',
+  '@I3032@': 'R\' Moshe Ashkenazi ben Eliezer Heilprin. mh#1504833. Gen 14. Poznań area.',
+  '@I2855@': 'Rabbi Eliezer Lipman Lazar Heilprin. mh#1504732. Gen 13. Tarnogród.',
+  '@I2617@': 'Rabbi Moshe Yehuda Selki Heilprin. mh#1504730. Gen 12. Poznań.',
+  // JewishGen Worldwide Jewish Burial Registry matches (2026-03-29)
+  '@I414@': 'Burial: Montrepose Cemetery, Kingston, New York. Death place: New Paltz, New York. Source: JewishGen Burial Registry.',
+  '@I479@': 'Burial: Mount Sinai Memorial Parks and Mortuaries, Los Angeles. Source: JewishGen Burial Registry.',
+  '@I258@': 'Burial: Montrepose Cemetery, Kingston, New York (also listed: Veteran Burials). Source: JewishGen Burial Registry.',
+  // Confirmed DNA matches — annotations
+  '@I376@': 'בן דוד/ה שני בהפרש דור — ענף אלפרוביץ׳-גורביץ׳. בן של Sinai Herbert + Sima Gurevitz Lerman (בת פראדה אלפרוביץ׳). מאושר DNA דרך 23andMe של אסיף (Father\'s side).',
+  '@I578@': 'בן דוד/ה שלישי. בן של Chaim Herbert (@I376@). FTDNA 150.8 cM ("Jonathan Sinai Herbert"). DNA מאושר.',
+  '@I385@': 'בן דוד/ה שני בהפרש דור — ענף קסטרל/קוסטרל. FTDNA 157.33 cM. Y-haplogroup J-FTF95213. מאשר שרשרת Castro→Kastrel→Costrell.',
+  // MyHeritage SmartMatch annotations — מידע חדש זמין לעדכון ידני
+  '@I244@': 'Louis Costrell (1915–2009). MyHeritage 10 SmartMatches — מידע חדש: אחים, תיאור, כתובת מפורטת, מקום קבורה.',
+  '@I335@': 'Geula Vulis (Epstein) (נולדה 23 Nov 1920). MyHeritage 18 SmartMatches — מידע חדש: תאריך פטירה, מקום פטירה, קבורה, בן/בת זוג, ילדים.',
+  '@I80@':  'Yehuda "Yudel" Alperovich (~1850–1917). אב-קדמון 4 דורות. MyHeritage 12 SmartMatches — מידע חדש: אחים.',
+  '@I198@': 'Meir Alperovich (10 Nov 1819–17 Mar 1900). אב-קדמון 5 דורות. MyHeritage 15 SmartMatches — מידע חדש: מקום פטירה, מקום מגורים.',
+  '@I349@': 'Reuven Alperovitch (~1823–~1890). אב-קדמון 6 דורות. MyHeritage 5 SmartMatches — מידע חדש: תמונה, עיסוק, מקום מגורים, השכלה.',
   '@I6@': 'DNA matches note: Abraham Guzhinsky appears in Oded match lists (paternal branch evidence).',
   '@I618@': 'Music note: Kevin Mark DuBrow, associated with the heavy metal band Riot.',
   '@I30@': 'Research note: family origin linked to Abraham Guzhinsky; likely Belarus/Ukraine.',
@@ -302,8 +352,30 @@ const MANUAL_MIGRATION_INFO_OVERRIDES: Record<string, string> = {
 const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullName' | 'surname' | 'surnameFinal' | 'relationToYael'>>> = {
   // Requested display naming: include both Livnat and Zaidman on Yael.
   '@I1@': { fullName: 'Yael Livnat Zaidman' },
-  // User-confirmed: Arie Livnat's birth name was Liviu Leib Lanzman (Romanized) before Hebraization to Livnat.
-  '@I4@': { surname: 'Lanzman', surnameFinal: 'Livnat' }, // Arie (Liviu) Livnat, born Lanzman
+  // User-confirmed: Arie Livnat's birth name was Liviu Leib Lanzmann (canonical spelling) before Hebraization to Livnat.
+  '@I4@': { surname: 'Lanzmann', surnameFinal: 'Livnat' }, // Arie (Liviu) Livnat, born Lanzmann
+  // ── Lanzmann surname standardisation ─────────────────────────────────────
+  // CSV has "Lanzman" or "Lantzman" variants; canonical spelling is "Lanzmann".
+  '@I9@':   { fullName: 'Mordekhai Marcu Lanzmann', surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Mordekhai 'Marcu' Lanzmann (1889–1969) — MyHeritage confirms Romanian given name 'Marcu'
+  '@I18@':  { surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Shlomo Lanzmann
+  '@I19@':  { surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Yehoshua Lanzmann
+  '@I20@':  { surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Zvi Lanzmann
+  '@I30@':  { surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Shlomo Lanzmann (Guzhinsky origin)
+  '@I31@':  { surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Mali Lanzmann
+  '@I38@':  { surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Gil Lanzmann
+  '@I39@':  { surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Yaron Lanzmann (CSV: Lantzman)
+  '@I40@':  { surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Noam Lanzmann (CSV: Lantzman)
+  '@I41@':  { surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Avi Lanzmann
+  '@I73@':  { surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Malka Lanzmann
+  '@I74@':  { surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Lori Lanzmann
+  '@I88@':  { surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Shmulik Lanzmann (CSV: Lantzman)
+  '@I89@':  { surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Matan Lanzmann
+  '@I90@':  { surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Shoham Lanzmann
+  '@I91@':  { surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Eyal Lanzmann (CSV: Lantzman)
+  '@I92@':  { surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Dana Lanzmann (CSV: Lantzman)
+  '@I94@':  { surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Rony Lanzmann (CSV: Lantzman)
+  '@I162@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Nava Lanzmann
+  '@I164@': { surname: 'Lanzmann', surnameFinal: 'Lanzmann' }, // Adi Lanzmann (CSV: Lantzman)
   // User-confirmed surname history in close family branch.
   '@I22@': { surname: 'Lanzmann', surnameFinal: 'Amiron' }, // Mirriam Mali Amiron (nee Lanzmann)
   '@I47@': { surname: 'Amiron', surnameFinal: 'Kfir' }, // Hava Kfir (nee Amiron)
@@ -319,6 +391,12 @@ const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullNa
   // Yehudit was born Bialik (parents: Israel Dov Ber Bialik & Michal Mania Bialik, niece of Chaim Nachman Bialik).
   // GEDCOM incorrectly stores her married name (Kastrel) as birth surname.
   '@I1392@': { fullName: 'Yehudit Bialik', surname: 'Bialik', surnameFinal: 'Kastrel' },
+  // Heilprin rabbinical dynasty — corrected full names from user-provided mh_identifier data.
+  '@I3167@': { fullName: 'Zvulen Eliezer Ashkenazi-Heilprin', surname: 'Heilprin', surnameFinal: 'Heilprin' }, // mh#1504849
+  '@I3032@': { fullName: "R' Moshe Ashkenazi ben Eliezer Heilprin", surname: 'Heilprin', surnameFinal: 'Heilprin' }, // mh#1504833
+  '@I2855@': { fullName: 'Rabbi Eliezer Lipman Lazar Heilprin', surname: 'Heilprin', surnameFinal: 'Heilprin' }, // mh#1504732
+  '@I2617@': { fullName: 'Rabbi Moshe Yehuda Selki Heilprin', surname: 'Heilprin', surnameFinal: 'Heilprin' }, // mh#1504730
+  '@I1746@': { fullName: 'Abram Avraham Alperovich Heilprin', surname: 'Alperovich', surnameFinal: 'Alperovich' }, // mh#1503373
   // Hyman Isidor Kastrel (born Costrell/Kastrol): GEDCOM has shortened name and misspelled surname.
   // Known as Chaim Hyman; also Jack Robbins, Herman. Co-founder of Yiddish daily Frayhayt.
   '@I124@': { fullName: 'Hyman Isidor Kastrel', surname: 'Kastrel', surnameFinal: 'Kastrel' },
