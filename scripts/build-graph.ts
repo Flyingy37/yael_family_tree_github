@@ -110,6 +110,19 @@ const MANUAL_TAG_OVERRIDES: Record<string, string[]> = {
   '@I500@': ['DNA'], // Joseph Gordon (brother)
   '@I831@': ['DNA'], // Albert Gordon (brother)
   '@I830@': ['DNA'], // Abraham E/abe Gozansky/Gordon
+  // tools/enrich_family_tree.py + research: Castro/Castrol/Kastrel origin narrative (Spain → Vilna area)
+  '@I1296@': ['Heritage', 'Lineage'], // Michael Castro, Spain (PREEXPORT note in canonical)
+  // Wolf Alperovitch: killed as partisan (text lives in birth_place pipe field; see extractTags haystack)
+  '@I1081@': ['Partisan'],
+  // Extended / unconnected rows (Krasne ghetto, Dolginovo) — apply when merged into data/canonical.csv
+  '@I4154@': ['Partisan', 'Migration'], // Joseph Sosinski: Shoah survivor, partisan, aliya 1962
+  '@I4151@': ['Heritage'], // Kopel Alperovits, Krasne ghetto (victim — see MANUAL_HOLOCAUST_VICTIM_OVERRIDES)
+  '@I4150@': ['Heritage'], // Rashka, Krasne ghetto
+  // Stub person_id rows from enrich script output (canonical_enriched.csv → ged_id column must match for build)
+  '@I_CASTRO_1@': ['Heritage', 'Lineage'],
+  '@I_ANDERS_1@': ['Famous', 'Heritage'], // Edward Anders: Holocaust survivor, academic (NASA meteoritics)
+  '@I_PARTISAN_1@': ['Partisan', 'Heritage'], // Leizer Alperovitz child survivor / partisan
+  '@I_PARTISAN_2@': ['Partisan', 'Heritage'], // Eliyahu Alperovitz partisan, fell in combat
 };
 
 // IDs where the note mentions DNA data but the person is NOT a verified DNA match to Yael.
@@ -145,6 +158,10 @@ const MANUAL_HOLOCAUST_VICTIM_OVERRIDES: Record<string, boolean> = {
   '@I57@': true, // Rashka Alperovitch (sister)
   '@I58@': false, // Ruven Duberstein - killed in battle (Russian army), not Shoah victim
   '@I59@': false, // Michael Duberstein - died as an infant, before Shoah
+  // Krasne ghetto (enrich_family_tree / extended rows when merged into canonical)
+  '@I4151@': true, // Kopel Alperovits
+  '@I4150@': true, // Rashka (Krasne)
+  '@I4154@': false, // Joseph Sosinski: survivor, partisan, aliya
 };
 
 const MANUAL_WAR_CASUALTY_OVERRIDES: Record<string, boolean> = {
@@ -307,6 +324,8 @@ const MANUAL_MIGRATION_INFO_OVERRIDES: Record<string, string> = {
   // family migrated from Belarus (Pleshchenitsy area), she was born in Haifa,
   // then the family returned to Belarus around 1930.
   '@I12@': 'Born in Haifa (British Mandate). Family origin in Belarus (Pleshchenitsy area), with return to Belarus around 1930.',
+  // Joseph Sosinski: aliya after Shoah (enrich note)
+  '@I4154@': 'Immigrated to Israel in 1962 after surviving the Shoah and partisan activity.',
 };
 
 const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullName' | 'surname' | 'surnameFinal' | 'relationToYael'>>> = {
@@ -837,6 +856,8 @@ function extractTags(
     row.titl,
     row.note,
     row.note_plain,
+    row.birth_place,
+    row.birth_date,
   ]
     .filter(Boolean)
     .join(' ')
@@ -857,7 +878,9 @@ function extractTags(
     haystack.includes('resistance') ||
     haystack.includes('פרטיזן') ||
     haystack.includes('פרטיזנים') ||
-    haystack.includes('מחתרת')
+    haystack.includes('מחתרת') ||
+    haystack.includes('הצטרף לפרטיזנים') ||
+    haystack.includes('ניצול שואה ופרטיזן')
   ) {
     tags.add('Partisan');
   }
