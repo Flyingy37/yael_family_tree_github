@@ -613,6 +613,18 @@ function isLikelyHolocaustVictimByDateAndRegion(
   const birthYear = extractYear(birthDate);
   const deathYear = extractYear(deathDate);
 
+  // Also extract the embedded death year from the raw birth_date field when the pipe
+  // separator has no surrounding spaces (canonical.csv format: "1 JAN 1880|9 SEP 1942").
+  // splitPipeField requires " | " so these are not parsed into deathDate automatically.
+  let embeddedDeathYear: number | null = null;
+  const rawBd = row.birth_date || '';
+  const pipeIdx = rawBd.indexOf('|');
+  if (pipeIdx >= 0) {
+    embeddedDeathYear = extractYear(rawBd.slice(pipeIdx + 1));
+  }
+
+  const effectiveDeathYear = deathYear ?? embeddedDeathYear;
+
   const placeHaystack = [
     birthPlace || '',
     row.birth_place || '',
@@ -623,19 +635,20 @@ function isLikelyHolocaustVictimByDateAndRegion(
     .join(' ')
     .toLowerCase();
 
-  // Focus on eastern-europe Shoah geographies represented in this dataset.
+  // Eastern-Europe and major Shoah geographies represented in this dataset.
+  // Excludes Western allied countries (USA, UK, Canada, Australia) to avoid false positives.
   const hasShoahRegion =
-    /kurenets|kureniets|vileyka|vilna|wilno|minsk|byelorussian|belarus|bielarus|poland|lithuania|ukraine|radoshkovichi/.test(
+    /kurenets|kureniets|vileyka|vilna|wilno|minsk|byelorussian|belarus|bielarus|poland|lithuania|ukraine|radoshkovichi|latvia|riga|romania|transnistria|auschwitz|treblinka|sobibor|belzec|majdanek|chelmno|ghetto|warsaw|lodz|krakow|lviv|lwow|vilnius|kaunas|dvinsk|daugavpils|birzai/.test(
       placeHaystack
     );
 
   if (!hasShoahRegion) return false;
 
-  // Strong signal: explicit death during core Shoah years.
-  if (deathYear !== null && deathYear >= 1941 && deathYear <= 1945) return true;
+  // Strong signal: explicit death during WWII / Shoah years (1939–1945).
+  if (effectiveDeathYear !== null && effectiveDeathYear >= 1939 && effectiveDeathYear <= 1945) return true;
 
   // Secondary signal: only a single wartime date exists (often imported as birthDate by source formatting).
-  if (!deathDate && birthYear !== null && birthYear >= 1941 && birthYear <= 1945) return true;
+  if (!deathDate && !embeddedDeathYear && birthYear !== null && birthYear >= 1939 && birthYear <= 1945) return true;
 
   return false;
 }
