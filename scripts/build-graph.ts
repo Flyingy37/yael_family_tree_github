@@ -346,7 +346,7 @@ const MANUAL_TITLE_APPEND_OVERRIDES: Record<string, string> = {
   '@I349@': 'Reuven Alperovitch (~1823–~1890). אב-קדמון 6 דורות. MyHeritage 5 SmartMatches — מידע חדש: תמונה, עיסוק, מקום מגורים, השכלה.',
   // ── Lanzmann & Shvartz siblings ───────────────────────────────────────
   '@I48@': 'נולדה לנצמן. אחות של מרדכי מרקו לנצמן (@I9@). נישאה לפנחס (Pinhas). נולדה פוקשני 1 אוקטובר 1903.',
-  '@I49@': 'אח של מינה לנצמן (לבית שוורץ). שם נעורים: שוורץ-דסקלו. נולד רומניה 1914. נפטר 17 מאי 1984, גבעת שמואל, ישראל.',
+  '@I49@': 'אח של מינה לנצמן (לבית שוורץ). שם נעורים: שוורץ-דסקלו. נולד רומניה 1914. נפטר 17 מאי 1984, גבעת שמואל, ישראל. אשתו: שושנה "ג\'ני" שרנה דורון (לבית בוז\'ינרו / Bojunaru) — מאושר מ-Outline Descendant Report (Branch 944: "Shoshana Cernă Jeni Doron Dascaălu born Bojunaru"). נפטרה ח\' סיון תשמ"ט (11 יוני 1989), קבורה: חולון, ישראל.',
   // ── Lanzmann paternal branch DNA findings (IN131982) ───────────────────
   // Mina Lanzmann née Shvartz: 629 autosomal matches with Schwartz surname cluster.
   // Strongest: Nelson D. Schwartz 80.47 cM (3rd-5th cousin), T-CTS6507.
