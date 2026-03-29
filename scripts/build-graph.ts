@@ -84,6 +84,7 @@ interface Person {
   connectionPathCount: number | null;
   doubleBloodTie: boolean;
   tags: string[];
+  story?: string | null;
 }
 
 const MANUAL_TAG_OVERRIDES: Record<string, string[]> = {
@@ -338,18 +339,20 @@ const MANUAL_TITLE_APPEND_OVERRIDES: Record<string, string> = {
   // Mina Lanzmann née Shvartz: 629 autosomal matches with Schwartz surname cluster.
   // Strongest: Nelson D. Schwartz 80.47 cM (3rd-5th cousin), T-CTS6507.
   // Schwartz variants in matches: Schwartz / Shvartz / Szwarc / Schwarz — Romania/Poland/Ukraine/Hungary.
-  '@I10@': 'DNA (IN131982): 629 matches with Schwartz/Shvartz surname cluster. Strongest match: Nelson D. Schwartz (80.47 cM, 3rd-5th cousin, T-CTS6507). Confirms Shvartz maiden name and Ashkenazi Schwartz family network. Source: autosomal DNA analysis 2026.',
+  '@I10@': 'בת של אריה לייב שוורץ (דסקאלו) וחנה אווה שוורץ/שוורצ. קבורה: חולון, ישראל (מאושר MyHeritage). DNA (IN131982): 629 matches with Schwartz/Shvartz surname cluster. Strongest match: Nelson D. Schwartz (80.47 cM, 3rd-5th cousin, T-CTS6507). Confirms Shvartz maiden name and Ashkenazi Schwartz family network. Source: autosomal DNA 2026 + MyHeritage.',
   // Khava Svartz (mother of Mina) — Dascalu branch: 6 matches.
   // Strongest: Sergiu Peltz 69.71 cM (3rd-5th cousin, R-L1029) with Davidescu/Dascalu/Peltz (Romania).
   // Aviva Weiss 50.77 cM with Daskal/Dascal variants. David Twersky (Nadvorna Hasidic dynasty connection).
   '@I33@': 'DNA (IN131982): 6 matches with Dascalu/Daskal surname cluster. Strongest: Sergiu Peltz (69.71 cM, 3rd-5th cousin, R-L1029) with Davidescu/Dascalu/Peltz surnames from Romania. Also: Aviva Weiss (50.77 cM), Reem Descalo (32.81 cM). Dascalu = Romanian Jewish family name, Moldova/Panciu area. Source: autosomal DNA 2026.',
-  // Rabbi Dascaalu (father of Mina) — Dascalu branch
-  '@I32@': 'שם אמיתי לא ידוע. "Dascaalu/Dascalu" = תואר ברומנית: dascăl = מורה/מלמד/חזן — כינוי שניתן לאנשי דת בקהילות יהודיות ברומניה. DNA (IN131982): 6 התאמות עם Dascalu/Daskal/Descalo; Sergiu Peltz (69.71 cM, R-L1029) — משפחות יהודיות רומניות, אזור מולדובה. Source: DNA 2026.',
+  // Arie Leib Shvartz (Dascaalu) — father of Mina Shvartz + Marcu Doron (Shvartz Dascalu)
+  // Name confirmed: gravestone of Marcu Doron (בן אריה) + MyHeritage Mina profile (Child of Arie Leib Shvartz).
+  // "Dascaalu/Dascalu" = Romanian title dascăl (teacher/cantor) — not a surname.
+  '@I32@': 'שמו האמיתי אריה לייב שוורץ — מאושר מרישום בית העלמין (מצבת מרקו דורון: "בן אריה") וממידע MyHeritage (Mina: "Child of Arie Leib Shvartz"). "דסקאלו" = תואר ברומנית: dascăl = מורה/מלמד/חזן. DNA (IN131982): 6 התאמות עם Dascalu/Daskal/Descalo; Sergiu Peltz (69.71 cM, R-L1029) — משפחות יהודיות רומניות, אזור מולדובה. Source: DNA 2026 + BillionGraves + MyHeritage.',
   // Glanzman/Lanzmann connection — IMPORTANT: Y-DNA mismatch means connection is via female line
   // Steven Glanzman (76.96 cM, J-FGC9941) + David Glanzman (72.12 cM, J-FGC9941) — Vinnitsky/Vinnytsia, Ukraine
   // Oded Y-DNA = R-FGC8601 ≠ J-FGC9941 → connection is NOT direct paternal line
   // Conclusion: a Glanzman woman married into Lanzmann (or vice versa), or "Lanzmann" is a variant spelling only
-  '@I9@': 'שרשרת האב: זבולון אליעזר היילפרין ~1525, פולין ← ... ← שלמה לנצמן ← מרדכי לנצמן (1889, פוקשני). DNA (IN131982): Steven Glanzman (76.96 cM) + David Glanzman (72.12 cM) — ancestry in Vinnytsia, Ukraine. Y-DNA J-FGC9941 ≠ עודד R-FGC8601 → קשר דרך אישה בשם Glanzman שנישאה ללנצמן (לא קו האב הישיר). שם "לנצמן" = כנראה Glanzman ללא G ראשונית (הסתגלות לרומנית). 7 התאמות Vinnitsky נוספות. Source: IN131982 + IN139620, 2026.',
+  '@I9@': 'שרשרת האב: זבולון אליעזר היילפרין ~1525, פולין ← ... ← שלמה לנצמן ← מרדכי לנצמן (1889, פוקשני). נפטר 20 אוגוסט 1969. קבור: חולון, ישראל. DNA (IN131982): Steven Glanzman (76.96 cM) + David Glanzman (72.12 cM) — ancestry in Vinnytsia, Ukraine. Y-DNA J-FGC9941 ≠ עודד R-FGC8601 → קשר דרך אישה בשם Glanzman שנישאה ללנצמן (לא קו האב הישיר). שם "לנצמן" = כנראה Glanzman ללא G ראשונית (הסתגלות לרומנית). 7 התאמות Vinnitsky נוספות. ילדים (מ-MyHeritage): יהושע (אידור), אריה ליביו, שולה קרולינה (וירט), מרים (אמירון), צבי, שלמה שלמה. Source: IN131982 + IN139620 + MyHeritage, 2026.',
   // Shlomo Lanzman (father of Mordekhai) — Heilprin chain + Vinnitsky geographic cluster
   '@I30@': 'שרשרת האב: זבולון אליעזר היילפרין ~1525, פולין → ... → שלמה לנצמן (בלארוס/אוקראינה) → מרדכי לנצמן (פוקשני, רומניה). DNA: 7 התאמות Vinnitsky/Vinnytsia (IN131982) + Steven Glanzman (76.96 cM, Vinnytsia ancestry) — מצביעים על Vinnytsia, אוקראינה כמקור המשפחה. Bradley Gordon (R-FGC61409, 3 צעדים מעודד) = ענף אחי (Abraham Gozansky, בלארוס 1800s) שנשאר בבלארוס בזמן שלנצמן המשיך לרומניה. Source: IN131982 + IN139620, 2026.',
   // mtDNA HV5a — Sofia Duberstein (bat Bashet Ginzburg) is Yael's earliest known maternal mt ancestor per MyHeritage tree.
@@ -376,6 +379,45 @@ const MANUAL_MIGRATION_INFO_OVERRIDES: Record<string, string> = {
   // family migrated from Belarus (Pleshchenitsy area), she was born in Haifa,
   // then the family returned to Belarus around 1930.
   '@I12@': 'Born in Haifa (British Mandate). Family origin in Belarus (Pleshchenitsy area), with return to Belarus around 1930.',
+};
+
+/**
+ * Historical narratives — shown in the "Story" modal in PersonDetailPanel.
+ * Source: document "The Alperowitzes, the Fines and the Costrells" (Joshua Kastrel letters, 1988).
+ */
+const MANUAL_STORY_OVERRIDES: Record<string, string> = {
+  // Michael Miguel Castro (~1660, Spain) — Sephardic root; Rashi book will.
+  '@I1296@': `מיגל קסטרו נמלט מספרד לדרום צרפת כדי לחיות כיהודי חופשי לאחר שבדורות קודמים נאלצה המשפחה לאמץ נצרות. בספר רש"י עתיק ששמרה המשפחה, כתב מיגל הקדשה בספרדית בה ביקש מצאצאיו להוסיף את שמותיהם ונדודיהם לאותו דף — כדי לשמור על רצף השושלת שנאלצה לחיות כקתולית בספרד.
+
+(מקור: מכתבי יהושע קסטרל, 1988)`,
+
+  // Chivia Alperovitz (Fine) — mother of the Fine children; endogamy note.
+  '@I786@': `חיביה אלפרוביץ' הייתה בתם של ראובן ושושה אסתר אלפרוביץ' מסוסנקה, כפר יהודי קטן ליד קורנץ (בלארוס). היא התחתנה עם שמעון פיין, וביחד גידלו שישה ילדים: בשה (בסי), מרי, סם, מאיר, לאזא ורחל-לאה.
+
+משפחת אלפרוביץ' הייתה משפחת כוהנים גאה, שנהגה בנישואין פנים-משפחתיים (אנדוגמיה) — אחותה מרקה נישאה לדוד שלה מאישה אלפרוביץ'. חיביה הייתה דמות מרכזית בחיי הקהילה, שבניה ובנותיה פרשו לדרכים שונות — ממהפכנים עד אמנים.
+
+(מקור: מכתבי יהושע קסטרל, 1988)`,
+
+  // Mary Alpert (née Fine/Alperovitz) — visited Leo Tolstoy at Yasnaya Polyana 1905.
+  '@I1060@': `מרי עבדה בילדותה במפעל גפרורים בבוריסוב. בצעירותה חיה בבית דודה בטולה באווירה תרבותית ורוחנית עשירה. היא נהגה לנסוע בימי ראשון ליסנאיה פוליאנה — אחוזתו של הסופר הגדול לב טולסטוי — ולעמוד בפתח ולהקשיב לשיחות הסופר עם הסטודנטים והמבקרים.
+
+מרי הייתה עדה למהפכת 1905 ולדיכוי הדמים של הסטודנטים בכיכר העיר. ניסיונות חייה הופכו אותה לאחת הנשים המרתקות בסיפור המשפחה.
+
+(מקור: מכתבי יהושע קסטרל, 1988)`,
+
+  // Myer Fine — died of malnutrition after being caught reading secular books.
+  '@I1137@': `מאיר למד לימודי קודש אך התעניין בסתר במדע ובספרות "חיצונית". כשדודתו הדתית הקיצונית תפסה אותו קורא ספרי מדע שנחשבו "טרפים" — היא הורתה לכל בעלי הבתים בעיירה להפסיק להאכיל אותו.
+
+מנהג "ימי אכילה" היה נפוץ בעיירות: ילדים שנשלחו ללמוד היו אוכלים מדי יום בבית משפחה אחרת. כשנשללה ממנו זכות זו, נחלש מאיר מרעב, חלה בדלקת ריאות ומת בצעירותו — קורבן לקנאות דתית ולניכור חברתי.
+
+(מקור: מכתבי יהושע קסטרל, 1988)`,
+
+  // Rachel-Leah Fine — shot by Tsarist troops age 14; revolutionary martyr.
+  '@I1140@': `🎖️ רחל-לאה הייתה פעילה נלהבת בתנועה המהפכנית ברוסיה הצארית. היא הייתה בת 14 בלבד כשעלתה על הבמה בכיכר העיר ונשאה נאום פוליטי נלהב נגד משטר הצאר.
+
+חיילי הצאר פתחו עליה ועל הקהל באש. רחל-לאה נפלה במקום. היא נחשבת לגיבורת המשפחה — סמל האמונה במהפכה ובחירות, ומותה עיצב את הזהות הפוליטית של אחיה ואחיותיה לאורך שנים.
+
+(מקור: מכתבי יהושע קסטרל, 1988)`,
 };
 
 const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullName' | 'surname' | 'surnameFinal' | 'relationToYael'>>> = {
@@ -414,6 +456,11 @@ const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullNa
   '@I10@': { fullName: 'Mina Lanzmann', surname: 'Shvartz', surnameFinal: 'Lanzmann' }, // Mina Lanzmann (nee Shvartz)
   '@I49@': { fullName: 'Marcu Doron', surname: 'Shvartz Dascalu', surnameFinal: 'Doron' }, // Marcu Doron (formerly Shvartz Dascalu) — brother of Mina Lanzmann née Shvartz
   '@I48@': { fullName: 'Cherna Lanzmann Pinhas', surname: 'Lanzmann', surnameFinal: 'Pinhas' }, // Cherna née Lanzmann, married Pinhas — sister of Mordekhai Lanzmann
+  // @I32@ = Rabbi Dascaalu — real name confirmed from gravestone (Marcu Doron "בן אריה") + MyHeritage profile of Mina (Shvartz).
+  // Father's name: Arie Leib Shvartz. "Dascaalu" = title dascăl (Romanian: teacher/cantor). Surname: Shvartz.
+  '@I32@': { fullName: 'Arie Leib Shvartz (Dascaalu)', surname: 'Shvartz', surnameFinal: 'Shvartz' },
+  // @I786@ Chivia — GEDCOM stores married name Kappelowitz; birth name was Alperovitz.
+  '@I786@': { fullName: 'Chivia Alperovitz Fine', surname: 'Alperovitz', surnameFinal: 'Fine' },
   '@I163@': { fullName: 'Yael Lanzmann', surname: 'Shipper', surnameFinal: 'Lanzmann' }, // Yael Lanzmann (nee Shipper)
   '@I77@': { fullName: 'Mordechay Amiron', surname: 'Tekotzino', surnameFinal: 'Amiron' }, // Mordechay Amiron (formerly Tekotzino)
   // User-confirmed: Avrum should be in Vulis surname cluster.
@@ -1629,6 +1676,7 @@ function buildGraph() {
         supplementalSignals.partisanNames.has(normalizeNameForLookup(fullNameNormalized.clean)),
         migrationInfo
       ),
+      story: MANUAL_STORY_OVERRIDES[row.ged_id] || null,
     };
 
     persons.push(person);

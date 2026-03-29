@@ -3,8 +3,9 @@ import type { Person, Family } from '../types';
 import { DEFAULT_FILTERS, isUnknownPlaceholderPerson, type Filters } from './FilterPanel';
 import { getCanonicalSurnameLabel } from '../utils/surname';
 import { HolocaustMemorialPatchIcon } from './HolocaustMemorialPatchIcon';
+import { StoryModal } from './StoryModal';
 import {
-  Dna, Swords, GitMerge, Shield, Star, BookMarked, Scroll, Landmark, Ship,
+  Dna, Swords, GitMerge, Shield, Star, BookMarked, Scroll, Landmark, Ship, BookOpen,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -274,6 +275,7 @@ export function PersonDetailPanel({
   const t = language === 'he';
   const [showPathDetails, setShowPathDetails] = useState(false);
   const [showWhyShown, setShowWhyShown] = useState(false);
+  const [showStory, setShowStory] = useState(false);
   const isUnknownPlaceholder = isUnknownPlaceholderPerson(person);
   const personDisplayName = isUnknownPlaceholder
     ? (t ? 'אדם לא מזוהה' : 'Unknown person')
@@ -714,6 +716,28 @@ export function PersonDetailPanel({
           {person.fatherName && <div className="text-sm">{t ? 'אב:' : 'Father:'} {person.fatherName}</div>}
           {person.motherName && <div className="text-sm">{t ? 'אם:' : 'Mother:'} {person.motherName}</div>}
         </div>
+      )}
+
+      {person.story && (
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={() => setShowStory(true)}
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-amber-300 bg-amber-50 py-2.5 px-4 text-sm font-semibold text-amber-700 shadow-sm transition-all hover:border-amber-400 hover:bg-amber-100"
+          >
+            <BookOpen size={15} strokeWidth={1.8} />
+            {t ? '📖 קרא את סיפור המשפחה' : '📖 Read the family story'}
+          </button>
+        </div>
+      )}
+
+      {showStory && person.story && (
+        <StoryModal
+          personName={personDisplayName}
+          story={person.story}
+          onClose={() => setShowStory(false)}
+          language={language}
+        />
       )}
     </div>
   );
