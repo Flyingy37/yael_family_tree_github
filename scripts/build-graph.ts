@@ -333,6 +333,8 @@ const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullNa
   '@I1@': { fullName: 'Yael Livnat Zaidman', surname: 'Livnat', surnameFinal: 'Zaidman' },
   // User-confirmed: Arie Livnat's birth name was Liviu Leib Lanzman (Romanized) before Hebraization to Livnat.
   '@I4@': { surname: 'Lanzmann', surnameFinal: 'Livnat', relationToYael: 'אבא (אריה ליבנת)' }, // Arie (Liviu) Livnat, birth name Liviu Leib Lanzmann
+  // Sister of Arie (@I4@); same parents @F3@ (Mordekhai Marcu + Mina Lanzmann).
+  '@I21@': { relationToYael: 'דודה מצד האבא (אחות של אריה ליבנת)' }, // Shulamit Shula Wirth
   // User-confirmed surname history in close family branch.
   '@I22@': { surname: 'Lanzmann', surnameFinal: 'Amiron' }, // Mirriam Mali Amiron (nee Lanzmann)
   '@I47@': { surname: 'Amiron', surnameFinal: 'Kfir' }, // Hava Kfir (nee Amiron)
