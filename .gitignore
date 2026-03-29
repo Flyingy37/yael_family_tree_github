@@ -15,8 +15,8 @@ __pycache__/
 # Build output
 dist/
 
-# Generated data
-public/family-graph.json
+# Generated data — family-graph.json is tracked for Vercel (no private CSV on server).
+# Regenerate locally: npm run build-graph (requires data/canonical.csv).
 
 # Environment
 .env

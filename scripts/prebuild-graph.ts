@@ -1,34 +1,35 @@
 /**
- * Prebuild gate: run graph build only when canonical CSV exists locally (dev / CI with secrets).
- * On Vercel without private CSV, keep the committed `public/family-graph.json`.
+ * Runs before `vite build`. On Vercel there is no private `data/canonical.csv`, so we must not
+ * regenerate the graph from the tiny sample CSV (that would ship a near-empty tree).
+ *
+ * - If `data/canonical.csv` exists → run `build-graph.ts` (local / CI with secrets).
+ * - Else if `public/family-graph.json` exists → skip (use committed deployment artifact).
+ * - Else → run `build-graph.ts` (sample or empty graph for greenfield clones).
  */
-import { spawnSync } from 'child_process';
 import { existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(__dirname, '..');
 const canonicalPath = join(ROOT, 'data/canonical.csv');
 const graphPath = join(ROOT, 'public/family-graph.json');
-const tsxBin = join(ROOT, 'node_modules/.bin/tsx');
+
+function runBuildGraph() {
+  execSync('npx tsx scripts/build-graph.ts', { cwd: ROOT, stdio: 'inherit', env: process.env });
+}
 
 if (existsSync(canonicalPath)) {
-  const r = spawnSync(tsxBin, ['scripts/build-graph.ts'], {
-    cwd: ROOT,
-    stdio: 'inherit',
-    shell: false,
-  });
-  process.exit(r.status ?? 1);
-}
-
-if (existsSync(graphPath)) {
+  console.log('prebuild-graph: found data/canonical.csv — running build-graph');
+  runBuildGraph();
+} else if (existsSync(graphPath)) {
   console.log(
-    'prebuild-graph: data/canonical.csv missing; keeping committed public/family-graph.json'
+    'prebuild-graph: no data/canonical.csv — keeping committed public/family-graph.json (Vercel / CI deploy)',
   );
-  process.exit(0);
+} else {
+  console.log(
+    'prebuild-graph: no canonical.csv and no family-graph.json — running build-graph (sample fallback)',
+  );
+  runBuildGraph();
 }
-
-console.error(
-  'prebuild-graph: need data/canonical.csv or an existing public/family-graph.json'
-);
-process.exit(1);
