@@ -89,6 +89,12 @@ export default function LangLayout() {
             >
               {t('📊 תובנות', '📊 Insights')}
             </Link>
+            <Link
+              to={`/${lang}/archive`}
+              className="text-gray-600 hover:text-gray-900 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
+            >
+              {t('📚 ארכיון', '📚 Archive')}
+            </Link>
           </nav>
 
           <div className="flex-1" />

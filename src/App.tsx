@@ -5,6 +5,7 @@ import LangLayout from './app/[lang]/layout';
 import TreePage from './app/[lang]/tree/page';
 import PersonPage from './app/[lang]/person/[id]/page';
 import InsightsPage from './app/[lang]/insights/page';
+import ArchivePage from './app/[lang]/archive/page';
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="tree" element={<TreePage />} />
         <Route path="person/:id" element={<PersonPage />} />
         <Route path="insights" element={<InsightsPage />} />
+        <Route path="archive" element={<ArchivePage />} />
       </Route>
 
       {/* Legacy /explore/* redirects */}
