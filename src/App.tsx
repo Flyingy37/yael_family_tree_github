@@ -14,7 +14,7 @@ export default function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/about" element={<AboutPage />} />
 
-      {/* ── App routes ── /:lang/{tree,person/:id,insights} ─────────── */}
+      {/* ── App routes ── /:lang/{tree,person/:id,insights,archive} ─ */}
       <Route path="/:lang" element={<LangLayout />}>
         <Route index element={<Navigate to="tree" replace />} />
         <Route path="tree" element={<TreePage />} />

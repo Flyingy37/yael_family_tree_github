@@ -2,23 +2,22 @@
 
 ## Cursor Cloud specific instructions
 
-This is a **React + TypeScript family tree web application** built with Vite, Tailwind CSS, ReactFlow, and Leaflet. It visualizes genealogy data across tree, map, timeline, and statistics views.
+This is a **React + TypeScript family tree web application** built with Vite, Tailwind CSS, ReactFlow, and Leaflet. It visualizes genealogy data across tree, map, timeline, statistics, narrative archive, and person profile views.
 
-### Data files (private — not in public repo)
+### Data files (private — often gitignored)
 
-<<<<<<< Current (Your changes)
-- `canonical_genealogy_master_patched_manual_surnames_equivalences_2026-03-14.csv` - master genealogy dataset (~4,145 records, 13 columns)
-- `heritage_6_mar_26 - FamilyTree.csv` - MyHeritage export (~4,067 records, 43 columns)
-- `Family_Tree_Yael_Livnat.csv` - Hebrew-language family tree (~352 records, semicolon-delimited)
-- `Family_Tree_Yael_Livnat_IMPROVED.csv` - small stub/template (5 records)
-=======
-The build script (`scripts/build-graph.ts`) reads two CSV files that are **gitignored** for privacy:
->>>>>>> Incoming (Background Agent changes)
+**Paths used by `scripts/build-graph.ts`:**
 
 - `data/canonical.csv` — master person records (GEDCOM-style columns: `ged_id`, `full_name`, `sex`, `birth_date`, `birth_place`, `fams`, `famc`, `note_plain`, etc.)
-- `data/curated.csv` — curated subset with Hebrew columns and relationship metadata
+- `data/curated.csv` — optional curated subset with Hebrew columns and relationship metadata
 
-If these files are missing, create minimal sample data matching the column schema in `scripts/build-graph.ts` (interfaces `RawCanonical` and `RawCurated`). The build script outputs `public/family-graph.json`.
+You may keep other exports locally under different filenames (for example master genealogy CSV or MyHeritage dumps); copy or symlink into `data/canonical.csv` when building.
+
+If `canonical.csv` is missing locally, `build-graph.ts` may fall back to `data/sample/canonical.sample.csv` (small stub) unless you rely on a pre-generated `public/family-graph.json`.
+
+**Production / CI (e.g. Vercel):** `npm run build` runs `prebuild` → `scripts/prebuild-graph.ts`. When `data/canonical.csv` is absent, the committed `public/family-graph.json` is left in place so the full graph ships without private CSV.
+
+Output of a full graph build: `public/family-graph.json`.
 
 ### Key commands
 
@@ -31,16 +30,18 @@ If these files are missing, create minimal sample data matching the column schem
 
 ### Dev server notes
 
-- `npm run dev` first executes `tsx scripts/build-graph.ts` to regenerate `public/family-graph.json`, then starts Vite on `http://localhost:5173`.
-- The build-graph script also optionally reads supplemental RTF files from `~/Downloads/` and a `surnames.csv` — these are not required; the script gracefully skips them when absent.
+- `npm run dev` runs `tsx scripts/build-graph.ts` then Vite on `http://localhost:5173/`.
+- `build-graph.ts` may read supplemental RTF files from `~/Downloads/` and `surnames.csv`; it skips them when absent.
 - No linter is configured in `package.json`. Use `npx tsc --noEmit` for type checking.
 - The app fetches `/family-graph.json` at runtime; if the file is missing or empty, the UI shows a loading error.
 
 ### Routes
 
-- `/` — Landing/home page
+- `/` — Landing / home
 - `/about` — About page
-- `/explore/tree` — Interactive family tree (ReactFlow + Dagre layout)
-- `/explore/map` — Leaflet map with person location markers
-- `/explore/timeline` — Decade-based event timeline
-- `/explore/statistics` — Statistics view
+- `/:lang/tree` — Family explorer (default view: tree). Query `?view=map`, `?view=timeline`, or `?view=stats` switches tabs inside the explorer (`he` | `en`).
+- `/:lang/person/:id` — Person profile
+- `/:lang/insights` — Statistics / analytics view
+- `/:lang/archive` — Narrative family archive (searchable stories)
+
+Legacy `/explore/*` paths redirect to `/he/tree` or `/he/insights` as appropriate.

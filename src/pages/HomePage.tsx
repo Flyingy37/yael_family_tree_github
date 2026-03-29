@@ -12,6 +12,7 @@ const COPY = {
       { view: 'timeline',  icon: '📅', title: 'ציר זמן משפחתי',     text: 'לידות, פטירות ואירועים לאורך הדורות - בסדר כרונולוגי.' },
       { view: 'map',       icon: '🗺️', title: 'מסע על המפה',         text: 'איפה המשפחה חיה ונעה - נקודות מרכזיות על גבי מפה.' },
       { view: 'insights',  icon: '📊', title: 'תמונת עומק',          text: 'סטטיסטיקות וסינונים מתקדמים למי שרוצה לחקור לעומק.' },
+      { view: 'archive',   icon: '📚', title: 'ארכיון נרטיבי',       text: 'סיפורים, מכתבים וחיפוש חכם לפי שמות וכינויים היסטוריים.' },
     ],
     about: 'אודות הפרויקט והמקורות',
     lang: 'EN',
@@ -26,6 +27,7 @@ const COPY = {
       { view: 'timeline',  icon: '📅', title: 'Family timeline',          text: 'Births, deaths, and events in chronological order.' },
       { view: 'map',       icon: '🗺️', title: 'Journey on the map',       text: 'Where the family lived and moved - key locations at a glance.' },
       { view: 'insights',  icon: '📊', title: 'Deeper picture',           text: 'Statistics and filters for researchers who want more detail.' },
+      { view: 'archive',   icon: '📚', title: 'Narrative archive',        text: 'Stories, letters, and smart search across historical name variants.' },
     ],
     about: 'About this project & sources',
     lang: 'עב',
@@ -35,6 +37,7 @@ const COPY = {
 /** Build the correct app URL for a given view and language. */
 function viewHref(lang: 'he' | 'en', view: string): string {
   if (view === 'insights') return `/${lang}/insights`;
+  if (view === 'archive') return `/${lang}/archive`;
   if (view === 'tree') return `/${lang}/tree`;
   return `/${lang}/tree?view=${view}`;
 }
