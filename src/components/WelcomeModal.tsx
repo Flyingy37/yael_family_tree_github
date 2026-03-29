@@ -77,6 +77,7 @@ export function WelcomeModal({ language }: WelcomeModalProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="welcome-modal-title"
+        aria-describedby="welcome-modal-description"
         className={`bg-white w-full max-w-md mx-4 rounded-2xl shadow-2xl p-6 relative transition-all duration-300 ease-out ${
           entered ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.97]'
         }`}
@@ -85,7 +86,7 @@ export function WelcomeModal({ language }: WelcomeModalProps) {
         <button
           type="button"
           onClick={dismiss}
-          className="absolute top-4 end-4 text-slate-400 hover:text-slate-600 bg-slate-100 rounded-full p-1"
+          className="absolute top-4 end-4 text-slate-400 hover:text-slate-600 bg-slate-100 rounded-full p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
           aria-label={t.closeLabel}
         >
           <X size={20} aria-hidden />

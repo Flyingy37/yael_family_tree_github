@@ -4,7 +4,7 @@
  * provides LangContext to all child pages via <Outlet />.
  */
 import { createContext, useContext, useEffect } from 'react';
-import { Outlet, useParams, useNavigate, Link } from 'react-router-dom';
+import { Outlet, useParams, useNavigate, Link, NavLink } from 'react-router-dom';
 import { useUiLanguage, type UiLanguage } from '../../hooks/useUiLanguage';
 
 // ── Language context ──────────────────────────────────────────────────────────
@@ -63,50 +63,83 @@ export default function LangLayout() {
         className="h-screen flex flex-col bg-gray-50"
         dir={lang === 'he' ? 'rtl' : 'ltr'}
       >
+        <a
+          href="#main-content"
+          className="fixed start-4 top-0 z-[200] -translate-y-full rounded-md bg-amber-800 px-3 py-2 text-sm font-medium text-white shadow-lg transition-transform focus:translate-y-4 focus:outline-none focus:ring-2 focus:ring-amber-200"
+        >
+          {t('דלג לתוכן', 'Skip to content')}
+        </a>
         {/* ── Top nav ───────────────────────────────────────────────── */}
-        <header className="flex items-center gap-3 px-4 py-2 bg-white border-b border-gray-200 shadow-sm flex-shrink-0">
+        <header className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2 bg-white border-b border-gray-200 shadow-sm flex-shrink-0">
           <Link
             to={`/${lang}/tree`}
-            className="text-lg font-bold text-gray-800 whitespace-nowrap hover:text-amber-700 transition-colors"
+            className="text-lg font-bold text-gray-800 whitespace-nowrap hover:text-amber-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 rounded-sm"
           >
             🌳 {t('משפחת ליבנת-זיידמן', 'Livnat-Zaidman Family Tree')}
           </Link>
 
-          <div className="flex items-center gap-1 text-sm text-gray-500 mx-2">
+          <div className="hidden sm:flex items-center gap-1 text-sm text-gray-400 mx-1" aria-hidden>
             <span>|</span>
           </div>
 
-          <nav className="flex items-center gap-2 text-sm">
-            <Link
+          <nav
+            className="flex flex-wrap items-center gap-1 text-sm"
+            aria-label={t('ניווט ראשי', 'Main navigation')}
+          >
+            <NavLink
               to={`/${lang}/tree`}
-              className="text-gray-600 hover:text-gray-900 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
+              className={({ isActive }) =>
+                `px-2 py-1 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 ${
+                  isActive
+                    ? 'bg-amber-100 text-amber-950 font-medium'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`
+              }
             >
               {t('🌳 עץ', '🌳 Tree')}
-            </Link>
-            <Link
+            </NavLink>
+            <NavLink
               to={`/${lang}/insights`}
-              className="text-gray-600 hover:text-gray-900 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
+              className={({ isActive }) =>
+                `px-2 py-1 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 ${
+                  isActive
+                    ? 'bg-amber-100 text-amber-950 font-medium'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`
+              }
             >
               {t('📊 תובנות', '📊 Insights')}
-            </Link>
-            <Link
+            </NavLink>
+            <NavLink
               to={`/${lang}/archive`}
-              className="text-gray-600 hover:text-gray-900 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
+              className={({ isActive }) =>
+                `px-2 py-1 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 ${
+                  isActive
+                    ? 'bg-amber-100 text-amber-950 font-medium'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`
+              }
             >
               {t('📚 ארכיון', '📚 Archive')}
-            </Link>
+            </NavLink>
           </nav>
 
-          <div className="flex-1" />
+          <div className="flex-1 min-w-[1rem]" />
 
           {/* Language switcher */}
-          <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5">
+          <div
+            className="flex gap-1 bg-gray-100 rounded-lg p-0.5"
+            role="group"
+            aria-label={t('בחירת שפת ממשק', 'Interface language')}
+          >
             {(['he', 'en'] as const).map(l => (
               <button
                 key={l}
                 type="button"
                 onClick={() => setLang(l)}
-                className={`px-2 py-1 rounded text-xs transition-colors ${
+                aria-pressed={lang === l}
+                aria-label={l === 'he' ? t('עברית', 'Hebrew') : t('אנגלית', 'English')}
+                className={`px-2 py-1 rounded text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-1 ${
                   lang === l
                     ? 'bg-white shadow-sm font-medium text-gray-800'
                     : 'text-gray-500 hover:text-gray-700'
@@ -119,7 +152,11 @@ export default function LangLayout() {
         </header>
 
         {/* ── Page content ──────────────────────────────────────────── */}
-        <main className="flex-1 overflow-hidden">
+        <main
+          className="flex-1 overflow-hidden min-h-0"
+          id="main-content"
+          aria-label={t('תוכן האפליקציה', 'Application content')}
+        >
           <Outlet />
         </main>
       </div>

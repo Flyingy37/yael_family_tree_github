@@ -92,8 +92,10 @@ export function SearchBar({ searchIndex, onSelect, language = 'en', allowedPerso
     }
   }
 
+  const listboxId = 'searchbar-results';
+
   return (
-    <div ref={containerRef} className="relative flex-shrink-0 z-20 w-72 max-w-[min(18rem,100vw-8rem)]" dir={t ? 'rtl' : 'ltr'}>
+    <div ref={containerRef} className="relative flex-shrink-0 z-20 w-72 max-w-[min(18rem,100vw-8rem)] min-w-[10rem]" dir={t ? 'rtl' : 'ltr'}>
       <div className="relative bg-white rounded-full shadow-md border border-slate-200 flex items-center px-3 py-1.5 gap-0.5">
         <Search size={18} className="text-slate-400 flex-shrink-0 pointer-events-none" aria-hidden />
         <input
@@ -108,9 +110,10 @@ export function SearchBar({ searchIndex, onSelect, language = 'en', allowedPerso
           onFocus={() => results.length > 0 && setIsOpen(true)}
           placeholder={t ? 'חיפוש קרוב משפחה...' : 'Search relative...'}
           aria-label={t ? 'חיפוש אנשים בעץ המשפחה' : 'Search people in family tree'}
-          aria-expanded={isOpen}
+          aria-expanded={isOpen && results.length > 0}
+          aria-controls={results.length > 0 ? listboxId : undefined}
           aria-autocomplete="list"
-          className="min-w-0 flex-1 bg-transparent border-none focus:outline-none focus:ring-0 px-2 text-sm text-slate-700 placeholder:text-slate-400"
+          className="min-w-0 flex-1 bg-transparent border-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/80 focus-visible:ring-offset-0 rounded-full px-2 text-sm text-slate-700 placeholder:text-slate-400"
         />
         {query ? (
           <button
@@ -120,7 +123,7 @@ export function SearchBar({ searchIndex, onSelect, language = 'en', allowedPerso
               setIsOpen(false);
               inputRef.current?.focus();
             }}
-            className="text-slate-400 hover:text-slate-600 p-0.5 rounded-full flex-shrink-0"
+            className="text-slate-400 hover:text-slate-600 p-0.5 rounded-full flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
             aria-label={t ? 'נקה חיפוש' : 'Clear search'}
           >
             <X size={16} aria-hidden />
@@ -130,6 +133,7 @@ export function SearchBar({ searchIndex, onSelect, language = 'en', allowedPerso
 
       {isOpen && results.length > 0 && (
         <div
+          id={listboxId}
           role="listbox"
           className="absolute top-full left-0 right-0 mt-2 w-full bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 max-h-60 overflow-y-auto"
         >
@@ -139,7 +143,7 @@ export function SearchBar({ searchIndex, onSelect, language = 'en', allowedPerso
               type="button"
               role="option"
               aria-selected={index === highlightedIndex}
-              className={`w-full px-4 py-3 ${t ? 'text-right' : 'text-left'} transition-colors border-b border-slate-50 last:border-0 flex flex-col gap-0.5 ${
+              className={`w-full px-4 py-3 ${t ? 'text-right' : 'text-left'} transition-colors border-b border-slate-50 last:border-0 flex flex-col gap-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-amber-400 ${
                 index === highlightedIndex ? 'bg-slate-100' : 'hover:bg-slate-50'
               }`}
               onMouseEnter={() => setHighlightedIndex(index)}

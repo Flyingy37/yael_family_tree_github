@@ -277,7 +277,7 @@ export default function FamilyExplorer() {
                     document.getElementById(`explorer-tab-${nextId}`)?.focus({ preventScroll: true });
                   });
                 }}
-                className={`px-3 py-1.5 rounded-md text-sm transition-colors whitespace-nowrap ${
+                className={`px-3 py-1.5 rounded-md text-sm transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 ${
                   viewMode === tab.id
                     ? 'bg-white shadow-sm font-medium text-gray-800'
                     : 'text-gray-500 hover:text-gray-700'
@@ -298,7 +298,7 @@ export default function FamilyExplorer() {
           <button
             type="button"
             onClick={handleExportVitals}
-            className={`text-xs px-2.5 py-1.5 rounded-md border transition-colors whitespace-nowrap ${
+            className={`text-xs px-2.5 py-1.5 rounded-md border transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 ${
               hasVitalsSnapshot
                 ? 'border-gray-300 text-gray-600 hover:bg-gray-100'
                 : 'border-gray-200 text-gray-400 hover:bg-gray-50'
