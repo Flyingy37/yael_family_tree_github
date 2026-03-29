@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Fuse from 'fuse.js';
 import type { Person, Family, FamilyGraph } from '../types';
+import { normalizeGraphPerson } from '../utils/coerceGraphPerson';
 
 export interface FamilyData {
   persons: Map<string, Person>;
@@ -35,7 +36,10 @@ export function useFamilyData(): FamilyData {
         return res.json();
       })
       .then((data: FamilyGraph) => {
-        setGraph(data);
+        setGraph({
+          ...data,
+          persons: data.persons.map(normalizeGraphPerson),
+        });
       })
       .catch((err: unknown) => {
         if (err instanceof DOMException && err.name === 'AbortError') return;
@@ -53,7 +57,7 @@ export function useFamilyData(): FamilyData {
     if (!graph) return new Map<string, Person>();
     const map = new Map<string, Person>();
     for (const p of graph.persons) {
-      map.set(p.id, p);
+      map.set(p.id, normalizeGraphPerson(p));
     }
     return map;
   }, [graph]);
@@ -67,7 +71,10 @@ export function useFamilyData(): FamilyData {
     return map;
   }, [graph]);
 
-  const personList = useMemo(() => graph?.persons || [], [graph]);
+  const personList = useMemo(
+    () => (graph?.persons || []).map(normalizeGraphPerson),
+    [graph]
+  );
 
   const searchablePeople = useMemo(() => {
     const normalize = (value: string): string => {
