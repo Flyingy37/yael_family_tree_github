@@ -1,5 +1,5 @@
 import { useMemo, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
@@ -64,6 +64,110 @@ function clusterToLocation(cluster: ClusterPoint): GeocodedLocation {
     resolved_name: places.length > 1 ? places.join(' · ') : primary,
     peopleCount: cluster.persons.length,
   };
+}
+
+/** Strip HTML and collapse whitespace for safe popup text. */
+function plainTextSnippet(raw: string | null | undefined, maxLen: number): string | null {
+  if (!raw?.trim()) return null;
+  const plain = raw
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!plain) return null;
+  if (plain.length <= maxLen) return plain;
+  return `${plain.slice(0, Math.max(0, maxLen - 1))}…`;
+}
+
+function lifespanLabel(p: Person): string | null {
+  const b = p.birthDate?.trim();
+  const d = p.deathDate?.trim();
+  if (b && d) return `${b} – ${d}`;
+  if (b) return b;
+  if (d) return d;
+  return null;
+}
+
+interface MapPersonBlockProps {
+  person: Person;
+  onSelect: (id: string) => void;
+  t: boolean;
+}
+
+function MapPersonBlock({ person: p, onSelect, t }: MapPersonBlockProps) {
+  const life = lifespanLabel(p);
+  const hebrewAlt =
+    p.hebrewName && p.hebrewName.trim() && p.hebrewName.trim() !== p.fullName.trim()
+      ? p.hebrewName.trim()
+      : null;
+  const noteSrc = p.note_plain?.trim() || p.note;
+  const snippet = plainTextSnippet(noteSrc, t ? 130 : 160);
+  const migrationShort = plainTextSnippet(p.migrationInfo, t ? 100 : 120);
+  const tags = (p.tags || []).slice(0, 5);
+
+  return (
+    <button
+      type="button"
+      className={`block w-full text-start rounded-lg border border-slate-100 bg-slate-50/80 px-2 py-1.5 mb-1.5 hover:bg-blue-50/90 hover:border-blue-100 transition-colors ${t ? 'text-right' : 'text-left'}`}
+      onClick={() => onSelect(p.id)}
+    >
+      <span className="font-semibold text-slate-800 text-[13px] leading-tight block">{p.fullName}</span>
+      {hebrewAlt && (
+        <span className="block text-[11px] text-slate-600 mt-0.5 leading-snug">{hebrewAlt}</span>
+      )}
+      {life && (
+        <span className="block text-[11px] text-slate-500 mt-0.5">
+          {t ? 'תאריכים: ' : ''}
+          {life}
+        </span>
+      )}
+      {p.title && (
+        <span className="block text-[10px] text-slate-500 mt-0.5 italic leading-snug line-clamp-2">
+          {p.title}
+        </span>
+      )}
+      {p.relationToYael && (
+        <span className="block text-[11px] text-violet-700 mt-1 leading-snug">{p.relationToYael}</span>
+      )}
+      {(p.holocaustVictim || p.warCasualty) && (
+        <span className="flex flex-wrap gap-1 mt-1">
+          {p.holocaustVictim && (
+            <span className="text-[9px] font-medium uppercase tracking-wide bg-rose-100 text-rose-800 px-1.5 py-0.5 rounded">
+              {t ? 'שואה' : 'Shoah'}
+            </span>
+          )}
+          {p.warCasualty && (
+            <span className="text-[9px] font-medium uppercase tracking-wide bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded">
+              {t ? 'נפילה בקרב' : 'War'}
+            </span>
+          )}
+        </span>
+      )}
+      {tags.length > 0 && (
+        <span className="flex flex-wrap gap-0.5 mt-1">
+          {tags.map(tag => (
+            <span
+              key={tag}
+              className="text-[9px] font-medium bg-white text-slate-600 border border-slate-200 px-1 py-px rounded"
+            >
+              {tag}
+            </span>
+          ))}
+        </span>
+      )}
+      {migrationShort && (
+        <span className="block text-[10px] text-sky-800 mt-1 leading-snug border-s border-sky-200 ps-1.5">
+          {t ? 'מסלול: ' : ''}
+          {migrationShort}
+        </span>
+      )}
+      {snippet && (
+        <span className="block text-[10px] text-slate-600 mt-1 leading-relaxed line-clamp-3">{snippet}</span>
+      )}
+      <span className="block text-[10px] text-blue-600 mt-1 font-medium">
+        {t ? 'לחצו לפרטים מלאים ←' : 'Open details →'}
+      </span>
+    </button>
+  );
 }
 
 export function MapView({ persons, filteredIds, onSelectPerson, language = 'en' }: Props) {
@@ -139,9 +243,19 @@ export function MapView({ persons, filteredIds, onSelectPerson, language = 'en' 
           const distinctPlaces = new Set(
             cluster.persons.map(p => p.birthPlace).filter(Boolean)
           );
+          const sortedPersons = [...cluster.persons].sort((a, b) =>
+            a.fullName.localeCompare(b.fullName, undefined, { sensitivity: 'base' })
+          );
+          const tooltipLine =
+            loc.peopleCount != null && loc.peopleCount > 1
+              ? `${loc.original_location} (${loc.peopleCount})`
+              : sortedPersons[0]?.fullName || loc.original_location;
           return (
             <Marker key={cluster.key} position={[cluster.lat, cluster.lng]}>
-              <Popup>
+              <Tooltip direction="top" offset={[0, -10]} opacity={0.92}>
+                <span dir={t ? 'rtl' : 'ltr'}>{tooltipLine}</span>
+              </Tooltip>
+              <Popup maxWidth={440} className="map-person-popup">
                 <div className={t ? 'text-right' : 'text-left'} dir={t ? 'rtl' : 'ltr'}>
                   <strong className="block text-[15px] text-slate-800 mb-1">{loc.original_location}</strong>
                   {distinctPlaces.size > 1 && (
@@ -154,23 +268,10 @@ export function MapView({ persons, filteredIds, onSelectPerson, language = 'en' 
                         : `${loc.peopleCount} family members at this place`}
                     </div>
                   )}
-                  <div className="max-h-48 overflow-y-auto text-xs border-t border-slate-100 pt-2 mt-1 space-y-0.5">
-                    {cluster.persons.slice(0, 20).map(p => (
-                      <button
-                        key={p.id}
-                        type="button"
-                        className={`block w-full py-0.5 text-blue-600 hover:underline ${t ? 'text-right' : 'text-left'}`}
-                        onClick={() => onSelectPerson(p.id)}
-                      >
-                        {p.fullName}
-                        {p.birthDate && <span className="text-slate-400"> ({p.birthDate})</span>}
-                      </button>
+                  <div className="max-h-[min(70vh,22rem)] overflow-y-auto text-xs border-t border-slate-100 pt-2 mt-1">
+                    {sortedPersons.map(p => (
+                      <MapPersonBlock key={p.id} person={p} onSelect={onSelectPerson} t={t} />
                     ))}
-                    {cluster.persons.length > 20 && (
-                      <div className="text-slate-400 pt-1">
-                        +{cluster.persons.length - 20} {t ? 'נוספים…' : 'more…'}
-                      </div>
-                    )}
                   </div>
                 </div>
               </Popup>

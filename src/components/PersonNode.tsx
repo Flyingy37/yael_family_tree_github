@@ -16,6 +16,7 @@ import {
   ChevronDown,
   ChevronUp,
   Plus,
+  Sparkles,
   type LucideIcon,
 } from 'lucide-react';
 import type { Person } from '../types';
@@ -114,6 +115,7 @@ const TAG_CONFIG: Record<string, TagConfig> = {
   Lineage: { Icon: Scroll, labelEn: 'Notable lineage', labelHe: 'ייחוס', color: '#5b21b6', bg: '#ede9fe' },
   Heritage: { Icon: Landmark, labelEn: 'Jewish heritage', labelHe: 'מסורת', color: '#065f46', bg: '#d1fae5' },
   Migration: { Icon: Ship, labelEn: 'Migration', labelHe: 'הגירה', color: '#0e7490', bg: '#cffafe' },
+  Cohen: { Icon: Sparkles, labelEn: 'Kohen', labelHe: 'כהן', color: '#1c398e', bg: '#e8eeff' },
 };
 
 interface BadgeEntry {

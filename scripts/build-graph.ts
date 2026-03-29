@@ -844,6 +844,15 @@ function hasVerifiedDnaMatchEvidence(row: RawCanonical, dnaInfo: string | null):
   return true;
 }
 
+/** Male persons tied to the Lanzmann surname cluster (patrilineal line in CSV + birth-name Lanzman). */
+function isLanzmannPatrilineMale(row: RawCanonical): boolean {
+  if (row.sex !== 'M') return false;
+  const blob = [row.surname, row.surname_final, row.full_name, row.note_plain, row.note]
+    .filter(Boolean)
+    .join('\n');
+  return /lanzmann|lanzman|lantzman/i.test(blob);
+}
+
 function extractTags(
   row: RawCanonical,
   hasVerifiedDnaEvidence: boolean,
@@ -948,6 +957,10 @@ function extractTags(
 
   if (migrationInfo) {
     tags.add('Migration');
+  }
+
+  if (isLanzmannPatrilineMale(row)) {
+    tags.add('Cohen');
   }
 
   const manualTags = MANUAL_TAG_OVERRIDES[row.ged_id] || [];
