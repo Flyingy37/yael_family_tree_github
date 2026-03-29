@@ -12,7 +12,7 @@ import {
   type Node,
   type Edge,
 } from '@xyflow/react';
-import { RouteIcon, X, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
+import { RouteIcon, X, CheckCircle, AlertCircle, RefreshCw, ArrowLeftRight, UserRound } from 'lucide-react';
 import '@xyflow/react/dist/style.css';
 import { PersonNode } from './PersonNode';
 import { GenerationBandNode } from './GenerationBandNode';
@@ -58,6 +58,9 @@ interface Props {
   onSelectPerson: (id: string) => void;
   onFocusSubtree?: (id: string) => void;
   language?: 'en' | 'he';
+  /** When set once, opens path mode with this person as the first selection */
+  pathCompareSeedId?: string | null;
+  onPathCompareSeedConsumed?: () => void;
 }
 
 export function TreeView({
@@ -69,6 +72,8 @@ export function TreeView({
   onSelectPerson,
   onFocusSubtree,
   language = 'en',
+  pathCompareSeedId = null,
+  onPathCompareSeedConsumed,
 }: Props) {
   const { fitView } = useReactFlow();
   const t = language === 'he';
@@ -159,6 +164,30 @@ export function TreeView({
   const [pathMode, setPathMode] = useState(false);
   const [pathPersonA, setPathPersonA] = useState<string | null>(null);
   const [pathResult, setPathResult] = useState<string[] | null>(null); // ordered IDs on path
+  const [pathEndpoints, setPathEndpoints] = useState<{ from: string; to: string } | null>(null);
+
+  useEffect(() => {
+    if (!pathCompareSeedId || !persons.has(pathCompareSeedId)) return;
+    setPathMode(true);
+    setPathPersonA(pathCompareSeedId);
+    setPathResult(null);
+    setPathEndpoints(null);
+    onPathCompareSeedConsumed?.();
+  }, [pathCompareSeedId, persons, onPathCompareSeedConsumed]);
+
+  useEffect(() => {
+    if (!pathMode) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setPathMode(false);
+        setPathPersonA(null);
+        setPathResult(null);
+        setPathEndpoints(null);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [pathMode]);
 
   const pathHighlightIds = useMemo(
     () => (pathResult ? new Set(pathResult) : new Set<string>()),
@@ -182,8 +211,10 @@ export function TreeView({
         // Entering path mode: clear previous result
         setPathResult(null);
         setPathPersonA(null);
+        setPathEndpoints(null);
       } else {
         setPathPersonA(null);
+        setPathEndpoints(null);
       }
       return !prev;
     });
@@ -240,8 +271,11 @@ export function TreeView({
         } else if (pathPersonA === id) {
           setPathPersonA(null); // deselect first person
         } else {
-          const path = findPathBFS(pathPersonA, id, persons, families);
+          const a = pathPersonA;
+          const path = findPathBFS(a, id, persons, families);
           setPathResult(path);
+          if (path.length > 0) setPathEndpoints({ from: a, to: id });
+          else setPathEndpoints(null);
           setPathPersonA(null);
           // keep pathMode open so user can search again
         }
