@@ -332,6 +332,9 @@ const MANUAL_TITLE_APPEND_OVERRIDES: Record<string, string> = {
   '@I80@':  'Yehuda "Yudel" Alperovich (~1850–1917). אב-קדמון 4 דורות. MyHeritage 12 SmartMatches — מידע חדש: אחים.',
   '@I198@': 'Meir Alperovich (10 Nov 1819–17 Mar 1900). אב-קדמון 5 דורות. MyHeritage 15 SmartMatches — מידע חדש: מקום פטירה, מקום מגורים.',
   '@I349@': 'Reuven Alperovitch (~1823–~1890). אב-קדמון 6 דורות. MyHeritage 5 SmartMatches — מידע חדש: תמונה, עיסוק, מקום מגורים, השכלה.',
+  // ── Lanzmann & Shvartz siblings ───────────────────────────────────────
+  '@I48@': 'נולדה לנצמן. אחות של מרדכי מרקו לנצמן (@I9@). נישאה לפנחס (Pinhas). נולדה פוקשני 1 אוקטובר 1903.',
+  '@I49@': 'אח של מינה לנצמן (לבית שוורץ). שם נעורים: שוורץ-דסקלו. נולד רומניה 1914. נפטר 17 מאי 1984, גבעת שמואל, ישראל.',
   // ── Lanzmann paternal branch DNA findings (IN131982) ───────────────────
   // Mina Lanzmann née Shvartz: 629 autosomal matches with Schwartz surname cluster.
   // Strongest: Nelson D. Schwartz 80.47 cM (3rd-5th cousin), T-CTS6507.
@@ -410,7 +413,8 @@ const MANUAL_PERSON_FIELD_OVERRIDES: Record<string, Partial<Pick<Person, 'fullNa
   '@I114@': { surname: 'Vulis', surnameFinal: 'Levi' }, // Ester Levi (nee Vulis)
   '@I218@': { fullName: 'Boaz Bar Levi', surname: 'Levi', surnameFinal: 'Bar Levi' }, // Son listed as Boaz Bar Levi (formerly Levi)
   '@I10@': { fullName: 'Mina Lanzmann', surname: 'Shvartz', surnameFinal: 'Lanzmann' }, // Mina Lanzmann (nee Shvartz)
-  '@I49@': { fullName: 'Marcu Doron', surname: 'Shvartz Dascalu', surnameFinal: 'Doron' }, // Marcu Doron (formerly Shvartz Dascalu)
+  '@I49@': { fullName: 'Marcu Doron', surname: 'Shvartz Dascalu', surnameFinal: 'Doron' }, // Marcu Doron (formerly Shvartz Dascalu) — brother of Mina Lanzmann née Shvartz
+  '@I48@': { fullName: 'Cherna Lanzmann Pinhas', surname: 'Lanzmann', surnameFinal: 'Pinhas' }, // Cherna née Lanzmann, married Pinhas — sister of Mordekhai Lanzmann
   '@I163@': { fullName: 'Yael Lanzmann', surname: 'Shipper', surnameFinal: 'Lanzmann' }, // Yael Lanzmann (nee Shipper)
   '@I77@': { fullName: 'Mordechay Amiron', surname: 'Tekotzino', surnameFinal: 'Amiron' }, // Mordechay Amiron (formerly Tekotzino)
   // User-confirmed: Avrum should be in Vulis surname cluster.
