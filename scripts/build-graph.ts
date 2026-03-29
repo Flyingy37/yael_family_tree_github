@@ -350,9 +350,9 @@ const MANUAL_TITLE_APPEND_OVERRIDES: Record<string, string> = {
   // Steven Glanzman (76.96 cM, J-FGC9941) + David Glanzman (72.12 cM, J-FGC9941) — Vinnitsky/Vinnytsia, Ukraine
   // Oded Y-DNA = R-FGC8601 ≠ J-FGC9941 → connection is NOT direct paternal line
   // Conclusion: a Glanzman woman married into Lanzmann (or vice versa), or "Lanzmann" is a variant spelling only
-  '@I9@': 'DNA (IN131982): Steven Glanzman (76.96 cM) + David Glanzman (72.12 cM) share surname Glanzman with ancestry in Vinnytsia, Ukraine. Both Y-DNA J-FGC9941 ≠ Oded Y-DNA R-FGC8601 → connection via female line (Glanzman woman married into Lanzmann family, or shared maternal ancestor). Also 7 matches with Vinnitsky/Vinnytsia surname, suggesting Lanzmann family origin in Vinnytsia area, Ukraine. Source: DNA analysis IN131982, 2026.',
-  // Shlomo Lanzman (father of Mordekhai) — Vinnitsky geographic cluster
-  '@I30@': 'Research note: family origin linked to Abraham Guzhinsky; likely Belarus/Ukraine. DNA support: 7 Vinnitsky/Vinnytsia matches in IN131982 autosomal analysis, plus Steven Glanzman (Vinnytsia ancestry, 76.96 cM) — points to Vinnytsia, Ukraine as probable region of origin for the Lanzmann/Glanzman family. Source: DNA analysis 2026.',
+  '@I9@': 'שרשרת האב: זבולון אליעזר היילפרין ~1525, פולין ← ... ← שלמה לנצמן ← מרדכי לנצמן (1889, פוקשני). DNA (IN131982): Steven Glanzman (76.96 cM) + David Glanzman (72.12 cM) — ancestry in Vinnytsia, Ukraine. Y-DNA J-FGC9941 ≠ עודד R-FGC8601 → קשר דרך אישה בשם Glanzman שנישאה ללנצמן (לא קו האב הישיר). שם "לנצמן" = כנראה Glanzman ללא G ראשונית (הסתגלות לרומנית). 7 התאמות Vinnitsky נוספות. Source: IN131982 + IN139620, 2026.',
+  // Shlomo Lanzman (father of Mordekhai) — Heilprin chain + Vinnitsky geographic cluster
+  '@I30@': 'שרשרת האב: זבולון אליעזר היילפרין ~1525, פולין → ... → שלמה לנצמן (בלארוס/אוקראינה) → מרדכי לנצמן (פוקשני, רומניה). DNA: 7 התאמות Vinnitsky/Vinnytsia (IN131982) + Steven Glanzman (76.96 cM, Vinnytsia ancestry) — מצביעים על Vinnytsia, אוקראינה כמקור המשפחה. Bradley Gordon (R-FGC61409, 3 צעדים מעודד) = ענף אחי (Abraham Gozansky, בלארוס 1800s) שנשאר בבלארוס בזמן שלנצמן המשיך לרומניה. Source: IN131982 + IN139620, 2026.',
   // mtDNA HV5a — Sofia Duberstein (bat Bashet Ginzburg) is Yael's earliest known maternal mt ancestor per MyHeritage tree.
   // Source: Adam Cherson email Aug 2024. Adam's grandmother (Zoila Benyakonski) also HV5a, difference of 1.
   // Adam's earliest mt ancestor: Miriam Khrszn (bat Itteh), Dieveniskes, SW Vilna — related but connection unclear.
