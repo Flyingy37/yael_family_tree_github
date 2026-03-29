@@ -39,6 +39,9 @@ const VIEW_TABS: Record<'en' | 'he', { id: ViewMode; label: string; icon: string
 const VALID_VIEWS: ViewMode[] = ['tree', 'map', 'timeline', 'stats'];
 const INCLUDE_SPOUSE_BRANCHES_STORAGE_KEY = 'includeSpouseBranches';
 
+/** Below this count, the loaded graph is almost certainly a dev sample, not the full export. */
+const FULL_DATASET_EXPECTED_MIN = 100;
+
 function buildBloodAdjacency(
   personIds: Iterable<string>,
   families: Map<string, { spouses: string[]; children: string[] }>
@@ -351,6 +354,30 @@ export default function FamilyExplorer() {
                 />
                 <span className="text-xs text-amber-700">{language === 'he' ? 'כלול ענפי בני זוג' : 'Include spouse branches'}</span>
               </label>
+            </div>
+          )}
+
+          {personList.length > 0 && personList.length < FULL_DATASET_EXPECTED_MIN && (
+            <div
+              className="rounded-lg border border-amber-400 bg-amber-50 p-3 text-xs text-amber-950 shadow-sm"
+              dir={language === 'he' ? 'rtl' : 'ltr'}
+              role="status"
+            >
+              <p className="font-semibold text-amber-900 mb-1">
+                {language === 'he' ? 'נתונים חלקיים בלבד' : 'Partial dataset loaded'}
+              </p>
+              <p className="text-amber-900/90 leading-relaxed">
+                {language === 'he'
+                  ? `נטענו רק ${personList.length.toLocaleString()} אנשים מ־family-graph.json. העץ המלא הוא אלפי רשומות. אם את רואה רק משפחה קטנה, כנראה שב־Vercel (או בדיפלוי) חסר הקובץ המלא מתיקיית public/. ודאי commit של public/family-graph.json אחרי npm run build (או prebuild מקומי), merge לענף שמחובר ל־Vercel, ובדקי שהפרויקט הנכון נבנה.`
+                  : `Only ${personList.length.toLocaleString()} people were loaded from family-graph.json; the full tree has thousands of records. If you expected the whole family here, the deployed site is probably missing the large file under public/. Commit public/family-graph.json after a local build (with your private CSV), merge the branch Vercel builds, and confirm the correct project is deployed.`}
+              </p>
+              {filters.connectedToYaelOnly && filteredIds.size < personList.length && (
+                <p className="mt-2 text-amber-800/90">
+                  {language === 'he'
+                    ? 'בינתיים אפשר לבטל את "מחובר ליעל בלבד" בפאנל הסינון כדי להציג את כל מי שבקובץ.'
+                    : 'You can also turn off "Connected to Yael only" in the filter panel to show everyone in this file.'}
+                </p>
+              )}
             </div>
           )}
 
