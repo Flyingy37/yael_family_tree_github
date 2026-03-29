@@ -101,9 +101,9 @@ export function WelcomeModal({ language }: WelcomeModalProps) {
         <h2 id="welcome-modal-title" className="text-2xl font-bold text-center text-slate-800 mb-2">
           {t.title}
         </h2>
-        <p className="text-center text-slate-600 mb-6 text-sm">{t.body}</p>
-
-        <div className="space-y-4 mb-8">
+        <div id="welcome-modal-description" className="text-center text-slate-600 mb-6 text-sm space-y-4">
+          <p>{t.body}</p>
+          <div className="space-y-4 text-start">
           <div className="flex items-start gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
             <PlusCircle className="text-emerald-500 mt-0.5 flex-shrink-0" size={20} aria-hidden />
             <div>
@@ -119,12 +119,14 @@ export function WelcomeModal({ language }: WelcomeModalProps) {
               <p className="text-xs text-slate-500">{t.searchBody}</p>
             </div>
           </div>
+          </div>
         </div>
 
         <button
           type="button"
           onClick={dismiss}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-colors shadow-md hover:shadow-lg"
+          autoFocus
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-colors shadow-md hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2"
         >
           {t.cta}
         </button>
