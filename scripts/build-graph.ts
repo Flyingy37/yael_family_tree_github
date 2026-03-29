@@ -332,6 +332,15 @@ const MANUAL_TITLE_APPEND_OVERRIDES: Record<string, string> = {
   '@I80@':  'Yehuda "Yudel" Alperovich (~1850–1917). אב-קדמון 4 דורות. MyHeritage 12 SmartMatches — מידע חדש: אחים.',
   '@I198@': 'Meir Alperovich (10 Nov 1819–17 Mar 1900). אב-קדמון 5 דורות. MyHeritage 15 SmartMatches — מידע חדש: מקום פטירה, מקום מגורים.',
   '@I349@': 'Reuven Alperovitch (~1823–~1890). אב-קדמון 6 דורות. MyHeritage 5 SmartMatches — מידע חדש: תמונה, עיסוק, מקום מגורים, השכלה.',
+  // mtDNA HV5a — Sofia Duberstein (bat Bashet Ginzburg) is Yael's earliest known maternal mt ancestor per MyHeritage tree.
+  // Source: Adam Cherson email Aug 2024. Adam's grandmother (Zoila Benyakonski) also HV5a, difference of 1.
+  // Adam's earliest mt ancestor: Miriam Khrszn (bat Itteh), Dieveniskes, SW Vilna — related but connection unclear.
+  '@I37@': 'mtDNA anchor: earliest known maternal mt-line ancestor (HV5a) per MyHeritage tree. Identified by Adam Cherson (NY) whose grandmother Zoila Benyakonski shares HV5a with 1 difference. Adam\'s mt line leads to Miriam Khrszn (bat Itteh), Dieveniskes, SW Vilna — same HV5a subgroup but connection unresolved (Aug 2024).',
+  // Y-DNA Q-M242 for Zeev Alperovich (Yael's maternal uncle) — as of Aug 2024
+  // Adam Cherson recommends upgrading to BY700 for deeper research.
+  // Possible connection to R' Judah Aryeh Leib Maggid of Vilna (Q-FT340368, below M242).
+  // FTDNA project: Alperovich of Kurenets — admin: Jenny Rappaport.
+  '@I23@': 'Y-DNA: Q-M242 (as of Aug 2024; FTDNA). Adam Cherson recommends upgrade to BY700 for deeper Alperovich research. Possible connection to R\' Judah Aryeh Leib Maggid of Vilna (Q-FT340368). FTDNA project "Alperovich of Kurenets" — admin: Jenny Rappaport. Source: Adam Cherson email Aug 2024.',
   '@I6@': 'DNA matches note: Abraham Guzhinsky appears in Oded match lists (paternal branch evidence).',
   '@I618@': 'Music note: Kevin Mark DuBrow, associated with the heavy metal band Riot.',
   '@I30@': 'Research note: family origin linked to Abraham Guzhinsky; likely Belarus/Ukraine.',
