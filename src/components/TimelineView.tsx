@@ -126,7 +126,7 @@ export function TimelineView({ persons, filteredIds, onSelectPerson, language = 
         </div>
         {selectedDecade !== null && (
           <button
-            className="text-xs text-blue-500 hover:text-blue-700"
+            className="text-xs text-blue-700 hover:text-blue-900"
             onClick={() => setSelectedDecade(null)}
           >
             {t ? 'נקה בחירה' : 'Clear selection'}

@@ -103,7 +103,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
                 min={-29}
                 max={2}
               />
-              <span className="text-gray-400">{t ? 'עד' : 'to'}</span>
+              <span className="text-gray-600">{t ? 'עד' : 'to'}</span>
               <input
                 type="number"
                 value={filters.generationMax}
@@ -126,7 +126,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
                   key={s}
                   className={`px-3 py-1 rounded text-xs transition-colors ${
                     filters.sex === s
-                      ? 'bg-blue-500 text-white'
+                      ? 'bg-blue-600 text-white'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                   onClick={() => onChange({ ...filters, sex: s })}
@@ -186,7 +186,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
                 placeholder={t ? 'הכל' : 'all'}
               />
               <button
-                className="text-xs text-blue-500 hover:text-blue-700"
+                className="text-xs text-blue-700 hover:text-blue-900"
                 onClick={() => onChange({ ...filters, maxHops: null })}
               >
                 {t ? 'הכל' : 'all'}

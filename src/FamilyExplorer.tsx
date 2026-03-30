@@ -280,7 +280,7 @@ export default function FamilyExplorer() {
                 className={`px-3 py-1.5 rounded-md text-sm transition-colors whitespace-nowrap ${
                   viewMode === tab.id
                     ? 'bg-white shadow-sm font-medium text-gray-800'
-                    : 'text-gray-500 hover:text-gray-700'
+                    : 'text-gray-600 hover:text-gray-800'
                 }`}
               >
                 {tab.icon} {tab.label}
@@ -307,7 +307,7 @@ export default function FamilyExplorer() {
           >
             {language === 'he' ? 'ייצוא Web Vitals' : 'Export Web Vitals'}
           </button>
-          <div className="text-xs text-gray-400 whitespace-nowrap" title={language === 'he' ? 'בטווח הסינון והתצוגה הנוכחיים' : 'Current filter and view scope'}>
+          <div className="text-xs text-gray-600 whitespace-nowrap" title={language === 'he' ? 'בטווח הסינון והתצוגה הנוכחיים' : 'Current filter and view scope'}>
             {displayIds.size !== filteredIds.size
               ? `${displayIds.size.toLocaleString()} / ${filteredIds.size.toLocaleString()}`
               : displayIds.size.toLocaleString()}{' '}
