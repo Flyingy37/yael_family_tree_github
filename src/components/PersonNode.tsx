@@ -17,6 +17,7 @@ import {
   ChevronUp,
   Plus,
   BookOpen,
+  Flame,
   type LucideIcon,
 } from 'lucide-react';
 import type { Person } from '../types';
@@ -109,6 +110,7 @@ interface TagConfig {
 }
 
 const TAG_CONFIG: Record<string, TagConfig> = {
+  Holocaust: { Icon: Flame, labelEn: 'Holocaust victim', labelHe: 'נספה בשואה', color: '#7c2d12', bg: '#ffedd5' },
   Partisan: { Icon: Shield, labelEn: 'Partisan', labelHe: 'פרטיזן', color: '#374151', bg: '#f3f4f6' },
   Famous: { Icon: Star, labelEn: 'Notable', labelHe: 'מפורסם', color: '#92400e', bg: '#fef3c7' },
   Rabbi: { Icon: BookMarked, labelEn: 'Rabbi', labelHe: 'רב', color: '#1e40af', bg: '#dbeafe' },
