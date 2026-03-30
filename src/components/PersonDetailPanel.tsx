@@ -407,7 +407,7 @@ export function PersonDetailPanel({
     if (f.hasMigrationTag && person.tags.includes('Migration')) {
       reasons.push(t ? 'כולל תג הגירה' : 'Includes Migration tag');
     }
-    if (f.hasDoubleBloodTieTag && person.tags.includes('DoubleBloodTie') && (person.connectionPathCount || 0) >= f.doubleBloodTieMinPaths) {
+    if (f.hasDoubleBloodTieTag && person.doubleBloodTie && (person.connectionPathCount || 0) >= f.doubleBloodTieMinPaths) {
       reasons.push(
         t
           ? `קשרי דם כפולים (מינימום ${f.doubleBloodTieMinPaths})`

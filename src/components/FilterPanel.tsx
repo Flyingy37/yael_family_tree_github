@@ -352,7 +352,7 @@ export function applyFilters(
     if (filters.hasMigrationTag && !p.tags.includes('Migration')) continue;
     if (filters.hasDoubleBloodTieTag) {
       const pathCount = p.connectionPathCount || 0;
-      if (!p.tags.includes('DoubleBloodTie')) continue;
+      if (!p.doubleBloodTie) continue;
       if (pathCount < filters.doubleBloodTieMinPaths) continue;
     }
     if (filters.maxHops !== null && p.hops !== null && p.hops > filters.maxHops) continue;
