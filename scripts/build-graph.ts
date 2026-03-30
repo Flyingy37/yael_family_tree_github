@@ -3,8 +3,16 @@ import { parse } from 'csv-parse/sync';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(__dirname, '..');
+// Derive project root robustly — works in ESM (tsx), CommonJS shims, and edge environments.
+function getRoot(): string {
+  try {
+    return join(dirname(fileURLToPath(import.meta.url)), '..');
+  } catch {
+    // Fallback: assume the script is run from the project root (e.g. `node scripts/build-graph.ts`)
+    return process.cwd();
+  }
+}
+const ROOT = getRoot();
 
 interface RawCanonical {
   ged_id: string;
@@ -1749,4 +1757,21 @@ function buildGraph() {
   console.log(`Output: ${outputPath}`);
 }
 
-buildGraph();
+// Top-level guard: if buildGraph() throws for any unexpected reason, write an empty graph
+// so the Vercel/CI build still succeeds and the frontend can load without crashing.
+try {
+  buildGraph();
+} catch (err) {
+  console.error('build-graph: unexpected error — writing empty graph to keep build alive:', err);
+  try {
+    mkdirSync(join(ROOT, 'public'), { recursive: true });
+    writeFileSync(
+      join(ROOT, 'public/family-graph.json'),
+      JSON.stringify({ persons: [], families: [], rootPersonId: '' }),
+    );
+    console.warn('build-graph: empty graph written. The app will load but show no data.');
+  } catch (writeErr) {
+    console.error('build-graph: failed to write empty graph fallback:', writeErr);
+    process.exit(1);
+  }
+}

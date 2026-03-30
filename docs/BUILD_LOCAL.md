@@ -7,4 +7,4 @@ npm ci
 npm run build   # מריץ prebuild (build-graph) ואז vite build
 ```
 
-בלי שני קבצי ה־CSV, `npm run build` ייכשל ב־`ENOENT` על `canonical.csv`.
+בלי `data/canonical.csv`, הסקריפט ינסה לטעון נתוני דוגמה מ־`data/sample/canonical.sample.csv`. אם גם קובץ זה חסר, ייכתב גרף ריק ל־`public/family-graph.json` כדי שהבנייה לא תיכשל (האפליקציה תיטען אך תציג עץ ריק).
