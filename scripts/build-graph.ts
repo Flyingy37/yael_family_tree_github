@@ -1697,6 +1697,13 @@ function buildGraph() {
       story: MANUAL_STORY_OVERRIDES[row.ged_id] || null,
     };
 
+    // Holocaust tag: add after person is built so holocaustVictim flag is available.
+    // extractTags() runs without holocaustVictim context; this ensures the tag is always
+    // present when the boolean is true (whether from text detection or manual override).
+    if (person.holocaustVictim && !person.tags.includes('Holocaust')) {
+      person.tags = [...person.tags, 'Holocaust'].sort();
+    }
+
     persons.push(person);
 
     // Build family entries from fams
