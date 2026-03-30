@@ -60,7 +60,7 @@ export default function LangLayout() {
   return (
     <LangContext.Provider value={{ lang, setLang, t }}>
       <div
-        className="h-screen flex flex-col bg-gray-50"
+        className="flex h-dvh min-h-0 flex-col bg-gray-50"
         dir={lang === 'he' ? 'rtl' : 'ltr'}
       >
         <a
@@ -97,6 +97,55 @@ export default function LangLayout() {
               }
             >
               {t('🌳 עץ', '🌳 Tree')}
+            </NavLink>
+            <NavLink
+              to={`/${lang}/research`}
+              end
+              className={({ isActive }) =>
+                `px-2 py-1 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 ${
+                  isActive
+                    ? 'bg-amber-100 text-amber-950 font-medium'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`
+              }
+            >
+              {t('🔬 מחקר', '🔬 Research')}
+            </NavLink>
+            <NavLink
+              to={`/${lang}/people`}
+              className={({ isActive }) =>
+                `px-2 py-1 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 ${
+                  isActive
+                    ? 'bg-amber-100 text-amber-950 font-medium'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`
+              }
+            >
+              {t('אנשים', 'People')}
+            </NavLink>
+            <NavLink
+              to={`/${lang}/research/merge`}
+              className={({ isActive }) =>
+                `px-2 py-1 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 ${
+                  isActive
+                    ? 'bg-amber-100 text-amber-950 font-medium'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`
+              }
+            >
+              {t('מיזוגים', 'Merge')}
+            </NavLink>
+            <NavLink
+              to={`/${lang}/research/dna`}
+              className={({ isActive }) =>
+                `px-2 py-1 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 ${
+                  isActive
+                    ? 'bg-amber-100 text-amber-950 font-medium'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`
+              }
+            >
+              {t('DNA', 'DNA')}
             </NavLink>
             <NavLink
               to={`/${lang}/insights`}

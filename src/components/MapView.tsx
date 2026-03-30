@@ -6,7 +6,7 @@ import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 import type { Person } from '../types';
-import { displayFullNameForUi, gedcomDatePrimary } from '../utils/personUiText';
+import { displayFullNameForUi, gedcomDateDisplay } from '../utils/personUiText';
 import { approximateCoordinatesForBirthPlace } from '../utils/birthPlaceCoordinates';
 
 L.Icon.Default.mergeOptions({
@@ -237,8 +237,8 @@ export function MapView({ persons, filteredIds, onSelectPerson, language = 'en' 
                         onClick={() => onSelectPerson(p.id)}
                       >
                         {displayFullNameForUi(p, uiLang)}
-                        {gedcomDatePrimary(p.birthDate) && (
-                          <span className="text-slate-400"> ({gedcomDatePrimary(p.birthDate)})</span>
+                        {gedcomDateDisplay(p.birthDate) && (
+                          <span className="text-slate-400"> ({gedcomDateDisplay(p.birthDate)})</span>
                         )}
                       </button>
                     ))}

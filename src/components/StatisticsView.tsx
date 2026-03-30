@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import type { Person } from '../types';
+import { HOLOCAUST_NARRATIVE_SUPPLEMENT_KRAKES_PART5 } from '../constants/narrativeHolocaustSupplement';
 import { getCanonicalSurnameLabel } from '../utils/surname';
-import { displayFullNameForUi, gedcomDatePrimary, relationTextForUi } from '../utils/personUiText';
+import { displayFullNameForUi, gedcomDateDisplay, relationTextForUi } from '../utils/personUiText';
 
 interface Props {
   personList: Person[];
@@ -114,12 +115,16 @@ export function StatisticsView({ personList, filteredIds, connectedToYaelIds, on
       20
     ).sort((a, b) => Number(a.label) - Number(b.label));
 
+    const holocaustVictimsWithNarrativeSupplement =
+      holocaustVictims + HOLOCAUST_NARRATIVE_SUPPLEMENT_KRAKES_PART5;
+
     return {
       total,
       male,
       female,
       unknownSex,
       holocaustVictims,
+      holocaustVictimsWithNarrativeSupplement,
       warCasualties,
       migration,
       jewishLineage,
@@ -173,97 +178,148 @@ export function StatisticsView({ personList, filteredIds, connectedToYaelIds, on
   }, [selectedSubset]);
 
   return (
-    <div className="h-full overflow-y-auto p-4 bg-gray-50" dir={t ? 'rtl' : 'ltr'}>
-      <div className="max-w-6xl mx-auto space-y-4">
-        <div className="bg-white border border-gray-200 rounded-xl p-4">
-          <h2 className="text-lg font-bold text-gray-800 mb-3">{t ? 'סטטיסטיקות משפחה' : 'Family Statistics'}</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+    <div className="h-full overflow-y-auto bg-stone-100/80 p-4 md:p-6" dir={t ? 'rtl' : 'ltr'}>
+      <div className="mx-auto max-w-6xl space-y-6">
+        <header className="border-b border-stone-200/90 pb-4">
+          <p className="text-[11px] font-bold uppercase tracking-widest text-stone-500">
+            {t ? 'לוח בקרת מחקר' : 'Research dashboard'}
+          </p>
+          <h2 className="mt-1 text-2xl font-bold tracking-tight text-stone-900">
+            {t ? 'סטטיסטיקות והיקף נתונים' : 'Family statistics and data scope'}
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-stone-600">
+            {t
+              ? 'בחרי מדד כדי לראות התפלגות דורית ורשימת רשומות. המספרים משקפים את טווח הסינון הנוכחי בעץ.'
+              : 'Pick a metric to see generation distribution and a scannable record list. Counts reflect your current tree filter scope.'}
+          </p>
+        </header>
+
+        <div className="rounded-xl border border-stone-200/90 bg-white p-4 shadow-sm md:p-5">
+          <h3 className="mb-4 text-xs font-bold uppercase tracking-wider text-stone-500">
+            {t ? 'מדדי אוכלוסייה' : 'Population metrics'}
+          </h3>
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
             <button
+              type="button"
               onClick={() => setSelectedMetric('total')}
-              className={`p-3 rounded-lg border text-right transition-colors ${
+              className={`rounded-lg border p-4 text-start transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2 ${
                 selectedMetric === 'total'
-                  ? 'bg-blue-100 border-blue-300'
-                  : 'bg-blue-50 border-blue-100 hover:bg-blue-100'
+                  ? 'border-sky-300 bg-sky-50/90 shadow-[inset_3px_0_0_0_#0284c7]'
+                  : 'border-stone-200/90 bg-stone-50/50 hover:border-stone-300 hover:bg-white'
               }`}
             >
-              <div className="text-gray-500">{t ? 'מוצגים כעת' : 'Currently shown'}</div>
-              <div className="text-lg font-semibold text-blue-700">
-                {stats.total.toLocaleString()}
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-stone-500">
+                {t ? 'מוצגים כעת' : 'Currently shown'}
               </div>
+              <div className="mt-1 font-mono text-xl font-bold tabular-nums text-sky-800">{stats.total.toLocaleString()}</div>
             </button>
             <button
+              type="button"
               onClick={() => setSelectedMetric('connected')}
-              className={`p-3 rounded-lg border text-right transition-colors ${
+              className={`rounded-lg border p-4 text-start transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2 ${
                 selectedMetric === 'connected'
-                  ? 'bg-emerald-100 border-emerald-300'
-                  : 'bg-emerald-50 border-emerald-100 hover:bg-emerald-100'
+                  ? 'border-emerald-300 bg-emerald-50/90 shadow-[inset_3px_0_0_0_#059669]'
+                  : 'border-stone-200/90 bg-stone-50/50 hover:border-stone-300 hover:bg-white'
               }`}
             >
-              <div className="text-gray-500">{t ? 'מחוברים ליעל' : 'Connected to Yael'}</div>
-              <div className="text-lg font-semibold text-emerald-700">
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-stone-500">
+                {t ? 'מחוברים ליעל' : 'Connected to Yael'}
+              </div>
+              <div className="mt-1 font-mono text-xl font-bold tabular-nums text-emerald-800">
                 {stats.connected.toLocaleString()}
               </div>
-              <div className="text-xs text-gray-500">
-                {pct(stats.connected, stats.total)} | {t ? 'כלל המערכת' : 'whole graph'}: {totalConnectedAll.toLocaleString()}
+              <div className="mt-1 text-[11px] leading-snug text-stone-500">
+                {pct(stats.connected, stats.total)} · {t ? 'בקובץ' : 'in file'}: {totalConnectedAll.toLocaleString()}
               </div>
             </button>
             <button
+              type="button"
               onClick={() => setSelectedMetric('holocaustVictims')}
-              className={`p-3 rounded-lg border text-right transition-colors ${
+              className={`rounded-lg border p-4 text-start transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2 ${
                 selectedMetric === 'holocaustVictims'
-                  ? 'bg-rose-100 border-rose-300'
-                  : 'bg-rose-50 border-rose-100 hover:bg-rose-100'
+                  ? 'border-rose-300 bg-rose-50/90 shadow-[inset_3px_0_0_0_#e11d48]'
+                  : 'border-stone-200/90 bg-stone-50/50 hover:border-stone-300 hover:bg-white'
               }`}
             >
-              <div className="text-gray-500">{t ? 'קורבנות שואה' : 'Holocaust victims'}</div>
-              <div className="text-lg font-semibold text-rose-700">
-                {stats.holocaustVictims.toLocaleString()}
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-stone-500">
+                {t ? 'קורבנות שואה' : 'Holocaust victims'}
               </div>
-              <div className="text-xs text-gray-500">{pct(stats.holocaustVictims, stats.total)}</div>
+              <div className="mt-1 font-mono text-xl font-bold tabular-nums text-rose-900">
+                {stats.holocaustVictimsWithNarrativeSupplement.toLocaleString()}
+              </div>
+              <div className="mt-1 text-[11px] leading-snug text-stone-500">
+                {pct(stats.holocaustVictims, stats.total)}
+                {HOLOCAUST_NARRATIVE_SUPPLEMENT_KRAKES_PART5 > 0 ? (
+                  <span className="mt-1 block text-rose-700/90">
+                    {t
+                      ? `בגרף: ${stats.holocaustVictims.toLocaleString()} · +${HOLOCAUST_NARRATIVE_SUPPLEMENT_KRAKES_PART5} במסמך חלק 5`
+                      : `In graph: ${stats.holocaustVictims.toLocaleString()} · +${HOLOCAUST_NARRATIVE_SUPPLEMENT_KRAKES_PART5} Part 5 doc`}
+                  </span>
+                ) : null}
+              </div>
             </button>
             <button
+              type="button"
               onClick={() => setSelectedMetric('warCasualties')}
-              className={`p-3 rounded-lg border text-right transition-colors ${
+              className={`rounded-lg border p-4 text-start transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2 ${
                 selectedMetric === 'warCasualties'
-                  ? 'bg-indigo-100 border-indigo-300'
-                  : 'bg-indigo-50 border-indigo-100 hover:bg-indigo-100'
+                  ? 'border-violet-300 bg-violet-50/90 shadow-[inset_3px_0_0_0_#7c3aed]'
+                  : 'border-stone-200/90 bg-stone-50/50 hover:border-stone-300 hover:bg-white'
               }`}
             >
-              <div className="text-gray-500">{t ? 'נפגעי מלחמה' : 'War casualties'}</div>
-              <div className="text-lg font-semibold text-indigo-700">
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-stone-500">
+                {t ? 'נפגעי מלחמה' : 'War casualties'}
+              </div>
+              <div className="mt-1 font-mono text-xl font-bold tabular-nums text-violet-900">
                 {stats.warCasualties.toLocaleString()}
               </div>
-              <div className="text-xs text-gray-500">{pct(stats.warCasualties, stats.total)}</div>
+              <div className="mt-1 text-[11px] text-stone-500">{pct(stats.warCasualties, stats.total)}</div>
             </button>
           </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-xl p-4">
-          <h3 className="font-semibold text-gray-800 mb-1">
-            {t ? 'תרשים דינמי' : 'Dynamic chart'}: {metricLabel}
-          </h3>
-          <div className="text-xs text-gray-500 mb-3">
-            {t
-              ? `לחצי על מדד כדי להחליף תרשים. מוצגות כרגע ${selectedSubset.length.toLocaleString()} רשומות.`
-              : `Click any metric to switch the chart. Currently showing ${selectedSubset.length.toLocaleString()} records.`}
+        <div className="rounded-xl border border-stone-200/90 bg-white p-4 shadow-sm md:p-5">
+          <div className="mb-4 flex flex-wrap items-end justify-between gap-2 border-b border-stone-100 pb-3">
+            <div>
+              <h3 className="text-lg font-semibold text-stone-900">
+                {metricLabel}
+              </h3>
+              <p className="mt-1 text-xs text-stone-500">
+                {t
+                  ? `${selectedSubset.length.toLocaleString()} רשומות בטווח המדד`
+                  : `${selectedSubset.length.toLocaleString()} records in this metric`}
+              </p>
+            </div>
+            <span className="rounded-md bg-stone-100 px-2 py-1 font-mono text-[11px] font-medium text-stone-600">
+              {t ? 'לפי דור' : 'By generation'}
+            </span>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {selectedByGeneration.length === 0 && (
-              <div className="text-sm text-gray-400">{t ? 'אין התפלגות דורית למדד הזה.' : 'No generation distribution for this metric.'}</div>
+              <div className="rounded-lg border border-dashed border-stone-200 py-8 text-center text-sm text-stone-400">
+                {t ? 'אין התפלגות דורית למדד הזה.' : 'No generation distribution for this metric.'}
+              </div>
             )}
             {selectedByGeneration.map(item => {
               const widthPercent =
                 maxGenerationCount === 0 ? 0 : Math.round((item.count / maxGenerationCount) * 100);
               return (
-                <div key={item.label} className="grid grid-cols-[72px_1fr_56px] items-center gap-2 text-xs">
-                  <div className="text-gray-500">{t ? `דור ${item.label}` : `Gen ${item.label}`}</div>
-                  <div className="h-4 bg-gray-100 rounded overflow-hidden">
+                <div
+                  key={item.label}
+                  className="grid grid-cols-[4.5rem_1fr_3rem] items-center gap-3 text-xs md:grid-cols-[5rem_1fr_3.5rem]"
+                >
+                  <div className="font-mono text-[11px] font-semibold tabular-nums text-stone-600">
+                    {t ? `דור ${item.label}` : `G${item.label}`}
+                  </div>
+                  <div className="h-2.5 overflow-hidden rounded-full bg-stone-100">
                     <div
-                      className="h-4 bg-blue-500"
+                      className="h-full rounded-full bg-gradient-to-l from-sky-600 to-sky-500"
                       style={{ width: `${widthPercent}%` }}
                     />
                   </div>
-                  <div className="text-gray-600 text-left">{item.count}</div>
+                  <div className="text-end font-mono text-[11px] font-semibold tabular-nums text-stone-800">
+                    {item.count}
+                  </div>
                 </div>
               );
             })}
@@ -337,6 +393,13 @@ export function StatisticsView({ personList, filteredIds, connectedToYaelIds, on
           <h3 className="font-semibold text-gray-800 mb-1">
             {t ? 'אנשים במדד הנבחר' : 'People in selected metric'}
           </h3>
+          {selectedMetric === 'holocaustVictims' && HOLOCAUST_NARRATIVE_SUPPLEMENT_KRAKES_PART5 > 0 ? (
+            <div className="mb-3 text-xs rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-rose-900">
+              {t
+                ? `הרשימה למטה היא רק אנשים בגרף. עוד ${HOLOCAUST_NARRATIVE_SUPPLEMENT_KRAKES_PART5} קורבנות מתועדים במסמך חלק 5 (קרקס: ד"ר בוריס, סוניה, דוד) – ראו ארכיון משפחתי.`
+                : `The list below is graph persons only. ${HOLOCAUST_NARRATIVE_SUPPLEMENT_KRAKES_PART5} more victims are documented in Part 5 (Krakes: Dr. Boris, Sonia, David) — see the family narrative archive.`}
+            </div>
+          ) : null}
           <div className="text-xs text-gray-500 mb-3">
             {t
               ? `לחיצה על אדם תפתח פרטים. מוצגים עד ${selectedPeoplePreview.length.toLocaleString()} אנשים.`
@@ -357,7 +420,7 @@ export function StatisticsView({ personList, filteredIds, connectedToYaelIds, on
                 </div>
                 <div className="text-xs text-gray-500">
                   {relationTextForUi(person, uiLang) || (t ? 'ללא טקסט קרבה' : 'No relation text')}
-                  {gedcomDatePrimary(person.birthDate) ? ` | ${gedcomDatePrimary(person.birthDate)}` : ''}
+                  {gedcomDateDisplay(person.birthDate) ? ` | ${gedcomDateDisplay(person.birthDate)}` : ''}
                 </div>
               </button>
             ))}

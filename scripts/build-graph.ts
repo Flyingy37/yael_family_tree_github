@@ -344,15 +344,15 @@ const MANUAL_TITLE_APPEND_OVERRIDES: Record<string, string> = {
   '@I479@': 'Burial: Mount Sinai Memorial Parks and Mortuaries, Los Angeles. Source: JewishGen Burial Registry.',
   '@I258@': 'Burial: Montrepose Cemetery, Kingston, New York (also listed: Veteran Burials). Source: JewishGen Burial Registry.',
   // Confirmed DNA matches — annotations
-  '@I376@': 'בן דוד/ה שני בהפרש דור — ענף אלפרוביץ׳-גורביץ׳. בן של Sinai Herbert + Sima Gurevitz Lerman (בת פראדה אלפרוביץ׳). מאושר DNA דרך 23andMe של אסיף (Father\'s side).',
-  '@I578@': 'בן דוד/ה שלישי. בן של Chaim Herbert (@I376@). FTDNA 150.8 cM ("Jonathan Sinai Herbert"). DNA מאושר.',
+  '@I376@': 'בן דוד/ה שני בהפרש דור — ענף אלפרוביץ׳-גורביץ׳. בן של Sinai Herbert + Sima Gurevitz Lerman. מאושר כהתאמת DNA דרך 23andMe של אסיף (Father\'s side).',
+  '@I578@': 'בן דוד/ה שלישי. בן של Chaim Herbert (@I376@). FTDNA 150.8 cM ("Jonathan Sinai Herbert"). מאושר DNA.',
   '@I385@': 'בן דוד/ה שני בהפרש דור — ענף קסטרל/קוסטרל. FTDNA 157.33 cM. Y-haplogroup J-FTF95213. מאשר שרשרת Castro→Kastrel→Costrell.',
   // MyHeritage SmartMatch annotations — מידע חדש זמין לעדכון ידני
-  '@I244@': 'Louis Costrell (1915–2009). MyHeritage 10 SmartMatches — מידע חדש: אחים, תיאור, כתובת מפורטת, מקום קבורה.',
-  '@I335@': 'Geula Vulis (Epstein) (נולדה 23 Nov 1920). MyHeritage 18 SmartMatches — מידע חדש: תאריך פטירה, מקום פטירה, קבורה, בן/בת זוג, ילדים.',
-  '@I80@':  'Yehuda "Yudel" Alperovich (~1850–1917). אב-קדמון 4 דורות. MyHeritage 12 SmartMatches — מידע חדש: אחים.',
-  '@I198@': 'Meir Alperovich (10 Nov 1819–17 Mar 1900). אב-קדמון 5 דורות. MyHeritage 15 SmartMatches — מידע חדש: מקום פטירה, מקום מגורים.',
-  '@I349@': 'Reuven Alperovitch (~1823–~1890). אב-קדמון 6 דורות. MyHeritage 5 SmartMatches — מידע חדש: תמונה, עיסוק, מקום מגורים, השכלה.',
+  '@I244@': 'Louis Costrell (1915–2009). MyHeritage 10 SmartMatches — מידע חדש זמין: אחים, תיאור, כתובת, מקום קבורה.',
+  '@I335@': 'Geula Vulis (Epstein) (נולדה 23 Nov 1920). MyHeritage 18 SmartMatches — מידע חדש זמין: תאריך פטירה, מקום פטירה, קבורה, בן/בת זוג, ילדים.',
+  '@I80@':  'Yehuda "Yudel" Alperovich (~1850–1917). אב-קדמון 4 דורות. MyHeritage 12 SmartMatches — מידע חדש זמין: אחים.',
+  '@I198@': 'Meir Alperovich (1819–17 Mar 1900). אב-קדמון 5 דורות. MyHeritage 15 SmartMatches — מידע חדש זמין: מקום פטירה, מקום מגורים.',
+  '@I349@': 'Reuven Alperovitch (~1823–~1890). אב-קדמון 6 דורות. MyHeritage 5 SmartMatches — מידע חדש זמין: תמונה, עיסוק, מקום מגורים, השכלה.',
   // ── Lanzmann & Shvartz siblings ───────────────────────────────────────
   '@I48@': 'נולדה לנצמן. אחות של מרדכי מרקו לנצמן (@I9@). נישאה לפנחס (Pinhas). נולדה פוקשני 1 אוקטובר 1903.',
   '@I49@': 'אח של מינה לנצמן (לבית שוורץ). שם נעורים: שוורץ-דסקלו. נולד רומניה 1914. נפטר 17 מאי 1984, גבעת שמואל, ישראל. אשתו: שושנה "ג\'ני" שרנה דורון (לבית בוז\'ינרו / Bojunaru) — מאושר מ-Outline Descendant Report (Branch 944: "Shoshana Cernă Jeni Doron Dascaălu born Bojunaru"). נפטרה ח\' סיון תשמ"ט (11 יוני 1989), קבורה: חולון, ישראל.',
@@ -1234,6 +1234,9 @@ function mergeDnaInfo(base: string | null, incoming: string | null): string | nu
 function mergePersons(primary: Person, duplicate: Person): Person {
   const familySet = new Set<string>([...primary.familiesAsSpouse, ...duplicate.familiesAsSpouse]);
   const tagSet = new Set<string>([...primary.tags, ...duplicate.tags]);
+  const mergedHolocaust = primary.holocaustVictim || duplicate.holocaustVictim;
+  if (mergedHolocaust) tagSet.add('Holocaust');
+  else tagSet.delete('Holocaust');
 
   return {
     ...primary,
@@ -1429,6 +1432,11 @@ function enrichConnectivitySignals(persons: Person[], families: Family[], rootPe
       tags.add('DoubleBloodTie');
     } else {
       tags.delete('DoubleBloodTie');
+    }
+    if (person.holocaustVictim) {
+      tags.add('Holocaust');
+    } else {
+      tags.delete('Holocaust');
     }
     return {
       ...person,
@@ -1697,6 +1705,17 @@ function buildGraph() {
       (manualDnaTagged || hasVerifiedDnaMatchEvidence(row, notes.dnaInfo));
     const resolvedDnaInfo = verifiedDnaEvidence ? notes.dnaInfo : null;
 
+    const tagSet = new Set(
+      extractTags(
+        row,
+        verifiedDnaEvidence,
+        supplementalSignals.partisanNames.has(normalizeNameForLookup(fullNameNormalized.clean)),
+        migrationInfo
+      )
+    );
+    if (holocaustVictim) tagSet.add('Holocaust');
+    else tagSet.delete('Holocaust');
+
     const person: Person = {
       id: row.ged_id,
       fullName: fullNameNormalized.clean,
@@ -1735,12 +1754,7 @@ function buildGraph() {
       warCasualty,
       connectionPathCount: null,
       doubleBloodTie: false,
-      tags: extractTags(
-        row,
-        verifiedDnaEvidence,
-        supplementalSignals.partisanNames.has(normalizeNameForLookup(fullNameNormalized.clean)),
-        migrationInfo
-      ),
+      tags: Array.from(tagSet).sort(),
       story: MANUAL_STORY_OVERRIDES[row.ged_id] || null,
     };
 

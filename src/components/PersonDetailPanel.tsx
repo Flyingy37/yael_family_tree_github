@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import type { Person, Family } from '../types';
 import { DEFAULT_FILTERS, isUnknownPlaceholderPerson, type Filters } from './FilterPanel';
 import { getCanonicalSurnameLabel } from '../utils/surname';
@@ -8,10 +8,11 @@ import {
   dualLangText,
   formatCompoundFieldDisplay,
   formatPathCountDisplay,
-  gedcomDatePrimary,
+  gedcomDateDisplay,
   jewishLineageForUi,
   relationTextForUi,
 } from '../utils/personUiText';
+import { formatLifespan } from '../utils/formatters';
 import { HolocaustMemorialPatchIcon } from './HolocaustMemorialPatchIcon';
 import { StoryModal } from './StoryModal';
 import {
@@ -49,9 +50,9 @@ interface Props {
 function InfoRow({ label, value }: { label: string; value: string | null | undefined }) {
   if (!value) return null;
   return (
-    <div className="flex gap-2 py-1 border-b border-gray-100">
-      <span className="text-gray-500 text-sm min-w-[80px]">{label}:</span>
-      <span className="text-sm font-medium">{value}</span>
+    <div className="grid grid-cols-[minmax(6.5rem,34%)_1fr] gap-x-3 gap-y-0.5 border-b border-stone-100 py-2.5 last:border-0">
+      <span className="text-[11px] font-semibold uppercase tracking-wide text-stone-500">{label}</span>
+      <span className="text-sm leading-snug text-stone-900">{value}</span>
     </div>
   );
 }
@@ -76,15 +77,51 @@ function DataStatusBadge({
   tone: 'verified' | 'inferred' | 'computed' | 'manual';
   label: string;
 }) {
+  const dot: Record<typeof tone, string> = {
+    verified: 'bg-emerald-500',
+    inferred: 'bg-amber-500',
+    computed: 'bg-sky-500',
+    manual: 'bg-violet-500',
+  };
   const styles: Record<typeof tone, string> = {
-    verified: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    inferred: 'bg-amber-50 text-amber-700 border-amber-200',
-    computed: 'bg-sky-50 text-sky-700 border-sky-200',
-    manual: 'bg-violet-50 text-violet-700 border-violet-200',
+    verified: 'border-emerald-200/80 bg-emerald-50/90 text-emerald-900',
+    inferred: 'border-amber-200/80 bg-amber-50/90 text-amber-950',
+    computed: 'border-sky-200/80 bg-sky-50/90 text-sky-950',
+    manual: 'border-violet-200/80 bg-violet-50/90 text-violet-950',
   };
   return (
-    <span className={`text-[10px] px-2 py-0.5 rounded-full border ${styles[tone]}`}>
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-[11px] font-medium leading-none ${styles[tone]}`}
+    >
+      <span className={`size-1.5 shrink-0 rounded-full ${dot[tone]}`} aria-hidden />
       {label}
+    </span>
+  );
+}
+
+function ProfileTagChip({
+  children,
+  icon: Icon,
+  borderColor,
+  bg,
+  color,
+  title,
+}: {
+  children: ReactNode;
+  icon: LucideIcon;
+  borderColor: string;
+  bg: string;
+  color: string;
+  title?: string;
+}) {
+  return (
+    <span
+      title={title}
+      className="inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] font-semibold leading-none shadow-sm"
+      style={{ backgroundColor: bg, color, borderColor }}
+    >
+      <Icon size={12} strokeWidth={2} className="shrink-0 opacity-90" aria-hidden />
+      {children}
     </span>
   );
 }
@@ -439,41 +476,66 @@ export function PersonDetailPanel({
     return reasons;
   }, [activeFilters, person, isConnectedToYael, t]);
 
-  return (
-    <div className="w-80 bg-white border-r border-gray-200 h-full overflow-y-auto p-4 shadow-lg" dir={t ? 'rtl' : 'ltr'}>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold">{personDisplayName}</h2>
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 text-xl leading-none"
-        >
-          ✕
-        </button>
-      </div>
+  const lifespan = formatLifespan(person.birthDate, person.deathDate);
+  const relationHead = relationTextForUi(person, uiLang);
 
+  return (
+    <div
+      className="h-full w-80 max-w-full overflow-y-auto border-r border-stone-200/90 bg-[#fafaf9] p-0 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[inset_-1px_0_0_0_rgba(28,25,23,0.06)] max-md:fixed max-md:inset-0 max-md:z-[100] max-md:h-[100dvh] max-md:w-full max-md:border-0 max-md:bg-stone-50 max-md:pt-[max(1rem,env(safe-area-inset-top))]"
+      dir={t ? 'rtl' : 'ltr'}
+    >
+      <header className="border-b border-stone-200/80 bg-stone-100/80 px-4 py-4 backdrop-blur-sm">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-stone-500">
+              {t ? 'רשומת מחקר' : 'Research record'}
+            </p>
+            <h2 className="mt-1 text-xl font-bold leading-tight tracking-tight text-stone-900">{personDisplayName}</h2>
+            {lifespan ? (
+              <p className="mt-1 font-mono text-sm tabular-nums text-stone-600">{lifespan}</p>
+            ) : null}
+            {relationHead ? (
+              <p className="mt-2 text-sm font-medium text-amber-900/90">{relationHead}</p>
+            ) : null}
+            <p className="mt-2 font-mono text-[11px] text-stone-500 tabular-nums">{person.id}</p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="shrink-0 rounded-md p-1.5 text-stone-400 transition-colors hover:bg-stone-200/80 hover:text-stone-700"
+            aria-label={t ? 'סגור' : 'Close'}
+          >
+            <span className="text-lg leading-none">✕</span>
+          </button>
+        </div>
+      </header>
+
+      <div className="space-y-4 px-4 py-4">
       {t &&
         person.hebrewName?.trim() &&
         person.hebrewName.trim() !== person.fullName && (
-          <div className="text-sm text-gray-600 mb-2">{person.fullName}</div>
+          <div className="text-sm text-stone-600">{person.fullName}</div>
         )}
       {!t &&
         person.hebrewName?.trim() &&
         person.hebrewName.trim() !== person.fullName && (
-          <div className="text-sm text-gray-600 mb-2">{person.hebrewName}</div>
+          <div className="text-sm text-stone-600">{person.hebrewName}</div>
         )}
       {isUnknownPlaceholder && (
-        <div className="text-xs text-gray-500 mb-2">
+        <div className="rounded-md border border-amber-200/80 bg-amber-50/90 px-3 py-2 text-xs text-amber-950">
           {t ? 'רשומת מקור לא מזוהה (Unknown/FNU).' : 'Unidentified source placeholder record (Unknown/FNU).'}
         </div>
       )}
       {formerSurnameInline && (
-        <div className="text-xs text-gray-500 mb-2">{formerSurnameInline}</div>
+        <div className="text-xs text-stone-500">{formerSurnameInline}</div>
       )}
 
       {trustBadges.length > 0 && (
-        <div className="mb-3">
-          <div className="text-[11px] text-gray-500 mb-1">{t ? 'אמינות נתון' : 'Data trust'}</div>
-          <div className="flex flex-wrap gap-1">
+        <div>
+          <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-stone-500">
+            {t ? 'אמינות והוכחה' : 'Evidence and confidence'}
+          </div>
+          <div className="flex flex-wrap gap-2">
             {trustBadges.map((badge, idx) => (
               <DataStatusBadge key={`${badge.label}-${idx}`} tone={badge.tone} label={badge.label} />
             ))}
@@ -497,22 +559,27 @@ export function PersonDetailPanel({
           onClick={() => onRequestPathCompare(person.id)}
           className="w-full mb-3 py-1.5 px-3 text-xs bg-sky-50 text-sky-800 border border-sky-200 rounded-lg hover:bg-sky-100 transition-colors"
         >
-          {t ? '🔗 מצא קשר לאדם אחר (בחר שני אנשים בעץ)' : '🔗 Compare with another person (pick two on tree)'}
+          {t
+            ? '🔗 מצא קשר לאדם אחר (עץ או חיפוש מלא בפאנל "בדוק קשר")'
+            : '🔗 Compare with another person (tree or full search in Check relationship)'}
         </button>
       )}
 
-      <div className="space-y-0">
-        <InfoRow label={t ? 'קרבה ליעל' : 'Relation to Yael'} value={relationTextForUi(person, uiLang)} />
+      <section>
+        <h3 className="mb-1 text-[10px] font-bold uppercase tracking-wider text-stone-500">
+          {t ? 'עובדות חיוניות' : 'Vital facts'}
+        </h3>
+        <div className="rounded-lg border border-stone-200/90 bg-white px-3 shadow-sm">
         <InfoRow label={t ? 'דור' : 'Generation'} value={person.generation?.toString()} />
         <InfoRow label={t ? 'קפיצות' : 'Hops'} value={person.hops?.toString()} />
         <InfoRow label={t ? 'מין' : 'Sex'} value={person.sex === 'M' ? (t ? 'זכר' : 'Male') : person.sex === 'F' ? (t ? 'נקבה' : 'Female') : (t ? 'לא ידוע' : 'Unknown')} />
-        <InfoRow label={t ? 'תאריך לידה' : 'Birth date'} value={gedcomDatePrimary(person.birthDate)} />
+        <InfoRow label={t ? 'תאריך לידה' : 'Birth date'} value={gedcomDateDisplay(person.birthDate)} />
         <InfoRow
           label={t ? 'מקום לידה' : 'Birth place'}
           value={dualLangText(person.birthPlace, person.birthPlaceEn, uiLang)}
         />
         {person.deathDate && (
-          <InfoRow label={t ? 'תאריך פטירה' : 'Death date'} value={gedcomDatePrimary(person.deathDate)} />
+          <InfoRow label={t ? 'תאריך פטירה' : 'Death date'} value={gedcomDateDisplay(person.deathDate)} />
         )}
         <InfoRow label={t ? 'שם בלידה' : 'Birth name'} value={person.birthName} />
         <InfoRow
@@ -540,7 +607,8 @@ export function PersonDetailPanel({
         {(person.title || person.titleEn) && (
           <InfoRow label={t ? 'תיאור' : 'Title'} value={dualLangText(person.title, person.titleEn, uiLang)} />
         )}
-      </div>
+        </div>
+      </section>
 
       {activeFilterReasons.length > 0 && (
         <div className="mt-3 p-2 bg-slate-50 border border-slate-200 rounded text-xs text-slate-700">
@@ -587,6 +655,26 @@ export function PersonDetailPanel({
               );
             })()}
             {person.tags.map(tag => {
+              if (tag === 'Holocaust') {
+                return (
+                  <span
+                    key="Holocaust"
+                    className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full font-medium border border-zinc-400/40 bg-zinc-100 text-zinc-900"
+                    title={
+                      t
+                        ? 'האדם סומן כנרצח/נספה בשואה (תג + שדה קורבן שואה).'
+                        : 'Marked as murdered/perished in the Shoah (Holocaust tag and holocaustVictim flag).'
+                    }
+                  >
+                    <HolocaustMemorialPatchIcon
+                      size={14}
+                      title={t ? 'קורבן שואה' : 'Holocaust victim'}
+                      className="flex-shrink-0"
+                    />
+                    {t ? 'קורבן שואה' : 'Holocaust victim'}
+                  </span>
+                );
+              }
               const cfg = TAG_ICONS[tag];
               if (cfg) {
                 return (
@@ -607,7 +695,7 @@ export function PersonDetailPanel({
         </div>
       )}
 
-      {person.holocaustVictim && (
+      {person.holocaustVictim && !person.tags.includes('Holocaust') && (
         <div className="mt-3 p-2 bg-zinc-100 border border-zinc-400 rounded text-xs text-zinc-900">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span
@@ -794,6 +882,7 @@ export function PersonDetailPanel({
           language={language}
         />
       )}
+      </div>
     </div>
   );
 }

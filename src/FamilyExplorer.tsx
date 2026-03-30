@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ReactFlowProvider } from '@xyflow/react';
 import { useFamilyData } from './hooks/useFamilyData';
+import { useMediaQuery } from './hooks/useMediaQuery';
 import { useLang } from './app/[lang]/layout';
 import { PersonDetailPanel } from './components/PersonDetailPanel';
 import { SearchBar } from './components/SearchBar';
@@ -18,6 +19,8 @@ import {
   downloadLastWebVitalsSnapshot,
   getLastWebVitalsSnapshot,
 } from './performance/webVitals';
+import { buildFamilyGraphExport, downloadFamilyGraphJson } from './utils/downloadFamilyGraph';
+import { downloadFamilyGraphExcel } from './utils/downloadFamilyGraphExcel';
 
 type ViewMode = 'tree' | 'map' | 'timeline' | 'stats';
 
@@ -86,10 +89,14 @@ export default function FamilyExplorer() {
   const { lang: language, setLang: setLanguage } = useLang();
   const [hasVitalsSnapshot, setHasVitalsSnapshot] = useState(false);
   const [pathCompareSeedId, setPathCompareSeedId] = useState<string | null>(null);
+  const [pathCompareSecondId, setPathCompareSecondId] = useState<string | null>(null);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const isMdUp = useMediaQuery('(min-width: 768px)');
   const viewTabs = VIEW_TABS[language];
   const basePath = `/${langParam || language}`;
 
   const pathFromQuery = searchParams.get('pathFrom');
+  const pathWithQuery = searchParams.get('pathWith');
   useEffect(() => {
     if (!pathFromQuery || persons.size === 0) return;
     let id = pathFromQuery;
@@ -99,16 +106,31 @@ export default function FamilyExplorer() {
       /* keep raw */
     }
     if (!persons.has(id)) return;
+    let second: string | null = null;
+    if (pathWithQuery) {
+      try {
+        const decoded = decodeURIComponent(pathWithQuery);
+        if (persons.has(decoded)) second = decoded;
+      } catch {
+        /* ignore */
+      }
+    }
     setPathCompareSeedId(id);
+    setPathCompareSecondId(second);
     setSearchParams(
       prev => {
         const n = new URLSearchParams(prev);
         n.delete('pathFrom');
+        n.delete('pathWith');
         return n;
       },
       { replace: true }
     );
-  }, [pathFromQuery, persons, setSearchParams]);
+  }, [pathFromQuery, pathWithQuery, persons, setSearchParams]);
+
+  useEffect(() => {
+    if (isMdUp) setMobileFilterOpen(false);
+  }, [isMdUp]);
 
   // View mode via ?view= query param (defaults to 'tree')
   const rawViewParam = searchParams.get('view');
@@ -217,6 +239,7 @@ export default function FamilyExplorer() {
 
   const handlePathCompareSeedConsumed = useCallback(() => {
     setPathCompareSeedId(null);
+    setPathCompareSecondId(null);
   }, []);
 
   const handleExportVitals = useCallback(() => {
@@ -227,6 +250,24 @@ export default function FamilyExplorer() {
         : 'No Web Vitals snapshot available yet. Reload and check the console.');
     }
   }, [language]);
+
+  const handleDownloadFamilyGraph = useCallback(() => {
+    const graph = buildFamilyGraphExport(personList, families, rootPersonId);
+    downloadFamilyGraphJson(graph);
+  }, [personList, families, rootPersonId]);
+
+  const handleDownloadFamilyExcel = useCallback(async () => {
+    try {
+      await downloadFamilyGraphExcel(personList, families, rootPersonId);
+    } catch (e) {
+      console.error(e);
+      window.alert(
+        language === 'he'
+          ? 'ייצוא לאקסל נכשל. פתחי Console לפרטים.'
+          : 'Excel export failed. See console for details.'
+      );
+    }
+  }, [personList, families, rootPersonId, language]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -279,83 +320,186 @@ export default function FamilyExplorer() {
   return (
     <div className="h-full flex flex-col bg-gray-50">
       <WelcomeModal language={language} />
-      <header className="bg-white border-b border-gray-200 px-4 py-2 z-10 flex-shrink-0">
-        <div className="flex items-center gap-3 flex-wrap">
-          <div
-            className="flex gap-1 bg-gray-100 rounded-lg p-0.5"
-            role="tablist"
-            aria-label={language === 'he' ? 'בחירת תצוגה' : 'View mode'}
-          >
-            {viewTabs.map(tab => (
-              <button
-                key={tab.id}
-                type="button"
-                role="tab"
-                aria-selected={viewMode === tab.id}
-                aria-controls="explorer-main-panel"
-                id={`explorer-tab-${tab.id}`}
-                tabIndex={viewMode === tab.id ? 0 : -1}
-                onClick={() => setViewMode(tab.id)}
-                onKeyDown={e => {
-                  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
-                  e.preventDefault();
-                  const i = viewTabs.findIndex(t => t.id === tab.id);
-                  const delta =
-                    language === 'he'
-                      ? e.key === 'ArrowLeft'
-                        ? 1
-                        : -1
-                      : e.key === 'ArrowRight'
-                        ? 1
-                        : -1;
-                  const next = (i + delta + viewTabs.length) % viewTabs.length;
-                  const nextId = viewTabs[next].id;
-                  setViewMode(nextId);
-                  queueMicrotask(() => {
-                    document.getElementById(`explorer-tab-${nextId}`)?.focus({ preventScroll: true });
-                  });
-                }}
-                className={`px-3 py-1.5 rounded-md text-sm transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 ${
-                  viewMode === tab.id
-                    ? 'bg-white shadow-sm font-medium text-gray-800'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                {tab.icon} {tab.label}
-              </button>
-            ))}
+      <header className="z-10 flex-shrink-0 border-b border-gray-200 bg-white px-3 py-2 md:px-4">
+        <div className="flex flex-col gap-2 md:flex-row md:flex-wrap md:items-center md:gap-3">
+          <div className="flex min-w-0 items-center gap-2">
+            <div
+              className="flex min-w-0 max-w-full gap-1 overflow-x-auto rounded-lg bg-gray-100 p-0.5 scrollbar-none"
+              role="tablist"
+              aria-label={language === 'he' ? 'בחירת תצוגה' : 'View mode'}
+            >
+              {viewTabs.map(tab => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={viewMode === tab.id}
+                  aria-controls="explorer-main-panel"
+                  id={`explorer-tab-${tab.id}`}
+                  tabIndex={viewMode === tab.id ? 0 : -1}
+                  onClick={() => setViewMode(tab.id)}
+                  onKeyDown={e => {
+                    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+                    e.preventDefault();
+                    const i = viewTabs.findIndex(t => t.id === tab.id);
+                    const delta =
+                      language === 'he'
+                        ? e.key === 'ArrowLeft'
+                          ? 1
+                          : -1
+                        : e.key === 'ArrowRight'
+                          ? 1
+                          : -1;
+                    const next = (i + delta + viewTabs.length) % viewTabs.length;
+                    const nextId = viewTabs[next].id;
+                    setViewMode(nextId);
+                    queueMicrotask(() => {
+                      document.getElementById(`explorer-tab-${nextId}`)?.focus({ preventScroll: true });
+                    });
+                  }}
+                  className={`shrink-0 whitespace-nowrap rounded-md px-2.5 py-1.5 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 md:px-3 md:text-sm ${
+                    viewMode === tab.id
+                      ? 'bg-white font-medium text-gray-800 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  {tab.icon} {tab.label}
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              className="shrink-0 rounded-lg border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 md:hidden"
+              aria-expanded={mobileFilterOpen}
+              onClick={() => setMobileFilterOpen(o => !o)}
+            >
+              {language === 'he' ? 'סינון' : 'Filters'}
+            </button>
           </div>
 
-          <SearchBar
-            searchIndex={searchIndex}
-            onSelect={handleSelectPerson}
-            language={language}
-            allowedPersonIds={filteredIds}
-          />
-          <div className="flex-1" />
-          <button
-            type="button"
-            onClick={handleExportVitals}
-            className={`text-xs px-2.5 py-1.5 rounded-md border transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 ${
-              hasVitalsSnapshot
-                ? 'border-gray-300 text-gray-600 hover:bg-gray-100'
-                : 'border-gray-200 text-gray-400 hover:bg-gray-50'
-            }`}
-            title={language === 'he' ? 'ייצוא snapshot אחרון של Web Vitals לקובץ JSON' : 'Export latest Web Vitals snapshot as JSON'}
-          >
-            {language === 'he' ? 'ייצוא Web Vitals' : 'Export Web Vitals'}
-          </button>
-          <div className="text-xs text-gray-400 whitespace-nowrap" title={language === 'he' ? 'בטווח הסינון והתצוגה הנוכחיים' : 'Current filter and view scope'}>
-            {displayIds.size !== filteredIds.size
-              ? `${displayIds.size.toLocaleString()} / ${filteredIds.size.toLocaleString()}`
-              : displayIds.size.toLocaleString()}{' '}
-            {language === 'he' ? 'אנשים' : 'people'}
+          <div className="min-w-0 flex-1 md:max-w-md">
+            <SearchBar
+              searchIndex={searchIndex}
+              onSelect={id => {
+                handleSelectPerson(id);
+                if (!isMdUp) setMobileFilterOpen(false);
+              }}
+              language={language}
+              allowedPersonIds={filteredIds}
+            />
+          </div>
+
+          <div className="flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-none md:hidden">
+            <span className="shrink-0 text-[10px] text-gray-400">
+              {displayIds.size !== filteredIds.size
+                ? `${displayIds.size.toLocaleString()}/${filteredIds.size.toLocaleString()}`
+                : displayIds.size.toLocaleString()}{' '}
+              {language === 'he' ? 'אנשים' : 'ppl'}
+            </span>
+            <button
+              type="button"
+              onClick={handleDownloadFamilyGraph}
+              className="shrink-0 rounded border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] text-emerald-900"
+            >
+              JSON
+            </button>
+            <button
+              type="button"
+              onClick={() => void handleDownloadFamilyExcel()}
+              className="shrink-0 rounded border border-violet-200 bg-violet-50 px-2 py-1 text-[10px] text-violet-900"
+            >
+              {language === 'he' ? 'אקסל' : 'XLSX'}
+            </button>
+            <button
+              type="button"
+              onClick={handleExportVitals}
+              className={`shrink-0 rounded border px-2 py-1 text-[10px] ${
+                hasVitalsSnapshot ? 'border-gray-300 text-gray-600' : 'border-gray-200 text-gray-400'
+              }`}
+            >
+              Vitals
+            </button>
+          </div>
+
+          <div className="hidden md:flex md:flex-1 md:flex-wrap md:items-center md:justify-end md:gap-2">
+            <button
+              type="button"
+              onClick={handleDownloadFamilyGraph}
+              className="whitespace-nowrap rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-xs text-emerald-900 transition-colors hover:bg-emerald-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+              title={
+                language === 'he'
+                  ? 'הורדת כל הגרף כ־JSON (כמו family-graph.json) - גיבוי או העלאה ל-Supabase'
+                  : 'Download full graph as JSON (same shape as family-graph.json) for backup or Supabase'
+              }
+            >
+              {language === 'he' ? 'הורדת גרף JSON' : 'Download graph JSON'}
+            </button>
+            <button
+              type="button"
+              onClick={() => void handleDownloadFamilyExcel()}
+              className="whitespace-nowrap rounded-md border border-violet-200 bg-violet-50 px-2.5 py-1.5 text-xs text-violet-900 transition-colors hover:bg-violet-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
+              title={
+                language === 'he'
+                  ? 'הורדת גיליונות Excel: Meta, Persons, Families (טקסטים ארוכים מקוצרים)'
+                  : 'Download Excel workbook: Meta, Persons, Families (long text fields truncated)'
+              }
+            >
+              {language === 'he' ? 'הורדת אקסל' : 'Download Excel'}
+            </button>
+            <button
+              type="button"
+              onClick={handleExportVitals}
+              className={`whitespace-nowrap rounded-md border px-2.5 py-1.5 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 ${
+                hasVitalsSnapshot
+                  ? 'border-gray-300 text-gray-600 hover:bg-gray-100'
+                  : 'border-gray-200 text-gray-400 hover:bg-gray-50'
+              }`}
+              title={language === 'he' ? 'ייצוא snapshot אחרון של Web Vitals לקובץ JSON' : 'Export latest Web Vitals snapshot as JSON'}
+            >
+              {language === 'he' ? 'ייצוא Web Vitals' : 'Export Web Vitals'}
+            </button>
+            <div
+              className="whitespace-nowrap text-xs text-gray-400"
+              title={language === 'he' ? 'בטווח הסינון והתצוגה הנוכחיים' : 'Current filter and view scope'}
+            >
+              {displayIds.size !== filteredIds.size
+                ? `${displayIds.size.toLocaleString()} / ${filteredIds.size.toLocaleString()}`
+                : displayIds.size.toLocaleString()}{' '}
+              {language === 'he' ? 'אנשים' : 'people'}
+            </div>
           </div>
         </div>
       </header>
 
-      <div className="flex-1 flex overflow-hidden">
-        <div className="w-64 p-3 space-y-3 overflow-y-auto border-l border-gray-200 bg-gray-50 flex-shrink-0">
+      <div className="relative flex min-h-0 flex-1 overflow-hidden">
+        {!isMdUp && mobileFilterOpen && (
+          <button
+            type="button"
+            className="absolute inset-0 z-[30] bg-black/35 md:hidden"
+            aria-label={language === 'he' ? 'סגור סינון' : 'Close filters'}
+            onClick={() => setMobileFilterOpen(false)}
+          />
+        )}
+        <div
+          className={`z-40 flex-shrink-0 space-y-3 overflow-y-auto border-l border-gray-200 bg-gray-50 p-3 md:relative md:w-64 md:translate-x-0 ${
+            !isMdUp && !mobileFilterOpen
+              ? 'pointer-events-none max-md:absolute max-md:inset-y-0 max-md:right-0 max-md:w-[min(20rem,92vw)] max-md:translate-x-full max-md:shadow-xl max-md:transition-transform max-md:duration-200'
+              : 'max-md:absolute max-md:inset-y-0 max-md:right-0 max-md:w-[min(20rem,92vw)] max-md:translate-x-0 max-md:shadow-xl max-md:transition-transform max-md:duration-200'
+          }`}
+        >
+          <div className="flex items-center justify-between md:hidden">
+            <span className="text-sm font-semibold text-gray-800">
+              {language === 'he' ? 'סינון וסטטיסטיקות' : 'Filters and stats'}
+            </span>
+            <button
+              type="button"
+              className="rounded p-1 text-lg leading-none text-gray-500 hover:bg-gray-200 hover:text-gray-800"
+              onClick={() => setMobileFilterOpen(false)}
+              aria-label={language === 'he' ? 'סגור' : 'Close'}
+            >
+              ✕
+            </button>
+          </div>
           {subtreeRootId && (
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm" dir={language === 'he' ? 'rtl' : 'ltr'}>
               <div className="flex items-center justify-between mb-1">
@@ -459,7 +603,9 @@ export default function FamilyExplorer() {
                   onFocusSubtree={handleShowSubtree}
                   language={language}
                   pathCompareSeedId={pathCompareSeedId}
+                  pathCompareSecondSeedId={pathCompareSecondId}
                   onPathCompareSeedConsumed={handlePathCompareSeedConsumed}
+                  searchIndex={searchIndex}
                 />
               </ReactFlowProvider>
             </div>

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, type KeyboardEvent } from 'react';
 import { Search, X } from 'lucide-react';
 import type Fuse from 'fuse.js';
 import type { Person } from '../types';
-import { displayFullNameForUi, gedcomDatePrimary, relationTextForUi } from '../utils/personUiText';
+import { displayFullNameForUi, gedcomDateDisplay, relationTextForUi } from '../utils/personUiText';
 
 interface Props {
   searchIndex: Fuse<Person>;
@@ -97,7 +97,11 @@ export function SearchBar({ searchIndex, onSelect, language = 'en', allowedPerso
   const listboxId = 'searchbar-results';
 
   return (
-    <div ref={containerRef} className="relative flex-shrink-0 z-20 w-72 max-w-[min(18rem,100vw-8rem)] min-w-[10rem]" dir={t ? 'rtl' : 'ltr'}>
+    <div
+      ref={containerRef}
+      className="relative z-20 min-w-0 w-full max-w-full shrink md:w-72 md:max-w-[min(18rem,100vw-8rem)] md:min-w-[10rem] md:shrink-0"
+      dir={t ? 'rtl' : 'ltr'}
+    >
       <div className="relative bg-white rounded-full shadow-md border border-slate-200 flex items-center px-3 py-1.5 gap-0.5">
         <Search size={18} className="text-slate-400 flex-shrink-0 pointer-events-none" aria-hidden />
         <input
@@ -154,9 +158,9 @@ export function SearchBar({ searchIndex, onSelect, language = 'en', allowedPerso
               <span className="font-semibold text-slate-800 text-sm">
                 {displayFullNameForUi(person, uiLang)}
               </span>
-              {gedcomDatePrimary(person.birthDate) ? (
+              {gedcomDateDisplay(person.birthDate) ? (
                 <span className="text-xs text-slate-500">
-                  {t ? 'יליד/ה:' : 'Born:'} {gedcomDatePrimary(person.birthDate)}
+                  {t ? 'יליד/ה:' : 'Born:'} {gedcomDateDisplay(person.birthDate)}
                 </span>
               ) : null}
               {(person.birthPlace || relationTextForUi(person, uiLang)) && (

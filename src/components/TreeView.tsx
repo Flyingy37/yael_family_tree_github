@@ -1,4 +1,5 @@
 import { useMemo, useCallback, useState, useEffect } from 'react';
+import type Fuse from 'fuse.js';
 import {
   ReactFlow,
   MiniMap,
@@ -20,7 +21,8 @@ import { computeLayout, NODE_HEIGHT, type LayoutEdge } from '../utils/layout';
 import { getDescendantIds, findPathBFS, countDescendantsMap } from '../utils/treeHelpers';
 import { useExpandCollapse } from '../hooks/useExpandCollapse';
 import type { Person, Family } from '../types';
-import { displayFullNameForUi, gedcomDatePrimary } from '../utils/personUiText';
+import { displayFullNameForUi, gedcomDateDisplay } from '../utils/personUiText';
+import { PathPairPickers } from './PathPairPickers';
 
 const BAND_HEIGHT = NODE_HEIGHT + 100; // node height + ranksep gap
 const BAND_X_OFFSET = -5000;           // far left so band spans full viewport
@@ -60,7 +62,11 @@ interface Props {
   language?: 'en' | 'he';
   /** When set once, opens path mode with this person as the first selection */
   pathCompareSeedId?: string | null;
+  /** Optional second person (with seed): opens path mode and runs path immediately */
+  pathCompareSecondSeedId?: string | null;
   onPathCompareSeedConsumed?: () => void;
+  /** Full-database fuzzy index for path picker (any person, not only visible nodes) */
+  searchIndex: Fuse<Person>;
 }
 
 export function TreeView({
@@ -73,7 +79,9 @@ export function TreeView({
   onFocusSubtree,
   language = 'en',
   pathCompareSeedId = null,
+  pathCompareSecondSeedId = null,
   onPathCompareSeedConsumed,
+  searchIndex,
 }: Props) {
   const { fitView } = useReactFlow();
   const t = language === 'he';
@@ -163,24 +171,38 @@ export function TreeView({
   // ── Path-find state ───────────────────────────────────────────────────────
   const [pathMode, setPathMode] = useState(false);
   const [pathPersonA, setPathPersonA] = useState<string | null>(null);
+  const [pathPickBId, setPathPickBId] = useState<string | null>(null);
   const [pathResult, setPathResult] = useState<string[] | null>(null); // ordered IDs on path
   const [pathEndpoints, setPathEndpoints] = useState<{ from: string; to: string } | null>(null);
 
   useEffect(() => {
     if (!pathCompareSeedId || !persons.has(pathCompareSeedId)) return;
     setPathMode(true);
-    setPathPersonA(pathCompareSeedId);
-    setPathResult(null);
-    setPathEndpoints(null);
+    const a = pathCompareSeedId;
+    const b =
+      pathCompareSecondSeedId && persons.has(pathCompareSecondSeedId) ? pathCompareSecondSeedId : null;
+    if (b) {
+      const path = findPathBFS(a, b, persons, families);
+      setPathPersonA(null);
+      setPathPickBId(null);
+      setPathResult(path);
+      setPathEndpoints({ from: a, to: b });
+    } else {
+      setPathPersonA(a);
+      setPathPickBId(null);
+      setPathResult(null);
+      setPathEndpoints(null);
+    }
     onPathCompareSeedConsumed?.();
-  }, [pathCompareSeedId, persons, onPathCompareSeedConsumed]);
+  }, [pathCompareSeedId, pathCompareSecondSeedId, persons, families, onPathCompareSeedConsumed]);
 
   useEffect(() => {
     if (!pathMode) return;
-    const onKey = (e: KeyboardEvent) => {
+    const onKey = (e: globalThis.KeyboardEvent) => {
       if (e.key === 'Escape') {
         setPathMode(false);
         setPathPersonA(null);
+        setPathPickBId(null);
         setPathResult(null);
         setPathEndpoints(null);
       }
@@ -208,17 +230,30 @@ export function TreeView({
   const togglePathMode = useCallback(() => {
     setPathMode(prev => {
       if (!prev) {
-        // Entering path mode: clear previous result
         setPathResult(null);
         setPathPersonA(null);
+        setPathPickBId(null);
         setPathEndpoints(null);
       } else {
         setPathPersonA(null);
+        setPathPickBId(null);
         setPathEndpoints(null);
       }
       return !prev;
     });
   }, []);
+
+  const runPathFromPickers = useCallback(() => {
+    if (!pathPersonA || !pathPickBId) return;
+    const a = pathPersonA;
+    const b = pathPickBId;
+    const path = findPathBFS(a, b, persons, families);
+    setPathResult(path);
+    if (path.length > 0) setPathEndpoints({ from: a, to: b });
+    else setPathEndpoints(null);
+    setPathPersonA(null);
+    setPathPickBId(null);
+  }, [pathPersonA, pathPickBId, persons, families]);
 
   // ── Layout ────────────────────────────────────────────────────────────────
   /**
@@ -269,7 +304,8 @@ export function TreeView({
         if (pathPersonA === null) {
           setPathPersonA(id);
         } else if (pathPersonA === id) {
-          setPathPersonA(null); // deselect first person
+          setPathPersonA(null);
+          setPathPickBId(null);
         } else {
           const a = pathPersonA;
           const path = findPathBFS(a, id, persons, families);
@@ -277,7 +313,7 @@ export function TreeView({
           if (path.length > 0) setPathEndpoints({ from: a, to: id });
           else setPathEndpoints(null);
           setPathPersonA(null);
-          // keep pathMode open so user can search again
+          setPathPickBId(null);
         }
         return;
       }
@@ -285,6 +321,17 @@ export function TreeView({
     },
     [pathMode, pathPersonA, onSelectPerson, persons, families]
   );
+
+  const clearPathPickA = useCallback(() => {
+    setPathPersonA(null);
+    setPathPickBId(null);
+    setPathResult(null);
+    setPathEndpoints(null);
+  }, []);
+
+  const clearPathPickB = useCallback(() => {
+    setPathPickBId(null);
+  }, []);
 
   // ── Generation band nodes ─────────────────────────────────────────────────
   const generationBandNodes: Node[] = useMemo(() => {
@@ -412,10 +459,12 @@ export function TreeView({
   // ── Path mode status label ────────────────────────────────────────────────
   const pathInstructions = pathMode
     ? pathPersonA === null
-      ? t ? 'בחר אדם ראשון' : 'Click first person'
+      ? t
+        ? 'בחר אדם ראשון בעץ או בשדה החיפוש למטה'
+        : 'Pick person A on the tree or via search below'
       : t
-        ? `✓ ${(pathPersonA && persons.get(pathPersonA) ? displayFullNameForUi(persons.get(pathPersonA)!, 'he') : pathPersonA)} — כעת בחר אדם שני`
-        : `✓ ${(pathPersonA && persons.get(pathPersonA) ? displayFullNameForUi(persons.get(pathPersonA)!, 'en') : pathPersonA)} — now click second person`
+        ? `✓ ${pathPersonA && persons.get(pathPersonA) ? displayFullNameForUi(persons.get(pathPersonA)!, 'he') : pathPersonA} — בחר אדם שני בעץ, או מלא חיפוש + "חשב נתיב"`
+        : `✓ ${pathPersonA && persons.get(pathPersonA) ? displayFullNameForUi(persons.get(pathPersonA)!, 'en') : pathPersonA} — second person: tree click or search + Find path`
     : null;
 
   const pathFoundText = pathResult !== null && !pathMode
@@ -466,7 +515,7 @@ export function TreeView({
         {isLazyMode && (
           <Panel position="top-left">
             <div
-              className="max-w-[220px] rounded-lg border border-slate-200/80 bg-white/95 px-3 py-2 text-[11px] leading-snug text-slate-600 shadow-md backdrop-blur-sm transition-opacity duration-300"
+              className="max-w-[min(13.75rem,calc(100vw-5rem))] rounded-lg border border-slate-200/80 bg-white/95 px-3 py-2 text-[11px] leading-snug text-slate-600 shadow-md backdrop-blur-sm transition-opacity duration-300 md:max-w-[220px]"
               dir={t ? 'rtl' : 'ltr'}
             >
               {t
@@ -478,7 +527,7 @@ export function TreeView({
 
         {/* Path-find toolbar */}
         <Panel position="top-right">
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, maxWidth: 290 }}>
+          <div className="flex w-full max-w-[min(20rem,calc(100vw-0.75rem))] flex-col items-end gap-1.5 md:max-w-[20rem]">
 
             {/* Main toggle button */}
             <button
@@ -494,8 +543,8 @@ export function TreeView({
               onClick={togglePathMode}
               title={
                 t
-                  ? 'בחר שני אנשים. Esc לביטול.'
-                  : 'Pick two people in the tree. Press Esc to cancel.'
+                  ? 'בחר שני אנשים (עץ או חיפוש מלא). Esc לביטול.'
+                  : 'Pick two people (tree or full search). Esc to cancel.'
               }
             >
               {pathMode ? <X size={13} /> : <RouteIcon size={13} />}
@@ -522,6 +571,7 @@ export function TreeView({
                 }}
                 onClick={() => {
                   setPathPersonA(selectedPersonId);
+                  setPathPickBId(null);
                   setPathResult(null);
                   setPathEndpoints(null);
                 }}
@@ -538,9 +588,29 @@ export function TreeView({
                 padding: '3px 6px', lineHeight: 1.5,
               }}>
                 {t
-                  ? 'לחץ כדי לגלות כיצד שני אנשים קשורים (או מהכרטיס: "מצא קשר לאדם אחר")'
-                  : 'Find the shortest chain between two people (or use the profile panel link)'}
+                  ? 'קשר בין שני אנשים: בעץ, או חיפוש בכל הקובץ בפאנל "בדוק קשר"'
+                  : 'Shortest chain: click two nodes, or open Check relationship and search anyone'}
               </div>
+            )}
+
+            {pathMode && (
+              <PathPairPickers
+                searchIndex={searchIndex}
+                persons={persons}
+                language={language}
+                pathPersonA={pathPersonA}
+                pathPickBId={pathPickBId}
+                onSelectA={id => {
+                  setPathPersonA(id);
+                  setPathPickBId(null);
+                  setPathResult(null);
+                  setPathEndpoints(null);
+                }}
+                onSelectB={setPathPickBId}
+                onClearA={clearPathPickA}
+                onClearB={clearPathPickB}
+                onFindPath={runPathFromPickers}
+              />
             )}
 
             {/* Instructions while selecting */}
@@ -614,6 +684,7 @@ export function TreeView({
                       onClick={() => {
                         setPathResult(null);
                         setPathPersonA(null);
+                        setPathPickBId(null);
                         setPathEndpoints(null);
                         setPathMode(true);
                       }}
@@ -635,6 +706,7 @@ export function TreeView({
                         setPathEndpoints(null);
                         setPathMode(false);
                         setPathPersonA(null);
+                        setPathPickBId(null);
                       }}
                       title={t ? 'נקה הדגשה' : 'Clear highlight'}
                     >
@@ -645,13 +717,18 @@ export function TreeView({
 
                 {/* Scrollable path list */}
                 {pathResult.length > 0 && (
-                  <ol style={{
-                    margin: 0, padding: '0 0 0 16px',
-                    maxHeight: 200, overflowY: 'auto',
-                    listStyle: 'decimal',
-                    fontSize: 10.5, color: '#374151',
-                    lineHeight: 1.7,
-                  }}>
+                  <ol
+                    style={{
+                      margin: 0,
+                      padding: '0 0 0 16px',
+                      maxHeight: 'min(12.5rem, 42vh)',
+                      overflowY: 'auto',
+                      listStyle: 'decimal',
+                      fontSize: 10.5,
+                      color: '#374151',
+                      lineHeight: 1.7,
+                    }}
+                  >
                     {pathResult.map((personId, idx) => {
                       const p = persons.get(personId);
                       return (
@@ -679,8 +756,8 @@ export function TreeView({
                             }}
                           >
                             {p ? displayFullNameForUi(p, uiLang) : personId}
-                            {p && gedcomDatePrimary(p.birthDate) ? (
-                              <span style={{ color: '#9ca3af', marginLeft: 4 }}>{gedcomDatePrimary(p.birthDate)}</span>
+                            {p && gedcomDateDisplay(p.birthDate) ? (
+                              <span style={{ color: '#9ca3af', marginLeft: 4 }}>{gedcomDateDisplay(p.birthDate)}</span>
                             ) : null}
                           </button>
                         </li>

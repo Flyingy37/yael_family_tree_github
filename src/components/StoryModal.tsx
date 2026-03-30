@@ -4,11 +4,13 @@ import { X, BookOpen } from 'lucide-react';
 interface StoryModalProps {
   personName: string;
   story: string;
+  /** When set (e.g. from `Person.storyTitle`), shown as the main heading; name moves to a secondary line */
+  storyTitle?: string | null;
   onClose: () => void;
   language?: 'en' | 'he';
 }
 
-export function StoryModal({ personName, story, onClose, language = 'he' }: StoryModalProps) {
+export function StoryModal({ personName, story, storyTitle, onClose, language = 'he' }: StoryModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const isHe = language === 'he';
 
@@ -44,9 +46,14 @@ export function StoryModal({ personName, story, onClose, language = 'he' }: Stor
           <BookOpen size={20} className="shrink-0 text-amber-600" strokeWidth={1.5} />
           <div className="min-w-0 flex-1">
             <p className="text-[11px] font-medium uppercase tracking-wide text-amber-600">
-              {isHe ? 'סיפור משפחתי' : 'Family Story'}
+              {isHe ? 'סיפור היסטורי' : 'Historical story'}
             </p>
-            <h2 className="truncate text-base font-bold text-slate-800">{personName}</h2>
+            <h2 className="truncate text-base font-bold text-slate-800">
+              {storyTitle?.trim() || personName}
+            </h2>
+            {storyTitle?.trim() && storyTitle.trim() !== personName.trim() && (
+              <p className="truncate text-xs font-medium text-slate-600">{personName}</p>
+            )}
           </div>
           <button
             type="button"

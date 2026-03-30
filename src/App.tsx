@@ -6,6 +6,13 @@ import TreePage from './app/[lang]/tree/page';
 import PersonPage from './app/[lang]/person/[id]/page';
 import InsightsPage from './app/[lang]/insights/page';
 import ArchivePage from './app/[lang]/archive/page';
+import DashboardPage from './pages/DashboardPage';
+import PeoplePage from './pages/PeoplePage';
+import PersonProfilePage from './pages/PersonProfilePage';
+import ResearchTreePage from './pages/ResearchTreePage';
+import DnaPage from './pages/DnaPage';
+import MergeReviewPage from './pages/MergeReviewPage';
+import { FamilyGraphProvider } from './hooks/useFamilyData';
 
 export default function App() {
   return (
@@ -15,12 +22,25 @@ export default function App() {
       <Route path="/about" element={<AboutPage />} />
 
       {/* ── App routes ── /:lang/{tree,person/:id,insights,archive} ─ */}
-      <Route path="/:lang" element={<LangLayout />}>
+      <Route
+        path="/:lang"
+        element={
+          <FamilyGraphProvider>
+            <LangLayout />
+          </FamilyGraphProvider>
+        }
+      >
         <Route index element={<Navigate to="tree" replace />} />
         <Route path="tree" element={<TreePage />} />
         <Route path="person/:id" element={<PersonPage />} />
         <Route path="insights" element={<InsightsPage />} />
         <Route path="archive" element={<ArchivePage />} />
+        <Route path="research" element={<DashboardPage />} />
+        <Route path="people" element={<PeoplePage />} />
+        <Route path="research/profile/:profileId" element={<PersonProfilePage />} />
+        <Route path="research/workspace-tree" element={<ResearchTreePage />} />
+        <Route path="research/dna" element={<DnaPage />} />
+        <Route path="research/merge" element={<MergeReviewPage />} />
       </Route>
 
       {/* Legacy /explore/* redirects */}

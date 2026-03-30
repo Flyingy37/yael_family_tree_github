@@ -1,5 +1,25 @@
 /** Narrative archive tree data (same structure as previously kept in App.jsx). */
 import type { ArchiveTreeNode } from './archiveTreeNode';
+import { assif23andmeFathersBranch } from './assif23andmeArchiveNodes';
+import { censusReportArchiveRoot } from './censusReportArchiveNodes';
+import {
+  ginzburgDobersteinUnderVladimir,
+  TZILA_GINZBURG_MEMOIR_FULL_STORY,
+  TZILA_GINZBURG_MEMOIR_TITLE,
+} from './ginzburgDobersteinArchiveNodes';
+import { juliusGenealogyDatasetReportRoot } from './juliusGenealogyDatasetReportNodes';
+import { lithuaniaAlperDirectoryArchiveNode } from './lithuaniaAlperDirectoryArchiveNode';
+import { genealogyIndexerVilnaKostrelRoot } from './genealogyIndexerVilnaKostrelArchiveNode';
+import { joshuaKastrollLettersDetailedRoot } from './joshuaKastrollLettersDetailedArchiveNodes';
+import { familyPdfWebSourcesRoot } from './familyPdfWebSourcesArchiveNodes';
+import { franceCastSurnameResearchLeadsRoot } from './franceCastSurnameResearchLeadsArchiveNode';
+import { heilprinMyHeritageFisherSuggestionsRoot } from './heilprinMyHeritageFisherSuggestionsArchiveNode';
+import { zaidmanFridmanBialaPodlaskaRoot } from './zaidmanFridmanBialaPodlaskaArchiveNodes';
+import {
+  dubershteinRomaniaHaifa1925AndIgraNode,
+  elisDubersteinChicago1894Node,
+} from './dubershteinPrimarySourcesArchiveNodes';
+import { herbertMyHeritageSiteRoot } from './herbertMyHeritageSiteArchiveNode';
 
 const BRANCH_NOTE =
   "הדגשה: התפתחות Castro → Kastroll (ליטא) → Alperovitz / Gurevich; בארה\"ב ענף Costrell מאותו שורש. ממיגל קסטרו (שורש ספרדי-צרפתי) השם התגלגל ל-Kastroll בליטא; צורות היסטוריות (Kastrel, Kastrell, Castrell) בצומת האיות. " +
@@ -14,16 +34,28 @@ const DNA_COSTRELL_BRANCH_NOTE =
 const MIGUEL_NOTE = 'אנוס מספרד שנמלט לצרפת. השאיר צוואה בספר רש"י עתיק.';
 
 const MIGUEL_STORY =
-  "מיגל קסטרו נמלט מספרד לדרום צרפת לאחר המהפכה הצרפתית כדי לחיות כיהודי חופשי. בספר רש\"י עתיק נכתבה הקדשה בספרדית ובה ביקש מצאצאיו לתעד שמות ונדודים בדפים; לפי מכתב יהושע קסטרל לא זוכר הכותב את כל שמות הצאצאים שהשאירו הערות בדפי הספר, אך זוכר בבירור את יהודה (פראג, אחר כך מחוז וילנה).";
+  'נמלט מספרד לדרום צרפת אחרי המהפכה הצרפתית. השאיר צוואה בספר רש"י עתיק שבו ביקש מצאצאיו לתעד את נדודיהם כדי לשמור על רצף השושלת.';
 
 const MARY_FINE_STORY =
-  'מרי עבדה בילדותה במפעל גפרורים בבוריסוב. בצעירותה חיה בבית דודה בטולה באווירה תרבותית. בימי ראשון נהגה לנסוע ליאסנאיה פוליאנה (Yasnaya Polyana), לעמוד בפתח האחוזה ולהקשיב לשיחות של לב טולסטוי עם הסטודנטים; ביקור בולט ב-1905. הייתה עדה למהפכת 1905 ולדיכוי דמים של סטודנטים בכיכר העיר. לפי המסמך: קרובה מאוד לאחותה בסי; עלתה לאמריקה בעקבותיה אחרי שחסכה כסף למסע.';
+  'בצעירותה נהגה לנסוע בימי ראשון ליסנאיה פוליאנה, לעמוד בפתח האחוזה ולהקשיב לשיחות של לב טולסטוי עם הסטודנטים.';
 
 const RACHEL_LEAH_FINE_STORY =
-  'רחל-לאה הייתה פעילה בתנועה המהפכנית ברוסיה. היא נורתה על ידי חיילי הצאר כשהייתה בת 14 או 16 בלבד, בזמן שנשאה נאום פוליטי נלהב נגד המשטר.';
+  'פעילה פוליטית נגד שלטון הצאר. נורתה על ידי חיילים בגיל 14 בזמן שנשאה נאום פוליטי באסיפה חשאית.';
+
+const HERZL_ALPEROVITZ_REVENGE_BOARDS_STORY =
+  'הבריח תחמושת לפרטיזנים על ידי הסתרתה בתוך חריצים בלוחות עץ שהושלכו מעל חומת מחנה וילייקה.';
 
 const MYER_FINE_STORY =
   "מאיר למד לימודי קודש אך התעניין במדע. כשדודתו הדתית הקיצונית תפסה אותו קורא ספרי מדע 'טרפים', היא הורתה למשפחות בעיירה להפסיק להאכיל אותו (מנהג 'ימי אכילה'). הוא נחלש מרעב, חלה בדלקת ריאות ונפטר בצעירותו.";
+
+const FOLKOFF_ALPEROVITZ_2026_REPORT_LEAD =
+  "דוח קשרי משפחה (ינואר 2026), לבראדלי פולקוף: מסביר את הקשר בין משפחת פולקוף (Folkoff / Falkov / פלקוב) למשפחת אלפרוביץ' מבלארוס. " +
+  "הקשר דרך רבקה אפלבאום, שנישאה ליעקב פולקוף (סבא-רבא), ובתו של נתן כהן אלפרוביץ' מסוסנקה. " +
+  "ממצא מרכזי: סבתא-רבתא רבתא רבקה אפלבאום (לימים רבקה פולקוף) - בת נתן כהן אלפרוביץ'. " +
+  "רקע DNA: פנייה של יעל לאדם צ'רסון (נכד נחום אלפרוביץ'); mtDNA HV5a.1; הערות על פער גנטי של 1 והבדלים גיאוגרפיים (מינסק מול דיבנישוק) - קשר ישיר דורש נתונים נוספים. " +
+  "Y-DNA: המלצה על בדיקה מתקדמת (BY700), אפשרות קשר ל-Q-FT340368 מול מגיד מווילנה - בדיקה מול פרויקט אלפרוביץ' ב-FTDNA. " +
+  "Family Finder: התאמות עם פאלקוב, פיאלקוב, פיאלקוביץ', פאלקוביץ', פאלקובסקי. " +
+  "מקורות: GEDCOM MyHeritage זיידמן (אפריל 2025), עץ Folkoff MyHeritage, FTDNA Family Finder, גיליון מאסטר, הגירה ומפקד.";
 
 const ENTITY_RESOLUTION_STORY =
   "משפחת אלפרוביץ' מתוארת כשורת כהונה במקורות שונים; אנדוגמיה בשבט יכולה להסביר חלק מריכוז ה-DNA המשותף. שינוי שמות אסטרטגי (כדי שלא יירשמו כבנים לאותה משפחה אחת ויימנע גיוס ארוך לצבא הצאר) יוצר אתגר של Entity Resolution: אותה משפחה ביולוגית תחת מזהים שונים - Kastroll, Alperovitz, Gurevich (עברית: קסטרל, אלפרוביץ', גורביץ'). החיפוש החכם בארכיון מאחד כינויים.";
@@ -32,7 +64,7 @@ const NAME_SPLIT_STORY =
   "לפי מכתב יהושע קסטרל: לסבו היו אחים ששינו את שם המשפחה ל-Gurevich ול-Alperovitz מהסיבה שלא לשרת את הצאר שנים עשר שנה. (במקור לעיתים Gurevitsch.) זה אותו שורש ביולוגי, שמות שונים ברישום.";
 
 const JEHOSHUA_GRANDSON_STORY =
-  "יהושע קסטרל (Joshua Kastroll; בחתימות במכתבים לעיתים Kastrel), הנכד, כתב ממקלטו את המכתבים ל-Michael Castroll (11 בדצמבר 1983) ול-Robert Costrell (27 במאי 1987 ו-25 ביוני 1988). בהם הוא מסכם את מסלול השם Castro / Kastroll / Castrell / Costrell, את דבורה וספר הרש\"י, ואת נדידת יהודה; אלה מקור עיקרי לנרטיב כאן. מסמך AlpertsAndCohens31 בדרייב משלים.";
+  "יהושע קסטרל (Joshua Kastroll; בחתימות במכתבים לעיתים Kastrel), הנכד, כתב מתל אביב מכתבים ל-Michael Castroll (11.12.1983), ל-Robert Costrell (27.5.1987 ו-25.6.1988), לדן (6.5.1986), ולריקי ובוב קסטרל (25.6.1988). בהם מסלול השם Castro / Kastroll / Castrell / Costrell, דבורה וספר הרש\"י, נדידת יהודה, ביוגרפיה (ליבאו 1908, סראטוב, ריגה, עלייה 1936), קווי K מול C בארה\"ב, ובונד/קומוניסטים. מקור עיקרי לנרטיב; צומת \"כרונולוגיה מלאה\" בארכיון. AlpertsAndCohens31 בדרייב משלים.";
 
 const ORTHOGRAPHY_KASTREL_STORY =
   "לפי מכתב יהושע קסטרל ל-Robert Costrell (יוני 1988): כשמשפחת Castro הראשונה התיישבה במחוז וילנה הרשויות המקומיות הוסיפו אות L לשם והחליפו C ב-K (כי C ברוסית נהגית ts), וכך נוצר Kastroll (לעיתים Kastrol באיות ישן). לאחד הדודים שחי בלונדון שנים רבות היה האיות Castrell עם C. סבו של הכותב, יהושע, שינה לעיתים לאיות עם e (Kastrell). הכותב אינו בטוח למה, אך משער שמטרת הייתה להתחמק משנים עשר שנה שירות בצבא צאר רוסיה. בארכיון: שם משפחה אחיד באנגלית לענף זה - Kastroll, למעט ציטוטים היסטוריים.";
@@ -55,9 +87,19 @@ const DEBORAH_STORY =
 const ELIYAHU_STORY =
   "אליהו אלפרוביץ': אחיה של דבורה. בנו משה אלפרוביץ' מטאלין (Talin) נספה בשואה - לפי המסמך המשפחתי.";
 
+const EDWARD_ANDERS_NASA_STORY =
+  'ד"ר אדוארד אנדרס (נולד Alperovitch): מדען בעל שם עולמי בנאס"א; ניתח סלעי ירח ממשימות אפולו. ניצול שואה שתיעד למעלה מ-7,000 קורבנות בלטביה.\n\n' +
+  `${ETYMOLOGY_LINE} שרד לאחר שאמו אריקה התחזתה לארית; היגר לארה"ב ב-1949 והפך לפרופסור לכימיה באוניברסיטת שיקגו (כולל מחקר מטאוריטים).`;
+
 /** GEDCOM anchors and IR-* summaries (from docs/identity_resolution_notes.md + canonical.csv). */
 const CHIVIA_BRANCH_GEDCOM_NOTE =
   "ב-GEDCOM (לאחר parse-ged): Chivia Kappelowitz @I786@ ב-fams @F350@; ילדים עם famc @F350@ כוללים את Sam/Myer/Laza/Rachel-Leah Fine (@I1136@-@I1140@), Shimon Fine (@I1228@), וכן Mary Alpert (@I1060@) ו-Bessie Alpert (@I1058@). יש להצליב עם הסיפור המשפחתי (מרי פיין וכו') כי השמות בשדות שונים.";
+
+/** Castro–Kastrol–Alperovitz narrative path (chips on archive cards). */
+const SEPHARDIC_ROUTE_TAGS = ['הנתיב הספרדי', 'The Sephardic Route'] as const;
+
+const PESIA_ALPEROVITZ_KASTROL_STORY =
+  "פסיה מייצגת את המעבר הלשוני והמשפחתי בין השם הספרדי המקורי קסטרו/קסטרול לבין השם אלפרוביץ' שאומץ במזרח אירופה.";
 
 export const familyData: ArchiveTreeNode = {
   id: 'root',
@@ -65,8 +107,8 @@ export const familyData: ArchiveTreeNode = {
   children: [
     {
       id: 'livnat_direct_line',
-      name: 'ענף ישיר: Castro–Alperovitz (אמא) · Heilprin–Lanzman (אבא) · דוברשטיין',
-      note: 'מבנה אבות (צאצאים למעלה, שורשים למטה): קו ספרדי-אשכנזי מצד אמא; קו היילפרין-לנצמן מצד אבא; ענף מחקר דוברשטיין.',
+      name: 'ענף ישיר: Castro–Alperovitz (אמא) · Heilprin–Lanzman (אבא) · דוברשטיין · פרידמן-ביאלה (חתן)',
+      note: 'מבנה אבות (צאצאים למעלה, שורשים למטה): קו ספרדי-אשכנזי מצד אמא; קו היילפרין-לנצמן מצד אבא; ענף מחקר דוברשטיין; קו פרידמן-זיידמן מביאלה-פודלסקה (צד חתן, ללא קשר לקסטרו).',
       children: [
         {
           id: 'father',
@@ -85,14 +127,19 @@ export const familyData: ArchiveTreeNode = {
               name: 'Shlioma Lanzman / שלומיא לנצמן',
               birth: '1804',
               birthPlace: 'Boguslavishki',
-              note: 'אב קדמון בקו הלנצמן; קישור לדורות היילפרין דרך הצאצאים.',
+              note:
+                'אב קדמון בקו הלנצמן; קישור לדורות היילפרין דרך האבות בעץ (אברהם למטה). ' +
+                'התאמה חזקה ל-FamilySearch Family Tree (למשל מזהה PHFH-865): לידה סביב 1804; ראש משק ב-boguslavishki / Bagaslaviskis, מחוז וילנה, 30.4.1834 ו-14.1.1851; בן לאברם לנצמן. ' +
+                'לפי אותו פרופיל: בן זוג מירקה (Merka); ילדים המוצעים שם: דוד יודל לנצמן (~1820), רוכא חיה (Landesman; ב-FS לעיתים סימון מין שגוי - להצלב במקור). ' +
+                'לא למזג אוטומטית פרופילים אחרים בשם דומה: למשל שלומיא לנצמן ~1837 באושומיר (הורים גרשון ומלכה) או לידה 1840 בקישינב (אב שמואל לנדסמן) - אנשים שונים.',
               children: [
                 {
                   id: 'abram_lantsman',
                   name: 'Abram Lanzman / אברהם לנצמן',
                   birth: '1748',
                   birthPlace: 'Vilna',
-                  note: 'נפטר ב-1832. וילנה.',
+                  note:
+                    'נפטר ב-1832. וילנה. לפי FamilySearch (אותו ענף): אביו של שלומיא; אחים המוזכרים שם: לייבה לנצמן (1797-1834), מובשה לנצמן - להשלים מול רישומי LitvakSIG / רשימות רוויזיה.',
                   children: [
                     {
                       id: 'zevulun_eliezer_heilprin',
@@ -100,13 +147,14 @@ export const familyData: ArchiveTreeNode = {
                       birth: '1554',
                       birthPlace: 'פולין / ליטא',
                       note:
-                        'שורש רבני (המאה ה-16). מאומת גנטית: Y-DNA Haplogroup R-FGC8601. קשר למשפחת לנצמן-ליבנת.',
+                        'שורש רבני (המאה ה-16). מאומת גנטית: Y-DNA Haplogroup R-FGC8601. קשר למשפחת לנצמן-ליבנת. הצעות עץ MyHeritage (A. Fisher) על דורות נוספים - ראו צומת נפרד תחת אריה; לא למזג אוטומטית.',
                       isDNAVerified: true,
                     },
                   ],
                 },
               ],
             },
+            heilprinMyHeritageFisherSuggestionsRoot,
           ],
         },
         {
@@ -117,30 +165,50 @@ export const familyData: ArchiveTreeNode = {
               id: 'nahum_alperovitz',
               name: "נחום אלפרוביץ' / Nahum Alperovitz",
               note:
-                "סבא מצד אמא; אביהם של פולה וזאב. מאומת ב-DNA: התאמה ל-Robert M. Costrell (157 cM). שורת כהונה (כהנים) מאימו דבורה. ענף Castro–Kastroll–אלפרוביץ' מפורט בצאצאים.",
+                "אם: פסיה אלפרוביץ' (לבית קסטרול). סבא מצד אמא; אביהם של פולה וזאב. פסיה - חוליה מקשרת לשורת קסטרול ולהתאמת DNA ל-Robert M. Costrell (157 cM). שורת כהונה (כהנים). לפי המסמכים: חבר המחתרת היהודית בקורניץ.",
               isDNAVerified: true,
+              isHero: true,
+              tags: [...SEPHARDIC_ROUTE_TAGS],
               children: [
                 {
-                  id: 'samuel_kastroll',
-                  name: 'Samuel Kastroll / שמואל קסטרול',
+                  id: 'pesia_alperovitz_kastrol',
+                  name: "פסיה אלפרוביץ' (לבית קסטרול) / Pesia Alperovitz (née Kastrol) · Pesia Kastrol",
                   note:
-                    "בנו של יהודה. לפי המסמך: אב ל-11 ילדים (שמואל ועשרה אחים ואחיות). חלקם שינו ל-Alperovitz או ל-Gurevich (גורביץ'; במקורות: Gurvitch, Gurevitsch) כדי שלא יירשמו כבני משפחה אחת ויימנע גיוס ארוך לצבא הצאר.",
+                    'אמו של נחום. החוליה המקשרת המאשרת את השם קסטרול (Kastrol) כגרסה מוקדמת. בזכותה הוכח הקשר הגנטי לענף קוסטרל בארה"ב.',
+                  story: PESIA_ALPEROVITZ_KASTROL_STORY,
+                  isDNAVerified: true,
+                  tags: [...SEPHARDIC_ROUTE_TAGS],
                   children: [
                     {
-                      id: 'yehuda_kastrol_vilna',
-                      name: 'Yehuda Kastroll / יהודה קסטרול',
-                      birth: '1820',
-                      birthPlace: 'Vilna',
+                      id: 'samuel_kastroll',
+                      name: 'Samuel Kastroll / שמואל קסטרול',
                       note:
-                        'בנו של מיגל. לפי מכתבי Joshua Kastroll: פראג, אחר כך מחוז וילנה אחרי מלחמות נפוליאון (~1820). שינוי איות Castro→Kastroll - ראו צומת "איות" בארכיון הנרטיבי.',
+                        "בנו של יהודה. לפי המסמך: אב ל-11 ילדים (שמואל ועשרה אחים ואחיות). חלקם שינו ל-Alperovitz או ל-Gurevich (גורביץ'; במקורות: Gurvitch, Gurevitsch) כדי שלא יירשמו כבני משפחה אחת ויימנע גיוס ארוך לצבא הצאר.",
+                      isDNAVerified: true,
+                      tags: [...SEPHARDIC_ROUTE_TAGS],
                       children: [
                         {
-                          id: 'miguel_castro_spain',
-                          name: 'Miguel Castro / מיגל קסטרו',
-                          birth: '1660',
-                          birthPlace: 'Spain',
-                          note: MIGUEL_NOTE,
-                          story: MIGUEL_STORY,
+                          id: 'yehuda_kastrol_vilna',
+                          name: 'Yehuda Kastroll / יהודה קסטרול',
+                          birth: '1820',
+                          birthPlace: 'Vilna',
+                          note:
+                            'בנו של מיגל. לפי מכתבי Joshua Kastroll: פראג, אחר כך מחוז וילנה אחרי מלחמות נפוליאון (~1820). שינוי איות Castro→Kastroll - ראו צומת "איות" בארכיון הנרטיבי.',
+                          isDNAVerified: true,
+                          tags: [...SEPHARDIC_ROUTE_TAGS],
+                          children: [
+                            {
+                              id: 'miguel_castro_spain',
+                              name: 'Miguel Castro / מיגל קסטרו',
+                              birth: '1660',
+                              birthPlace: 'Spain',
+                              note: MIGUEL_NOTE,
+                              storyTitle: 'השורש הספרדי',
+                              fullStory: MIGUEL_STORY,
+                              isDNAVerified: true,
+                              tags: [...SEPHARDIC_ROUTE_TAGS],
+                            },
+                          ],
                         },
                       ],
                     },
@@ -151,29 +219,61 @@ export const familyData: ArchiveTreeNode = {
             {
               id: 'vladimir_sofia',
               name: 'ולדימיר דוברשטיין וסופיה גינזבורג',
-              note: 'Vladimir Dubershtein & Sofia Ginzburg - הורים של צילה; ענף מחקר לקרובי משפחה מצד דוברשטיין.',
+              note:
+                'Vladimir Dubershtein & Sofia Ginzburg. ילדים: ראובן (1920), מיכאל (נפטר בפולין כתינוק), אמה (בשאטה) מאירסון, צילה (1926 חיפה - בענף למעלה), וולה (1928 תל אביב). ולדימיר - קופאי בנק בפלשניץ; מורה לעברית; קשר לדלגינובה במלחמה. ענף גינזבורג-ליאנדרס ומחקר DNA למטה. רשימת עולים אניה רומניה לחיפה 20.4.1925: "זאב" דוברשטין גיל 30 עם רעיה וילדים ראובן ובתיה אסתר - ראו צומת מקורות; סביר שזאב = ולדימיר בשם עברי במסמך העלייה.',
               children: [
                 {
                   id: 'reuven_dubershtein',
                   name: 'ראובן דוברשטיין',
-                  note: 'אחיה של צילה. נהרג ב-1942 בשירותו בצבא האדום.',
+                  note:
+                    'אחיה של צילה. נהרג ב-1942 בשירותו בצבא האדום. מופיע ברשימת עולים אניה רומניה לחיפה 20.4.1925, גיל 5, משפחת דוברשטין (יחד עם זאב וחוליה ובתיה אסתר).',
                   children: [
                     {
                       id: 'alex_dubershtein_research',
                       name: 'Alex Dubershtein (Dubrow) / אלכס דוברשטיין',
-                      note: '🔍 Research Target: Migrated to USA 1944. Potential match to Ace Dubrow (1.54%).',
+                      note:
+                        '🔍 Research Target (Alex Dubrow): היגר לארה"ב 1944. התאמה פוטנציאלית ל-Ace Dubrow (1.54%).',
                       isResearchTarget: true,
                     },
                   ],
                 },
+                dubershteinRomaniaHaifa1925AndIgraNode,
+                elisDubersteinChicago1894Node,
+                {
+                  id: 'michael_doberstein_infant',
+                  name: 'מיכאל דוברשטיין (~1922)',
+                  note: 'נפטר בפולין לפני גיל שנתיים (לפי מסורת משפחתית).',
+                  isVictim: true,
+                },
+                {
+                  id: 'ema_besheta_meirson',
+                  name: 'אמה (בשאטה) דוברשטיין - מאירסון',
+                  birth: '1924',
+                  birthPlace: 'בלארוס',
+                  note:
+                    'אחות צילה; נישאה לאנשל מאירסון. קו מארק מאירסון ותמונות משפחתיות - ראו צומת במחקר גינזבורג. מוצע: ברשימת עולים 20.4.1925 מופיעה "בתיה אסתר" גיל 1 באותה משפחת דוברשטין כמו ראובן וזאב - להצלב כשם מלא/כינוי לאמה.',
+                },
+                {
+                  id: 'volia_doberstein_axelrod',
+                  name: 'וולה (ולנטינה) דוברשטיין / אקסלרוד',
+                  birth: '1928',
+                  birthPlace: 'תל אביב',
+                  note: 'אחות צילה; נישאה ליצחק אקסלרוד (רימה, זינה וצאצאים).',
+                },
+                ...ginzburgDobersteinUnderVladimir,
               ],
             },
             {
               id: 'tzila_dubershtein',
               name: 'צילה שרה דוברשטיין-גינזבורג (גינזבורג-ליאנדרס)',
               note:
-                'קו אמהי מאומת דרך באשאטה ליאנדרס. חיבור גנטי לדניאל גינזבורג (158 cM). mtDNA Haplogroup HV5a; השושלת האימהית הישירה מהפזורה הצפונית (בלארוס/ליטא).',
+                'קו אמהי מאומת דרך באשאטה ליאנדרס. חיבור גנטי לדניאל גינזבורג (158 cM). mtDNA Haplogroup HV5a; השושלת האימהית הישירה מהפזורה הצפונית (בלארוס/ליטא). עדות הישרדות מפלשניץ ודלגינובה - פתחו את הסיפור המלא. מקור PDF נוסף: צומת "סבתא צילה - סיפור משפחתי" תחת מקורות PDF.',
+              storyTitle: TZILA_GINZBURG_MEMOIR_TITLE,
+              fullStory: TZILA_GINZBURG_MEMOIR_FULL_STORY,
               isDNAVerified: true,
+              isSurvivor: true,
+              highlightStoryCard: true,
+              tags: ['Pleshchenitsy', 'Dalginovo', 'Holocaust survivor', 'Duberstein'],
             },
             {
               id: 'siblings_pola_zeev',
@@ -194,6 +294,7 @@ export const familyData: ArchiveTreeNode = {
             },
           ],
         },
+        zaidmanFridmanBialaPodlaskaRoot,
       ],
     },
     {
@@ -205,8 +306,19 @@ export const familyData: ArchiveTreeNode = {
         {
           id: 'archive_crossref_main_line',
           name: 'הערה: המסלול המרכזי Castro–Alperovitz',
-          note: 'ענף נחום אלפרוביץ\' בעץ הישיר למעלה מרכז את מיגל קסטרו, יהודה קסטרול, שמואל קסטרול והקישור ל-Robert Costrell (157 cM). כאן: סיפורים משלימים וענפים נוספים.',
+          note: 'ענף נחום אלפרוביץ\' בעץ הישיר למעלה: מיגל קסטרו, יהודה קסטרול, שמואל קסטרול, פסיה (לבית קסטרול) כאם נחום, והקישור ל-Robert Costrell (157 cM). תג "הנתיב הספרדי" מסמן את השרשרת. כאן: סיפורים משלימים וענפים נוספים.',
         },
+        familyPdfWebSourcesRoot,
+        herbertMyHeritageSiteRoot,
+        {
+          id: 'kurenets_sosenka_levitan_krivitsky',
+          name: 'קורניץ / סוסנקה – רשת לויטן וקריביצקי',
+          note:
+            'קשרי נישואין מתועדים עם משפחות לויטן (Levitan) וקריביצקי (Krivitsky). ענפים היגרו לשיבויגן, ויסקונסין (Sheboygan, Wisconsin). לחיפוש: השתמשו גם באיותים לועזיים במילון החיפוש החכם.',
+          tags: ['Levitan–Krivitsky', 'Sheboygan'],
+        },
+        lithuaniaAlperDirectoryArchiveNode,
+        genealogyIndexerVilnaKostrelRoot,
         {
           id: 'doc_entity_resolution_dna',
           name: 'אנדוגמיה, כהונה ו-Entity Resolution (מהמסמך)',
@@ -223,9 +335,10 @@ export const familyData: ArchiveTreeNode = {
               id: 'doc_joshua_kastrel_letters_compendium',
               name: 'מכתבי Joshua Kastroll: תמצית (1983-1988)',
               note:
-                'ציטוטים וסיכום ממכתבים ל-Michael Castroll (11.12.1983) ול-Robert Costrell (27.5.1987, 25.6.1988). הערות 5-7 במקורות משפחתיים מתייחסות אליהם.',
+                'ציטוטים וסיכום ממכתבים ל-Michael Castroll (11.12.1983) ול-Robert Costrell (27.5.1987, 25.6.1988). יש גם מכתבים לדן ולריקי/בוב - ראו צומת הבא.',
               story: JOSHUA_KASTREL_LETTERS_COMPENDIUM_STORY,
             },
+            joshuaKastrollLettersDetailedRoot,
             {
               id: 'I_CASTRO_1',
               name: 'Miguel Castro / מיגל קסטרו',
@@ -233,7 +346,8 @@ export const familyData: ArchiveTreeNode = {
               birthPlace: 'קסטיליה / טולדו, ספרד',
               note:
                 'אב קדמון; יהודי אנוס (Converso). ' + MIGUEL_NOTE,
-              story: MIGUEL_STORY,
+              storyTitle: 'השורש הספרדי',
+              fullStory: MIGUEL_STORY,
             },
             {
               id: 'doc_yehuda_kastrol_narrative',
@@ -261,6 +375,7 @@ export const familyData: ArchiveTreeNode = {
               note: 'לפי מכתב יוני 1988 ל-Robert Costrell (הערה 7 במקור).',
               story: ORTHOGRAPHY_KASTREL_STORY,
             },
+            franceCastSurnameResearchLeadsRoot,
             {
               id: 'doc_yehoshua_kastrel_elder',
               name: 'יהושע קסטרל (הזקן) / Yehoshua Kastroll',
@@ -275,10 +390,10 @@ export const familyData: ArchiveTreeNode = {
             {
               id: 'jehoshua_costrell',
               name: 'Joshua Kastroll / יהושע קסטרל (הנכד, כותב המכתב)',
-              birth: '~1905',
-              birthPlace: 'תל אביב (מכתב 1988)',
+              birth: '1908',
+              birthPlace: 'Libau (Liepāja), Latvia',
               note:
-                'הנכד, כותב המכתב מתל אביב (1988) - המקור המרכזי לנרטיב; קיימים גם סיכומים מסביבות 1983. אביו נולד בקורניץ ב-1876; משפחה קרובה נספתה בשואה.',
+                'הנכד, כותב המכתב מתל אביב (1983-1988). לפי מכתב 6.5.1986: נולד בליבאו 1908, מלחמה ראשונה בסראטוב, חזרה לליבאו 1919, ריגה 1933, עלייה 1936. אביו נולד בקורניץ 1876; משפחה נספתה בשואה. פתחו "כרונולוגיה מלאה" לפרטי המכתבים.',
               story: JEHOSHUA_GRANDSON_STORY,
             },
             {
@@ -340,9 +455,9 @@ export const familyData: ArchiveTreeNode = {
                   name: 'Rachel-Leah Alperovitz / רחל-לאה אלפרוביץ\'',
                   note:
                     'בת Markel. במסמך: האחות הצעירה של בסי; מהפכנית. 🎗️ נורתה על ידי חיילי הצאר (ראו סיפור מלא).',
-                  story: RACHEL_LEAH_FINE_STORY,
+                  storyTitle: 'המהפכנית הצעירה',
+                  fullStory: RACHEL_LEAH_FINE_STORY,
                   isVictim: true,
-                  highlightStoryCard: true,
                 },
                 {
                   id: 'doc_reuben_alperovitz',
@@ -369,8 +484,16 @@ export const familyData: ArchiveTreeNode = {
                   name: 'Mary Alperovitz / מרי אלפרוביץ\'',
                   note:
                     'בת Markel; אחות לבסי. הנרטיב על טולסטוי ו-1905 נשמר; הגירה לאמריקה בעקבות בסי אחרי חיסכון - במסמך.',
-                  story: MARY_FINE_STORY,
-                  highlightStoryCard: true,
+                  storyTitle: 'הביקור אצל טולסטוי',
+                  fullStory: MARY_FINE_STORY,
+                },
+                {
+                  id: 'herzl_alperovitz_markel_son',
+                  name: 'Herzl Alperovitz / הרצל אלפרוביץ\'',
+                  note:
+                    'בן Markel לפי הרחבת הנרטיב; סיפור "לוחות הנקמה" והברחת תחמושת - בכרטיס הסיפור.',
+                  storyTitle: 'לוחות הנקמה',
+                  fullStory: HERZL_ALPEROVITZ_REVENGE_BOARDS_STORY,
                 },
               ],
             },
@@ -517,7 +640,7 @@ export const familyData: ArchiveTreeNode = {
               id: 'ir_002_sosha_esther',
               name: 'IR-002: סושה אסתר קסטרל (זמני)',
               note:
-                '@I362@ Sosha Esther Kastrel - מוצגת כהורה ב-@F69@ לצד פסיה קסטרול; שני הורים נקבה באותה משפחה מעלה חשד לארטיפקט ייבוא. ממתין לאימות ממקורות חיצוניים.',
+                '@I362@ Sosha Esther Kastrel - מוצגת כהורה ב-@F69@ לצד פסיה קסטרול; שני הורים נקבה באותה משפחה מעלה חשד לארטיפקט ייבוא. ממתין לאימות ממקורות חיצוניים. דוח פולקוף 2026 מציין סושה אסתר כרעיה לראובן בקו סוסנקה - יש להצלב.',
               isResearchTarget: true,
             },
             {
@@ -535,9 +658,35 @@ export const familyData: ArchiveTreeNode = {
             },
             {
               id: 'pesia_kastrel_ged',
-              name: 'פסיה קסטרל / Costrell (GEDCOM)',
+              name: 'פסיה קסטרל / Pesia Kastrol · Costrell (GEDCOM)',
               note:
-                '@I348@ Pesia Kastrel, נולדה ~1813; Batch3: פסיה Costrell (וריאנט), בת לנחום Costrell; הורה ב-@F69@; אחים מהמשפחה כוללים יהושע קסטרל @I409@.',
+                '@I348@ Pesia Kastrel, נולדה ~1813; Batch3: פסיה Costrell (וריאנט), בת לנחום Costrell; הורה ב-@F69@; אחים מהמשפחה כוללים יהושע קסטרל @I409@. החוליה המקשרת המאשרת את השם קסטרול (Kastrol) כגרסה מוקדמת; בזכות קו זה הוכח הקשר הגנטי לענף קוסטרל בארה"ב.',
+              isDNAVerified: true,
+            },
+            {
+              id: 'part2_kurenets_shochet_costrell_line',
+              name: 'חלק 2: שוחט קורניץ – נחום קסטרול (Castrol) וענף Costrell',
+              note: `${ETYMOLOGY_LINE} לפי מסמך משפחת אלפרוביץ' חלק 2; צומת ל-Nachum Costrell @I82@ ב-GEDCOM.`,
+              children: [
+                {
+                  id: 'nachum_castrol_kurenets_shochet',
+                  name: 'Nachum Castrol / נחום קסטרול',
+                  note: `${ETYMOLOGY_LINE} השוחט של קורניץ (the shochet of Kurenets).`,
+                  children: [
+                    {
+                      id: 'hyman_costrell_communist',
+                      name: 'Hyman Costrell / היימן קוסטרל',
+                      note:
+                        `${ETYMOLOGY_LINE} פעיל קומוניסטי. נשוי ל-Bessie Alpert; בתם Dorothy.`,
+                    },
+                    {
+                      id: 'solomon_costrell_nachum_son',
+                      name: 'Solomon Costrell / סולומון קוסטרל',
+                      note: `${ETYMOLOGY_LINE} בן נחום; ענף Costrell.`,
+                    },
+                  ],
+                },
+              ],
             },
           ],
         },
@@ -554,13 +703,33 @@ export const familyData: ArchiveTreeNode = {
             "במאה ה-19 חלק מהאחים לקו Kastroll שינו את שמם ל-Alperovitz ול-Gurevich (עברית גורביץ'; וריאנטים מתועדים: Gurvitch, Gurevitsch) כטקטיקת הישרדות מול גיוס כפוי לצבא הצאר. בארצות הברית התפתח גם Costrell - ענף אמריקאי מאותו שורש.",
         },
         {
-          id: 'I_ANDERS_1',
-          name: 'Edward Anders (Alperovitz)',
-          birth: '1926',
-          birthPlace: 'Liepaja',
-          note:
-            `${ETYMOLOGY_LINE} 🕊️ ניצול שואה. שרד לאחר שאמו אריקה התחזתה לארית. היגר לארה"ב ב-1949 והפך לפרופסור בעל שם עולמי לכימיה באוניברסיטת שיקגו (חקר מטאוריטים עבור נאס"א).`,
-          isSurvivor: true,
+          id: 'part2_nasa_edward_anders_line',
+          name: 'חלק 2: קו נאס"א – ישראל, אדולף אבא, ד"ר אדוארד אנדרס',
+          note: `${ETYMOLOGY_LINE} לפי מסמך משפחת אלפרוביץ' חלק 2.`,
+          children: [
+            {
+              id: 'israel_alperovitz_gabbai_kurenets',
+              name: "ישראל אלפרוביץ' / Israel Alperovitz",
+              note: `${ETYMOLOGY_LINE} גבאי בבית הכנסת של קורניץ (Kurenets).`,
+            },
+            {
+              id: 'adolf_aba_alperovitz_victim',
+              name: "אדולף אבא אלפרוביץ' / Adolf Aba Alperovitz",
+              note: `${ETYMOLOGY_LINE} נספתה בשואה.`,
+              isVictim: true,
+            },
+            {
+              id: 'edward_anders_alperovitch_nasa',
+              name: 'Dr. Edward Anders (born Alperovitch) / ד"ר אדוארד אנדרס',
+              birth: '1926',
+              birthPlace: 'Liepaja',
+              note:
+                `${ETYMOLOGY_LINE} ניצול שואה. פרופסור לכימיה; שיתוף פעולה עם נאס"א וניתוח סלעי ירח מאפולו. סיפור מלא בכפתור.`,
+              story: EDWARD_ANDERS_NASA_STORY,
+              isSurvivor: true,
+              isDNAVerified: true,
+            },
+          ],
         },
         {
           id: 'I_PARTISAN_1',
@@ -572,12 +741,63 @@ export const familyData: ArchiveTreeNode = {
           isHero: true,
         },
         {
-          id: 'boris_sonia_alperovitz',
-          name: "ד\"ר בוריס וסוניה אלפרוביץ'",
-          birthPlace: 'Krakes, Lithuania',
+          id: 'part2_sosinski_dolhinov_partisan',
+          name: "חלק 2: משפחת סוסינסקי – פרטיזן דולהינוב",
+          note: `${ETYMOLOGY_LINE} לפי מסמך משפחת אלפרוביץ' חלק 2.`,
+          children: [
+            {
+              id: 'chaika_rafael_sosinski_parents',
+              name: "חייקה אלפרוביץ' ורפאל סוסינסקי / Chaika Alperovitz & Rafael Sosinski",
+              note: 'הורים ליוסף.',
+              children: [
+                {
+                  id: 'joseph_sosinski_dolhinov_partisan',
+                  name: 'Joseph Sosinski / יוסף סוסינסקי',
+                  note:
+                    `${ETYMOLOGY_LINE} פרטיזן ביערות דולהינוב (Dolhinov), אחר כך חייל בצבא האדום. עלה לישראל ב-1962.`,
+                  isHero: true,
+                  isSurvivor: true,
+                },
+              ],
+            },
+          ],
+        },
+        {
+          id: 'krakes_martyrs_part5',
+          name: "נספי קרקס (Krakes) – חלק 5: משפחת ד\"ר בוריס אלפרוביץ'",
           note:
-            `${ETYMOLOGY_LINE} 🕯️✡️ סוניה (לבית קוטליאר) הייתה מורה ובוריס היה רופא. נספו בקרקס (ליטא) ב-1941 יחד עם ילדיהם הקטנים דוד (10) ומקס (6).`,
-          isVictim: true,
+            'לפי מסמך משפחת אלפרוביץ\' חלק 5: משפחה שנרצחה בקרקס, ליטא, 1941. להלן שלושה צמתים נפרדים (בוריס, סוניה, דוד) לסימון 🕯️ בארכיון.',
+          children: [
+            {
+              id: 'dr_boris_alperovitch_krakes',
+              name: 'Dr. Boris Alperovitch / ד"ר בוריס אלפרוביץ\'',
+              birthPlace: 'Krakes, Lithuania',
+              note:
+                'רופא. נרצח ב-1941 בקרקס (Krakes), ליטא (murdered 1941), על ידי משתפי פעולה מקומיים. ' +
+                ETYMOLOGY_LINE,
+              isVictim: true,
+            },
+            {
+              id: 'sonia_kotliar_alperovitch_krakes',
+              name: "Sonia Alperovitch (née Kotliar) / סוניה אלפרוביץ' (לבית קוטליאר)",
+              birthPlace: 'Krakes, Lithuania',
+              note:
+                'מורה. נרצחה ב-1941 בקרקס (Krakes), ליטא (murdered 1941), על ידי משתפי פעולה מקומיים. ' +
+                'Entity resolution: משפחת הלידה גם כ-Kotler / קוטלר (איותים משפחתיים קרובים לקוטליאר). ' +
+                ETYMOLOGY_LINE,
+              isVictim: true,
+              tags: ['Kotliar', 'Kotler', 'קוטליאר'],
+            },
+            {
+              id: 'david_alperovitz_krakes',
+              name: "David Alperovitz / דוד אלפרוביץ'",
+              birthPlace: 'Krakes, Lithuania',
+              note:
+                'בנם של בוריס וסוניה. נרצח ב-1941 בקרקס יחד עם הוריו. לפי המסמך היה גם ילד שני קטן במשפחה (מקס, גיל ~6). ' +
+                ETYMOLOGY_LINE,
+              isVictim: true,
+            },
+          ],
         },
         {
           id: 'valeria_halperova',
@@ -597,10 +817,197 @@ export const familyData: ArchiveTreeNode = {
             `${ETYMOLOGY_LINE} אבות 'הענף האמריקאי'. ילדיהם (כמו סמואל ואיזידור) היגרו לארה"ב והתיישבו בסיילם, מסצ'וסטס.`,
         },
         {
-          id: 'moshe_beila_alperovitz',
-          name: "משה וביילה אלפרוביץ'",
-          note: `${ETYMOLOGY_LINE} משה היה סבה של מירה. אשתו הייתה ביילה לבית זיידל.`,
+          id: 'yosef_alperovitz_kupershtooch_photo',
+          name: "יוסף אלפרוביץ' וזאב קופרשטוך (תצלום היסטורי)",
+          note:
+            "במסמכים: תמונה של זאב קופרשטוך לצד יוסף אלפרוביץ'. ב-DNA: השם Kupershtooch לא מופיע במפורש ברשימת אסיף (23andMe); ייתכן שצאצאים נושאים שמות משפחה אמריקאיים. כדאי לחפש ב-23andMe תחת Shared Matches עם Marilyn Engel או Robert Costrell שמות הקשורים לווילייקה.",
+          isResearchTarget: true,
+        },
+        {
+          id: 'holocaust_memorial_documented_victims',
+          name: 'נספי שואה – לפי מסמכים משפחתיים (🕯️)',
+          note: 'כרטיסי זיכרון (isVictim) בארכיון; להצלבה עם GEDCOM ומקורות.',
           children: [
+            {
+              id: 'moshe_alperovitz_tallin_estonia',
+              name: "משה אלפרוביץ' / Moshe Alperovitz (Tallinn)",
+              birth: '~1880',
+              birthPlace: 'Sosenka; מ-1921 טאלין, אסטוניה',
+              note:
+                "בנו של אליהו אלפרוביץ'; נכדו של אברהם גדליהו. התגאה בייחוס הכהונה. נספה בשואה (Tallin / אסטוניה).",
+              isVictim: true,
+            },
+            {
+              id: 'elia_chaya_hillman_zagare',
+              name: 'אליה הילמן וחיה שורה (אלקישקי) / Elia Hillman & Chaya Sora Elkishky (Zagare)',
+              birthPlace: 'Zagare (אליה 1875; חיה שורה 1877)',
+              note: 'נספו בשואה. אליה הילמן - זכרון לפי מסמכים; זאגר (Zagare).',
+              isVictim: true,
+            },
+            {
+              id: 'chaim_zalman_alperovitz_vilejka',
+              name: "חיים זלמן אלפרוביץ' / Chaim Zalman Alperovitz (Vilejka)",
+              birth: '1903',
+              birthPlace: 'Kurenets',
+              note: 'נרצח במחנה וילייקה (Vilejka), 1943.',
+              isVictim: true,
+            },
+            {
+              id: 'cira_alperovitz_kurenets',
+              name: "צירה אלפרוביץ' / Cira Alperovitz",
+              birth: '1912',
+              birthPlace: 'Kurenets',
+              note: 'נספתה בקורניץ, 1942.',
+              isVictim: true,
+            },
+            {
+              id: 'malka_alperovitz_kurenets',
+              name: "מלכה אלפרוביץ' / Malka Alperovitz",
+              birth: '1910',
+              birthPlace: 'Kurenets',
+              note: 'נספתה בקורניץ, 1942.',
+              isVictim: true,
+            },
+            {
+              id: 'freida_alperovitz_globokie',
+              name: "פריידה אלפרוביץ' / Freida Alperovitz",
+              birth: '1888',
+              birthPlace: 'Kurenets',
+              note: 'נספתה בגלוביקי (Globokie), 1943.',
+              isVictim: true,
+            },
+          ],
+        },
+        {
+          id: 'engel_dunilovichi_dna_branch',
+          name: "ענף דונילוביץ' – משפחת אנגל (מאומת DNA)",
+          note:
+            "לפי רשימת התאמות DNA של אסיף (23andMe): Marilyn Engel מופיעה כבת דודה מדרגה שנייה (כ-3 דורות) עם כ-0.95% DNA משותף. במסמך \"חלק 4\": איזידור מאיר אנגל ונחמה אלפרוביץ'. הקשר לענף אנגל ולדונילוביץ' אינו רק נרטיב היסטורי אלא גם עובדה גנטית.",
+          isDNAVerified: true,
+          children: [
+            {
+              id: 'shneur_zalman_rifka_feldman',
+              name: "שניאור זלמן אלפרוביץ' וריבקה פלדמן / Shneur Zalman Alperovitz & Rifka Feldman",
+              note: 'הורים לנחמה (1883) ולשישה ילדים נוספים לפי המסמך; משפחה מדונילוביץ\'. Alperovich = Alperovitz.',
+              children: [
+                {
+                  id: 'nechama_alperovich_engel',
+                  name: "נחמה אלפרוביץ' / Nechama Alperovich",
+                  birth: '1883',
+                  birthPlace: 'Dunilovichi',
+                  note:
+                    "נולדה בדונילוביץ'. נישאה לאיזידור מאיר אנגל (Isidore Meier Engel). חיו באנטוורפן, בלגיה, סביב 1913. לפי המסמך: ילדים כולל רגינה ומקס דויד.",
+                  isDNAVerified: true,
+                  children: [
+                    {
+                      id: 'isidore_meier_engel',
+                      name: 'Isidore Meier Engel / איזידור מאיר אנגל',
+                      note: 'בעלה של נחמה; מופיע ב"חלק 4" במסמכים המשפחתיים.',
+                      children: [
+                        {
+                          id: 'marilyn_engel_dna',
+                          name: 'Marilyn Engel / מרילין אנגל',
+                          note:
+                            '🧬 DNA Match: 0.95%. Confirms the link between Alperovitz and Engel families. (23andMe / אסיף; ~בת דודה מדרגה שנייה, כ-3 דורות.)',
+                          isDNAVerified: true,
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        censusReportArchiveRoot,
+        assif23andmeFathersBranch,
+        juliusGenealogyDatasetReportRoot,
+        {
+          id: 'folkoff_polkoff_alperovitz_report_2026',
+          name: "דוח קשרי משפחה: פולקוף - אלפרוביץ' (ינואר 2026)",
+          note: FOLKOFF_ALPEROVITZ_2026_REPORT_LEAD,
+          tags: ['Folkoff', 'Sosenka', 'Bangor', 'Applebaum'],
+          isResearchTarget: true,
+          children: [
+            {
+              id: 'reuben_sosha_sosenka_folkoff_line',
+              name: "ראובן אלפרוביץ' וסושה אסתר – קו סוסנקה (דוח פולקוף)",
+              birth: '1824 / ~1823',
+              birthPlace: 'Sosenka, Belarus (מחוז מינסק)',
+              note:
+                "לפי הדוח לבראדלי פולקוף: ראובן אלפרוביץ' (1824-1890) ואשתו סושה אסתר (~1823) מסוסנקה; הורים לנתן כהן אלפרוביץ'. יש להצלב עם מבנה Markel-אב ועם IR-002 (סושה אסתר ב-GEDCOM) - אותו שם דורש אימות ישות; ראו גם צומת Reuben Alperovitz (מרקל) בארכיון.",
+            },
+            {
+              id: 'nathan_cohen_alperovitz_bangor',
+              name: "נתן כהן אלפרוביץ' / Nathan Cohen Alperovitz",
+              birth: 'אוקטובר 1844',
+              birthPlace: 'Sosenka, Belarus',
+              note:
+                'לפי הדוח: היגר לארה"ב, התיישב בבנגור, מיין. הגיע לבוסטון ב-9 במרץ 1888 (בגיל 43). נפטר ב-1 בפברואר 1901 בבנגור. אב לרבקה אפלבאום (פולקוף).',
+            },
+            {
+              id: 'rebecca_applebaum_folkoff',
+              name: 'רבקה אפלבאום / רבקה פולקוף · Rebecca Applebaum (Folkoff)',
+              note:
+                "בת נתן כהן אלפרוביץ'. נישאה ליעקב פולקוף; הקשר בין משפחות אלפרוביץ' ופולקוף.",
+            },
+            {
+              id: 'jacob_folkoff_patriarch',
+              name: 'יעקב פולקוף (פאלקוב) / Jacob Folkoff',
+              birth: '~1874',
+              birthPlace: 'רוסיה',
+              note:
+                'לפי הדוח: מקור המשפחה פלקוב/פיאלקוב; הגירה לארה"ב, פנסילבניה ומישיגן. נשוי לרבקה אפלבאום.',
+            },
+            {
+              id: 'folkoff_descendants_brief_2026',
+              name: 'צאצאי פולקוף (תקציר מהדוח)',
+              note:
+                'קו ישיר: יעקב ורבקה → רובין מאייר פולקוף (1917, בלארוס/ברה"מ) ושרה פולקוף (גרנט, 1923, ברסט) → לורנס פולקוף (1949) ולינדה (קלינטון, 1952) → בראדלי, קנת, אריקה פולקוף.',
+            },
+            {
+              id: 'folkoff_related_branches_note',
+              name: 'משפחות קשורות (מהדוח)',
+              note:
+                "כהן: צאצאי נתן כהן אלפרוביץ' במיין ומרילנד. קוסטרל/קסטרל: רוז ליליאן קאסטרל מקורניץ ונישואין לענף אלפרוביץ'. גרנט: שרה פולקוף לבית גרנט, ברסט. קלימשטיין: דרך לינדה קלינטון.",
+            },
+          ],
+        },
+        {
+          id: 'moshe_beila_alperovitz',
+          name: "חלק 2: עין שמר – משה, ביילה (זיידל), נחמיה, חיה סטירל",
+          note: `${ETYMOLOGY_LINE} לפי מסמך משפחת אלפרוביץ' חלק 2. מירה: נכדה; טביעה בילדותה בבריכת קיבוץ עין שמר.`,
+          children: [
+            {
+              id: 'moshe_alperovich_ein_shemer',
+              name: "משה אלפרוביץ' / Moshe Alperovich",
+              note: `${ETYMOLOGY_LINE} קו קורניץ ועין שמר.`,
+            },
+            {
+              id: 'beila_zaidel_alperovich_victim',
+              name: "ביילה אלפרוביץ' (זיידל) / Beila (Zaidel) Alperovich",
+              note: `${ETYMOLOGY_LINE} נרצחה ב-1942. 🕯️`,
+              isVictim: true,
+            },
+            {
+              id: 'nechemia_alperovich_ein_shemer',
+              name: "Nechemia Alperovich / נחמיה אלפרוביץ'",
+              birth: '1912',
+              note:
+                `${ETYMOLOGY_LINE} 1912-2011. חבר קיבוץ עין שמר; מהנדס, למד בטכניון. Member of Kibbutz Ein Shemer; engineer, studied at Technion.`,
+            },
+            {
+              id: 'chaia_stirel_alperovitz_victim',
+              name: "חיה סטירל אלפרוביץ' / Chaia Stirel Alperovitz",
+              note: `${ETYMOLOGY_LINE} נרצחה בקורניץ, 1942. 🕯️`,
+              isVictim: true,
+            },
+            {
+              id: 'michle_kuznitz_victim',
+              name: 'Michle Kuznitz / מיכלה קוזניץ',
+              note: `${ETYMOLOGY_LINE} קורבן שואה. 🕯️`,
+              isVictim: true,
+            },
             {
               id: 'mira',
               name: "מירה אלפרוביץ'",
@@ -609,14 +1016,6 @@ export const familyData: ArchiveTreeNode = {
                 `${ETYMOLOGY_LINE} נכדתו של משה אלפרוביץ'. טרגדיה משפחתית: טבעה בילדותה בבריכה של קיבוץ עין שמר.`,
             },
           ],
-        },
-        {
-          id: 'nechama_alperovich_engl',
-          name: "Nechama Alperovitz (Engel) / נחמה אלפרוביץ' (אנגל)",
-          birth: '1883',
-          birthPlace: 'Dunilovichi',
-          note:
-            `${ETYMOLOGY_LINE} בתם של שניאור זלמן אלפרוביץ' ורבקה פלדמן. נישאה לאיזידור מאיר אנגל (חיו באנטוורפן). חלק מאחיה היגרו לפילדלפיה.`,
         },
       ],
     },

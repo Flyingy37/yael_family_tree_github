@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 html, body, #root {
+  min-height: 100dvh;
   height: 100%;
   margin: 0;
   padding: 0;
@@ -13,4 +14,11 @@ html, body, #root {
 /* ReactFlow overrides for RTL */
 .react-flow__attribution {
   direction: ltr;
+}
+
+/* MiniMap steals space on narrow screens; tree pan/zoom stays primary */
+@media (max-width: 767px) {
+  .react-flow__minimap {
+    display: none !important;
+  }
 }
