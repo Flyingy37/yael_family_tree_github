@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { useFamilyData } from '../../../hooks/useFamilyData';
 import { StatisticsView } from '../../../components/StatisticsView';
 import { TimelineView } from '../../../components/TimelineView';
+import { DnaMatchesView } from '../../../components/DnaMatchesView';
 import { useLang } from '../layout';
 
 export default function InsightsPage() {
@@ -84,6 +85,20 @@ export default function InsightsPage() {
             onSelectPerson={() => {}}
             language={lang}
           />
+        </section>
+
+        {/* DNA Matches */}
+        <section>
+          <h2 className="text-lg font-semibold text-gray-700 mb-1">
+            {t('🧬 התאמות DNA — Family Finder (IN131982)', '🧬 DNA Matches — Family Finder (IN131982)')}
+          </h2>
+          <p className="text-xs text-gray-400 mb-3">
+            {t(
+              'יעל ליבנת זיידמן — 37,327 התאמות סה"כ. מוצגות 98 הקרובות ביותר (≥85 cM).',
+              'Yael Livnat Zaidman — 37,327 total matches. Showing top 98 (≥85 cM).'
+            )}
+          </p>
+          <DnaMatchesView language={lang} />
         </section>
       </div>
     </div>

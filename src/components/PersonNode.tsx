@@ -16,6 +16,7 @@ import {
   ChevronDown,
   ChevronUp,
   Plus,
+  BookOpen,
   type LucideIcon,
 } from 'lucide-react';
 import type { Person } from '../types';
@@ -343,6 +344,14 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
                 >
                   <Dna size={9} />
                   DNA
+                </span>
+              )}
+              {person.story && (
+                <span
+                  className="inline-flex shrink-0 items-center gap-0.5 rounded-md bg-amber-100 px-1 py-0.5 text-[8.5px] font-semibold text-amber-700"
+                  title={isHe ? 'יש סיפור משפחתי' : 'Has a family story'}
+                >
+                  <BookOpen size={9} />
                 </span>
               )}
             </div>
