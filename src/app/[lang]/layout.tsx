@@ -6,6 +6,7 @@
 import { createContext, useContext, useEffect } from 'react';
 import { Outlet, useParams, useNavigate, Link } from 'react-router-dom';
 import { useUiLanguage, type UiLanguage } from '../../hooks/useUiLanguage';
+import ChatWidget from '../../components/ChatWidget';
 
 // ── Language context ──────────────────────────────────────────────────────────
 interface LangContextValue {
@@ -122,6 +123,9 @@ export default function LangLayout() {
         <main className="flex-1 overflow-hidden">
           <Outlet />
         </main>
+
+        {/* ── Floating chat widget ───────────────────────────────────── */}
+        <ChatWidget />
       </div>
     </LangContext.Provider>
   );
