@@ -13,6 +13,7 @@ import { MapView } from './components/MapView';
 import { TimelineView } from './components/TimelineView';
 import { StatisticsView } from './components/StatisticsView';
 import { WelcomeModal } from './components/WelcomeModal';
+import { ChatBot } from './components/ChatBot';
 import { getSubtreeIds } from './utils/subtree';
 import {
   downloadLastWebVitalsSnapshot,
@@ -474,6 +475,14 @@ export default function FamilyExplorer() {
           />
         )}
       </div>
+
+      <ChatBot
+        persons={persons}
+        families={families}
+        personList={personList}
+        searchIndex={searchIndex}
+        language={language}
+      />
     </div>
   );
 }
