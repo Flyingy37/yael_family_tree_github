@@ -8,14 +8,20 @@ export interface Person {
   birthDate: string | null;
   deathDate: string | null;
   birthPlace: string | null;
+  /** English birthplace when curated data provides a dual-language version */
+  birthPlaceEn?: string | null;
   generation: number | null;
   relationToYael: string | null;
+  /** English relation description when curated data provides a dual-language version */
+  relationToYaelEn?: string | null;
   hops: number | null;
   dnaInfo: string | null;
   coordinates: [number, number] | null;
   familiesAsSpouse: string[];
   familyAsChild: string | null;
   title: string | null;
+  /** English title when curated data provides a dual-language version */
+  titleEn?: string | null;
   /** Research notes (may contain HTML); prefer `note_plain` for display when set */
   note?: string | null;
   /** Plain-text notes from GEDCOM / CSV */
@@ -32,6 +38,8 @@ export interface Person {
   surnameOrigin: string | null;
   jewishLineage: string | null;
   migrationInfo: string | null;
+  /** English migration info when curated data provides a dual-language version */
+  migrationInfoEn?: string | null;
   holocaustVictim: boolean;
   warCasualty: boolean;
   connectionPathCount: number | null;
