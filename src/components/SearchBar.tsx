@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, type KeyboardEvent } from 'react';
 import { Search, X } from 'lucide-react';
 import type Fuse from 'fuse.js';
 import type { Person } from '../types';
+import { useDebounce } from '../hooks/useDebounce';
 
 interface Props {
   searchIndex: Fuse<Person>;
@@ -16,6 +17,7 @@ const VISIBLE_RESULTS = 8;
 export function SearchBar({ searchIndex, onSelect, language = 'en', allowedPersonIds }: Props) {
   const t = language === 'he';
   const [query, setQuery] = useState('');
+  const debouncedQuery = useDebounce(query, 200);
   const [results, setResults] = useState<Person[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
@@ -23,12 +25,12 @@ export function SearchBar({ searchIndex, onSelect, language = 'en', allowedPerso
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (query.length < 2) {
+    if (debouncedQuery.length < 2) {
       setResults([]);
       setHighlightedIndex(-1);
       return;
     }
-    const hits = searchIndex.search(query, { limit: 50 });
+    const hits = searchIndex.search(debouncedQuery, { limit: 50 });
     const items = hits
       .map(h => h.item)
       .filter(p => !allowedPersonIds || allowedPersonIds.has(p.id))
@@ -36,7 +38,7 @@ export function SearchBar({ searchIndex, onSelect, language = 'en', allowedPerso
     setResults(items);
     setHighlightedIndex(items.length > 0 ? 0 : -1);
     setIsOpen(true);
-  }, [query, searchIndex, allowedPersonIds]);
+  }, [debouncedQuery, searchIndex, allowedPersonIds]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {

@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ReactFlowProvider } from '@xyflow/react';
 import { useFamilyData } from './hooks/useFamilyData';
+import { useDebounce } from './hooks/useDebounce';
 import { useLang } from './app/[lang]/layout';
 import { PersonDetailPanel } from './components/PersonDetailPanel';
 import { SearchBar } from './components/SearchBar';
@@ -80,6 +81,9 @@ export default function FamilyExplorer() {
   const { persons, families, rootPersonId, personList, searchIndex, loading, error, reload } = useFamilyData();
   const [selectedPersonId, setSelectedPersonId] = useState<string | null>(null);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  // Debounce filter changes so expensive applyFilters only runs after the user
+  // finishes interacting, preventing checkbox/input clicks from blocking the UI.
+  const debouncedFilters = useDebounce(filters, 150);
   const [subtreeRootId, setSubtreeRootId] = useState<string | null>(null);
   const [subtreeDepth, setSubtreeDepth] = useState(4);
   const [includeSpouseBranches, setIncludeSpouseBranches] = useState(true);
@@ -116,8 +120,8 @@ export default function FamilyExplorer() {
   }, [persons, families, rootPersonId]);
 
   const filteredIds = useMemo(
-    () => applyFilters(personList, filters, connectedToYaelIds),
-    [personList, filters, connectedToYaelIds]
+    () => applyFilters(personList, debouncedFilters, connectedToYaelIds),
+    [personList, debouncedFilters, connectedToYaelIds]
   );
 
   const displayIds = useMemo(() => {
