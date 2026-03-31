@@ -1,3 +1,6 @@
+# Pages: enable once manually — Settings → Pages → Source: GitHub Actions.
+# enablement: false avoids "Resource not accessible by integration" when the
+# integration cannot auto-create the Pages site (orgs / first-time setup).
 name: Deploy static content to Pages
 
 on:
@@ -28,7 +31,7 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
         with:
-          enablement: true
+          enablement: false
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
