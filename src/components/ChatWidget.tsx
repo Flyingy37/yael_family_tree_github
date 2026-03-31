@@ -80,11 +80,10 @@ export default function ChatWidget() {
         ...prev,
         { id: nextId.current++, role: 'assistant', text: data.answer ?? copy.chat.noMatch },
       ]);
-    } catch (err) {
-      const detail = err instanceof Error ? err.message : String(err);
+    } catch {
       setMessages(prev => [
         ...prev,
-        { id: nextId.current++, role: 'assistant', text: `שגיאה: ${detail}` },
+        { id: nextId.current++, role: 'assistant', text: copy.chat.error },
       ]);
     } finally {
       setLoading(false);
