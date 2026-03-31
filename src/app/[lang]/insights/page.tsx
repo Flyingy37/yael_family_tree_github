@@ -6,6 +6,7 @@ import { useFamilyData } from '../../../hooks/useFamilyData';
 import { StatisticsView } from '../../../components/StatisticsView';
 import { TimelineView } from '../../../components/TimelineView';
 import { DnaMatchesView } from '../../../components/DnaMatchesView';
+import { DnaEvidenceSummaries } from '../../../components/DnaEvidenceSummaries';
 import { useLang } from '../layout';
 
 export default function InsightsPage() {
@@ -85,6 +86,20 @@ export default function InsightsPage() {
             onSelectPerson={() => {}}
             language={lang}
           />
+        </section>
+
+        {/* DNA Evidence Summaries */}
+        <section>
+          <h2 className="text-lg font-semibold text-gray-700 mb-1">
+            {t('🔬 סיכומי ראיות DNA', '🔬 DNA Evidence Summaries')}
+          </h2>
+          <p className="text-xs text-gray-400 mb-3">
+            {t(
+              'סיכומים בטוחים לפרסום — ללא מזהי ערכה, ללא טבלאות סגמנטים גולמיות.',
+              'Public-safe summaries — no kit IDs, no raw segment tables.'
+            )}
+          </p>
+          <DnaEvidenceSummaries language={lang} />
         </section>
 
         {/* DNA Matches */}
