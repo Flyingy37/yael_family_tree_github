@@ -39,6 +39,8 @@ export interface Person {
   // Runtime-only normalized text for accent-insensitive search.
   searchNormalized?: string;
   tags: string[];
+  /** Historical narrative / family story (shown in story modal) */
+  story?: string | null;
 }
 
 export interface Family {

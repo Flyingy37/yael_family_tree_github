@@ -3,8 +3,9 @@ import type { Person, Family } from '../types';
 import { DEFAULT_FILTERS, isUnknownPlaceholderPerson, type Filters } from './FilterPanel';
 import { getCanonicalSurnameLabel } from '../utils/surname';
 import { HolocaustMemorialPatchIcon } from './HolocaustMemorialPatchIcon';
+import { StoryModal } from './StoryModal';
 import {
-  Dna, Swords, GitMerge, Shield, Star, BookMarked, Scroll, Landmark, PlaneTakeoff,
+  Dna, Swords, GitMerge, Shield, Star, BookMarked, Scroll, Landmark, Ship, BookOpen,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -15,7 +16,7 @@ const TAG_ICONS: Record<string, { Icon: LucideIcon; color: string; bg: string; l
   Rabbi:     { Icon: BookMarked,   color: '#1e40af', bg: '#dbeafe', labelEn: 'Rabbi',             labelHe: 'רב' },
   Lineage:   { Icon: Scroll,       color: '#5b21b6', bg: '#ede9fe', labelEn: 'Notable lineage',   labelHe: 'ייחוס' },
   Heritage:  { Icon: Landmark,     color: '#065f46', bg: '#d1fae5', labelEn: 'Jewish heritage',   labelHe: 'מסורת' },
-  Migration: { Icon: PlaneTakeoff, color: '#0e7490', bg: '#cffafe', labelEn: 'Migration',         labelHe: 'הגירה' },
+  Migration: { Icon: Ship, color: '#0e7490', bg: '#cffafe', labelEn: 'Migration', labelHe: 'הגירה' },
   warCasualty:    { Icon: Swords,    color: '#991b1b', bg: '#fee2e2', labelEn: 'War casualty',    labelHe: 'נפל במלחמה' },
   doubleBloodTie: { Icon: GitMerge, color: '#6d28d9', bg: '#ede9fe', labelEn: 'Double blood tie', labelHe: 'קשר דם כפול' },
 };
@@ -145,7 +146,7 @@ function normalizeSurnameToken(value: string | null | undefined): string {
     .replace(/[^a-z\u0590-\u05ff]/g, '');
 }
 
-function isAlperovichKastrolCluster(person: Person): boolean {
+function isAlperovitzKastrollCluster(person: Person): boolean {
   const hay = [
     person.surnameFinal,
     person.surname,
@@ -156,7 +157,7 @@ function isAlperovichKastrolCluster(person: Person): boolean {
     .join(' ');
   return (
     /alperov|alperovitch|alperowitz|halperov/.test(hay) ||
-    /kastrol|kastrel|kostrel|costrel|castro|kestrel/.test(hay)
+    /kastroll|kastrol|kastrel|kostrel|costrel|castro|kestrel|gurev/.test(hay)
   );
 }
 
@@ -274,6 +275,7 @@ export function PersonDetailPanel({
   const t = language === 'he';
   const [showPathDetails, setShowPathDetails] = useState(false);
   const [showWhyShown, setShowWhyShown] = useState(false);
+  const [showStory, setShowStory] = useState(false);
   const isUnknownPlaceholder = isUnknownPlaceholderPerson(person);
   const personDisplayName = isUnknownPlaceholder
     ? (t ? 'אדם לא מזוהה' : 'Unknown person')
@@ -308,11 +310,16 @@ export function PersonDetailPanel({
     currentSurname.length > 0 &&
     baseSurname.toLowerCase() !== currentSurname.toLowerCase();
   const hasAnySpouseFamily = person.familiesAsSpouse.length > 0;
-  const marriedSurname = marriedSurnameFromSpouse || (
-    currentSurname.length > 0 && (hasSurnameChange || hasAnySpouseFamily)
-      ? currentSurname
-      : null
-  );
+  const marriedSurnameRaw =
+    marriedSurnameFromSpouse ||
+    (currentSurname.length > 0 && (hasSurnameChange || hasAnySpouseFamily) ? currentSurname : null);
+  // Do not repeat "Current/Married surname" when it matches the Surname row (surnameFinal).
+  // Don't show "Current/Married surname" when it's identical to surnameFinal —
+  // that field is already displayed as "Surname" above, so it would be a duplicate.
+  const marriedSurname =
+    marriedSurnameRaw && marriedSurnameRaw.toLowerCase() !== currentSurname.toLowerCase()
+      ? marriedSurnameRaw
+      : null;
   const originalSurname = hasSurnameChange ? baseSurname : null;
   const formerSurnameInline =
     originalSurname
@@ -328,7 +335,7 @@ export function PersonDetailPanel({
     );
     spouseClusterMarriageFlags.set(
       spouseId,
-      !!spouse && isAlperovichKastrolCluster(person) && isAlperovichKastrolCluster(spouse)
+      !!spouse && isAlperovitzKastrollCluster(person) && isAlperovitzKastrollCluster(spouse)
     );
   }
   const hasClusterMarriageSignal = Array.from(spouseClusterMarriageFlags.values()).some(Boolean);
@@ -623,12 +630,12 @@ export function PersonDetailPanel({
       {hasClusterMarriageSignal && (
         <div className="mt-3 p-2 bg-fuchsia-50 border border-fuchsia-200 rounded text-xs text-fuchsia-700">
           <div className="font-semibold">
-            {t ? 'קשרי נישואין ברשת אלפרוביץ׳/קסטרול' : 'Alperovich/Kastrol marriage-network signal'}
+            {t ? 'קשרי נישואין ברשת אלפרוביץ׳/קסטרל' : 'Alperovitz/Kastroll marriage-network signal'}
           </div>
           <div>
             {t
               ? 'זוהו נישואין עם בן/בת זוג מאותה רשת משפחות (אלפרוביץ׳/קסטרול), כולל נישואין בין-ענפיים ובתוך הענף.'
-              : 'Detected spouse links within the Alperovich/Kastrol family network (cross-branch and within-branch marriages).'}
+              : 'Detected spouse links within the Alperovitz/Kastroll family network (cross-branch and within-branch marriages).'}
           </div>
         </div>
       )}
@@ -672,7 +679,7 @@ export function PersonDetailPanel({
                 )}
                 {spouseClusterMarriageFlags.get(id) && (
                   <div className="text-[11px] text-fuchsia-700 bg-fuchsia-50 border border-fuchsia-200 rounded px-2 py-0.5 inline-block">
-                    {t ? 'רשת אלפרוביץ׳/קסטרול' : 'Alperovich/Kastrol network'}
+                    {t ? 'רשת אלפרוביץ׳/קסטרל' : 'Alperovitz/Kastroll network'}
                   </div>
                 )}
               </div>
@@ -709,6 +716,28 @@ export function PersonDetailPanel({
           {person.fatherName && <div className="text-sm">{t ? 'אב:' : 'Father:'} {person.fatherName}</div>}
           {person.motherName && <div className="text-sm">{t ? 'אם:' : 'Mother:'} {person.motherName}</div>}
         </div>
+      )}
+
+      {person.story && (
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={() => setShowStory(true)}
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-amber-300 bg-amber-50 py-2.5 px-4 text-sm font-semibold text-amber-700 shadow-sm transition-all hover:border-amber-400 hover:bg-amber-100"
+          >
+            <BookOpen size={15} strokeWidth={1.8} />
+            {t ? '📖 קרא את סיפור המשפחה' : '📖 Read the family story'}
+          </button>
+        </div>
+      )}
+
+      {showStory && person.story && (
+        <StoryModal
+          personName={personDisplayName}
+          story={person.story}
+          onClose={() => setShowStory(false)}
+          language={language}
+        />
       )}
     </div>
   );

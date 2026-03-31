@@ -1,0 +1,62 @@
+Person Name,Relationship to Yael,Birth Year,Death Year,Match Count,New Information Available,Priority,Notes
+Paul (Falk) Yehoshua Dubrow (born Dubrowsky),בן דוד/ה ראשון בהפרש 3 דורות / 3rd cousin of grandfather's husband,1894,1996,12,spouse + children + birthplace + more precise death place + burial + middle name + occupation + education + siblings,Medium,Dubrowsky branch
+Louis Costrell,בן דוד/ה ראשון בהפרש 2 דורות,1915,2009,10,siblings + description + more precise death place + burial + middle name + detailed address,High,Costrell branch – many matches
+Geula Vulis (Epstein),חותן/ת של אחות/אח של סבא,1920,,18,personal photo + death date + death place + burial + spouse + children,Medium,Vulis branch
+Yakov Yan Gamarnik,גיס של גיס של סבתא / connected via Bialik–Kastrel chain,1894,1937,14,spouse + residence,Medium,Gamarnik – political figure (Soviet general)
+Chasha Dubrow (Epstein),בת דוד/ה ראשון – aunt of Pesach Dubrow,1897,,10,middle name + occupation + residence + father + mother + siblings,Medium,Dubrowsky branch
+Fannie Gutkin (Dubrowsky),cousin of grandfather's husband,1910,1976,8,personal photo + death date + death place + burial + siblings + children,Low,Dubrowsky
+Shimon Simon Gordon,בן דוד/ה ראשון,1910,,6,personal photo + death date + death place + burial + middle name + residence + spouse + children,Low,Gordon branch
+Rhoda Shaina Kasden,3rd cousin 3 generations,1861,,18,personal photo + death date + death place + residence + siblings + children,Low,Kasden branch
+Fanny Silver (Zeidenkop),1st cousin 3 generations,1919,,1,death date + siblings + spouse + children,Low,Zeidenkop
+Lea Levison,in-law branch,1911,,13,death date + siblings + spouse + children,Low,
+Pasha (Pesach) Bialik,Bialik branch ancestor,1865,,8,death date + siblings + spouse + children,Medium,Bialik family – related to Chaim Nachman Bialik
+Jonathan Herbert,3rd cousin (בן דוד/ה שלישי),1972,,3,personal photo + residence + siblings + children,High,"Cross-confirmed: same as Chaim Herbert. Son of Sinai Herbert + Sima Gurevitz. FTDNA 150.8 cM. Assif 23andMe confirmed."
+Gershon Gorev,2nd cousin once removed,1928,,4,personal photo + death date + death place + occupation + residence + spouse + children,Medium,Gorev/Gurevich branch
+Rachel Gordin Was Gurevich (Gordin),2nd cousin once removed,1929,,5,personal photo + death date + death place + children,Medium,Gurevich branch
+Luba Gurevich (Bar-Dan),2nd cousin once removed (בת דודה של סבא),1914,1995,26,burial place + residence + spouse + children,High,26 matches – highest match count in list. Gurevich branch.
+Reuven Alperovitch,ancestor 6 generations,1823,,5,personal photo + occupation + residence + education,High,Core Alperovich ancestor – 5 matches
+Robert Michael Costrell,2nd cousin once removed,1950,,1,occupation + spouse + children,High,"FTDNA 157.33 cM. J-FTF95213. Surnames: Costrell/Castroll/de Castro/Kastrel. Confirms Castro→Kastrel→Costrell chain."
+Batia Gurevich (Bender),2nd cousin once removed,1906,,11,death date + death place + siblings + spouse + children,Medium,Gurevich branch
+Meir Alperovich,ancestor 5 generations,1819,~1900,15,death date + death place + residence,High,Core Alperovich ancestor
+Moshe Yaacov Bialik (born Bialek),great-great-grandfather of Kastrel wife,1810,1893,49,more precise death date,Low,Bialik – very high 49 matches
+Mina Shvartz (Lanzmann),grandmother (סבתא),1904,1973,1,death place + siblings,High,Yael's maternal grandmother (Lanzmann branch). Override applied in build-graph.
+Cohen Mordekhai Marcu Lanzmann,grandfather (סבא),1889,1969,1,more detailed address,High,"Yael's paternal grandfather (Arie Livnat's father). 'Marcu'=Romanian for Mordekhai. 'Cohen' additional surname. GEDCOM @I9@. Surname standardised to Lanzmann."
+Henia Alperovitch,sister of grandfather (אחות של סבא),died 1942,,1,siblings + spouse,High,Holocaust victim – sister of Nachum Alperovich. GEDCOM @I56@. Override: holocaustVictim=true.
+Solomon (Zalman) Yizhak Alperovich,half-brother of grandfather's grandfather,1877,1965,6,siblings + spouse + children,Medium,Alperovich branch
+Frada Alperovich,ancestor 5 generations,~1833,,11,father,High,Core Alperovich ancestor
+Yehuda Leibe Kastroll (born Castroll),ancestor 5 generations,1826,,10,spouse + children,High,Kastrel/Castroll ancestor – confirms Castro→Kastrel etymology
+Natan Avraham Gurevich,cousin of grandfather (בן דודה של סבא),1896,1985,12,death place + burial + detailed address,Medium,Gurevich branch
+Edwin Stanley Costrell,cousin of grandfather (בן דוד של סבא),1913,2010,6,siblings + spouse,High,Costrell branch – close relative
+Natalie Costrell (Frazis),cousin of grandfather (בת דוד של סבא),1922,,3,siblings + children,High,Mother of Harley Frazis. Confirms Natalie Kostrel = Frazis connection.
+Khaneh Annie Alperovich (Costrell),uncle's wife (דודה של סבא),1885,,6,personal photo,High,Annie Alperovich married into Costrell – key double-bloodtie link
+Israel Dov Ber Bialik,father-in-law of Kastrel grandson,~1877,1960,24,mother + siblings,Low,Bialik branch
+Solomon (Zalman) Yizhak Alperovitch,great-uncle of grandfather,1877,,6,siblings + spouse + children,Medium,Duplicate entry? Same as above but different spelling
+Nochim Nachum Alperovich,grandfather (סבא),1923,1996,7,residence,High,GEDCOM @I11@. Yael's maternal grandfather. 7 matches – residence info new.
+Cilia Sara Duberstein (Alperovitch),grandmother (סבתא),1926,,1,siblings,High,GEDCOM @I12@. Yael's maternal grandmother. New: siblings.
+Michael Alperovich,great-great-grandfather (סבא רבא),~1874,,11,children,High,GEDCOM @I34@. Holocaust victim. Father of Nachum.
+Pesya Kostrel Kastrel (Alperovich),great-great-grandmother (סבתא רבא),~1880,,12,siblings,High,GEDCOM @I35@. Holocaust victim. Mother of Nachum.
+Yehuda 'Yudel' Alperovich,great-great-grandfather (סבא של סבא),~1850,1917,12,siblings,High,Alperovich ancestor
+Chaim Herbert,2nd cousin once removed (בן דוד/ה שני),1946,,3,death date + death place,High,"Cross-confirmed FTDNA Jonathan Sinai Herbert (150.8 cM) + Assif 23andMe. Son of Sinai Herbert + Sima Gurevitz Lerman."
+Sima Gurevich (Lerman Herbert),cousin of grandfather (בת דודה של סבא),~1911,,12,children,High,Mother of Chaim Herbert. Daughter of Frada Alperovich Gurevich.
+Rose Lillian Alperovich Alpert (Gordon),cousin of grandfather (בת דודה של סבא),1918,,4,siblings,High,GEDCOM @I83@. Double-bloodtie person.
+Mordechai Gurevich,uncle of grandfather (דוד של סבא),1870,,7,siblings,Medium,Gurevich branch
+Seth Franklin Duberstein,2nd cousin once removed (בן דוד/ה שני),1945,1990,1,more precise burial,High,"GEDCOM @I414@. JewishGen: burial=Montrepose Cemetery Kingston NY; death place=New Paltz NY. Override added."
+Dorothy Costrell (Berson),cousin of grandfather (בת דוד של סבא),1915,2002,8,more detailed address,Medium,Costrell branch
+Phillip Dubrow,in-law of grandfather's cousin,1915,2002,3,,Low,Dubrow branch
+Pola (Polina) Alperovich (Livnat),mother (אמא),1948,2013,1,,HIGH,GEDCOM @I2@. Yael's mother. No new info in match but watch for updates.
+Cohen Zvi Hersh Lanzmann,uncle (דוד),1923,,1,,High,"Lanzmann family uncle. 'Cohen' additional surname. Born 1923. Likely @I30@ or other Lanzmann uncle. Surname standardised."
+Cohen Gil Lanzmann,cousin (בן דוד),1961,,1,,Medium,GEDCOM @I38@. Lanzmann cousin. Match confirms surname variant.
+Cohen Yaron Lanzmann,cousin (בן דוד),1967,,1,,Medium,GEDCOM @I39@. Lanzmann cousin (CSV: Lantzman). Standardised to Lanzmann.
+Nachum Kastrel,great-great-grandfather (סבא של סבא),~1850,~1916,14,spouse + children + …,High,Kastrel ancestor – 14 matches
+Rose Lillian (Rocha Leah) Alperovich (Kostrell),great-grandmother (סבתא של סבא),,,6,,High,GEDCOM @I83@.
+Frada (Freidel) Alperovich (Gurevich),great-aunt of grandfather,~1870,1939,24,,High,Mother of Sima Gurevitz Lerman Herbert. 24 matches.
+Solomon Nathan Costrell (Kastrol),great-uncle of great-grandmother,1884,,13,,High,Costrell/Kastrol ancestor – 13 matches
+Hyman Herman Kostrell,great-uncle of great-grandmother,1889,,9,,High,Kostrel branch
+Sadie Kostrell (Alpert/Alperovich),great-aunt of great-grandmother,~1886,,12,,High,Kostrel→Alpert→Dubrow chain
+Bessie Alpert Alperovich (Dubrow),cousin of grandfather (בת דודה של סבא),1911,,4,,High,Wife of Benjamin Dubrow. Daughter of Sadie Kostrell + Isadore Alpert.
+Harley Frazis,2nd cousin once removed,1957,,2,siblings + children,High,"GEDCOM @I390@. Son of Natalie Costrell Frazis. FTDNA Fred Harber Q-Y2197 may be same lineage."
+Alvin Leon Dubrow,2nd cousin once removed,1932,2011,3,burial,High,Son of Benjamin Dubrow + Bessie Alpert. Brother of Harris Dubrow.
+Hayim Nahman Bialik,uncle of wife of Kastrel grandson,1873,,36,more precise birth date,Medium,"Famous poet. GEDCOM @I2560@. Tag: Famous. 36 matches – very high. Via Bialik–Kastrel–Alperovich chain."
+Louis Emanuel Duberstein,cousin of grandmother (בן דוד של סבתא),1913,,5,,High,"GEDCOM @I258@. JewishGen: burial=Montrepose Cemetery Kingston + Veteran Burials. Override added."
+Eleanore Leah Duberstein (Mitgang),cousin of grandmother (בת דוד של סבתא),1922,1993,2,,Medium,Sister of Louis Duberstein.
+Yehuda Gurevich,cousin of grandfather (בן דודה של סבא),~1916,~1917,22,,High,22 matches despite very short life. Gurevich branch.

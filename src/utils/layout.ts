@@ -22,7 +22,7 @@ export interface LayoutEdge {
 
 /** Must match `PersonNode` outer box so dagre spacing aligns with React Flow handles */
 export const NODE_WIDTH = 200;
-export const NODE_HEIGHT = 200;
+export const NODE_HEIGHT = 220;
 
 export function computeLayout(
   persons: Map<string, Person>,
@@ -32,9 +32,9 @@ export function computeLayout(
   const g = new dagre.graphlib.Graph();
   g.setGraph({
     rankdir: 'TB',
-    nodesep: 40,
-    ranksep: 100,
-    edgesep: 20,
+    nodesep: 50,
+    ranksep: 120,
+    edgesep: 25,
   });
   g.setDefaultEdgeLabel(() => ({}));
 

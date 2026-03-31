@@ -21,7 +21,8 @@ const COPY = {
           'עץ אינטראקטיבי - הורים, ילדים ובני זוג, עם אפשרות להתמקד בתת־עץ של אדם מסוים.',
           'מפת עולם - מיקומים ידועים (לידה, מגורים, הגירה) כשהנתונים קיימים.',
           'ציר זמן - לידות, פטירות ואירועים לפי תקופות.',
-          'סטטיסטיקות וסינונים - דורות, שם משפחה, תגיות מחקר, מרחק קרבה מיעל, ועוד.',
+          'סטטיסטיקות וסינונים - דורות, שם משפחה, תגיות מחקר, מרחק קרבה מיעל, ועוד (בעמוד "תובנות").',
+          'ארכיון נרטיבי - סיפורים, מכתבים וחיפוש חכם לפי כינויים היסטוריים של שמות.',
           'חיפוש חכם - לפי שם, מקום או טקסטים נלווים (כולל תמיכה בעברית ובלועזית).',
         ],
       },
@@ -39,6 +40,11 @@ const COPY = {
         h: 'פרטיות ואחריות',
         p:
           'מידע על אנשים חיים, קטינים ונתוני DNA רגישים אינו מיועד לפרסום ציבורי. גם בפריסה פרטית - שיתוף קישורים או צילומי מסך עלול לחשוף פרטים; יש לשקול מראש מי הקהל ומה מוצג. אם האתר מופיע ברשת, כדאי לעיין ב־`data_dictionary.md` ובמדיניות הגישה שלכם.',
+      },
+      {
+        h: 'כתובות וניווט',
+        p:
+          'האפליקציה עובדת עם קידומת שפה: `/he/...` או `/en/...`. עץ, מפה, ציר זמן ותצוגת סטטיסטיקה בתוך החוקר נמצאים ב־`/:lang/tree` (מעבר בין תצוגות עם `?view=map`, `timeline`, `stats`). תובנות: `/:lang/insights`. ארכיון נרטיבי: `/:lang/archive`. פרופיל אדם: `/:lang/person/:id`. נתיבי `/explore/...` ישנים מפנים אוטומטית.',
       },
       {
         h: 'טכנולוגיה (בקצרה)',
@@ -61,7 +67,8 @@ const COPY = {
           'Interactive tree - parents, children, and spouses, with optional focus on one person’s subtree.',
           'World map - known locations (birth, residence, migration) when coordinates exist.',
           'Timeline - births, deaths, and events by period.',
-          'Statistics & filters - generations, surnames, research tags, kinship distance from Yael, and more.',
+          'Statistics & filters - generations, surnames, research tags, kinship distance from Yael, and more (Insights page).',
+          'Narrative archive - stories, letters, and smart search across historical name variants.',
           'Smart search - names, places, and related text (Hebrew and Latin-friendly).',
         ],
       },
@@ -79,6 +86,11 @@ const COPY = {
         h: 'Privacy & responsibility',
         p:
           'Information about living people, minors, and sensitive DNA data is not intended for public distribution. Even on a private deployment, sharing links or screenshots can expose details - consider audience and what is visible. If the site is online, review `data_dictionary.md` and your own access policy.',
+      },
+      {
+        h: 'URLs & navigation',
+        p:
+          'The app uses a language prefix: `/he/...` or `/en/...`. Tree, map, timeline, and in-explorer stats live at `/:lang/tree` (switch views with `?view=map`, `timeline`, or `stats`). Insights: `/:lang/insights`. Narrative archive: `/:lang/archive`. Person profile: `/:lang/person/:id`. Legacy `/explore/...` paths redirect.',
       },
       {
         h: 'Technology (briefly)',
@@ -120,7 +132,7 @@ export default function AboutPage() {
           </Link>
           <div className="flex items-center gap-2">
             <Link
-              to="/explore/tree"
+              to={`/${language}/tree`}
               className="text-sm font-medium text-stone-800 hover:text-amber-950"
             >
               {t.explore}

@@ -8,7 +8,7 @@ import {
   BookMarked,
   Scroll,
   Landmark,
-  PlaneTakeoff,
+  Ship,
   Dna,
   MapPin,
   Focus,
@@ -16,6 +16,8 @@ import {
   ChevronDown,
   ChevronUp,
   Plus,
+  BookOpen,
+  Flame,
   type LucideIcon,
 } from 'lucide-react';
 import type { Person } from '../types';
@@ -108,12 +110,13 @@ interface TagConfig {
 }
 
 const TAG_CONFIG: Record<string, TagConfig> = {
+  Holocaust: { Icon: Flame, labelEn: 'Holocaust victim', labelHe: 'נספה בשואה', color: '#7c2d12', bg: '#ffedd5' },
   Partisan: { Icon: Shield, labelEn: 'Partisan', labelHe: 'פרטיזן', color: '#374151', bg: '#f3f4f6' },
   Famous: { Icon: Star, labelEn: 'Notable', labelHe: 'מפורסם', color: '#92400e', bg: '#fef3c7' },
   Rabbi: { Icon: BookMarked, labelEn: 'Rabbi', labelHe: 'רב', color: '#1e40af', bg: '#dbeafe' },
   Lineage: { Icon: Scroll, labelEn: 'Notable lineage', labelHe: 'ייחוס', color: '#5b21b6', bg: '#ede9fe' },
   Heritage: { Icon: Landmark, labelEn: 'Jewish heritage', labelHe: 'מסורת', color: '#065f46', bg: '#d1fae5' },
-  Migration: { Icon: PlaneTakeoff, labelEn: 'Migration', labelHe: 'הגירה', color: '#0e7490', bg: '#cffafe' },
+  Migration: { Icon: Ship, labelEn: 'Migration', labelHe: 'הגירה', color: '#0e7490', bg: '#cffafe' },
 };
 
 interface BadgeEntry {
@@ -342,6 +345,14 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
                 >
                   <Dna size={9} />
                   DNA
+                </span>
+              )}
+              {person.story && (
+                <span
+                  className="inline-flex shrink-0 items-center gap-0.5 rounded-md bg-amber-100 px-1 py-0.5 text-[8.5px] font-semibold text-amber-700"
+                  title={isHe ? 'יש סיפור משפחתי' : 'Has a family story'}
+                >
+                  <BookOpen size={9} />
                 </span>
               )}
             </div>

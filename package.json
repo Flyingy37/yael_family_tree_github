@@ -4,14 +4,17 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "prebuild": "tsx scripts/build-graph.ts",
+    "prebuild": "tsx scripts/prebuild-graph.ts",
+    "build-graph": "tsx scripts/build-graph.ts",
     "report:unlinked": "tsx scripts/export-unlinked-review.ts",
     "report:pdf-candidates": "python3 scripts/export_pdf_update_candidates.py",
     "report:review-queue": "python3 scripts/build_review_queue.py",
     "dev": "tsx scripts/build-graph.ts && vite",
     "start": "npm run dev",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "postinstall": "node scripts/playwright-install.mjs",
+    "test": "playwright test"
   },
   "dependencies": {
     "@dagrejs/dagre": "^1.1.4",
@@ -37,6 +40,7 @@
     }
   },
   "devDependencies": {
+    "@playwright/test": "^1.51.0",
     "@types/leaflet": "^1.9.21",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
