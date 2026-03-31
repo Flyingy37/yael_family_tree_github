@@ -13,6 +13,7 @@
     "start": "npm run dev",
     "build": "vite build",
     "preview": "vite preview",
+    "setup": "node scripts/setup.mjs",
     "postinstall": "node scripts/playwright-install.mjs",
     "test": "playwright test"
   },

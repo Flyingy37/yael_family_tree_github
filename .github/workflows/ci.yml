@@ -22,6 +22,8 @@ jobs:
       - run: npx playwright install-deps chromium
       - run: npx tsc --noEmit
       - run: npm run build
+        env:
+          VITE_CHAT_API_URL: ${{ vars.VITE_CHAT_API_URL }}
       - run: npm test
         env:
           CI: true
