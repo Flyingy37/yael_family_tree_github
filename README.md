@@ -58,6 +58,14 @@ npm run dev
 
 נתיבי `/explore/...` ישנים מפנים ל־`/he/tree` או ל־`/he/insights`.
 
+## פריסה ל־GitHub Pages
+
+1. עברי ל־**Settings → Pages** במאגר.
+2. תחת **Build and deployment → Source** בחרי **GitHub Actions** (לא Branch).
+3. דחיפה ל־`main` תפעיל אוטומטית את ה־workflow ותפרוס את האתר.
+
+> **הערה:** ענף `project` בונה ומעלה ארטיפקט `jekyll-site` (להורדה מ־Actions) אך **אינו** פורס לאתר — פריסה קורית רק מ־`main`.
+
 ## טכנולוגיות
 
 - **React 19** + **TypeScript** - ממשק משתמש
