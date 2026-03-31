@@ -138,6 +138,7 @@ function buildContext(query, persons, dnaMatches) {
 // ── main handler ──────────────────────────────────────────────────────────────
 
 export default async function handler(req, res) {
+  console.log('[chat/query] method:', req.method, 'keys:', Object.keys(req.body ?? {}));
   cors(res);
 
   // Preflight
