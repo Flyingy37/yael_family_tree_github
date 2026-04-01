@@ -14,3 +14,9 @@ html, body, #root {
 .react-flow__attribution {
   direction: ltr;
 }
+
+/* Hot Sync toast slide-in */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateX(-50%) translateY(-16px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}

@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@dagrejs/dagre": "^1.1.4",
+    "@supabase/supabase-js": "^2.101.1",
     "@xyflow/react": "^12.6.0",
     "fuse.js": "^7.1.0",
     "leaflet": "^1.9.4",

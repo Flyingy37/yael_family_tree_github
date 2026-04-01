@@ -3,10 +3,11 @@
  * Validates the lang param (he | en), syncs with localStorage,
  * provides LangContext to all child pages via <Outlet />.
  */
-import { createContext, useContext, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { Outlet, useParams, useNavigate, Link } from 'react-router-dom';
 import { useUiLanguage, type UiLanguage } from '../../hooks/useUiLanguage';
 import ChatWidget from '../../components/ChatWidget';
+import { useHotSync } from '../../hooks/useHotSync';
 
 // ── Language context ──────────────────────────────────────────────────────────
 interface LangContextValue {
@@ -30,6 +31,20 @@ export default function LangLayout() {
   const { lang: langParam } = useParams<{ lang: string }>();
   const navigate = useNavigate();
   const [lang, setLangState] = useUiLanguage();
+
+  // ── Hot Sync toast ─────────────────────────────────────────────────────────
+  const [syncToast, setSyncToast] = useState<string | null>(null);
+
+  const handleHotSync = useCallback((msg: { message: string; branch_name: string | null }) => {
+    const text = msg.branch_name
+      ? `🔄 עדכון! נוספו פרטים חדשים על ענף ${msg.branch_name}`
+      : `🔄 ${msg.message}`;
+    setSyncToast(text);
+    // Auto-dismiss after 8 s
+    setTimeout(() => setSyncToast(null), 8000);
+  }, []);
+
+  useHotSync(handleHotSync);
 
   // Validate param — redirect to /he if unknown
   useEffect(() => {
@@ -126,6 +141,25 @@ export default function LangLayout() {
 
         {/* ── Floating chat widget ───────────────────────────────────── */}
         <ChatWidget language={lang} />
+
+        {/* ── Hot Sync toast ────────────────────────────────────────── */}
+        {syncToast && (
+          <div
+            dir={lang === 'he' ? 'rtl' : 'ltr'}
+            className="fixed top-16 start-1/2 -translate-x-1/2 z-50 max-w-sm w-full mx-4 px-4 py-3 rounded-xl bg-amber-700 text-white text-sm shadow-xl flex items-start gap-3 animate-bounce-once"
+            style={{ animation: 'slideDown 0.3s ease-out' }}
+          >
+            <span className="flex-1 leading-snug">{syncToast}</span>
+            <button
+              type="button"
+              onClick={() => setSyncToast(null)}
+              className="text-white/70 hover:text-white text-lg leading-none flex-shrink-0"
+              aria-label="סגור"
+            >
+              ✕
+            </button>
+          </div>
+        )}
       </div>
     </LangContext.Provider>
   );

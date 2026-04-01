@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Fuse from 'fuse.js';
 import type { Person, Family, FamilyGraph } from '../types';
+import { supabase } from '../lib/supabase';
 
 export interface FamilyData {
   persons: Map<string, Person>;
@@ -25,27 +26,44 @@ export function useFamilyData(): FamilyData {
 
   useEffect(() => {
     const controller = new AbortController();
-
     setLoading(true);
     setError(null);
 
-    fetch('/family-graph.json', { signal: controller.signal })
-      .then(res => {
+    async function load() {
+      // ── 1. Try Supabase first (if configured) ──────────────────────────
+      if (supabase) {
+        const { data: rows, error: sbErr } = await supabase
+          .from('family_graph')
+          .select('data')
+          .order('updated_at', { ascending: false })
+          .limit(1);
+
+        if (!sbErr && rows && rows.length > 0) {
+          if (!controller.signal.aborted) {
+            setGraph(rows[0].data as FamilyGraph);
+            setLoading(false);
+          }
+          return;
+        }
+        // If Supabase returned no data, fall through to JSON fallback
+      }
+
+      // ── 2. Fallback: static /family-graph.json ─────────────────────────
+      try {
+        const res = await fetch('/family-graph.json', { signal: controller.signal });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((data: FamilyGraph) => {
-        setGraph(data);
-      })
-      .catch((err: unknown) => {
+        const data: FamilyGraph = await res.json();
+        if (!controller.signal.aborted) setGraph(data);
+      } catch (err: unknown) {
         if (err instanceof DOMException && err.name === 'AbortError') return;
         const message = err instanceof Error ? err.message : 'Unknown error';
-        setError(`Failed to load data (${message})`);
-      })
-      .finally(() => {
+        if (!controller.signal.aborted) setError(`Failed to load data (${message})`);
+      } finally {
         if (!controller.signal.aborted) setLoading(false);
-      });
+      }
+    }
 
+    load();
     return () => controller.abort();
   }, [reloadToken]);
 
