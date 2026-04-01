@@ -410,7 +410,7 @@ export function TreeView({
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
         fitView
-        fitViewOptions={{ padding: 0.2, minZoom: 0.18, includeHiddenNodes: false }}
+        fitViewOptions={{ padding: 1.2, nodes: [{ id: rootPersonId }], duration: 0 }}
         minZoom={0.12}
         maxZoom={2.5}
         zoomOnPinch      /* pinch-to-zoom on mobile */
