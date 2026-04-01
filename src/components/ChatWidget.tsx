@@ -1,14 +1,14 @@
 /**
  * ChatWidget — floating chat button + panel for querying the family tree.
  *
- * The API endpoint is read from the VITE_CHAT_API_URL environment variable
- * at build time. When the variable is absent the widget is hidden, so
- * deployers who have not wired up the API won't see a broken UI.
+ * The API endpoint defaults to /api/chat/query (same-origin serverless fn).
+ * Override with VITE_CHAT_API_URL at build time if needed.
  */
 import { useState, useRef, useEffect } from 'react';
 import { copy } from '../copy';
 
-const API_URL = import.meta.env.VITE_CHAT_API_URL as string | undefined;
+const API_URL: string =
+  (import.meta.env.VITE_CHAT_API_URL as string | undefined) ?? '/api/chat/query';
 
 // ── types ─────────────────────────────────────────────────────────────────────
 
@@ -40,9 +40,6 @@ export default function ChatWidget() {
   const nextId = useRef(0);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Don't render when API URL is not configured
-  if (!API_URL) return null;
 
   // ── effects ────────────────────────────────────────────────────────────────
 
