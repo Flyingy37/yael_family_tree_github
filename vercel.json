@@ -8,7 +8,8 @@
     }
   },
   "rewrites": [
-    { "source": "/:path*", "destination": "/index.html" }
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/(he|en)(.*)", "destination": "/index.html" }
   ]
 }
 
