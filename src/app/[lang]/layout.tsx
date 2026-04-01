@@ -125,7 +125,7 @@ export default function LangLayout() {
         </main>
 
         {/* ── Floating chat widget ───────────────────────────────────── */}
-        <ChatWidget />
+        <ChatWidget language={lang} />
       </div>
     </LangContext.Provider>
   );

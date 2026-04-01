@@ -18,6 +18,10 @@ interface Message {
   text: string;
 }
 
+interface ChatWidgetProps {
+  language?: 'he' | 'en';
+}
+
 // ── sub-components ────────────────────────────────────────────────────────────
 
 function Spinner() {
@@ -32,7 +36,7 @@ function Spinner() {
 
 // ── main component ────────────────────────────────────────────────────────────
 
-export default function ChatWidget() {
+export default function ChatWidget({ language = 'he' }: ChatWidgetProps) {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -40,6 +44,9 @@ export default function ChatWidget() {
   const nextId = useRef(0);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const c = language === 'en' ? copy.chatEn : copy.chat;
+  const isRtl = language === 'he';
 
   // ── effects ────────────────────────────────────────────────────────────────
 
@@ -75,12 +82,12 @@ export default function ChatWidget() {
 
       setMessages(prev => [
         ...prev,
-        { id: nextId.current++, role: 'assistant', text: data.answer ?? copy.chat.noMatch },
+        { id: nextId.current++, role: 'assistant', text: data.answer ?? c.noMatch },
       ]);
     } catch (err) {
       setMessages(prev => [
         ...prev,
-        { id: nextId.current++, role: 'assistant', text: copy.chat.error },
+        { id: nextId.current++, role: 'assistant', text: c.error },
       ]);
     } finally {
       setLoading(false);
@@ -92,6 +99,12 @@ export default function ChatWidget() {
     sendQuery(input);
   }
 
+  function clearChat() {
+    setMessages([]);
+    setInput('');
+    setTimeout(() => inputRef.current?.focus(), 50);
+  }
+
   // ── render ─────────────────────────────────────────────────────────────────
 
   return (
@@ -99,7 +112,7 @@ export default function ChatWidget() {
       {/* Floating toggle button */}
       <button
         type="button"
-        aria-label={open ? copy.chat.close : copy.chat.title}
+        aria-label={open ? c.close : c.title}
         onClick={() => setOpen(v => !v)}
         className="fixed bottom-5 end-5 z-50 w-12 h-12 rounded-full bg-amber-700 text-white shadow-lg hover:bg-amber-600 active:scale-95 transition-all flex items-center justify-center text-xl"
       >
@@ -110,32 +123,51 @@ export default function ChatWidget() {
       {open && (
         <div
           role="dialog"
-          aria-label={copy.chat.title}
+          aria-label={c.title}
           className="fixed bottom-20 end-5 z-50 w-80 sm:w-96 max-h-[75vh] flex flex-col rounded-2xl bg-white border border-gray-200 shadow-2xl overflow-hidden"
-          dir="rtl"
+          dir={isRtl ? 'rtl' : 'ltr'}
         >
           {/* Header */}
-          <div className="px-4 py-3 bg-amber-700 text-white flex-shrink-0">
-            <p className="font-bold text-sm">{copy.chat.title}</p>
-            <p className="text-xs opacity-80">{copy.chat.subtitle}</p>
+          <div className="px-4 py-3 bg-amber-700 text-white flex-shrink-0 flex items-start justify-between gap-2">
+            <div>
+              <p className="font-bold text-sm">{c.title}</p>
+              <p className="text-xs opacity-80">{c.subtitle}</p>
+            </div>
+            {messages.length > 0 && (
+              <button
+                type="button"
+                onClick={clearChat}
+                title={c.clearChat}
+                className="mt-0.5 flex-shrink-0 text-white/70 hover:text-white text-xs underline underline-offset-2 transition-colors"
+              >
+                {c.clearChat}
+              </button>
+            )}
           </div>
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-[8rem]">
             {messages.length === 0 && (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <p className="text-xs text-gray-400 text-center">
-                  {copy.chat.subtitle}
+                  {c.subtitle}
                 </p>
-                {copy.chat.starters.map(s => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => sendQuery(s)}
-                    className="block w-full text-start text-xs text-gray-700 bg-gray-50 hover:bg-amber-50 border border-gray-200 rounded-lg px-3 py-2 transition-colors"
-                  >
-                    {s}
-                  </button>
+                {c.categories.map(cat => (
+                  <div key={cat.label}>
+                    <p className="text-xs font-semibold text-gray-500 mb-1 px-1">{cat.label}</p>
+                    <div className="space-y-1">
+                      {cat.questions.map(q => (
+                        <button
+                          key={q}
+                          type="button"
+                          onClick={() => sendQuery(q)}
+                          className="block w-full text-start text-xs text-gray-700 bg-gray-50 hover:bg-amber-50 border border-gray-200 rounded-lg px-3 py-2 transition-colors"
+                        >
+                          {q}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
@@ -178,7 +210,7 @@ export default function ChatWidget() {
               type="text"
               value={input}
               onChange={e => setInput(e.target.value)}
-              placeholder={copy.chat.placeholder}
+              placeholder={c.placeholder}
               disabled={loading}
               className="flex-1 text-sm rounded-lg border border-gray-200 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:opacity-50"
             />
@@ -187,7 +219,7 @@ export default function ChatWidget() {
               disabled={!input.trim() || loading}
               className="px-3 py-1.5 text-sm rounded-lg bg-amber-700 text-white font-medium hover:bg-amber-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
-              {copy.chat.submit}
+              {c.submit}
             </button>
           </form>
         </div>
