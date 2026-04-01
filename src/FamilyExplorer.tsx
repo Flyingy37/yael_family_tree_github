@@ -83,10 +83,13 @@ export default function FamilyExplorer() {
   const [subtreeRootId, setSubtreeRootId] = useState<string | null>(null);
   const [subtreeDepth, setSubtreeDepth] = useState(4);
   const [includeSpouseBranches, setIncludeSpouseBranches] = useState(true);
-  const { lang: language, setLang: setLanguage } = useLang();
+  const { lang: contextLang } = useLang();
+  const language: 'en' | 'he' =
+    langParam === 'en' || langParam === 'he' ? langParam : contextLang;
   const [hasVitalsSnapshot, setHasVitalsSnapshot] = useState(false);
   const viewTabs = VIEW_TABS[language];
   const basePath = `/${langParam || language}`;
+  const showWebVitalsExport = import.meta.env.DEV;
 
   // View mode via ?view= query param (defaults to 'tree')
   const rawViewParam = searchParams.get('view');
@@ -207,8 +210,9 @@ export default function FamilyExplorer() {
   }, [includeSpouseBranches]);
 
   useEffect(() => {
+    if (!showWebVitalsExport) return;
     setHasVitalsSnapshot(getLastWebVitalsSnapshot() !== null);
-  }, [loading, error]);
+  }, [loading, error, showWebVitalsExport]);
 
   if (loading) {
     return (
@@ -295,18 +299,20 @@ export default function FamilyExplorer() {
             allowedPersonIds={filteredIds}
           />
           <div className="flex-1" />
-          <button
-            type="button"
-            onClick={handleExportVitals}
-            className={`text-xs px-2.5 py-1.5 rounded-md border transition-colors whitespace-nowrap ${
-              hasVitalsSnapshot
-                ? 'border-gray-300 text-gray-600 hover:bg-gray-100'
-                : 'border-gray-200 text-gray-400 hover:bg-gray-50'
-            }`}
-            title={language === 'he' ? 'ייצוא snapshot אחרון של Web Vitals לקובץ JSON' : 'Export latest Web Vitals snapshot as JSON'}
-          >
-            {language === 'he' ? 'ייצוא Web Vitals' : 'Export Web Vitals'}
-          </button>
+          {showWebVitalsExport ? (
+            <button
+              type="button"
+              onClick={handleExportVitals}
+              className={`text-xs px-2.5 py-1.5 rounded-md border transition-colors whitespace-nowrap ${
+                hasVitalsSnapshot
+                  ? 'border-gray-300 text-gray-600 hover:bg-gray-100'
+                  : 'border-gray-200 text-gray-400 hover:bg-gray-50'
+              }`}
+              title={language === 'he' ? 'ייצוא snapshot אחרון של Web Vitals לקובץ JSON' : 'Export latest Web Vitals snapshot as JSON'}
+            >
+              {language === 'he' ? 'ייצוא Web Vitals' : 'Export Web Vitals'}
+            </button>
+          ) : null}
           <div className="text-xs text-gray-400 whitespace-nowrap" title={language === 'he' ? 'בטווח הסינון והתצוגה הנוכחיים' : 'Current filter and view scope'}>
             {displayIds.size !== filteredIds.size
               ? `${displayIds.size.toLocaleString()} / ${filteredIds.size.toLocaleString()}`

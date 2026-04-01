@@ -90,10 +90,17 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
             {t ? 'זהות' : 'Identity'}
           </div>
           <div>
-            <label className="text-xs text-gray-500">{t ? 'טווח דורות' : 'Generation range'}</label>
-            <div className="flex gap-2 items-center mt-1">
+            <span className="text-xs text-gray-500" id="filter-generation-range-label">
+              {t ? 'טווח דורות' : 'Generation range'}
+            </span>
+            <div
+              className="flex gap-2 items-center mt-1"
+              role="group"
+              aria-labelledby="filter-generation-range-label"
+            >
               <input
                 type="number"
+                id="filter-generation-min"
                 value={filters.generationMin}
                 onChange={e => {
                   const parsed = parseInt(e.target.value, 10);
@@ -102,10 +109,12 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
                 className="w-16 px-2 py-1 border rounded text-center text-xs"
                 min={-29}
                 max={2}
+                aria-label={t ? 'דור מינימלי בטווח הסינון' : 'Minimum generation in filter range'}
               />
               <span className="text-gray-400">{t ? 'עד' : 'to'}</span>
               <input
                 type="number"
+                id="filter-generation-max"
                 value={filters.generationMax}
                 onChange={e => {
                   const parsed = parseInt(e.target.value, 10);
@@ -114,6 +123,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
                 className="w-16 px-2 py-1 border rounded text-center text-xs"
                 min={-29}
                 max={2}
+                aria-label={t ? 'דור מקסימלי בטווח הסינון' : 'Maximum generation in filter range'}
               />
             </div>
           </div>
@@ -170,10 +180,13 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
             {t ? 'קרבה' : 'Kinship'}
           </div>
           <div>
-            <label className="text-xs text-gray-500">{t ? 'קפיצות מיעל (מקסימום)' : 'Hops from Yael (max)'}</label>
+            <span className="text-xs text-gray-500" id="filter-max-hops-label">
+              {t ? 'קפיצות מיעל (מקסימום)' : 'Hops from Yael (max)'}
+            </span>
             <div className="flex gap-2 items-center mt-1">
               <input
                 type="number"
+                id="filter-max-hops"
                 value={filters.maxHops ?? ''}
                 onChange={e => {
                   const v = e.target.value;
@@ -184,6 +197,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
                 min={0}
                 max={30}
                 placeholder={t ? 'הכל' : 'all'}
+                aria-label={t ? 'מספר קפיצות מקסימלי מיעל (ריק = ללא הגבלה)' : 'Max hops from Yael (empty = no limit)'}
               />
               <button
                 className="text-xs text-blue-500 hover:text-blue-700"

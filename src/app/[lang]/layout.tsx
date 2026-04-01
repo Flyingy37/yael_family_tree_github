@@ -37,6 +37,16 @@ export default function LangLayout() {
     }
   }, [langParam, navigate]);
 
+  useEffect(() => {
+    if (lang !== 'he' && lang !== 'en') return;
+    document.documentElement.lang = lang === 'he' ? 'he' : 'en';
+    document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+    document.title =
+      lang === 'he'
+        ? 'אילן יוחסין – משפחת ליבנת-זיידמן'
+        : 'Family tree – Livnat–Zaidman family';
+  }, [lang]);
+
   // Keep URL param in sync with stored preference
   useEffect(() => {
     if (langParam === 'he' || langParam === 'en') {

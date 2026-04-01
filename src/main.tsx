@@ -5,7 +5,9 @@ import App from './App';
 import './index.css';
 import { initWebVitalsTracking } from './performance/webVitals';
 
-initWebVitalsTracking();
+if (import.meta.env.DEV) {
+  initWebVitalsTracking();
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -65,11 +65,39 @@ function lifeSpan(person: Person): string | null {
 /** Prefer plain note; fall back to HTML-stripped `note` */
 function researchNoteText(person: Person): string | null {
   const plain = person.note_plain?.trim();
-  if (plain) return plain;
-  const raw = person.note?.trim();
-  if (!raw) return null;
-  const stripped = raw.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-  return stripped || null;
+  const candidate = plain || person.note?.trim();
+  if (!candidate) return null;
+  const stripped = candidate.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  if (!stripped || stripped === '\u00a0') return null;
+  // Internal maintenance lines — not for display or screen readers
+  if (/status updated to deceased/i.test(stripped)) return null;
+  if (/^status updated to/i.test(stripped)) return null;
+  return stripped;
+}
+
+function stripHtmlToPlain(text: string): string {
+  return text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+/** Short, stable label for the card (overrides noisy descendant text in the a11y tree). */
+function personCardAriaLabel(person: Person, isHe: boolean): string {
+  const birthY = extractYear(person.birthDate);
+  const deathY = extractYear(person.deathDate);
+  let life: string;
+  if (birthY != null && deathY != null) {
+    life = isHe ? `לידה ${birthY}, פטירה ${deathY}` : `Born ${birthY}, died ${deathY}`;
+  } else if (birthY != null) {
+    life = isHe ? `לידה ${birthY}` : `Born ${birthY}`;
+  } else if (deathY != null) {
+    life = isHe ? `פטירה ${deathY}` : `Died ${deathY}`;
+  } else {
+    life = isHe ? 'תאריכים לא ידועים' : 'Dates unknown';
+  }
+  const holo = person.holocaustVictim ? (isHe ? 'קורבן שואה' : 'Holocaust victim') : '';
+  const relRaw = person.relationToYael?.trim();
+  const rel = relRaw ? stripHtmlToPlain(relRaw) : '';
+  const parts = [person.fullName, life, holo, rel].filter(Boolean);
+  return parts.join(', ');
 }
 
 function getGenerationColor(generation: number | null): string {
@@ -277,6 +305,7 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
       <div
         role="button"
         tabIndex={0}
+        aria-label={personCardAriaLabel(person, isHe)}
         onClick={() => data.onClick(person.id)}
         onKeyDown={e => {
           if (e.key === 'Enter' || e.key === ' ') {

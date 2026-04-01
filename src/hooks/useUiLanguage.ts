@@ -7,6 +7,11 @@ const LANGUAGE_EXPLICIT_STORAGE_KEY = 'appLanguageExplicitlySet';
 
 function readInitialLanguage(): UiLanguage {
   if (typeof window === 'undefined') return 'he';
+  // URL wins on /he/* and /en/* so first paint matches the route (avoids EN route + HE UI flash).
+  const fromPath = window.location.pathname.match(/^\/(he|en)(\/|$)/);
+  if (fromPath && (fromPath[1] === 'en' || fromPath[1] === 'he')) {
+    return fromPath[1];
+  }
   const explicit = window.localStorage.getItem(LANGUAGE_EXPLICIT_STORAGE_KEY) === '1';
   const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
   if (explicit && (stored === 'en' || stored === 'he')) return stored;
