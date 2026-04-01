@@ -3,7 +3,7 @@
  * Validates the lang param (he | en), syncs with localStorage,
  * provides LangContext to all child pages via <Outlet />.
  */
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
 import { Outlet, useParams, useNavigate, Link } from 'react-router-dom';
 import { useUiLanguage, type UiLanguage } from '../../hooks/useUiLanguage';
 import ChatWidget from '../../components/ChatWidget';
@@ -34,14 +34,16 @@ export default function LangLayout() {
 
   // ── Hot Sync toast ─────────────────────────────────────────────────────────
   const [syncToast, setSyncToast] = useState<string | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleHotSync = useCallback((msg: { message: string; branch_name: string | null }) => {
     const text = msg.branch_name
       ? `🔄 עדכון! נוספו פרטים חדשים על ענף ${msg.branch_name}`
       : `🔄 ${msg.message}`;
+    // Clear any previous timer so back-to-back updates don't dismiss early
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     setSyncToast(text);
-    // Auto-dismiss after 8 s
-    setTimeout(() => setSyncToast(null), 8000);
+    toastTimerRef.current = setTimeout(() => setSyncToast(null), 8000);
   }, []);
 
   useHotSync(handleHotSync);

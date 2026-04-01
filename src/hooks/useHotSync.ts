@@ -31,7 +31,7 @@ export function useHotSync(onUpdate: (msg: FamilyUpdateRow) => void) {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase?.removeChannel(channel);
     };
   }, [onUpdate]);
 }
