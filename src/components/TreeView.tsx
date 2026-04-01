@@ -16,6 +16,7 @@ import { RouteIcon, X, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react'
 import '@xyflow/react/dist/style.css';
 import { PersonNode } from './PersonNode';
 import { GenerationBandNode } from './GenerationBandNode';
+import { FamilyChatPanel } from './FamilyChatPanel';
 import { computeLayout, NODE_HEIGHT, type LayoutEdge } from '../utils/layout';
 import { getDescendantIds, findPathBFS, countDescendantsMap } from '../utils/treeHelpers';
 import { useExpandCollapse } from '../hooks/useExpandCollapse';
@@ -566,6 +567,10 @@ export function TreeView({
                 )}
               </div>
             )}
+
+            <div style={{ marginTop: 10, width: '100%' }}>
+              <FamilyChatPanel language={language === 'he' ? 'he' : 'en'} />
+            </div>
           </div>
         </Panel>
       </ReactFlow>
