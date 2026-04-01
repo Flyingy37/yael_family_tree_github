@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useState, useEffect } from 'react';
+import { useMemo, useCallback, useState, useEffect, useRef } from 'react';
 import {
   ReactFlow,
   MiniMap,
@@ -84,6 +84,21 @@ export function TreeView({
     ancestorGenerations: 4,   // root → parents → grandparents → great-grandparents
     descendantGenerations: 2, // root → children → grandchildren
   });
+
+  // ── Initial fitView after first layout is ready ───────────────────────────
+  // The `fitView` ReactFlow prop fires before nodes are measured; this effect
+  // waits two animation frames so React Flow has time to position nodes first.
+  const initialFitDone = useRef(false);
+  useEffect(() => {
+    if (filteredIds.size === 0 || initialFitDone.current) return;
+    initialFitDone.current = true;
+    const outer = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        fitView({ duration: 0, padding: 0.12, includeHiddenNodes: false });
+      });
+    });
+    return () => cancelAnimationFrame(outer);
+  }, [filteredIds, fitView]);
 
   // After expanding a branch, re-center the viewport (double rAF: layout then measure)
   useEffect(() => {
@@ -412,8 +427,7 @@ export function TreeView({
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
-        fitView
-        fitViewOptions={{ padding: 0.12, duration: 0 }}
+        /* fitView is handled by useEffect after nodes are measured */
         minZoom={0.12}
         maxZoom={2.5}
         zoomOnPinch      /* pinch-to-zoom on mobile */
