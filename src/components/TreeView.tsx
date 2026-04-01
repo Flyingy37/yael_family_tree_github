@@ -88,23 +88,22 @@ export function TreeView({
     descendantGenerations: 2, // root → children → grandchildren
   });
 
-  // ── Re-fit after initial data loads (double rAF so React Flow has measured nodes) ──
-  // The ReactFlow `fitView` prop fires too early (before nodes are positioned);
-  // this effect fires once filteredIds is populated and waits two frames.
+  // ── Re-fit after visible nodes are ready ────────────────────────────────────
+  // We wait for effectiveDisplayIds (the visible subset) rather than filteredIds
+  // (all 2430 records) because fitView({ includeHiddenNodes: false }) finds nothing
+  // when visible nodes haven't been determined yet.
+  // setTimeout(250) gives React Flow time to measure all DOM nodes before we ask it
+  // to calculate the bounding box — 2 rAFs alone proved too short with this graph size.
   const initialFitDone = useRef(false);
   useEffect(() => {
-    if (filteredIds.size === 0) return;
+    if (effectiveDisplayIds.size === 0) return;
     if (initialFitDone.current) return;
-    // Schedule inside rAF so we don't cancel ourselves on re-render
-    const outer = window.requestAnimationFrame(() => {
-      const inner = window.requestAnimationFrame(() => {
-        initialFitDone.current = true;
-        fitView({ duration: 0, padding: 0.12, includeHiddenNodes: false });
-      });
-      return () => cancelAnimationFrame(inner);
-    });
-    return () => cancelAnimationFrame(outer);
-  }, [filteredIds, fitView]);
+    const timer = window.setTimeout(() => {
+      initialFitDone.current = true;
+      fitView({ duration: 400, padding: 0.15, includeHiddenNodes: false });
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [effectiveDisplayIds, fitView]);
 
   // After expanding a branch, re-center the viewport.
   // If a chat focus was pending (the requested person was hidden), zoom to them instead.
@@ -466,8 +465,6 @@ export function TreeView({
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
-        fitView
-        fitViewOptions={{ padding: 0.12, duration: 0 }}
         minZoom={0.12}
         maxZoom={2.5}
         zoomOnPinch      /* pinch-to-zoom on mobile */
