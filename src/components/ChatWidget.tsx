@@ -83,7 +83,7 @@ export default function ChatWidget() {
     } catch (err) {
       setMessages(prev => [
         ...prev,
-        { id: nextId.current++, role: 'assistant', text: `שגיאה: ${err instanceof Error ? err.message : String(err)}` },
+        { id: nextId.current++, role: 'assistant', text: copy.chat.error },
       ]);
     } finally {
       setLoading(false);
