@@ -213,9 +213,16 @@ export default function FamilyExplorer() {
   if (loading) {
     return (
       <div className="h-full flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="text-4xl mb-4">🌳</div>
-          <div className="text-lg text-gray-600">{language === 'he' ? 'טוען את אילן היוחסין...' : 'Loading family tree...'}</div>
+        <div className="text-center" dir={language === 'he' ? 'rtl' : 'ltr'}>
+          <div className="text-5xl mb-5 animate-bounce">🌳</div>
+          <div className="text-lg font-medium text-gray-700 mb-2">
+            {language === 'he' ? 'טוען את אילן היוחסין...' : 'Loading family tree...'}
+          </div>
+          <div className="flex justify-center gap-1.5 mt-3">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-bounce [animation-delay:0ms]" />
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-bounce [animation-delay:150ms]" />
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-bounce [animation-delay:300ms]" />
+          </div>
         </div>
       </div>
     );

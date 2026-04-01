@@ -100,6 +100,13 @@ export function TreeView({
     [expandBranch]
   );
 
+  // ── Navigation hint (auto-dismiss after 7 s) ─────────────────────────────
+  const [showNavHint, setShowNavHint] = useState(true);
+  useEffect(() => {
+    const id = setTimeout(() => setShowNavHint(false), 7000);
+    return () => clearTimeout(id);
+  }, []);
+
   // ── Collapse state ────────────────────────────────────────────────────────
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
 
@@ -403,8 +410,8 @@ export function TreeView({
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
         fitView
-        fitViewOptions={{ padding: 0.15, includeHiddenNodes: false }}
-        minZoom={0.03}   /* allow zooming out further on mobile */
+        fitViewOptions={{ padding: 0.2, minZoom: 0.18, includeHiddenNodes: false }}
+        minZoom={0.12}
         maxZoom={2.5}
         zoomOnPinch      /* pinch-to-zoom on mobile */
         panOnDrag
@@ -430,12 +437,38 @@ export function TreeView({
         {isLazyMode && (
           <Panel position="top-left">
             <div
-              className="max-w-[220px] rounded-lg border border-slate-200/80 bg-white/95 px-3 py-2 text-[11px] leading-snug text-slate-600 shadow-md backdrop-blur-sm transition-opacity duration-300"
+              className="max-w-[230px] rounded-lg border border-slate-200/80 bg-white/95 px-3 py-2 text-[11px] leading-snug text-slate-600 shadow-md backdrop-blur-sm"
               dir={t ? 'rtl' : 'ltr'}
             >
+              <div className="font-semibold text-slate-700 mb-0.5">
+                {t ? '🌳 עץ גדול' : '🌳 Large tree'}
+              </div>
               {t
-                ? 'עץ גדול: Dagre פעם אחת לכל הסינון; מוצגים שורש ו־2 דורות הורים/ילדים. לחץ + כדי לחשוף קרובים (מבטל hidden).'
-                : 'Large tree: one layout for the full filter; root ±2 ancestor/descendant gens shown. + reveals relatives (toggles hidden).'}
+                ? 'מוצגים השורש ו‑2 דורות סמוכים. לחצו + על כרטיסיית אדם כדי לגלות קרובים נוספים.'
+                : 'Showing root and nearby 2 generations. Click + on any card to reveal more relatives.'}
+            </div>
+          </Panel>
+        )}
+
+        {/* Navigation hint — auto-dismisses after 7 s */}
+        {showNavHint && (
+          <Panel position="bottom-center">
+            <div
+              className="flex items-center gap-3 rounded-full border border-slate-200/80 bg-white/95 px-4 py-2 text-[11px] text-slate-500 shadow-md backdrop-blur-sm"
+              dir="ltr"
+            >
+              <span>🖱️ {t ? 'גלגל = זום' : 'Scroll = zoom'}</span>
+              <span className="text-slate-300">|</span>
+              <span>✋ {t ? 'גרור = ניווט' : 'Drag = pan'}</span>
+              <span className="text-slate-300">|</span>
+              <span>🔍 {t ? 'חפש בשורת החיפוש' : 'Use search bar above'}</span>
+              <button
+                onClick={() => setShowNavHint(false)}
+                className="ms-1 text-slate-400 hover:text-slate-600"
+                aria-label="close hint"
+              >
+                ✕
+              </button>
             </div>
           </Panel>
         )}
