@@ -72,6 +72,9 @@ export function TreeView({
   const { fitView } = useReactFlow();
   const t = language === 'he';
 
+  /** Stores a personId that should be focused after the next expand tick. */
+  const pendingFocusId = useRef<string | null>(null);
+
   // ── Lazy load (large graphs): initial neighborhood around root, expand by hop ──
   const {
     graphVisibleIds,
@@ -103,16 +106,49 @@ export function TreeView({
     return () => cancelAnimationFrame(outer);
   }, [filteredIds, fitView]);
 
-  // After expanding a branch, re-center the viewport (double rAF: layout then measure)
+  // After expanding a branch, re-center the viewport.
+  // If a chat focus was pending (the requested person was hidden), zoom to them instead.
   useEffect(() => {
     if (expandTick === 0) return;
+    const focusId = pendingFocusId.current;
+    pendingFocusId.current = null;
     const outer = window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {
-        fitView({ duration: 480, padding: 0.15, includeHiddenNodes: false });
+        if (focusId) {
+          fitView({ nodes: [{ id: focusId }], padding: 0.4, duration: 800, includeHiddenNodes: false });
+        } else {
+          fitView({ duration: 480, padding: 0.15, includeHiddenNodes: false });
+        }
       });
     });
     return () => cancelAnimationFrame(outer);
   }, [expandTick, fitView]);
+
+  // ── Chat → tree focus bridge ──────────────────────────────────────────────
+  // Listens for a CustomEvent dispatched by ChatWidget when the API returns a personId.
+  // If the node is already visible, fitView on it immediately.
+  // If the node is hidden (lazy mode), expand its branch first, then focus after expandTick fires.
+  useEffect(() => {
+    function handler(e: Event) {
+      const personId = (e as CustomEvent<{ personId: string }>).detail?.personId;
+      if (!personId) return;
+
+      if (effectiveDisplayIds.has(personId)) {
+        // Node is already rendered — focus right away
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => {
+            fitView({ nodes: [{ id: personId }], padding: 0.4, duration: 800, includeHiddenNodes: false });
+          });
+        });
+      } else {
+        // Node is outside current view — expand and focus after layout settles
+        pendingFocusId.current = personId;
+        expandBranch(personId);
+      }
+    }
+    window.addEventListener('familyTreeFocus', handler);
+    return () => window.removeEventListener('familyTreeFocus', handler);
+  }, [effectiveDisplayIds, fitView, expandBranch]);
 
   const handleExpandBranch = useCallback(
     (id: string) => {

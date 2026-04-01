@@ -30,6 +30,24 @@ async function loadJson(filename) {
   return JSON.parse(text);
 }
 
+// ── person ID resolver ────────────────────────────────────────────────────────
+
+/**
+ * Returns the ID of the single best-matching person for `query`, or null if
+ * the query matches zero or more than ~3 persons (too ambiguous to focus).
+ */
+function findPersonId(query, persons) {
+  const q = query.toLowerCase();
+  const hits = persons.filter(p => {
+    const blob = [p.fullName, p.hebrewName, p.birthName, p.birthPlace]
+      .filter(Boolean).join(' ').toLowerCase();
+    return q.split(/\s+/).some(word => word.length > 2 && blob.includes(word));
+  });
+  // Only send a focusable ID when the match is unambiguous (1 hit)
+  // or the first hit is clearly the top result (≤3 hits).
+  return hits.length > 0 && hits.length <= 3 ? hits[0].id ?? null : null;
+}
+
 // ── fallback: keyword search ─────────────────────────────────────────────────
 
 function keywordSearch(query, persons) {
@@ -180,15 +198,18 @@ export default async function handler(req, res) {
       source = 'keyword';
     }
 
+    const personId = findPersonId(query.trim(), persons);
+
     if (!answer) {
       return res.status(200).json({
         ok: true,
         answer: 'לא נמצאה התאמה ברורה בגרף המשפחה. נסה/י לנסח מחדש.',
         source,
+        personId: null,
       });
     }
 
-    return res.status(200).json({ ok: true, answer, source });
+    return res.status(200).json({ ok: true, answer, source, personId });
   } catch (err) {
     console.error('[chat/query]', err);
     return res.status(500).json({ error: 'Internal server error', detail: err.message });

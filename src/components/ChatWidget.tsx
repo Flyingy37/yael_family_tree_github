@@ -80,6 +80,13 @@ export default function ChatWidget({ language = 'he' }: ChatWidgetProps) {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
 
+      // If the server resolved a specific person, signal the tree to focus on them
+      if (data.personId) {
+        window.dispatchEvent(
+          new CustomEvent('familyTreeFocus', { detail: { personId: data.personId } })
+        );
+      }
+
       setMessages(prev => [
         ...prev,
         { id: nextId.current++, role: 'assistant', text: data.answer ?? c.noMatch },
