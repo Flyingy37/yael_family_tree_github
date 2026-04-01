@@ -252,14 +252,20 @@ export function TreeView({
 
   // ── Layout ────────────────────────────────────────────────────────────────
   /**
-   * Lazy mode: one Dagre pass over the full filtered set; visibility is toggled with
-   * React Flow `node.hidden` / `edge.hidden` so expand/collapse does not re-run Dagre.
-   * Non-lazy: Dagre only on the visible subset (small graphs).
+   * Lazy mode: Dagre runs only on the VISIBLE subset (effectiveDisplayIds, ~50–200 nodes).
+   *
+   * Previous approach ran Dagre on all 2430 nodes and used node.hidden to show/hide —
+   * this caused 30–60 s of synchronous CPU freeze that blanked the tree entirely.
+   * Now we re-run Dagre only when effectiveDisplayIds changes (on branch expand),
+   * which is fast (<200 ms for a few hundred nodes) and keeps the tree responsive.
+   * Trade-off: nodes may re-position on each expand, which is acceptable.
+   *
+   * Non-lazy: Dagre only on the visible subset (small graphs) — unchanged.
    */
   const fullLazyLayout = useMemo(() => {
-    if (!isLazyMode || filteredIds.size === 0) return null;
-    return computeLayout(persons, families, filteredIds);
-  }, [isLazyMode, persons, families, filteredIds]);
+    if (!isLazyMode || effectiveDisplayIds.size === 0) return null;
+    return computeLayout(persons, families, effectiveDisplayIds);
+  }, [isLazyMode, persons, families, effectiveDisplayIds]);
 
   const visibleOnlyLayout = useMemo(() => {
     if (isLazyMode) return null;
@@ -287,10 +293,11 @@ export function TreeView({
 
   const rfPersonIds = useMemo(() => {
     if (fullLazyLayout) {
-      return Array.from(filteredIds).sort((a, b) => a.localeCompare(b));
+      // Only pass visible nodes to React Flow — no hidden:true nodes needed
+      return Array.from(effectiveDisplayIds).sort((a, b) => a.localeCompare(b));
     }
     return layoutNodes.map(n => n.id);
-  }, [fullLazyLayout, filteredIds, layoutNodes]);
+  }, [fullLazyLayout, effectiveDisplayIds, layoutNodes]);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
   const handleNodeClick = useCallback(
