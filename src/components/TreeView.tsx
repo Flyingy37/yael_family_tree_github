@@ -80,7 +80,10 @@ export function TreeView({
     isLazyMode,
     hasHiddenRelatives,
     hiddenRelativeCount,
-  } = useExpandCollapse(rootPersonId, filteredIds, persons, families);
+  } = useExpandCollapse(rootPersonId, filteredIds, persons, families, {
+    ancestorGenerations: 4,   // root → parents → grandparents → great-grandparents
+    descendantGenerations: 2, // root → children → grandchildren
+  });
 
   // After expanding a branch, re-center the viewport (double rAF: layout then measure)
   useEffect(() => {
@@ -444,8 +447,8 @@ export function TreeView({
                 {t ? '🌳 עץ גדול' : '🌳 Large tree'}
               </div>
               {t
-                ? 'מוצגים השורש ו‑2 דורות סמוכים. לחצו + על כרטיסיית אדם כדי לגלות קרובים נוספים.'
-                : 'Showing root and nearby 2 generations. Click + on any card to reveal more relatives.'}
+                ? 'מוצגים את ומשפחתך הקרובה עד סבא-סבתא רבתא. לחצו + על כרטיסיית אדם כדי לגלות קרובים נוספים.'
+                : 'Showing you and close family up to great-grandparents. Click + on any card to reveal more.'}
             </div>
           </Panel>
         )}
