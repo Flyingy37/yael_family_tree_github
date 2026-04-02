@@ -93,10 +93,10 @@ const MANUAL_TAG_OVERRIDES: Record<string, string[]> = {
   // User-confirmed: maternal uncle appears in verified DNA matching evidence.
   '@I23@': ['DNA'], // Zeev Vladimir Alperovich
   // Requested notable public figures
-  '@I2560@': ['Famous'], // Hayim Nahman Bialik
-  '@I619@': ['Famous'], // Terry J. Dubrow
-  '@I1085@': ['Famous'], // Terry J. Dubrow (second profile)
-  '@I618@': ['Famous'], // Kevin Mark Dubrow (Riot)
+  '@I2348@': ['Famous'], // Hayim Nahman Bialik
+  '@I588@': ['Famous'], // Terry J. Dubrow
+  '@I1025@': ['Famous'], // Terry J. Dubrow (second profile)
+  '@I587@': ['Famous'], // Kevin Mark Dubrow (Quiet Riot)
   '@I124@': ['Famous'], // Hyman Isidor Kastrel — co-founder of Yiddish daily Frayhayt; editor of Funken
   // Heilprin rabbinical dynasty — direct ancestors of the Alperovich branch.
   // Source: user-confirmed chain (mh_identifiers #1504849 / #1504833 / #1504732 / #1504730 / #1503373)
@@ -377,7 +377,7 @@ const MANUAL_TITLE_APPEND_OVERRIDES: Record<string, string> = {
   // FTDNA project: Alperovich of Kurenets — admin: Jenny Rappaport.
   '@I23@': 'Y-DNA: Q-Y2197 (sub-clade of Q-M242; FTDNA IN131982 match list 2025 confirms Q-Y2197). Adam Cherson recommends upgrade to BY700 for deeper Alperovich research. Possible connection to R\' Judah Aryeh Leib Maggid of Vilna (Q-FT340368). FTDNA project "Alperovich of Kurenets" — admin: Jenny Rappaport. ✅ Confirmed: Fred Harber (108 cM, 3rd-5th cousin) shares Q-Y2197 — independent confirmation of Alperovich Y-haplogroup. Source: Adam Cherson email Aug 2024 + IN131982 match list 2025.',
   '@I6@': 'DNA matches note: Abraham Guzhinsky appears in Oded match lists (paternal branch evidence).',
-  '@I618@': 'Music note: Kevin Mark DuBrow, associated with the heavy metal band Riot.',
+  '@I587@': 'Music note: Kevin Mark DuBrow, associated with the heavy metal band Quiet Riot.',
   '@I30@': 'Research note: family origin linked to Abraham Guzhinsky; likely Belarus/Ukraine.',
   '@I721@': 'MyHeritage profile note: Joseph/Yushua Kaszinsky. Birth: Poland. Family context includes Gordon maternal line.',
   '@I724@': 'MyHeritage profile note: Gordon (mother line linked to Joseph/Yushua Kaszinsky profile).',
