@@ -1,8 +1,8 @@
 /**
  * ReportBrowser.tsx
- * Descendant Report Browser for the Livnat Family Tree.
- * Displays branches and persons from livnat-report.json with search,
- * collapsible branches, generation color-coding, and family tree focus.
+ * Descendant Report Browser — Livnat Family Tree.
+ * Upgraded visual design: rich generation legend, improved typography,
+ * polished sidebar, card-style branch sections, hover actions.
  */
 
 import { useEffect, useState, useMemo, useCallback } from 'react';
@@ -45,46 +45,79 @@ interface Props {
 
 const LABELS = {
   he: {
-    title: 'דו"ח ירידת הדורות',
+    title: 'ירידת הדורות',
     families: 'משפחות',
     search: 'חפש שם...',
     branches: 'ענפים',
     generations: 'דורות',
-    birth: 'לידה',
-    death: 'פטירה',
-    loading: 'טוען...',
+    birth: 'נ׳',
+    death: 'נ׳פ',
+    loading: 'טוען דו"ח...',
     error: 'שגיאה בטעינת הדו"ח',
     noResults: 'אין תוצאות',
-    totalPersons: 'סה"כ אנשים',
+    totalPersons: 'אנשים',
     focusTree: 'הצג בעץ',
     persons: 'אנשים',
+    spouse: 'בן/בת זוג',
+    legendTitle: 'מפת דורות',
+    genLabels: ['אבות קדמונים', 'עידן היסטורי', 'ראשית המודרני', 'דורות מודרניים', 'דור נוכחי'],
+    genRanges: ['1–3', '4–8', '9–13', '14–18', '19+'],
   },
   en: {
     title: 'Descendant Report',
     families: 'Families',
     search: 'Search name...',
     branches: 'branches',
-    generations: 'generations',
+    generations: 'gen.',
     birth: 'b.',
     death: 'd.',
-    loading: 'Loading...',
+    loading: 'Loading report...',
     error: 'Failed to load report',
     noResults: 'No results',
-    totalPersons: 'Total persons',
-    focusTree: 'Focus in tree',
+    totalPersons: 'persons',
+    focusTree: 'Show in tree',
     persons: 'persons',
+    spouse: 'spouse',
+    legendTitle: 'Generation Map',
+    genLabels: ['Ancestors', 'Historical', 'Early Modern', 'Modern', 'Living'],
+    genRanges: ['1–3', '4–8', '9–13', '14–18', '19+'],
   },
 } as const;
 
-// ─── Generation color helpers ─────────────────────────────────────────────────
+// ─── Generation palette ────────────────────────────────────────────────────────
 
-function genBadgeClass(gen: number | null): string {
-  if (gen === null) return 'bg-stone-400 text-white';
-  if (gen <= 3) return 'bg-amber-900 text-amber-50';
-  if (gen <= 8) return 'bg-amber-700 text-amber-50';
-  if (gen <= 13) return 'bg-yellow-600 text-white';
-  if (gen <= 18) return 'bg-green-700 text-white';
-  return 'bg-blue-600 text-white';
+const GEN_TIERS = [
+  // [maxGen, badgeClass, dotClass, label index]
+  { max: 3,  badge: 'bg-stone-800 text-stone-100',        dot: 'bg-stone-700',    idx: 0 },
+  { max: 8,  badge: 'bg-amber-800 text-amber-50',         dot: 'bg-amber-700',    idx: 1 },
+  { max: 13, badge: 'bg-amber-500 text-white',            dot: 'bg-amber-400',    idx: 2 },
+  { max: 18, badge: 'bg-teal-700 text-white',             dot: 'bg-teal-600',     idx: 3 },
+  { max: Infinity, badge: 'bg-indigo-600 text-white',     dot: 'bg-indigo-500',   idx: 4 },
+] as const;
+
+function getTier(gen: number | null) {
+  if (gen === null) return { badge: 'bg-stone-300 text-stone-600', dot: 'bg-stone-300', idx: -1 };
+  return GEN_TIERS.find(t => gen <= t.max) ?? GEN_TIERS[GEN_TIERS.length - 1];
+}
+
+// ─── Generation Legend ────────────────────────────────────────────────────────
+
+function GenLegend({ lbl }: { lbl: (typeof LABELS)['en' | 'he'] }) {
+  return (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 px-4 py-2 bg-white border-b border-stone-100">
+      <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wide mr-1 shrink-0">
+        {lbl.legendTitle}
+      </span>
+      {GEN_TIERS.map((tier, i) => (
+        <span key={i} className="flex items-center gap-1">
+          <span className={`inline-flex items-center justify-center w-6 h-4 rounded text-[9px] font-bold ${tier.badge}`}>
+            {lbl.genRanges[i]}
+          </span>
+          <span className="text-[10px] text-stone-500">{lbl.genLabels[i]}</span>
+        </span>
+      ))}
+    </div>
+  );
 }
 
 // ─── PersonRow ────────────────────────────────────────────────────────────────
@@ -92,9 +125,11 @@ function genBadgeClass(gen: number | null): string {
 function PersonRow({
   person,
   lbl,
+  highlight,
 }: {
   person: ReportPerson;
   lbl: (typeof LABELS)['en' | 'he'];
+  highlight: string;
 }) {
   const handleFocus = useCallback(() => {
     window.dispatchEvent(
@@ -102,47 +137,69 @@ function PersonRow({
     );
   }, [person.name]);
 
-  const indent = person.isSpouse ? 'pl-6' : '';
+  const tier = getTier(person.generation);
+  const isSpouse = person.isSpouse;
+
+  // Highlight matched text
+  const displayName = useMemo(() => {
+    if (!highlight) return <>{person.name}</>;
+    const idx = person.name.toLowerCase().indexOf(highlight.toLowerCase());
+    if (idx === -1) return <>{person.name}</>;
+    return (
+      <>
+        {person.name.slice(0, idx)}
+        <mark className="bg-amber-200 text-amber-900 rounded-sm px-0.5">
+          {person.name.slice(idx, idx + highlight.length)}
+        </mark>
+        {person.name.slice(idx + highlight.length)}
+      </>
+    );
+  }, [person.name, highlight]);
 
   return (
     <div
-      className={`flex items-start gap-2 py-1 px-2 rounded hover:bg-amber-50 group transition-colors ${indent}`}
+      className={`group flex items-center gap-2 py-1 px-2 rounded-md transition-colors hover:bg-amber-50 ${
+        isSpouse ? 'ms-6 opacity-80' : ''
+      }`}
     >
-      {/* Generation badge */}
-      <span
-        className={`shrink-0 inline-flex items-center justify-center w-7 h-5 rounded text-[10px] font-bold ${genBadgeClass(
-          person.generation
-        )} mt-0.5`}
-      >
-        {person.isSpouse ? '⚭' : (person.generation ?? '?')}
-      </span>
+      {/* Connector line for spouse */}
+      {isSpouse && (
+        <span className="shrink-0 text-stone-300 text-xs select-none">⚭</span>
+      )}
 
-      {/* Name and dates */}
-      <div className="flex-1 min-w-0">
-        <span className="text-sm font-medium text-stone-800 leading-snug">
-          {person.name}
+      {/* Generation badge */}
+      {!isSpouse && (
+        <span
+          className={`shrink-0 inline-flex items-center justify-center w-7 h-5 rounded text-[10px] font-bold tracking-tight ${tier.badge}`}
+          title={`${lbl.generations} ${person.generation ?? '?'}`}
+        >
+          {person.generation ?? '?'}
         </span>
-        <span className="text-xs text-stone-400 ml-2">
-          {person.birthDate && (
-            <span>
-              {lbl.birth} {person.birthDate}
-              {person.birthPlace && ` · ${person.birthPlace}`}
-            </span>
-          )}
-          {person.deathDate && (
-            <span className="ml-1">
-              {lbl.death} {person.deathDate}
-            </span>
-          )}
+      )}
+
+      {/* Dot for spouse */}
+      {isSpouse && (
+        <span className={`shrink-0 w-2 h-2 rounded-full mt-0.5 ${tier.dot}`} />
+      )}
+
+      {/* Name + dates */}
+      <div className="flex-1 min-w-0 flex flex-wrap items-baseline gap-x-2">
+        <span className={`text-sm leading-snug font-medium ${isSpouse ? 'text-stone-600' : 'text-stone-800'}`}>
+          {displayName}
+        </span>
+        <span className="text-[11px] text-stone-400 whitespace-nowrap">
+          {person.birthDate && `${lbl.birth} ${person.birthDate}`}
+          {person.birthPlace && ` · ${person.birthPlace}`}
+          {person.deathDate && `  ${lbl.death} ${person.deathDate}`}
         </span>
       </div>
 
-      {/* Focus button */}
+      {/* Focus button — visible on hover */}
       <button
         onClick={handleFocus}
         title={lbl.focusTree}
-        className="shrink-0 opacity-0 group-hover:opacity-100 text-amber-700 hover:text-amber-900 text-sm transition-opacity"
         aria-label={lbl.focusTree}
+        className="shrink-0 opacity-0 group-hover:opacity-100 flex items-center gap-1 text-[10px] text-amber-700 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded px-1.5 py-0.5 transition-all"
       >
         🌳
       </button>
@@ -165,19 +222,16 @@ function BranchSection({
 }) {
   const [open, setOpen] = useState(defaultOpen);
 
-  // Filter persons by search query
   const filteredPersons = useMemo(() => {
     if (!searchQuery) return branch.persons;
     const q = searchQuery.toLowerCase();
-    return branch.persons.filter((p) => p.name.toLowerCase().includes(q));
+    return branch.persons.filter(p => p.name.toLowerCase().includes(q));
   }, [branch.persons, searchQuery]);
 
-  // Auto-open when searching
   useEffect(() => {
     if (searchQuery && filteredPersons.length > 0) setOpen(true);
   }, [searchQuery, filteredPersons.length]);
 
-  // Don't render if search active and no matches
   if (searchQuery && filteredPersons.length === 0) return null;
 
   const maxGen = branch.persons.reduce(
@@ -185,32 +239,45 @@ function BranchSection({
     0
   );
 
+  const personCount = filteredPersons.filter(p => !p.isSpouse).length;
+
   return (
-    <div className="border border-stone-200 rounded-lg mb-2 overflow-hidden">
+    <div className="border border-stone-200 rounded-xl mb-3 overflow-hidden shadow-sm">
+      {/* Branch header */}
       <button
-        onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between px-3 py-2 bg-stone-50 hover:bg-amber-50 transition-colors text-left"
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-stone-50 to-amber-50 hover:from-amber-50 hover:to-amber-100 transition-colors text-left border-b border-stone-100"
       >
-        <span className="font-semibold text-stone-700 text-sm">
-          {branch.label}
-        </span>
-        <span className="flex items-center gap-2 text-xs text-stone-500">
-          <span>{filteredPersons.length} {lbl.persons}</span>
+        <div className="flex items-center gap-2">
+          <span className="w-1.5 h-5 rounded-full bg-amber-500 shrink-0" />
+          <span className="font-semibold text-stone-800 text-sm">{branch.label}</span>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-stone-500">
+          <span className="bg-white border border-stone-200 rounded-full px-2 py-0.5 font-medium">
+            {personCount} {lbl.persons}
+          </span>
           {maxGen > 0 && (
-            <span>
-              {maxGen} {lbl.generations}
-            </span>
+            <span className="text-stone-400">{maxGen} {lbl.generations}</span>
           )}
-          <span className={`transition-transform ${open ? 'rotate-180' : ''}`}>
+          <span
+            className={`text-stone-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+            aria-hidden
+          >
             ▾
           </span>
-        </span>
+        </div>
       </button>
 
+      {/* Person list */}
       {open && (
-        <div className="px-2 py-1 divide-y divide-stone-100">
-          {filteredPersons.map((person) => (
-            <PersonRow key={person.id} person={person} lbl={lbl} />
+        <div className="px-2 py-2 space-y-0.5 bg-white">
+          {filteredPersons.map(person => (
+            <PersonRow
+              key={person.id}
+              person={person}
+              lbl={lbl}
+              highlight={searchQuery}
+            />
           ))}
         </div>
       )}
@@ -229,66 +296,58 @@ export function ReportBrowser({ lang }: Props) {
   const [selectedFamily, setSelectedFamily] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Load data once
   useEffect(() => {
     fetch('/livnat-report.json')
-      .then((r) => {
+      .then(r => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json() as Promise<ReportData>;
       })
-      .then((d) => {
+      .then(d => {
         setData(d);
-        // Default: select first family
-        if (d.families.length > 0) {
-          setSelectedFamily(d.families[0].name);
-        }
+        if (d.families.length > 0) setSelectedFamily(d.families[0].name);
       })
       .catch(() => setLoadError(true));
   }, []);
 
-  // When searching, find families that have matches
   const familiesWithMatches = useMemo(() => {
     if (!data) return [];
     if (!searchQuery) return data.families;
     const q = searchQuery.toLowerCase();
-    return data.families.filter((fam) =>
-      fam.branches.some((branch) =>
-        branch.persons.some((p) => p.name.toLowerCase().includes(q))
+    return data.families.filter(fam =>
+      fam.branches.some(branch =>
+        branch.persons.some(p => p.name.toLowerCase().includes(q))
       )
     );
   }, [data, searchQuery]);
 
-  // Auto-select first matching family on search change
   useEffect(() => {
     if (searchQuery && familiesWithMatches.length > 0) {
-      const currentStillMatches = familiesWithMatches.some(
-        (f) => f.name === selectedFamily
-      );
-      if (!currentStillMatches) {
-        setSelectedFamily(familiesWithMatches[0].name);
-      }
+      const stillMatches = familiesWithMatches.some(f => f.name === selectedFamily);
+      if (!stillMatches) setSelectedFamily(familiesWithMatches[0].name);
     }
   }, [searchQuery, familiesWithMatches, selectedFamily]);
 
   const currentFamily = useMemo(
-    () => (data?.families ?? []).find((f) => f.name === selectedFamily) ?? null,
+    () => (data?.families ?? []).find(f => f.name === selectedFamily) ?? null,
     [data, selectedFamily]
   );
 
-  // ── Loading / Error states ──────────────────────────────────────────────────
+  // ── Loading / Error ─────────────────────────────────────────────────────────
 
   if (loadError) {
     return (
-      <div className="flex items-center justify-center h-40 text-red-600">
-        {lbl.error}
+      <div className="flex flex-col items-center justify-center h-48 gap-2 text-red-500">
+        <span className="text-3xl">⚠️</span>
+        <span className="text-sm">{lbl.error}</span>
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="flex items-center justify-center h-40 text-stone-500 animate-pulse">
-        {lbl.loading}
+      <div className="flex flex-col items-center justify-center h-48 gap-3">
+        <div className="w-6 h-6 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm text-stone-400">{lbl.loading}</span>
       </div>
     );
   }
@@ -296,80 +355,93 @@ export function ReportBrowser({ lang }: Props) {
   // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
-    <div
-      dir={isRtl ? 'rtl' : 'ltr'}
-      className="flex flex-col h-full min-h-0"
-    >
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-4 py-3 border-b border-stone-200 bg-amber-50">
-        <div>
-          <h2 className="text-lg font-bold text-amber-900">{lbl.title}</h2>
-          <p className="text-xs text-stone-500">
-            {lbl.totalPersons}: {data.meta.totalPersons.toLocaleString()} ·{' '}
-            {data.meta.totalBranches} {lbl.branches}
-          </p>
+    <div dir={isRtl ? 'rtl' : 'ltr'} className="flex flex-col h-full min-h-0 bg-stone-50">
+
+      {/* ── Top bar ─────────────────────────────────────────────────────────── */}
+      <div className="flex items-center justify-between gap-3 px-4 py-3 bg-white border-b border-stone-200 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-amber-100 text-amber-700 text-base">
+            📋
+          </div>
+          <div>
+            <h2 className="text-base font-bold text-stone-900 leading-tight">{lbl.title}</h2>
+            <p className="text-[11px] text-stone-400">
+              {data.meta.totalPersons.toLocaleString()} {lbl.totalPersons} · {data.meta.totalBranches} {lbl.branches}
+            </p>
+          </div>
         </div>
+
         {/* Search */}
-        <input
-          type="search"
-          placeholder={lbl.search}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full sm:w-64 px-3 py-1.5 border border-stone-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-400"
-          dir={isRtl ? 'rtl' : 'ltr'}
-        />
+        <div className="relative w-56 shrink-0">
+          <span className="absolute inset-y-0 start-3 flex items-center text-stone-400 pointer-events-none text-sm">
+            🔍
+          </span>
+          <input
+            type="search"
+            placeholder={lbl.search}
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            className="w-full ps-8 pe-3 py-1.5 border border-stone-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition"
+            dir={isRtl ? 'rtl' : 'ltr'}
+          />
+        </div>
       </div>
 
-      {/* Body: sidebar + main */}
+      {/* ── Generation legend ────────────────────────────────────────────────── */}
+      <GenLegend lbl={lbl} />
+
+      {/* ── Body ────────────────────────────────────────────────────────────── */}
       <div className="flex flex-1 min-h-0 overflow-hidden">
-        {/* Left sidebar: family list */}
+
+        {/* Sidebar */}
         <aside className="w-44 shrink-0 border-e border-stone-200 overflow-y-auto bg-white">
-          <div className="px-2 py-2 text-xs font-semibold text-stone-400 uppercase tracking-wide">
+          <div className="px-3 py-2 text-[10px] font-bold text-stone-400 uppercase tracking-widest">
             {lbl.families}
           </div>
-          <ul>
-            {(searchQuery ? familiesWithMatches : data.families).map((fam) => {
+          <ul className="pb-4">
+            {(searchQuery ? familiesWithMatches : data.families).map(fam => {
               const isSelected = fam.name === selectedFamily;
+              const totalPersons = fam.branches.reduce((s, b) => s + b.persons.length, 0);
               return (
                 <li key={fam.name}>
                   <button
                     onClick={() => setSelectedFamily(fam.name)}
-                    className={`w-full text-start px-3 py-2 text-sm flex items-center justify-between gap-1 transition-colors ${
+                    className={`w-full text-start px-3 py-2 text-sm flex items-center justify-between gap-2 transition-colors border-e-2 ${
                       isSelected
-                        ? 'bg-amber-100 text-amber-900 font-semibold border-e-2 border-amber-600'
-                        : 'text-stone-700 hover:bg-stone-50'
+                        ? 'bg-amber-50 text-amber-900 font-semibold border-amber-500'
+                        : 'text-stone-600 hover:bg-stone-50 border-transparent'
                     }`}
                   >
-                    <span className="truncate">{fam.name}</span>
+                    <span className="truncate leading-tight">{fam.name}</span>
                     <span
-                      className={`shrink-0 inline-flex items-center justify-center min-w-[1.25rem] h-5 rounded-full text-[10px] font-bold px-1 ${
-                        isSelected
-                          ? 'bg-amber-600 text-white'
-                          : 'bg-stone-200 text-stone-600'
+                      className={`shrink-0 min-w-[1.5rem] h-5 inline-flex items-center justify-center rounded-full text-[10px] font-bold px-1.5 ${
+                        isSelected ? 'bg-amber-500 text-white' : 'bg-stone-100 text-stone-500'
                       }`}
                     >
-                      {fam.branches.length}
+                      {totalPersons > 999 ? `${Math.round(totalPersons / 100) / 10}k` : totalPersons}
                     </span>
                   </button>
                 </li>
               );
             })}
+            {searchQuery && familiesWithMatches.length === 0 && (
+              <li className="px-3 py-4 text-xs text-stone-400">{lbl.noResults}</li>
+            )}
           </ul>
-          {searchQuery && familiesWithMatches.length === 0 && (
-            <p className="px-3 py-4 text-xs text-stone-400">{lbl.noResults}</p>
-          )}
         </aside>
 
-        {/* Main content: branches within selected family */}
-        <main className="flex-1 overflow-y-auto px-4 py-3">
+        {/* Main content */}
+        <main className="flex-1 overflow-y-auto px-4 py-4">
           {currentFamily ? (
             <>
-              <h3 className="text-base font-bold text-stone-700 mb-3">
-                {currentFamily.name}
-                <span className="ml-2 text-sm font-normal text-stone-400">
+              {/* Family header */}
+              <div className="flex items-center gap-2 mb-4">
+                <h3 className="text-lg font-bold text-stone-900">{currentFamily.name}</h3>
+                <span className="text-xs text-stone-400 bg-stone-100 rounded-full px-2 py-0.5">
                   {currentFamily.branches.length} {lbl.branches}
                 </span>
-              </h3>
+              </div>
+
               {currentFamily.branches.map((branch, idx) => (
                 <BranchSection
                   key={branch.id}
@@ -381,7 +453,9 @@ export function ReportBrowser({ lang }: Props) {
               ))}
             </>
           ) : (
-            <p className="text-stone-400 text-sm">{lbl.noResults}</p>
+            <div className="flex items-center justify-center h-full text-stone-400 text-sm">
+              {lbl.noResults}
+            </div>
           )}
         </main>
       </div>
