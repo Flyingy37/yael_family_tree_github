@@ -54,21 +54,21 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-stone-50 via-amber-50/30 to-stone-100" dir={dir}>
-      <header className="border-b border-stone-200/80 bg-white/80 backdrop-blur-sm sticky top-0 z-20">
+    <div className="min-h-screen bg-stone-50" dir={dir}>
+      <header className="border-b border-stone-200 bg-white sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-          <span className="text-sm font-semibold text-stone-800">{t.title}</span>
+          <span className="text-sm font-medium text-stone-900">{t.title}</span>
           <div className="flex items-center gap-2">
             <Link
               to="/about"
-              className="text-sm text-amber-900/80 hover:text-amber-950 underline-offset-2 hover:underline"
+              className="text-sm text-stone-500 hover:text-stone-800 underline-offset-2 hover:underline"
             >
               {t.about}
             </Link>
             <button
               type="button"
               onClick={toggleLang}
-              className="text-xs px-2 py-1 rounded-md border border-stone-300 text-stone-600 hover:bg-stone-50"
+              className="text-xs px-2 py-1 rounded border border-stone-300 text-stone-600 hover:bg-stone-50"
             >
               {t.lang}
             </button>
@@ -78,15 +78,14 @@ export default function HomePage() {
 
       <main className="max-w-5xl mx-auto px-4 py-12 md:py-16">
         <section className="text-center mb-14 md:mb-20">
-          <p className="text-5xl md:text-6xl mb-4" aria-hidden>🌳</p>
-          <h1 className="text-3xl md:text-4xl font-bold text-stone-900 tracking-tight mb-3">
+          <h1 className="text-3xl md:text-4xl font-medium text-stone-900 tracking-tight mb-3">
             {t.title}
           </h1>
-          <p className="text-lg md:text-xl text-amber-900/90 font-medium mb-4">{t.subtitle}</p>
-          <p className="text-stone-600 max-w-2xl mx-auto leading-relaxed mb-8">{t.lead}</p>
+          <p className="text-lg md:text-xl text-stone-600 mb-4">{t.subtitle}</p>
+          <p className="text-stone-500 max-w-2xl mx-auto leading-relaxed mb-8">{t.lead}</p>
           <Link
             to={viewHref(language, 'tree')}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-stone-900 text-white text-sm font-semibold shadow-lg shadow-stone-900/15 hover:bg-stone-800 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors"
           >
             {t.ctaExplore}
             <span aria-hidden>{dir === 'rtl' ? '←' : '→'}</span>
@@ -98,13 +97,13 @@ export default function HomePage() {
             <Link
               key={card.view}
               to={viewHref(language, card.view)}
-              className="group rounded-2xl border border-stone-200/90 bg-white p-6 shadow-sm hover:shadow-md hover:border-amber-200/80 transition-all"
+              className="group rounded border border-stone-200 bg-white p-6 hover:border-stone-400 transition-colors"
             >
               <div className="text-3xl mb-3">{card.icon}</div>
-              <h2 className="text-lg font-bold text-stone-900 mb-2 group-hover:text-amber-950 transition-colors">
+              <h2 className="text-lg font-medium text-stone-900 mb-2 transition-colors">
                 {card.title}
               </h2>
-              <p className="text-sm text-stone-600 leading-relaxed">{card.text}</p>
+              <p className="text-sm text-stone-500 leading-relaxed">{card.text}</p>
             </Link>
           ))}
         </section>

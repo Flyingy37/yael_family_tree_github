@@ -81,12 +81,12 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
   }, [personList]);
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-3 space-y-3 text-sm" dir={t ? 'rtl' : 'ltr'}>
-      <div className="font-bold text-gray-700">{t ? 'סינון' : 'Filters'}</div>
+    <div className="bg-white border border-stone-200 rounded p-3 space-y-3 text-sm" dir={t ? 'rtl' : 'ltr'}>
+      <div className="font-medium text-stone-900">{t ? 'סינון' : 'Filters'}</div>
 
       <div className="space-y-3">
-        <section className="border border-gray-100 rounded-md p-2 space-y-2">
-          <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">
+        <section className="border border-stone-100 rounded p-2 space-y-2">
+          <div className="text-[11px] font-medium text-stone-500 uppercase tracking-wide">
             {t ? 'זהות' : 'Identity'}
           </div>
           <div>
@@ -126,8 +126,8 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
                   key={s}
                   className={`px-3 py-1 rounded text-xs transition-colors ${
                     filters.sex === s
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? 'bg-stone-800 text-white'
+                      : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
                   }`}
                   onClick={() => onChange({ ...filters, sex: s })}
                 >
@@ -165,8 +165,8 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
           </label>
         </section>
 
-        <section className="border border-gray-100 rounded-md p-2 space-y-2">
-          <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">
+        <section className="border border-stone-100 rounded p-2 space-y-2">
+          <div className="text-[11px] font-medium text-stone-500 uppercase tracking-wide">
             {t ? 'קרבה' : 'Kinship'}
           </div>
           <div>
@@ -186,7 +186,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
                 placeholder={t ? 'הכל' : 'all'}
               />
               <button
-                className="text-xs text-blue-500 hover:text-blue-700"
+                className="text-xs text-stone-500 hover:text-stone-700"
                 onClick={() => onChange({ ...filters, maxHops: null })}
               >
                 {t ? 'הכל' : 'all'}
@@ -228,8 +228,8 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
           </div>
         </section>
 
-        <section className="border border-gray-100 rounded-md p-2 space-y-2">
-          <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">DNA</div>
+        <section className="border border-stone-100 rounded p-2 space-y-2">
+          <div className="text-[11px] font-medium text-stone-500 uppercase tracking-wide">DNA</div>
           <label
             className="flex items-center gap-2 cursor-pointer"
             title={t ? 'קשרים מבוססי התאמות DNA מאומתות בלבד.' : 'Links based on verified DNA match evidence only.'}
@@ -240,12 +240,12 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
               onChange={e => onChange({ ...filters, hasDna: e.target.checked })}
               className="rounded"
             />
-            <span className="text-xs text-gray-600 flex items-center gap-1"><Dna size={11} className="text-emerald-700" />{t ? 'קשרי DNA מאומתים' : 'Verified DNA links'}</span>
+            <span className="text-xs text-gray-600 flex items-center gap-1"><Dna size={11} className="text-stone-500" />{t ? 'קשרי DNA מאומתים' : 'Verified DNA links'}</span>
           </label>
         </section>
 
-        <section className="border border-gray-100 rounded-md p-2 space-y-2">
-          <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">
+        <section className="border border-stone-100 rounded p-2 space-y-2">
+          <div className="text-[11px] font-medium text-stone-500 uppercase tracking-wide">
             {t ? 'היסטורי' : 'Historical'}
           </div>
           <label className="flex items-center gap-2 cursor-pointer">
@@ -264,7 +264,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
               onChange={e => onChange({ ...filters, hasHeritageTag: e.target.checked })}
               className="rounded"
             />
-            <span className="text-xs text-gray-600 flex items-center gap-1"><Landmark size={11} className="text-emerald-700" />{t ? 'מורשת' : 'Heritage'}</span>
+            <span className="text-xs text-gray-600 flex items-center gap-1"><Landmark size={11} className="text-stone-500" />{t ? 'מורשת' : 'Heritage'}</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -282,7 +282,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
               onChange={e => onChange({ ...filters, hasFamousTag: e.target.checked })}
               className="rounded"
             />
-            <span className="text-xs text-gray-600 flex items-center gap-1"><Star size={11} className="text-amber-600" />{t ? 'אנשים מפורסמים' : 'Famous people'}</span>
+            <span className="text-xs text-gray-600 flex items-center gap-1"><Star size={11} className="text-stone-500" />{t ? 'אנשים מפורסמים' : 'Famous people'}</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -291,7 +291,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
               onChange={e => onChange({ ...filters, hasRabbiTag: e.target.checked })}
               className="rounded"
             />
-            <span className="text-xs text-gray-600 flex items-center gap-1"><BookMarked size={11} className="text-blue-700" />{t ? 'רבנים ידועים' : 'Notable rabbis'}</span>
+            <span className="text-xs text-gray-600 flex items-center gap-1"><BookMarked size={11} className="text-stone-500" />{t ? 'רבנים ידועים' : 'Notable rabbis'}</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -300,7 +300,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
               onChange={e => onChange({ ...filters, hasLineageTag: e.target.checked })}
               className="rounded"
             />
-            <span className="text-xs text-gray-600 flex items-center gap-1"><Scroll size={11} className="text-violet-700" />{t ? 'ייחוס (שושלת)' : 'Lineage'}</span>
+            <span className="text-xs text-gray-600 flex items-center gap-1"><Scroll size={11} className="text-stone-500" />{t ? 'ייחוס (שושלת)' : 'Lineage'}</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -309,13 +309,13 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
               onChange={e => onChange({ ...filters, hasMigrationTag: e.target.checked })}
               className="rounded"
             />
-            <span className="text-xs text-gray-600 flex items-center gap-1"><Ship size={11} className="text-cyan-700" />{t ? 'הגירה' : 'Migration'}</span>
+            <span className="text-xs text-gray-600 flex items-center gap-1"><Ship size={11} className="text-stone-500" />{t ? 'הגירה' : 'Migration'}</span>
           </label>
         </section>
       </div>
 
       <button
-        className="w-full py-1.5 text-xs bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+        className="w-full py-1.5 text-xs bg-stone-100 hover:bg-stone-200 rounded transition-colors"
         onClick={() => onChange(DEFAULT_FILTERS)}
       >
         {t ? 'איפוס סינון' : 'Reset filters'}

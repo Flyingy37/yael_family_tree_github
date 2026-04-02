@@ -25,31 +25,31 @@ export function StatsPanel({
   const filtersExcludeSome = afterFiltersCount < fullFilePersonCount;
   const excludedByFilters = fullFilePersonCount - afterFiltersCount;
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-3 text-sm space-y-1" dir={t ? 'rtl' : 'ltr'}>
-      <div className="font-bold text-gray-700 mb-2">{t ? 'סטטיסטיקות' : 'Statistics'}</div>
+    <div className="bg-white border border-stone-200 rounded p-3 text-sm space-y-1" dir={t ? 'rtl' : 'ltr'}>
+      <div className="font-medium text-stone-900 mb-2">{t ? 'סטטיסטיקות' : 'Statistics'}</div>
       <div className="flex justify-between items-baseline">
-        <span className="text-gray-700 font-medium">{t ? 'אחרי סינון:' : 'After filters:'}</span>
-        <span className="font-semibold text-blue-600 text-base">{afterFiltersCount.toLocaleString()}</span>
+        <span className="text-stone-600">{t ? 'אחרי סינון:' : 'After filters:'}</span>
+        <span className="font-medium text-stone-900 text-base">{afterFiltersCount.toLocaleString()}</span>
       </div>
       {subtreeNarrowed && (
         <div className="flex justify-between">
-          <span className="text-gray-500">{t ? 'בתצוגה (תת־עץ):' : 'In view (subtree):'}</span>
-          <span className="font-medium text-blue-600">{shownInViewCount.toLocaleString()}</span>
+          <span className="text-stone-500">{t ? 'בתצוגה (תת־עץ):' : 'In view (subtree):'}</span>
+          <span className="font-medium text-stone-700">{shownInViewCount.toLocaleString()}</span>
         </div>
       )}
       {filtersExcludeSome && (
-        <div className="flex justify-between text-xs text-gray-400 pt-0.5 border-t border-gray-100">
+        <div className="flex justify-between text-xs text-stone-400 pt-0.5 border-t border-stone-100">
           <span>{t ? 'לא בטווח הסינון הנוכחי:' : 'Outside current filters:'}</span>
           <span>{excludedByFilters.toLocaleString()}</span>
         </div>
       )}
       <div className="flex justify-between">
-        <span className="text-gray-500">{t ? 'משפחות:' : 'Families:'}</span>
+        <span className="text-stone-500">{t ? 'משפחות:' : 'Families:'}</span>
         <span className="font-medium">{familyCount.toLocaleString()}</span>
       </div>
       <div className="flex justify-between">
-        <span className="text-gray-500">{t ? 'קורבנות שואה:' : 'Holocaust victims:'}</span>
-        <span className="font-medium text-rose-700">
+        <span className="text-stone-500">{t ? 'קורבנות שואה:' : 'Holocaust victims:'}</span>
+        <span className="font-medium text-stone-700">
           {filteredHolocaustVictimCount.toLocaleString()} / {holocaustVictimCount.toLocaleString()}
         </span>
       </div>
