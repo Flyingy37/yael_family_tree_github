@@ -20,3 +20,22 @@ html, body, #root {
   from { opacity: 0; transform: translateX(-50%) translateY(-16px); }
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
+
+/* ── D3 Family Tree transitions ──────────────────────────────── */
+.d3-tree-link {
+  transition: stroke-dashoffset 0.5s ease-in-out;
+}
+
+.d3-tree-circle {
+  transition: all 0.3s ease;
+}
+
+.d3-tree-circle:hover {
+  r: 8;
+  filter: drop-shadow(0 0 5px rgba(0,0,0,0.1));
+}
+
+.d3-tree-label {
+  font-size: 13px;
+  fill: #292524; /* stone-800 */
+}

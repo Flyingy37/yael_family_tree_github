@@ -13,30 +13,34 @@ import { MapView } from './components/MapView';
 import { TimelineView } from './components/TimelineView';
 import { StatisticsView } from './components/StatisticsView';
 import { WelcomeModal } from './components/WelcomeModal';
+import { FamilyTreeVisual } from './components/FamilyTreeVisual';
+import { useSupabaseFamilyTree } from './hooks/useSupabaseFamilyTree';
 import { getSubtreeIds } from './utils/subtree';
 import {
   downloadLastWebVitalsSnapshot,
   getLastWebVitalsSnapshot,
 } from './performance/webVitals';
 
-type ViewMode = 'tree' | 'map' | 'timeline' | 'stats';
+type ViewMode = 'tree' | 'map' | 'timeline' | 'stats' | 'd3tree';
 
 const VIEW_TABS: Record<'en' | 'he', { id: ViewMode; label: string; icon: string }[]> = {
   en: [
     { id: 'tree', label: 'Tree', icon: '🌳' },
+    { id: 'd3tree', label: 'D3 Tree', icon: '🌲' },
     { id: 'map', label: 'Map', icon: '🗺️' },
     { id: 'timeline', label: 'Timeline', icon: '📅' },
     { id: 'stats', label: 'Statistics', icon: '📊' },
   ],
   he: [
     { id: 'tree', label: 'עץ', icon: '🌳' },
+    { id: 'd3tree', label: 'עץ D3', icon: '🌲' },
     { id: 'map', label: 'מפה', icon: '🗺️' },
     { id: 'timeline', label: 'ציר זמן', icon: '📅' },
     { id: 'stats', label: 'סטטיסטיקות', icon: '📊' },
   ],
 };
 
-const VALID_VIEWS: ViewMode[] = ['tree', 'map', 'timeline', 'stats'];
+const VALID_VIEWS: ViewMode[] = ['tree', 'd3tree', 'map', 'timeline', 'stats'];
 const INCLUDE_SPOUSE_BRANCHES_STORAGE_KEY = 'includeSpouseBranches';
 
 /** Below this count, the loaded graph is almost certainly a dev sample, not the full export. */
@@ -85,6 +89,9 @@ export default function FamilyExplorer() {
   const [includeSpouseBranches, setIncludeSpouseBranches] = useState(true);
   const { lang: language, setLang: setLanguage } = useLang();
   const [hasVitalsSnapshot, setHasVitalsSnapshot] = useState(false);
+
+  const d3Root = subtreeRootId || rootPersonId;
+  const { hierarchy: d3Hierarchy } = useSupabaseFamilyTree(d3Root, persons, families);
   const viewTabs = VIEW_TABS[language];
   const basePath = `/${langParam || language}`;
 
@@ -441,6 +448,17 @@ export default function FamilyExplorer() {
                 onSelectPerson={handleSelectPerson}
                 language={language}
               />
+            </div>
+          )}
+          {viewMode === 'd3tree' && (
+            <div className="flex-1 min-h-0 overflow-auto p-2">
+              {d3Hierarchy ? (
+                <FamilyTreeVisual data={d3Hierarchy} />
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-400">
+                  {language === 'he' ? 'אין נתונים להצגה' : 'No data to display'}
+                </div>
+              )}
             </div>
           )}
           {viewMode === 'timeline' && (
