@@ -203,6 +203,20 @@ export function D3TreeView({
     });
   }, []);
 
+  // Pre-compute which nodes in the original hierarchy have children (for collapse indicator)
+  const nodesWithChildren = useMemo(() => {
+    const set = new Set<string>();
+    if (!hierarchyData) return set;
+    function walk(node: TreeDatum) {
+      if (node.children && node.children.length > 0) {
+        set.add(node.id);
+        for (const ch of node.children) walk(ch);
+      }
+    }
+    walk(hierarchyData);
+    return set;
+  }, [hierarchyData]);
+
   // Apply collapse to hierarchy
   const processedHierarchy = useMemo(() => {
     if (!hierarchyData) return null;
@@ -293,7 +307,9 @@ export function D3TreeView({
       .transition()
       .duration(500)
       .attr('opacity', 0.6)
-      .attr('d', d => linkGenerator(d as unknown as d3.HierarchyLink<TreeDatum>) ?? '');
+      // d3 selection data is already HierarchyLink<TreeDatum> from root.links(); cast needed
+      // because the merged selection generic doesn't narrow to the link accessor's expected type.
+      .attr('d', d => linkGenerator(d as d3.HierarchyLink<TreeDatum>) ?? '');
 
     // ── Nodes ──────────────────────────────────────────────────────
     const nodes = g.selectAll<SVGGElement, d3.HierarchyPointNode<TreeDatum>>('g.tree-node')
@@ -383,22 +399,7 @@ export function D3TreeView({
         if (!d.data.children || d.data.children.length === 0) return '';
         return collapsedIds.has(d.data.id) ? '+' : '−';
       })
-      .attr('display', d => {
-        const orig = hierarchyData;
-        if (!orig) return 'none';
-        // Check if original data had children
-        function findNode(node: TreeDatum, id: string): TreeDatum | null {
-          if (node.id === id) return node;
-          if (!node.children) return null;
-          for (const ch of node.children) {
-            const found = findNode(ch, id);
-            if (found) return found;
-          }
-          return null;
-        }
-        const origNode = findNode(orig, d.data.id);
-        return origNode?.children && origNode.children.length > 0 ? 'block' : 'none';
-      });
+      .attr('display', d => nodesWithChildren.has(d.data.id) ? 'block' : 'none');
 
     // Event handlers
     nodesAll
@@ -439,7 +440,7 @@ export function D3TreeView({
       );
     }
 
-  }, [processedHierarchy, dimensions, selectedPersonId, isRTL, onSelectPerson, toggleCollapse, collapsedIds, hierarchyData]);
+  }, [processedHierarchy, dimensions, selectedPersonId, isRTL, onSelectPerson, toggleCollapse, collapsedIds, nodesWithChildren]);
 
   const isHe = language === 'he';
 

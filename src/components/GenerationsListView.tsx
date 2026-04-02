@@ -184,7 +184,6 @@ export function GenerationsListView({
                     person={person}
                     accentColor={accentColor}
                     isHe={isHe}
-                    isSelected={false}
                     onSelect={onSelectPerson}
                   />
                 ))}
@@ -222,7 +221,6 @@ interface PersonListItemProps {
   person: Person;
   accentColor: string;
   isHe: boolean;
-  isSelected: boolean;
   onSelect: (id: string) => void;
 }
 
