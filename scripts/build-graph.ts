@@ -1294,7 +1294,7 @@ function isMissingSurname(value: string | null | undefined): boolean {
   if (!value) return true;
   const normalized = normalizeForDedup(value);
   if (!normalized) return true;
-  return /^(unknown|fnu|lnu|none|n\/a|na|-+)$/i.test(normalized);
+  return /^(unknown|fnu|lnu|none|n\/a|na|u|-+)$/i.test(normalized);
 }
 
 function pickMostCommonSurname(candidates: string[]): string | null {
@@ -1315,6 +1315,23 @@ function pickMostCommonSurname(candidates: string[]): string | null {
       if (b.count !== a.count) return b.count - a.count;
       return b.value.length - a.value.length;
     })[0].value;
+}
+
+/**
+ * Extract a surname from the last word of a full name as a fallback
+ * when both surname fields are missing and family inference fails.
+ * Returns null for single-word names, placeholder names, or empty input.
+ */
+function extractSurnameFromFullName(fullName: string | null | undefined): string | null {
+  if (!fullName) return null;
+  // Strip parenthesized content (e.g. nicknames) before splitting
+  const cleaned = fullName.replace(/\([^)]*\)/g, '').trim();
+  const parts = cleaned.split(/\s+/).filter(Boolean);
+  if (parts.length < 2) return null;
+  const candidate = parts[parts.length - 1];
+  if (isMissingSurname(candidate)) return null;
+  if (!isMeaningfulPersonName(candidate)) return null;
+  return candidate;
 }
 
 function enrichMissingSurnames(persons: Person[], families: Family[]): Person[] {
@@ -1361,7 +1378,8 @@ function enrichMissingSurnames(persons: Person[], families: Family[]): Person[] 
 
     const inferredSurname =
       pickMostCommonSurname(parentCandidates) ||
-      pickMostCommonSurname(spouseCandidates);
+      pickMostCommonSurname(spouseCandidates) ||
+      extractSurnameFromFullName(person.fullName);
 
     if (!inferredSurname) return person;
     return {
