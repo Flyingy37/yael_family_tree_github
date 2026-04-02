@@ -3,6 +3,7 @@
  * regenerate the graph from the tiny sample CSV (that would ship a near-empty tree).
  *
  * - If `data/canonical.csv` exists → run `build-graph.ts` (local / CI with secrets).
+ * - Else if `data/canonical_final_clean.csv` exists → run `build-graph.ts` (real data, committed to repo).
  * - Else if `public/family-graph.json` exists → skip (use committed deployment artifact).
  * - Else → run `build-graph.ts` (sample or empty graph for greenfield clones).
  */
@@ -14,6 +15,7 @@ import { execSync } from 'child_process';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
 const canonicalPath = join(ROOT, 'data/canonical.csv');
+const canonicalFinalPath = join(ROOT, 'data/canonical_final_clean.csv');
 const graphPath = join(ROOT, 'public/family-graph.json');
 
 function runBuildGraph() {
@@ -23,13 +25,16 @@ function runBuildGraph() {
 if (existsSync(canonicalPath)) {
   console.log('prebuild-graph: found data/canonical.csv — running build-graph');
   runBuildGraph();
+} else if (existsSync(canonicalFinalPath)) {
+  console.log('prebuild-graph: found data/canonical_final_clean.csv — running build-graph');
+  runBuildGraph();
 } else if (existsSync(graphPath)) {
   console.log(
-    'prebuild-graph: no data/canonical.csv — keeping committed public/family-graph.json (Vercel / CI deploy)',
+    'prebuild-graph: no canonical CSV — keeping committed public/family-graph.json (Vercel / CI deploy)',
   );
 } else {
   console.log(
-    'prebuild-graph: no canonical.csv and no family-graph.json — running build-graph (sample fallback)',
+    'prebuild-graph: no canonical CSV and no family-graph.json — running build-graph (sample fallback)',
   );
   runBuildGraph();
 }
