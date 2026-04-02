@@ -1180,7 +1180,6 @@ function normalizeGivenNameForDedup(value: string): string {
   s = s.replace(/\bruchel\b/g, 'rachel');
   s = s.replace(/\bsura\b/g, 'sarah');
   s = s.replace(/\bshifra\b/g, 'shifrah');
-  s = s.replace(/\bmoshe\b/g, 'moshe');   // keep canonical
   s = s.replace(/\bmordechai\b/g, 'mordecai');
   s = s.replace(/\byakov\b/g, 'yaakov');
   return s;
@@ -1535,29 +1534,28 @@ function deduplicatePersons(persons: Person[], families: Family[]): {
     ].join('|');
   });
 
-  // Pass 3: given name + surname + sex + birth year (captures punctuation/format variants).
-  runMergePass(person => {
+  // Helper for name-based merge passes: builds a dedup key from given + surname + sex + year
+  // using the specified normalization functions.
+  const nameBasedKeyBuilder = (
+    givenNorm: (v: string) => string,
+    surnameNorm: (v: string) => string,
+  ) => (person: Person): string | null => {
     if (!person.sex) return null;
-    const given = normalizeForDedup(person.givenName || '');
-    const surname = normalizeForDedup(person.surnameFinal || person.surname || '');
+    const given = givenNorm(person.givenName || '');
+    const surname = surnameNorm(person.surnameFinal || person.surname || '');
     const year = person.birthDate?.match(/\d{4}/)?.[0] || '';
     if (!given || !surname || !year) return null;
     if (!isMeaningfulPersonName(given) || !isMeaningfulPersonName(surname)) return null;
     return [given, surname, person.sex, year].join('|');
-  });
+  };
+
+  // Pass 3: given name + surname + sex + birth year (captures punctuation/format variants).
+  runMergePass(nameBasedKeyBuilder(normalizeForDedup, normalizeForDedup));
 
   // Pass 4: normalized given name + normalized surname + sex + birth year.
   // Catches transliteration variants (Boruch/Baruch, Levinsohn/Levinson,
   // Mordukh/Morduch, Alperovitch/Alperovich, etc.).
-  runMergePass(person => {
-    if (!person.sex) return null;
-    const given = normalizeGivenNameForDedup(person.givenName || '');
-    const surname = normalizeSurnameForDedup(person.surnameFinal || person.surname || '');
-    const year = person.birthDate?.match(/\d{4}/)?.[0] || '';
-    if (!given || !surname || !year) return null;
-    if (!isMeaningfulPersonName(given) || !isMeaningfulPersonName(surname)) return null;
-    return [given, surname, person.sex, year].join('|');
-  });
+  runMergePass(nameBasedKeyBuilder(normalizeGivenNameForDedup, normalizeSurnameForDedup));
 
   // Apply explicit manual merges for known branches with fuzzy/partial identity records.
   for (const [duplicateId, requestedPrimaryId] of Object.entries(MANUAL_MERGE_TO_PRIMARY)) {
