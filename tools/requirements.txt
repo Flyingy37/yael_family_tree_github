@@ -3,3 +3,4 @@ pandas>=2.0
 rapidfuzz>=3.0
 abydos>=0.5
 dedupe>=3.0
+thefuzz>=0.20
