@@ -44,7 +44,7 @@ function InsightSection({
 
 export default function InsightsPage() {
   const { lang, t } = useLang();
-  const { persons, families, personList, loading, error } = useFamilyData();
+  const { persons, personList, loading, error } = useFamilyData();
 
   if (loading) {
     return (

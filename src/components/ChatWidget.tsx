@@ -91,7 +91,7 @@ export default function ChatWidget({ language = 'he' }: ChatWidgetProps) {
         ...prev,
         { id: nextId.current++, role: 'assistant', text: data.answer ?? c.noMatch },
       ]);
-    } catch (err) {
+    } catch {
       setMessages(prev => [
         ...prev,
         { id: nextId.current++, role: 'assistant', text: c.error },

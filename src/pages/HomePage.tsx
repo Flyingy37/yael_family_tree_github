@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useUiLanguage } from '../hooks/useUiLanguage';
 
 const COPY = {
@@ -44,7 +44,6 @@ function viewHref(lang: 'he' | 'en', view: string): string {
 
 export default function HomePage() {
   const [language, setLanguage] = useUiLanguage();
-  const navigate = useNavigate();
   const t = COPY[language];
   const dir = language === 'he' ? 'rtl' : 'ltr';
 
