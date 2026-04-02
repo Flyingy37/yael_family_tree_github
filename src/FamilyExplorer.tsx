@@ -178,7 +178,7 @@ export default function FamilyExplorer() {
       setSubtreeRootId(id);
       navigate(`${basePath}/tree`);
     },
-    [navigate]
+    [navigate, basePath]
   );
 
   const handleExportVitals = useCallback(() => {
