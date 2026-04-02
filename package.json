@@ -9,6 +9,7 @@
     "report:unlinked": "tsx scripts/export-unlinked-review.ts",
     "report:pdf-candidates": "python3 scripts/export_pdf_update_candidates.py",
     "report:review-queue": "python3 scripts/build_review_queue.py",
+    "scan:gems": "tsx scripts/scan-gems.ts",
     "dev": "tsx scripts/build-graph.ts && vite",
     "start": "npm run dev",
     "build": "vite build",

@@ -97,6 +97,7 @@ const MANUAL_TAG_OVERRIDES: Record<string, string[]> = {
   '@I588@': ['Famous'], // Terry J. Dubrow
   '@I587@': ['Famous'], // Kevin Mark Dubrow (Quiet Riot)
   '@I124@': ['Famous'], // Hyman Isidor Kastrel — co-founder of Yiddish daily Frayhayt; editor of Funken
+  '@I1595@': ['Famous'], // Yehoshua Kastrell (1850–1908, Kurenets→Libau) — relative of Chaim Nachman Bialik
   // Heilprin rabbinical dynasty — direct ancestors of the Alperovich branch.
   // Source: user-confirmed chain (mh_identifiers #1504849 / #1504833 / #1504732 / #1504730 / #1503373)
   '@I3167@': ['Rabbi', 'Lineage'], // Zvulen Eliezer Ashkenazi-Heilprin (gen 15, Brisk) mh#1504849
@@ -319,7 +320,8 @@ const MANUAL_TITLE_APPEND_OVERRIDES: Record<string, string> = {
   // Hyman Y. Kastrel/Costrell: journalist, co-founder of Frayhayt (NY Yiddish daily), communist.
   // Also known as Jack Robbins. Born 19 Oct 1890, Kuraniec Belarus. Died 25 Feb 1956.
   // Second great-uncle of Yael Zaidman-Livnat (Geni confirmed).
-  '@I4149@': 'Journalist; co-founder of Frayhayt (NY Yiddish daily, 1922); edited Funken 1933–1935; Communist Party candidate NY 8th District 1934; AKA Jack Robbins. Source: Congress for Jewish Culture + Geni.',
+  // @I4149@ (Hyman Costrell stub) is merged into @I124@ via MANUAL_MERGE_TO_PRIMARY.
+  '@I124@': 'Journalist; co-founder of Frayhayt (NY Yiddish daily, 1922); edited Funken 1933–1935; Communist Party candidate NY 8th District 1934; AKA Jack Robbins. Source: Congress for Jewish Culture + Geni.',
   // Heilprin patriarchal ancestor: Abram Avraham Alperovich Heilprin.
   // His surname "Alperovich" = son of Alper/Eliezer Heilprin — the patronymic origin of the entire Alperovich branch.
   // Source: user-confirmed lineage data, mh_identifier #1503373.
@@ -549,6 +551,8 @@ const MANUAL_MERGE_TO_PRIMARY: Record<string, string> = {
   '@I4069@': '@I1240@', // R' Avrum Gershkov ... Vulis -> Avrum (1789) in Vulis branch
   // Terry Dubrow duplicate: @I1025@ is the same person as @I588@; merge into primary.
   '@I1025@': '@I588@', // Terry J. Dubrow — Los Angeles profile → primary
+  // Hyman Costrell stub: @I4149@ is the same person as @I124@ (Hyman Kastrol / Kastrel).
+  '@I4149@': '@I124@', // Hyman Costrell (stub) → Hyman Kastrol / Isidor Kastrel (primary)
 };
 
 const SUPPLEMENTAL_RTF_FILES = [
