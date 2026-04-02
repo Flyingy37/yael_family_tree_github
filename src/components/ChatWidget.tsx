@@ -123,10 +123,16 @@ export default function ChatWidget({ language = 'he' }: ChatWidgetProps) {
         onClick={() => setOpen(v => !v)}
         className={`fixed bottom-5 end-5 z-50 w-13 h-13 rounded-full shadow-xl transition-all duration-200 flex items-center justify-center text-xl
           ${open
-            ? 'bg-stone-700 hover:bg-stone-600 rotate-0 scale-95'
-            : 'bg-amber-700 hover:bg-amber-600 hover:scale-110 active:scale-95'
+            ? 'bg-rose-600 hover:bg-rose-500 rotate-0 scale-95'
+            : 'bg-emerald-700 hover:bg-emerald-600 hover:scale-110 active:scale-95 ring-2 ring-emerald-300/40'
           }`}
-        style={{ width: '3.25rem', height: '3.25rem' }}
+        style={{
+          width: '3.25rem',
+          height: '3.25rem',
+          boxShadow: open
+            ? '0 4px 24px rgba(225,29,72,0.45), 0 2px 8px rgba(0,0,0,0.18)'
+            : '0 4px 24px rgba(6,95,70,0.5), 0 2px 8px rgba(0,0,0,0.18)',
+        }}
       >
         <span className={`transition-transform duration-200 ${open ? 'rotate-90' : ''}`}>
           {open ? '✕' : '🌳'}
@@ -144,13 +150,13 @@ export default function ChatWidget({ language = 'he' }: ChatWidgetProps) {
         >
           {/* Header — gradient strip */}
           <div className="px-4 py-3 flex-shrink-0 flex items-start justify-between gap-2"
-            style={{ background: 'linear-gradient(135deg, #92400e 0%, #b45309 60%, #d97706 100%)' }}
+            style={{ background: 'linear-gradient(135deg, #064e3b 0%, #065f46 60%, #047857 100%)' }}
           >
             <div className="flex items-center gap-2">
               <span className="text-lg leading-none">🌳</span>
               <div>
                 <p className="font-bold text-sm text-white leading-tight">{c.title}</p>
-                <p className="text-[11px] text-amber-200 leading-tight mt-0.5">{c.subtitle}</p>
+                <p className="text-[11px] text-emerald-200 leading-tight mt-0.5">{c.subtitle}</p>
               </div>
             </div>
             {messages.length > 0 && (

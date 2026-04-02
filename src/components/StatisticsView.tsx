@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { Person } from '../types';
 import { getCanonicalSurnameLabel } from '../utils/surname';
+import { RepoLanguageSunburst } from './RepoLanguageSunburst';
 
 interface Props {
   personList: Person[];
@@ -370,6 +371,13 @@ export function StatisticsView({ personList, filteredIds, connectedToYaelIds, on
               </div>
             ))}
           </div>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl p-4">
+          <h3 className="font-semibold text-gray-800 mb-3">
+            {t ? 'הרכב שפות במאגר (Sunburst)' : 'Repository Language Composition (Sunburst)'}
+          </h3>
+          <RepoLanguageSunburst language={language} />
         </div>
       </div>
     </div>
