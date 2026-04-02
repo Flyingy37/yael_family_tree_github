@@ -88,6 +88,37 @@ export function TreeView({
     descendantGenerations: 2, // root → children → grandchildren
   });
 
+  // ── Collapse state ────────────────────────────────────────────────────────
+  const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
+
+  // Reset collapse state when the filtered set changes substantially
+  useEffect(() => {
+    setCollapsedIds(new Set());
+  }, [filteredIds]);
+
+  const handleToggleCollapse = useCallback((id: string) => {
+    setCollapsedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  // Effective display: lazy-visible ∩ filter, then hide collapsed subtrees
+  // Must be declared before any useEffect that references it.
+  const effectiveDisplayIds = useMemo(() => {
+    const base = graphVisibleIds;
+    if (collapsedIds.size === 0) return base;
+    const result = new Set(base);
+    for (const cId of collapsedIds) {
+      if (!result.has(cId)) continue;
+      const descendants = getDescendantIds(cId, persons, families);
+      for (const dId of descendants) result.delete(dId);
+    }
+    return result;
+  }, [graphVisibleIds, collapsedIds, persons, families]);
+
   // ── Re-fit after visible nodes are ready ────────────────────────────────────
   // We wait for effectiveDisplayIds (the visible subset) rather than filteredIds
   // (all 2430 records) because fitView({ includeHiddenNodes: false }) finds nothing
@@ -162,36 +193,6 @@ export function TreeView({
     const id = setTimeout(() => setShowNavHint(false), 7000);
     return () => clearTimeout(id);
   }, []);
-
-  // ── Collapse state ────────────────────────────────────────────────────────
-  const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
-
-  // Reset collapse state when the filtered set changes substantially
-  useEffect(() => {
-    setCollapsedIds(new Set());
-  }, [filteredIds]);
-
-  const handleToggleCollapse = useCallback((id: string) => {
-    setCollapsedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }, []);
-
-  // Effective display: lazy-visible ∩ filter, then hide collapsed subtrees
-  const effectiveDisplayIds = useMemo(() => {
-    const base = graphVisibleIds;
-    if (collapsedIds.size === 0) return base;
-    const result = new Set(base);
-    for (const cId of collapsedIds) {
-      if (!result.has(cId)) continue;
-      const descendants = getDescendantIds(cId, persons, families);
-      for (const dId of descendants) result.delete(dId);
-    }
-    return result;
-  }, [graphVisibleIds, collapsedIds, persons, families]);
 
   // Total descendant counts per person (all generations, full dataset)
   const descendantCountMap = useMemo(
@@ -563,7 +564,7 @@ export function TreeView({
               <div style={{
                 fontSize: 10, color: '#6b7280', textAlign: 'right',
                 padding: '3px 6px', lineHeight: 1.5,
-              }}>
+            }}>
                 {t
                   ? 'לחץ כדי לגלות כיצד שני אנשים קשורים'
                   : 'Click to discover how two people are related'}
