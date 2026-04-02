@@ -1,7 +1,0 @@
-Hops,Relationship to Yael,Full Name,Birth Name,Birth Year,Birth City,Generation,Father Name,Mother Name,Spouse Name,Children Names,ID
-0,Self,Yael Livnat,Yael Livnat,1973,Kfar Saba,0,David Livnat,Ruth Cohen,,, @I1@
-1,Father,David Livnat,David Livnat,1955,Haifa,-1,Moshe Livnat,Sarah Goldberg,Ruth Cohen,Yael Livnat,@I2@
-1,Mother,Ruth Cohen,Ruth Cohen,1958,Jerusalem,-1,Avraham Cohen,,David Livnat,Yael Livnat,@I3@
-2,Paternal Grandfather,Moshe Livnat,Moshe Livnat,1920,Minsk,-2,,,Sarah Goldberg,David Livnat,@I4@
-2,Paternal Grandmother,Sarah Goldberg,Sarah Goldberg,1925,Warsaw,-2,,,Moshe Livnat,David Livnat,@I5@
-2,Maternal Grandfather,Avraham Cohen,Avraham Cohen,1930,Casablanca,-2,,,,Ruth Cohen,@I6@
