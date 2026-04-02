@@ -78,47 +78,53 @@ export default function LangLayout() {
   return (
     <LangContext.Provider value={{ lang, setLang, t }}>
       <div
-        className="h-screen flex flex-col bg-gray-50"
+        className="h-screen flex flex-col bg-stone-50"
         dir={lang === 'he' ? 'rtl' : 'ltr'}
       >
         {/* ── Top nav ───────────────────────────────────────────────── */}
-        <header className="flex items-center gap-3 px-4 py-2 bg-white border-b border-gray-200 shadow-sm flex-shrink-0">
+        <header className="flex items-center gap-3 px-4 py-2 bg-white border-b border-stone-200 flex-shrink-0">
           <Link
             to={`/${lang}/tree`}
-            className="text-lg font-bold text-gray-800 whitespace-nowrap hover:text-amber-700 transition-colors"
+            className="text-lg font-medium text-stone-900 whitespace-nowrap hover:text-stone-700 transition-colors"
           >
-            🌳 {t('משפחת ליבנת-זיידמן', 'Livnat-Zaidman Family Tree')}
+            {t('משפחת ליבנת-זיידמן', 'Livnat-Zaidman Family Tree')}
           </Link>
 
-          <div className="flex items-center gap-1 text-sm text-gray-500 mx-2">
+          <div className="flex items-center gap-1 text-sm text-stone-300 mx-2">
             <span>|</span>
           </div>
 
           <nav className="flex items-center gap-2 text-sm">
             <Link
               to={`/${lang}/tree`}
-              className="text-gray-600 hover:text-gray-900 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
+              className="text-stone-500 hover:text-stone-900 px-2 py-1 rounded hover:bg-stone-100 transition-colors"
             >
-              {t('🌳 עץ', '🌳 Tree')}
+              {t('עץ', 'Tree')}
+            </Link>
+            <Link
+              to={`/${lang}/d3tree`}
+              className="text-stone-500 hover:text-stone-900 px-2 py-1 rounded hover:bg-stone-100 transition-colors"
+            >
+              {t('עץ D3', 'D3 Tree')}
             </Link>
             <Link
               to={`/${lang}/insights`}
-              className="text-gray-600 hover:text-gray-900 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
+              className="text-stone-500 hover:text-stone-900 px-2 py-1 rounded hover:bg-stone-100 transition-colors"
             >
-              {t('📊 תובנות', '📊 Insights')}
+              {t('תובנות', 'Insights')}
             </Link>
             <Link
               to={`/${lang}/archive`}
-              className="text-gray-600 hover:text-gray-900 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
+              className="text-stone-500 hover:text-stone-900 px-2 py-1 rounded hover:bg-stone-100 transition-colors"
             >
-              {t('📚 ארכיון', '📚 Archive')}
+              {t('ארכיון', 'Archive')}
             </Link>
           </nav>
 
           <div className="flex-1" />
 
           {/* Language switcher */}
-          <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5">
+          <div className="flex gap-1 bg-stone-100 rounded-lg p-0.5">
             {(['he', 'en'] as const).map(l => (
               <button
                 key={l}
@@ -126,8 +132,8 @@ export default function LangLayout() {
                 onClick={() => setLang(l)}
                 className={`px-2 py-1 rounded text-xs transition-colors ${
                   lang === l
-                    ? 'bg-white shadow-sm font-medium text-gray-800'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'bg-white font-medium text-stone-900'
+                    : 'text-stone-400 hover:text-stone-600'
                 }`}
               >
                 {l.toUpperCase()}
@@ -141,21 +147,21 @@ export default function LangLayout() {
           <Outlet />
         </main>
 
-        {/* ── Floating chat widget ───────────────────────────────────── */}
+        {/* ── Chat widget — modest sidebar strip ──────────────────── */}
         <ChatWidget language={lang} />
 
         {/* ── Hot Sync toast ────────────────────────────────────────── */}
         {syncToast && (
           <div
             dir={lang === 'he' ? 'rtl' : 'ltr'}
-            className="fixed top-16 start-1/2 -translate-x-1/2 z-50 max-w-sm w-full mx-4 px-4 py-3 rounded-xl bg-amber-700 text-white text-sm shadow-xl flex items-start gap-3 animate-bounce-once"
+            className="fixed top-16 start-1/2 -translate-x-1/2 z-50 max-w-sm w-full mx-4 px-4 py-3 rounded border border-stone-300 bg-white text-stone-900 text-sm flex items-start gap-3"
             style={{ animation: 'slideDown 0.3s ease-out' }}
           >
             <span className="flex-1 leading-snug">{syncToast}</span>
             <button
               type="button"
               onClick={() => setSyncToast(null)}
-              className="text-white/70 hover:text-white text-lg leading-none flex-shrink-0"
+              className="text-stone-400 hover:text-stone-700 text-lg leading-none flex-shrink-0"
               aria-label="סגור"
             >
               ✕

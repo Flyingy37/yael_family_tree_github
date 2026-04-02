@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Heebo', 'Arial', 'sans-serif'],
+        sans: ['Frank Ruhl Libre', 'David Libre', 'Georgia', 'serif'],
       },
     },
   },

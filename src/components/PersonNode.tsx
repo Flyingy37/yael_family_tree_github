@@ -73,25 +73,25 @@ function researchNoteText(person: Person): string | null {
 }
 
 function getGenerationColor(generation: number | null): string {
-  if (generation === null) return '#94a3b8';
-  if (generation >= 1) return '#22c55e';
-  if (generation === 0) return '#eab308';
-  if (generation >= -2) return '#f97316';
-  if (generation >= -5) return '#ef4444';
-  if (generation >= -10) return '#a855f7';
-  return '#6366f1';
+  if (generation === null) return '#a8a29e';
+  if (generation >= 1) return '#78716c';
+  if (generation === 0) return '#57534e';
+  if (generation >= -2) return '#78716c';
+  if (generation >= -5) return '#a8a29e';
+  if (generation >= -10) return '#d6d3d1';
+  return '#e7e5e4';
 }
 
 function getAvatarColors(sex: string): { bg: string; text: string } {
-  if (sex === 'F') return { bg: '#fce7f3', text: '#9d174d' };
-  if (sex === 'M') return { bg: '#dbeafe', text: '#1e40af' };
-  return { bg: '#f1f5f9', text: '#475569' };
+  if (sex === 'F') return { bg: '#f5f5f4', text: '#57534e' };
+  if (sex === 'M') return { bg: '#fafaf9', text: '#44403c' };
+  return { bg: '#fafaf9', text: '#78716c' };
 }
 
 function getSexAccent(sex: string): string {
-  if (sex === 'F') return '#f472b6';
-  if (sex === 'M') return '#60a5fa';
-  return '#94a3b8';
+  if (sex === 'F') return '#57534e';
+  if (sex === 'M') return '#a8a29e';
+  return '#d6d3d1';
 }
 
 function getInitials(givenName: string, fullName: string): string {
@@ -110,13 +110,13 @@ interface TagConfig {
 }
 
 const TAG_CONFIG: Record<string, TagConfig> = {
-  Holocaust: { Icon: Flame, labelEn: 'Holocaust victim', labelHe: 'נספה בשואה', color: '#7c2d12', bg: '#ffedd5' },
-  Partisan: { Icon: Shield, labelEn: 'Partisan', labelHe: 'פרטיזן', color: '#374151', bg: '#f3f4f6' },
-  Famous: { Icon: Star, labelEn: 'Notable', labelHe: 'מפורסם', color: '#92400e', bg: '#fef3c7' },
-  Rabbi: { Icon: BookMarked, labelEn: 'Rabbi', labelHe: 'רב', color: '#1e40af', bg: '#dbeafe' },
-  Lineage: { Icon: Scroll, labelEn: 'Notable lineage', labelHe: 'ייחוס', color: '#5b21b6', bg: '#ede9fe' },
-  Heritage: { Icon: Landmark, labelEn: 'Jewish heritage', labelHe: 'מסורת', color: '#065f46', bg: '#d1fae5' },
-  Migration: { Icon: Ship, labelEn: 'Migration', labelHe: 'הגירה', color: '#0e7490', bg: '#cffafe' },
+  Holocaust: { Icon: Flame, labelEn: 'Holocaust victim', labelHe: 'נספה בשואה', color: '#44403c', bg: '#f5f5f4' },
+  Partisan: { Icon: Shield, labelEn: 'Partisan', labelHe: 'פרטיזן', color: '#57534e', bg: '#f5f5f4' },
+  Famous: { Icon: Star, labelEn: 'Notable', labelHe: 'מפורסם', color: '#57534e', bg: '#f5f5f4' },
+  Rabbi: { Icon: BookMarked, labelEn: 'Rabbi', labelHe: 'רב', color: '#57534e', bg: '#f5f5f4' },
+  Lineage: { Icon: Scroll, labelEn: 'Notable lineage', labelHe: 'ייחוס', color: '#57534e', bg: '#f5f5f4' },
+  Heritage: { Icon: Landmark, labelEn: 'Jewish heritage', labelHe: 'מסורת', color: '#57534e', bg: '#f5f5f4' },
+  Migration: { Icon: Ship, labelEn: 'Migration', labelHe: 'הגירה', color: '#57534e', bg: '#f5f5f4' },
 };
 
 interface BadgeEntry {
@@ -135,8 +135,8 @@ function buildTagBadges(person: Person, isHe: boolean): BadgeEntry[] {
       Icon: Swords,
       key: 'war',
       label: isHe ? 'נפל במלחמה' : 'War casualty',
-      color: '#991b1b',
-      bg: '#fee2e2',
+      color: '#44403c',
+      bg: '#f5f5f4',
     });
   }
   if (person.doubleBloodTie) {
@@ -144,8 +144,8 @@ function buildTagBadges(person: Person, isHe: boolean): BadgeEntry[] {
       Icon: GitMerge,
       key: 'blood',
       label: isHe ? 'קשר דם כפול' : 'Double blood tie',
-      color: '#6d28d9',
-      bg: '#ede9fe',
+      color: '#57534e',
+      bg: '#f5f5f4',
     });
   }
   for (const tag of person.tags) {
@@ -199,28 +199,28 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
   const showPhoto = Boolean(photoSrc && !imgFailed);
 
   const borderColor = isRoot
-    ? '#f59e0b'
+    ? '#44403c'
     : isPathStart
-      ? '#6366f1'
+      ? '#57534e'
       : isOnPath
-        ? '#f97316'
+        ? '#78716c'
         : isSelected
-          ? '#facc15'
+          ? '#44403c'
           : accent;
 
   const shadowClass = isSelected
-    ? 'shadow-[0_0_0_2px_#facc15,0_8px_24px_rgba(15,23,42,0.12)]'
+    ? 'shadow-[0_0_0_1px_#44403c]'
     : isPathStart
-      ? 'shadow-[0_0_0_3px_#6366f1,0_8px_28px_rgba(99,102,241,0.25)]'
+      ? 'shadow-[0_0_0_1px_#57534e]'
       : isOnPath
-        ? 'shadow-[0_0_0_2px_#f97316,0_8px_24px_rgba(249,115,22,0.2)]'
+        ? 'shadow-[0_0_0_1px_#78716c]'
         : isRoot
-          ? 'shadow-[0_0_0_2px_#f59e0b,0_8px_22px_rgba(245,158,11,0.18)]'
-          : 'shadow-md shadow-slate-900/10';
+          ? 'shadow-[0_0_0_1px_#44403c]'
+          : '';
 
   return (
     <div
-      className="relative font-sans transition-shadow duration-300 ease-out hover:shadow-lg hover:shadow-slate-900/12"
+      className="relative font-sans transition-shadow duration-300 ease-out"
       style={{
         width: NODE_WIDTH,
         height: NODE_HEIGHT,
@@ -284,7 +284,7 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
             data.onClick(person.id);
           }
         }}
-        className={`flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border-2 bg-white transition-[box-shadow,transform] duration-300 ease-out hover:-translate-y-px ${shadowClass}`}
+        className={`flex h-full cursor-pointer flex-col overflow-hidden rounded border bg-white transition-[box-shadow] duration-300 ease-out ${shadowClass}`}
         style={{ borderColor }}
         dir="ltr"
       >
@@ -292,7 +292,7 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
         <div className="h-0.5 w-full shrink-0" style={{ backgroundColor: genColor }} />
 
         {/* Avatar / photo */}
-        <div className="relative h-14 w-full shrink-0 overflow-hidden bg-gradient-to-br from-slate-100 via-slate-50 to-slate-200">
+        <div className="relative h-14 w-full shrink-0 overflow-hidden bg-stone-50">
           {showPhoto ? (
             <img
               src={photoSrc}
@@ -303,7 +303,7 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
           ) : (
             <div
               className="flex h-full w-full flex-col items-center justify-center gap-0.5"
-              style={{ background: `linear-gradient(145deg, ${avatarColors.bg} 0%, #fff 100%)` }}
+              style={{ backgroundColor: avatarColors.bg }}
               aria-hidden
             >
               <User className="h-6 w-6 text-slate-400/90" strokeWidth={1.5} />
@@ -340,7 +340,7 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
               </h2>
               {hasDNA && (
                 <span
-                  className="inline-flex shrink-0 items-center gap-0.5 rounded-md bg-emerald-100 px-1 py-0.5 text-[8.5px] font-semibold text-emerald-800"
+                  className="inline-flex shrink-0 items-center gap-0.5 rounded border border-stone-200 bg-stone-50 px-1 py-0.5 text-[8.5px] font-medium text-stone-600"
                   title={isHe ? 'התאמת DNA מאומתת' : 'Verified DNA match'}
                 >
                   <Dna size={9} />
@@ -349,7 +349,7 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
               )}
               {person.story && (
                 <span
-                  className="inline-flex shrink-0 items-center gap-0.5 rounded-md bg-amber-100 px-1 py-0.5 text-[8.5px] font-semibold text-amber-700"
+                  className="inline-flex shrink-0 items-center gap-0.5 rounded border border-stone-200 bg-stone-50 px-1 py-0.5 text-[8.5px] font-medium text-stone-500"
                   title={isHe ? 'יש סיפור משפחתי' : 'Has a family story'}
                 >
                   <BookOpen size={9} />
@@ -438,7 +438,7 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
           {hasLazyExpand && data.onExpandBranch && (
             <button
               type="button"
-              className="flex w-full shrink-0 items-center justify-center gap-1 rounded-lg border border-violet-200 bg-violet-50 py-0.5 text-[9px] font-semibold text-violet-800 shadow-sm transition-all duration-200 hover:border-violet-300 hover:bg-violet-100"
+              className="flex w-full shrink-0 items-center justify-center gap-1 rounded border border-stone-200 bg-stone-50 py-0.5 text-[9px] font-medium text-stone-700 transition-all duration-200 hover:border-stone-300 hover:bg-stone-100"
               onClick={e => {
                 e.stopPropagation();
                 data.onExpandBranch!(person.id);
@@ -473,7 +473,7 @@ export const PersonNode = memo(({ data }: PersonNodeProps) => {
               <span className="text-[11px] font-bold leading-none">{isCollapsed ? '+' : '−'}</span>
               <span>{isCollapsed ? (isHe ? 'פרוס' : 'Expand') : isHe ? 'קפל' : 'Collapse'}</span>
               {descendantCount !== undefined && descendantCount > 0 && (
-                <span className="rounded bg-sky-100 px-1 text-[8.5px] font-bold text-sky-800">
+                <span className="rounded bg-stone-100 px-1 text-[8.5px] font-medium text-stone-600">
                   {descendantCount}
                 </span>
               )}

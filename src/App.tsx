@@ -7,6 +7,7 @@ import TreePage from './app/[lang]/tree/page';
 import PersonPage from './app/[lang]/person/[id]/page';
 import InsightsPage from './app/[lang]/insights/page';
 import ArchivePage from './app/[lang]/archive/page';
+import D3TreePage from './app/[lang]/d3tree/page';
 
 export default function App() {
   return (
@@ -16,13 +17,14 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
 
-        {/* ── App routes ── /:lang/{tree,person/:id,insights,archive} ─ */}
+        {/* ── App routes ── /:lang/{tree,person/:id,insights,archive,d3tree} ─ */}
         <Route path="/:lang" element={<LangLayout />}>
           <Route index element={<Navigate to="tree" replace />} />
           <Route path="tree" element={<TreePage />} />
           <Route path="person/:id" element={<PersonPage />} />
           <Route path="insights" element={<InsightsPage />} />
           <Route path="archive" element={<ArchivePage />} />
+          <Route path="d3tree" element={<D3TreePage />} />
         </Route>
 
         {/* Legacy /explore/* redirects */}
