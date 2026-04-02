@@ -26,7 +26,7 @@ export default function ArchivePage() {
   const labels = TAB_LABELS[lang];
 
   return (
-    <div className="h-full flex flex-col overflow-hidden bg-gray-50">
+    <div className="h-full flex flex-col overflow-hidden bg-archive-paper">
       {/* Tab bar */}
       <div className="flex gap-1 px-4 pt-3 border-b border-stone-200 bg-white shrink-0">
         {(['cards', 'report'] as TabId[]).map((tab) => (
@@ -36,7 +36,7 @@ export default function ArchivePage() {
             className={`px-4 py-2 text-sm font-medium rounded-t-md border-b-2 transition-colors focus:outline-none ${
               activeTab === tab
                 ? 'border-amber-600 text-amber-800 bg-amber-50'
-                : 'border-transparent text-stone-500 hover:text-stone-700 hover:bg-stone-50'
+                : 'border-transparent text-archive-accent hover:text-stone-700 hover:bg-stone-50'
             }`}
           >
             {labels[tab]}
