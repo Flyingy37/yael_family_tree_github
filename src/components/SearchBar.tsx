@@ -110,6 +110,7 @@ export function SearchBar({ searchIndex, onSelect, language = 'en', allowedPerso
           aria-label={t ? 'חיפוש אנשים בעץ המשפחה' : 'Search people in family tree'}
           aria-expanded={isOpen}
           aria-autocomplete="list"
+          role="combobox"
           className="min-w-0 flex-1 bg-transparent border-none focus:outline-none focus:ring-0 px-2 text-sm text-slate-700 placeholder:text-slate-400"
         />
         {query ? (

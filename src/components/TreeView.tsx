@@ -194,6 +194,7 @@ export function TreeView({
     return () => clearTimeout(id);
   }, []);
 
+
   // Total descendant counts per person (all generations, full dataset)
   const descendantCountMap = useMemo(
     () => countDescendantsMap(persons, families),

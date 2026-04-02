@@ -3,6 +3,7 @@ import type { Person } from '../types';
 import { getCanonicalSurnameLabel } from '../utils/surname';
 import { Dna, Landmark, Shield, Star, BookMarked, Scroll, Ship } from 'lucide-react';
 import { HolocaustMemorialPatchIcon } from './HolocaustMemorialPatchIcon';
+import CollapsibleSection from './CollapsibleSection';
 
 export interface Filters {
   generationMin: number;
@@ -85,10 +86,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
       <div className="font-bold text-gray-700">{t ? 'סינון' : 'Filters'}</div>
 
       <div className="space-y-3">
-        <section className="border border-gray-100 rounded-md p-2 space-y-2">
-          <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">
-            {t ? 'זהות' : 'Identity'}
-          </div>
+        <CollapsibleSection title={t ? 'זהות' : 'Identity'} icon="🏷️" defaultOpen={true}>
           <div>
             <label className="text-xs text-gray-500">{t ? 'טווח דורות' : 'Generation range'}</label>
             <div className="flex gap-2 items-center mt-1">
@@ -100,6 +98,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
                   onChange({ ...filters, generationMin: Number.isNaN(parsed) ? -29 : parsed });
                 }}
                 className="w-16 px-2 py-1 border rounded text-center text-xs"
+                inputMode="numeric"
                 min={-29}
                 max={2}
               />
@@ -112,6 +111,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
                   onChange({ ...filters, generationMax: Number.isNaN(parsed) ? 2 : parsed });
                 }}
                 className="w-16 px-2 py-1 border rounded text-center text-xs"
+                inputMode="numeric"
                 min={-29}
                 max={2}
               />
@@ -163,12 +163,9 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
               {t ? '🙈 הסתר רשומות לא מזוהות (Unknown/FNU)' : '🙈 Hide unknown placeholders (Unknown/FNU)'}
             </span>
           </label>
-        </section>
+        </CollapsibleSection>
 
-        <section className="border border-gray-100 rounded-md p-2 space-y-2">
-          <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">
-            {t ? 'קרבה' : 'Kinship'}
-          </div>
+        <CollapsibleSection title={t ? 'קרבה' : 'Kinship'} icon="🔗" defaultOpen={true}>
           <div>
             <label className="text-xs text-gray-500">{t ? 'קפיצות מיעל (מקסימום)' : 'Hops from Yael (max)'}</label>
             <div className="flex gap-2 items-center mt-1">
@@ -181,6 +178,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
                   onChange({ ...filters, maxHops: v === '' || Number.isNaN(parsed) ? null : parsed });
                 }}
                 className="w-16 px-2 py-1 border rounded text-center text-xs"
+                inputMode="numeric"
                 min={0}
                 max={30}
                 placeholder={t ? 'הכל' : 'all'}
@@ -226,10 +224,9 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
               </div>
             )}
           </div>
-        </section>
+        </CollapsibleSection>
 
-        <section className="border border-gray-100 rounded-md p-2 space-y-2">
-          <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">DNA</div>
+        <CollapsibleSection title="DNA" icon="🧬" defaultOpen={true}>
           <label
             className="flex items-center gap-2 cursor-pointer"
             title={t ? 'קשרים מבוססי התאמות DNA מאומתות בלבד.' : 'Links based on verified DNA match evidence only.'}
@@ -242,12 +239,9 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
             />
             <span className="text-xs text-gray-600 flex items-center gap-1"><Dna size={11} className="text-emerald-700" />{t ? 'קשרי DNA מאומתים' : 'Verified DNA links'}</span>
           </label>
-        </section>
+        </CollapsibleSection>
 
-        <section className="border border-gray-100 rounded-md p-2 space-y-2">
-          <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">
-            {t ? 'היסטורי' : 'Historical'}
-          </div>
+        <CollapsibleSection title={t ? 'היסטורי' : 'Historical'} icon="📜" defaultOpen={false}>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
@@ -311,7 +305,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
             />
             <span className="text-xs text-gray-600 flex items-center gap-1"><Ship size={11} className="text-cyan-700" />{t ? 'הגירה' : 'Migration'}</span>
           </label>
-        </section>
+        </CollapsibleSection>
       </div>
 
       <button

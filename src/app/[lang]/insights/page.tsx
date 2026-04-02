@@ -1,12 +1,16 @@
 /**
  * /[lang]/insights — family analytics & statistics standalone page.
  */
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useFamilyData } from '../../../hooks/useFamilyData';
 import { StatisticsView } from '../../../components/StatisticsView';
 import { TimelineView } from '../../../components/TimelineView';
 import { DnaMatchesView } from '../../../components/DnaMatchesView';
 import { DnaEvidenceSummaries } from '../../../components/DnaEvidenceSummaries';
+import MemberCard from '../../../components/MemberCard';
+import { PersonDetailPanel } from '../../../components/PersonDetailPanel';
+import { X, Star } from 'lucide-react';
 import { useLang } from '../layout';
 
 // ── Section card wrapper ──────────────────────────────────────────────────────
@@ -45,6 +49,20 @@ function InsightSection({
 export default function InsightsPage() {
   const { lang, t } = useLang();
   const { persons, families, personList, loading, error } = useFamilyData();
+  const [selectedPersonId, setSelectedPersonId] = useState<string | null>(null);
+
+  const selectedPerson = selectedPersonId ? persons.get(selectedPersonId) : null;
+
+  const highlightedMembers = personList
+    .filter(p => p.birthPlace || p.note || p.story)
+    .slice(0, 6)
+    .map(p => ({
+      full_name: p.fullName,
+      gender: p.sex as 'M' | 'F',
+      birth_date: p.birthDate || undefined,
+      birth_place: p.birthPlace || undefined,
+      branch: p.surnameFinal || p.surname || undefined,
+    }));
 
   if (loading) {
     return (
@@ -100,6 +118,80 @@ export default function InsightsPage() {
             {t('ניתוח הדאטה של עץ המשפחה', 'Analysis of the family tree data')}
           </span>
         </div>
+
+        {/* Highlighted Members */}
+        {highlightedMembers.length > 0 && (
+          <section>
+            <h2 className="text-lg font-semibold text-gray-700 mb-1 flex items-center gap-2">
+              <Star className="w-5 h-5 text-amber-500" />
+              {t('חברים מודגשים', 'Highlighted Members')}
+            </h2>
+            <p className="text-xs text-gray-400 mb-4">
+              {t('אנשים עם ביוגרפיה או מקום לידה', 'People with biography or birth place')}
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {highlightedMembers.map((member, idx) => (
+                <MemberCard
+                  key={idx}
+                  member={member}
+                  language={lang}
+                  onFocusBranch={() => {}}
+                  onOpenBio={() => {
+                    const original = personList.find(p => p.fullName === member.full_name);
+                    if (original) setSelectedPersonId(original.id);
+                  }}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Person Detail Modal */}
+        {selectedPerson && (
+          <div className="fixed inset-0 z-50 flex">
+            <div
+              className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+              onClick={() => setSelectedPersonId(null)}
+            />
+            <div className="relative ms-auto h-full w-80 md:w-96 overflow-y-auto bg-white shadow-2xl">
+              <button
+                onClick={() => setSelectedPersonId(null)}
+                className="absolute top-4 start-4 p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors z-10"
+                aria-label={t('סגור', 'Close')}
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <PersonDetailPanel
+                person={selectedPerson}
+                persons={persons}
+                families={families}
+                activeFilters={{
+                  generationMin: -29,
+                  generationMax: 2,
+                  sex: 'all',
+                  surname: '',
+                  connectedToYaelOnly: false,
+                  hasDna: false,
+                  holocaustVictimsOnly: false,
+                  hasHeritageTag: false,
+                  hasPartisanTag: false,
+                  hasFamousTag: false,
+                  hasRabbiTag: false,
+                  hasLineageTag: false,
+                  hasMigrationTag: false,
+                  hasDoubleBloodTieTag: false,
+                  doubleBloodTieMinPaths: 3,
+                  maxHops: null,
+                  hideUnknownPlaceholders: true,
+                }}
+                isConnectedToYael={true}
+                onNavigate={(id) => setSelectedPersonId(id)}
+                onClose={() => setSelectedPersonId(null)}
+                language={lang}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Statistics */}
         <InsightSection

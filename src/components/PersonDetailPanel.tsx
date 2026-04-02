@@ -4,10 +4,13 @@ import { DEFAULT_FILTERS, isUnknownPlaceholderPerson, type Filters } from './Fil
 import { getCanonicalSurnameLabel } from '../utils/surname';
 import { HolocaustMemorialPatchIcon } from './HolocaustMemorialPatchIcon';
 import { StoryModal } from './StoryModal';
+import { useIsMobile } from '../hooks/useIsMobile';
+import { X } from 'lucide-react';
 import {
   Dna, Swords, GitMerge, Shield, Star, BookMarked, Scroll, Landmark, Ship, BookOpen,
   type LucideIcon,
 } from 'lucide-react';
+import CollapsibleSection from './CollapsibleSection';
 
 const TAG_ICONS: Record<string, { Icon: LucideIcon; color: string; bg: string; labelEn: string; labelHe: string }> = {
   DNA:       { Icon: Dna,          color: '#065f46', bg: '#d1fae5', labelEn: 'DNA',             labelHe: 'DNA' },
@@ -421,18 +424,37 @@ export function PersonDetailPanel({
     return reasons;
   }, [activeFilters, person, isConnectedToYael, t]);
 
+  const isMobile = useIsMobile();
+
   return (
-    <div className="w-80 bg-white border-r border-gray-200 h-full overflow-y-auto p-4 shadow-lg" dir={t ? 'rtl' : 'ltr'}>
-      <div className="flex items-center justify-between mb-4">
+    <div 
+      className={`${isMobile 
+        ? 'fixed bottom-0 left-0 right-0 z-50 max-h-[85vh] rounded-t-2xl shadow-2xl' 
+        : 'w-80 border-r shadow-lg'
+      } bg-white h-full overflow-hidden flex flex-col`} 
+      dir={t ? 'rtl' : 'ltr'}
+    >
+      {isMobile && (
+        <div 
+          className="fixed inset-0 z-[-1] bg-black/50"
+          onClick={onClose}
+          role="button"
+          tabIndex={0}
+          aria-label={t ? 'סגור' : 'Close'}
+          onKeyDown={(e) => e.key === 'Escape' && onClose()}
+        />
+      )}
+      <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
         <h2 className="text-lg font-bold">{personDisplayName}</h2>
         <button
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 text-xl leading-none"
+          className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
+          aria-label={t ? 'סגור' : 'Close'}
         >
-          ✕
+          <X className="w-5 h-5" />
         </button>
       </div>
-
+      <div className="flex-1 overflow-y-auto p-4">
       {person.hebrewName && person.hebrewName !== person.fullName && (
         <div className="text-sm text-gray-600 mb-2">{person.hebrewName}</div>
       )}
@@ -552,37 +574,39 @@ export function PersonDetailPanel({
         </div>
       )}
 
-      {person.holocaustVictim && (
-        <div className="mt-3 p-2 bg-zinc-100 border border-zinc-400 rounded text-xs text-zinc-900">
-          <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <span
-              className="inline-flex items-center gap-1.5 font-semibold text-zinc-900"
-              title={t ? 'סימון זיכרון' : 'Memorial marker'}
-            >
-              <HolocaustMemorialPatchIcon
-                size={22}
-                title={t ? 'טלאי זיכרון לקורבן שואה' : 'Holocaust memorial patch'}
-              />
-              <span>{t ? 'טלאי זיכרון' : 'Memorial patch'}</span>
-            </span>
-            <div className="font-semibold">{t ? 'קורבן שואה' : 'Holocaust Victim'}</div>
-          </div>
-          <div>{t ? 'האדם סומן כנרצח/נספה בשואה.' : 'This person was marked as murdered/perished in the Shoah.'}</div>
-        </div>
-      )}
+      {(person.holocaustVictim || person.warCasualty || person.tags.includes('Partisan')) && (
+        <CollapsibleSection 
+          title={t ? 'תקופת השואה וזיכרון' : 'Holocaust Period & Memory'} 
+          icon="🕯️" 
+          variant="memory"
+          defaultOpen={person.holocaustVictim}
+        >
+          {person.holocaustVictim && (
+            <div className="p-2 bg-gray-100 border border-gray-300 rounded text-xs text-gray-700">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <span className="inline-flex items-center gap-1.5 font-semibold text-gray-800">
+                  <span aria-hidden="true">🕯️</span>
+                  <span>{t ? 'נספה בשואה' : 'Perished in the Holocaust'}</span>
+                </span>
+              </div>
+              <div>{t ? 'האדם סומן כנרצח/נספה בשואה.' : 'This person was marked as murdered/perished in the Shoah.'}</div>
+            </div>
+          )}
 
-      {person.warCasualty && (
-        <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700">
-          <div className="font-semibold">{t ? 'נפגע מלחמה' : 'War Casualty'}</div>
-          <div>{t ? 'האדם סומן כחלל מלחמה או שירות צבאי.' : 'This person was marked as killed/fallen in military service or battle.'}</div>
-        </div>
-      )}
+          {person.warCasualty && (
+            <div className="p-2 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700 mt-2">
+              <div className="font-semibold">{t ? 'נפגע מלחמה' : 'War Casualty'}</div>
+              <div>{t ? 'האדם סומן כחלל מלחמה או שירות צבאי.' : 'This person was marked as killed/fallen in military service or battle.'}</div>
+            </div>
+          )}
 
-      {person.tags.includes('Partisan') && (
-        <div className="mt-3 p-2 bg-emerald-50 border border-emerald-200 rounded text-xs text-emerald-700">
-          <div className="font-semibold">{t ? 'פרטיזן / מחתרת' : 'Partisan / Resistance'}</div>
-          <div>{t ? 'האדם מסומן כחלק מפעילות פרטיזנית או מחתרתית.' : 'This person is marked as part of partisan or resistance activity.'}</div>
-        </div>
+          {person.tags.includes('Partisan') && (
+            <div className="p-2 bg-emerald-50 border border-emerald-200 rounded text-xs text-emerald-700 mt-2">
+              <div className="font-semibold">{t ? 'פרטיזן / מחתרת' : 'Partisan / Resistance'}</div>
+              <div>{t ? 'האדם מסומן כחלק מפעילות פרטיזנית או מחתרתית.' : 'This person is marked as part of partisan or resistance activity.'}</div>
+            </div>
+          )}
+        </CollapsibleSection>
       )}
 
       {person.doubleBloodTie && (
@@ -641,73 +665,83 @@ export function PersonDetailPanel({
       )}
 
       {(person.dnaInfo || person.tags.includes('DNA')) && (
-        <div className="mt-4 p-2 bg-purple-50 rounded text-xs">
-          <div className="font-bold text-purple-700 mb-1 flex items-center gap-1.5">
-            <Dna size={13} />
-            {t ? 'קשרי DNA מאומתים' : 'Verified DNA links'}
+        <CollapsibleSection 
+          title={t ? 'קשרי DNA' : 'DNA Links'} 
+          icon="🧬" 
+          variant="dna"
+        >
+          <div className="text-xs">
+            {person.dnaInfo ? (
+              <div className="text-purple-700 whitespace-pre-wrap">{person.dnaInfo}</div>
+            ) : (
+              <div className="text-purple-600">{t ? 'קיימים קשרי DNA מאומתים ברשימות ההתאמות.' : 'Verified DNA links exist in the match lists.'}</div>
+            )}
           </div>
-          {person.dnaInfo ? (
-            <div className="text-purple-600 whitespace-pre-wrap">{person.dnaInfo}</div>
-          ) : (
-            <div className="text-purple-600">{t ? 'קיימים קשרי DNA מאומתים ברשימות ההתאמות.' : 'Verified DNA links exist in the match lists.'}</div>
-          )}
-        </div>
+        </CollapsibleSection>
       )}
 
-      {parents.length > 0 && (
-        <div className="mt-4">
-          <h3 className="text-sm font-bold text-gray-700 mb-1">{t ? 'הורים' : 'Parents'}</h3>
-          <div className="space-y-1">
-            {parents.map(id => (
-              <div key={id}><PersonLink id={id} persons={persons} onNavigate={onNavigate} /></div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {spouses.size > 0 && (
-        <div className="mt-4">
-          <h3 className="text-sm font-bold text-gray-700 mb-1">{t ? 'בני/בנות זוג' : 'Spouses'}</h3>
-          <div className="space-y-1">
-            {Array.from(spouses).map(id => (
-              <div key={id} className="space-y-0.5">
-                <PersonLink id={id} persons={persons} onNavigate={onNavigate} />
-                {spouseRelationFlags.get(id) && (
-                  <div className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-0.5 inline-block">
-                    {t ? 'נישואין אפשריים בתוך המשפחה (אב קדמון משותף)' : 'Possible in-family marriage (shared ancestor)'}
-                  </div>
-                )}
-                {spouseClusterMarriageFlags.get(id) && (
-                  <div className="text-[11px] text-fuchsia-700 bg-fuchsia-50 border border-fuchsia-200 rounded px-2 py-0.5 inline-block">
-                    {t ? 'רשת אלפרוביץ׳/קסטרל' : 'Alperovitz/Kastroll network'}
-                  </div>
-                )}
+      {(parents.length > 0 || spouses.size > 0 || children.length > 0 || siblings.length > 0) && (
+        <CollapsibleSection 
+          title={t ? 'משפחה' : 'Family'} 
+          icon="👨‍👩‍👧‍👦" 
+          defaultOpen={true}
+        >
+          {parents.length > 0 && (
+            <div className="mb-3">
+              <h3 className="text-xs font-semibold text-gray-600 mb-1">{t ? 'הורים' : 'Parents'}</h3>
+              <div className="space-y-1">
+                {parents.map(id => (
+                  <div key={id}><PersonLink id={id} persons={persons} onNavigate={onNavigate} /></div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
-      )}
+            </div>
+          )}
 
-      {children.length > 0 && (
-        <div className="mt-4">
-          <h3 className="text-sm font-bold text-gray-700 mb-1">{t ? 'ילדים' : 'Children'}</h3>
-          <div className="space-y-1">
-            {children.map(id => (
-              <div key={id}><PersonLink id={id} persons={persons} onNavigate={onNavigate} /></div>
-            ))}
-          </div>
-        </div>
-      )}
+          {spouses.size > 0 && (
+            <div className="mb-3">
+              <h3 className="text-xs font-semibold text-gray-600 mb-1">{t ? 'בני/בנות זוג' : 'Spouses'}</h3>
+              <div className="space-y-1">
+                {Array.from(spouses).map(id => (
+                  <div key={id} className="space-y-0.5">
+                    <PersonLink id={id} persons={persons} onNavigate={onNavigate} />
+                    {spouseRelationFlags.get(id) && (
+                      <div className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-0.5 inline-block">
+                        {t ? 'נישואין אפשריים בתוך המשפחה (אב קדמון משותף)' : 'Possible in-family marriage (shared ancestor)'}
+                      </div>
+                    )}
+                    {spouseClusterMarriageFlags.get(id) && (
+                      <div className="text-[11px] text-fuchsia-700 bg-fuchsia-50 border border-fuchsia-200 rounded px-2 py-0.5 inline-block">
+                        {t ? 'רשת אלפרוביץ׳/קסטרל' : 'Alperovitz/Kastroll network'}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
-      {siblings.length > 0 && (
-        <div className="mt-4">
-          <h3 className="text-sm font-bold text-gray-700 mb-1">{t ? 'אחים/אחיות' : 'Siblings'}</h3>
-          <div className="space-y-1">
-            {siblings.map(id => (
-              <div key={id}><PersonLink id={id} persons={persons} onNavigate={onNavigate} /></div>
-            ))}
-          </div>
-        </div>
+          {children.length > 0 && (
+            <div className="mb-3">
+              <h3 className="text-xs font-semibold text-gray-600 mb-1">{t ? 'ילדים' : 'Children'}</h3>
+              <div className="space-y-1">
+                {children.map(id => (
+                  <div key={id}><PersonLink id={id} persons={persons} onNavigate={onNavigate} /></div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {siblings.length > 0 && (
+            <div>
+              <h3 className="text-xs font-semibold text-gray-600 mb-1">{t ? 'אחים/אחיות' : 'Siblings'}</h3>
+              <div className="space-y-1">
+                {siblings.map(id => (
+                  <div key={id}><PersonLink id={id} persons={persons} onNavigate={onNavigate} /></div>
+                ))}
+              </div>
+            </div>
+          )}
+        </CollapsibleSection>
       )}
 
       {(person.fatherName || person.motherName) && !parents.length && (
@@ -739,6 +773,7 @@ export function PersonDetailPanel({
           language={language}
         />
       )}
+      </div>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Network, PlusCircle, Search, X } from 'lucide-react';
 
 const STORAGE_KEY = 'hasSeenTreeWelcome';
@@ -65,25 +66,30 @@ export function WelcomeModal({ language }: WelcomeModalProps) {
   if (!isVisible) return null;
 
   return (
-    <div
-      className={`fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 ${
-        entered ? 'opacity-100' : 'opacity-0'
-      }`}
-      dir={isRtl ? 'rtl' : 'ltr'}
-      role="presentation"
-      onClick={e => {
-        if (e.target === e.currentTarget) dismiss();
-      }}
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="welcome-modal-title"
-        className={`bg-white w-full max-w-md mx-4 rounded-2xl shadow-2xl p-6 relative transition-all duration-300 ease-out ${
-          entered ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.97]'
-        }`}
-        onClick={e => e.stopPropagation()}
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        className={`fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm`}
+        dir={isRtl ? 'rtl' : 'ltr'}
+        role="presentation"
+        onClick={e => {
+          if (e.target === e.currentTarget) dismiss();
+        }}
       >
+        <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="welcome-modal-title"
+          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 10 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+          className="bg-white w-full max-w-md mx-4 rounded-2xl shadow-2xl p-6 relative"
+          onClick={e => e.stopPropagation()}
+        >
         <button
           type="button"
           onClick={dismiss}
@@ -129,7 +135,8 @@ export function WelcomeModal({ language }: WelcomeModalProps) {
         >
           {t.cta}
         </button>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 }
