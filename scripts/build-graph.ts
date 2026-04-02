@@ -1602,23 +1602,35 @@ function buildGraph() {
 
   // Read canonical CSV — fall back to sample data when the private file is absent (e.g. Vercel / CI)
   const canonicalPath = join(ROOT, 'data/canonical.csv');
+  const canonicalFinalPath = join(ROOT, 'data/canonical_final_clean.csv');
   const canonicalFallbackPath = join(ROOT, 'data/sample/canonical.sample.csv');
   let canonicalRaw: string;
   if (existsSync(canonicalPath)) {
     canonicalRaw = readFileSync(canonicalPath, 'utf-8');
+  } else if (existsSync(canonicalFinalPath)) {
+    console.log('data/canonical.csv not found — using data/canonical_final_clean.csv');
+    canonicalRaw = readFileSync(canonicalFinalPath, 'utf-8');
   } else if (existsSync(canonicalFallbackPath)) {
     console.log('data/canonical.csv not found — using sample data from data/sample/canonical.sample.csv');
     canonicalRaw = readFileSync(canonicalFallbackPath, 'utf-8');
   } else {
-    console.log('Neither data/canonical.csv nor data/sample/canonical.sample.csv found — writing empty graph');
+    console.log('No canonical CSV found — writing empty graph');
     mkdirSync(join(ROOT, 'public'), { recursive: true });
     writeFileSync(join(ROOT, 'public/family-graph.json'), JSON.stringify({ persons: [], families: [], rootPersonId: '' }));
     return;
   }
-  const canonicalRows: RawCanonical[] = parse(canonicalRaw, {
+  // Strip BOM from raw content so column headers are parsed cleanly
+  const canonicalRowsParsed = parse(canonicalRaw.replace(/^\ufeff/, ''), {
     columns: true,
     skip_empty_lines: true,
     relax_column_count: true,
+  }) as Array<Record<string, string>>;
+  const canonicalRows: RawCanonical[] = canonicalRowsParsed.map(row => {
+    // canonical_final_clean.csv uses 'person_id' instead of 'ged_id' — normalise
+    if (!row['ged_id'] && row['person_id']) {
+      row['ged_id'] = row['person_id'];
+    }
+    return row as unknown as RawCanonical;
   });
 
   // Read curated CSV (optional — enriches hops, generation, Hebrew names, relationships)
