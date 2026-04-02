@@ -120,8 +120,7 @@ export const FamilyTreeVisual: React.FC<FamilyTreeVisualProps> = ({ data }) => {
   return (
     <svg
       ref={svgRef}
-      className="w-full h-full min-h-[500px]"
-      style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}
+      className="w-full h-full min-h-[500px] d3-tree-svg"
     />
   );
 };

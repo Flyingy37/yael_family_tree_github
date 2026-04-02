@@ -6,7 +6,7 @@
  * Falls back to the existing `useFamilyData()` hook (static JSON / family_graph)
  * when the Supabase tables are unavailable or empty.
  */
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import {
   buildHierarchyFromRows,
@@ -45,11 +45,6 @@ export function useSupabaseFamilyTree(
 
   const reload = useCallback(() => setReloadToken((t) => t + 1), []);
 
-  // Persist the latest rootPersonId so the Realtime callback can access it
-  // without re-subscribing every time it changes.
-  const rootRef = useRef(rootPersonId);
-  rootRef.current = rootPersonId;
-
   /* ── fetch logic ──────────────────────────────────────────────── */
   useEffect(() => {
     let cancelled = false;
@@ -70,7 +65,7 @@ export function useSupabaseFamilyTree(
       const relations = relationsRes.data as FamilyRelationRow[] | null;
       if (!members?.length || !relations?.length) return false;
 
-      const tree = buildHierarchyFromRows(members, relations, rootRef.current);
+      const tree = buildHierarchyFromRows(members, relations, rootPersonId);
       if (!cancelled) setHierarchy(tree);
       return true;
     }
@@ -80,7 +75,7 @@ export function useSupabaseFamilyTree(
         const gotSupabase = await fetchFromSupabase();
         if (!gotSupabase && fallbackPersons && fallbackFamilies) {
           // Build hierarchy from the existing in-memory data
-          const tree = buildHierarchy(fallbackPersons, fallbackFamilies, rootRef.current);
+          const tree = buildHierarchy(fallbackPersons, fallbackFamilies, rootPersonId);
           if (!cancelled) setHierarchy(tree);
         }
       } catch (err: unknown) {

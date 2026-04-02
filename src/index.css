@@ -35,6 +35,10 @@ html, body, #root {
   filter: drop-shadow(0 0 5px rgba(0,0,0,0.1));
 }
 
+.d3-tree-svg {
+  font-family: 'Georgia', 'Times New Roman', serif;
+}
+
 .d3-tree-label {
   font-size: 13px;
   fill: #292524; /* stone-800 */
