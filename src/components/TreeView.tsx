@@ -106,6 +106,7 @@ export function TreeView({
   }, []);
 
   // Effective display: lazy-visible ∩ filter, then hide collapsed subtrees
+  // Must be declared before any useEffect that references it.
   const effectiveDisplayIds = useMemo(() => {
     const base = graphVisibleIds;
     if (collapsedIds.size === 0) return base;
@@ -563,7 +564,7 @@ export function TreeView({
               <div style={{
                 fontSize: 10, color: '#6b7280', textAlign: 'right',
                 padding: '3px 6px', lineHeight: 1.5,
-              }}>
+            }}>
                 {t
                   ? 'לחץ כדי לגלות כיצד שני אנשים קשורים'
                   : 'Click to discover how two people are related'}
