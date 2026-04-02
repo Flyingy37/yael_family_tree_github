@@ -5,6 +5,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Heebo', 'Arial', 'sans-serif'],
+        serif: ['Frank Ruhl Libre', 'serif'],
       },
     },
   },
