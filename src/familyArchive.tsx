@@ -248,18 +248,18 @@ function StoryModal({
         className="relative z-[101] max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-xl border border-stone-200 bg-white p-5 shadow-xl"
         dir={lang === 'en' ? 'ltr' : 'rtl'}
       >
-        <h3 id="story-modal-title" className="mb-3 text-lg font-semibold text-stone-900">
+        <h3 id="story-modal-title" className="mb-3 font-serif text-lg font-semibold text-archive-ink">
           {title}
         </h3>
         <p className="whitespace-pre-wrap text-sm leading-relaxed text-stone-700">{story}</p>
-        <div className="mt-4 space-y-2 border-t border-stone-100 pt-3 text-xs text-stone-500">
+        <div className="mt-4 space-y-2 border-t border-stone-100 pt-3 text-xs text-archive-accent">
           <p>{STORY_SOURCE_FOOTER}</p>
           <p>{STORY_SOURCE_SECONDARY}</p>
           <p>{STORY_SOURCE_ANNOTATIONS}</p>
         </div>
         <button
           type="button"
-          className="mt-4 w-full rounded-lg bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-800"
+          className="mt-4 w-full rounded-lg bg-archive-ink px-4 py-2 text-sm font-medium text-white hover:bg-stone-800"
           onClick={onClose}
         >
           {closeLabel}
@@ -319,9 +319,9 @@ function TreeNode({ node, lang = 'he' }: { node: ArchiveTreeNode; lang?: Archive
 
   const metaBlock = (
     <>
-      {node.birth ? <div className="mt-1 text-sm text-stone-600">{node.birth}</div> : null}
-      {node.birthPlace ? <div className="text-sm text-stone-600">{node.birthPlace}</div> : null}
-      {node.note ? <div className="mt-2 text-sm text-stone-600 whitespace-pre-wrap">{node.note}</div> : null}
+      {node.birth ? <div className="mt-1 text-sm text-archive-accent">{node.birth}</div> : null}
+      {node.birthPlace ? <div className="text-sm text-archive-accent">{node.birthPlace}</div> : null}
+      {node.note ? <div className="mt-2 text-sm text-archive-accent whitespace-pre-wrap">{node.note}</div> : null}
     </>
   );
 
@@ -359,7 +359,7 @@ function TreeNode({ node, lang = 'he' }: { node: ArchiveTreeNode; lang?: Archive
     case 'research':
       card = (
         <div className="rounded-lg border-2 border-dashed border-amber-600 bg-amber-50/40 p-4 shadow-sm">
-          <div className="flex items-center gap-2 font-semibold text-stone-900">
+          <div className="flex items-center gap-2 font-serif font-semibold text-archive-ink">
             <span className="text-xl leading-none" aria-hidden title="יעד מחקר">
               🔍
             </span>
@@ -372,8 +372,8 @@ function TreeNode({ node, lang = 'he' }: { node: ArchiveTreeNode; lang?: Archive
       break;
     default:
       card = (
-        <div className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
-          <div className="font-semibold text-stone-900">{node.name}</div>
+        <div className="rounded-lg border border-stone-200 bg-archive-paper p-4 shadow-sm">
+          <div className="font-serif font-semibold text-archive-ink">{node.name}</div>
           {metaBlock}
           {storyRow}
         </div>
@@ -447,8 +447,8 @@ export function FamilyArchiveApp({ lang = 'he' }: { lang?: ArchiveLang } = {}) {
   return (
     <div className="py-6" dir={lang === 'en' ? 'ltr' : 'rtl'}>
       <header className="mb-4">
-        <h2 className="text-xl font-bold text-stone-900">{copy.title}</h2>
-        <p className="mt-1 text-sm text-stone-600">{copy.subtitle}</p>
+        <h2 className="font-serif text-xl font-bold text-archive-ink">{copy.title}</h2>
+        <p className="mt-1 text-sm text-archive-accent">{copy.subtitle}</p>
       </header>
 
       <div className="relative mx-auto mb-6 w-full max-w-md">
@@ -459,7 +459,7 @@ export function FamilyArchiveApp({ lang = 'he' }: { lang?: ArchiveLang } = {}) {
         />
         <input
           type="search"
-          className="w-full rounded-lg border border-stone-300 bg-white py-2.5 ps-10 pe-3 text-sm text-stone-900 shadow-sm outline-none ring-stone-400 placeholder:text-stone-400 focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
+          className="w-full rounded-lg border border-stone-300 bg-white py-2.5 ps-10 pe-3 text-sm text-archive-ink shadow-sm outline-none ring-stone-400 placeholder:text-stone-400 focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
           placeholder={copy.placeholder}
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
@@ -469,11 +469,11 @@ export function FamilyArchiveApp({ lang = 'he' }: { lang?: ArchiveLang } = {}) {
       </div>
 
       <aside
-        className="mb-6 rounded-lg border border-stone-200 bg-stone-50/80 p-4 text-sm text-stone-700"
+        className="mb-6 rounded-lg border border-stone-200 bg-archive-paper p-4 text-sm text-stone-700"
         aria-label={copy.legendTitle}
       >
-        <h3 className="mb-2 font-semibold text-stone-900">{copy.legendTitle}</h3>
-        <p className="mb-2 text-xs font-medium text-stone-600">{copy.legendLead}</p>
+        <h3 className="mb-2 font-serif font-semibold text-archive-ink">{copy.legendTitle}</h3>
+        <p className="mb-2 text-xs font-medium text-archive-accent">{copy.legendLead}</p>
         <ul className="list-inside list-disc space-y-1 marker:text-stone-400">
           <li>{copy.legendDNA}</li>
           <li>{copy.legendResearch}</li>
@@ -486,7 +486,7 @@ export function FamilyArchiveApp({ lang = 'he' }: { lang?: ArchiveLang } = {}) {
       </aside>
 
       {!displayTree ? (
-        <p className="text-sm text-stone-500">{copy.empty}</p>
+        <p className="text-sm text-archive-accent">{copy.empty}</p>
       ) : (
         <TreeNode node={displayTree} lang={lang} />
       )}
