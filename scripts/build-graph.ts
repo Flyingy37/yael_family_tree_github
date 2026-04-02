@@ -95,7 +95,6 @@ const MANUAL_TAG_OVERRIDES: Record<string, string[]> = {
   // Requested notable public figures
   '@I2348@': ['Famous'], // Hayim Nahman Bialik
   '@I588@': ['Famous'], // Terry J. Dubrow
-  '@I1025@': ['Famous'], // Terry J. Dubrow (second profile)
   '@I587@': ['Famous'], // Kevin Mark Dubrow (Quiet Riot)
   '@I124@': ['Famous'], // Hyman Isidor Kastrel — co-founder of Yiddish daily Frayhayt; editor of Funken
   // Heilprin rabbinical dynasty — direct ancestors of the Alperovich branch.
@@ -548,6 +547,8 @@ const MANUAL_MERGE_TO_PRIMARY: Record<string, string> = {
   '@I1128@': '@I1240@', // Avrum Gershkov* M'skvira -> Avrum (1789) in Vulis branch
   '@I1653@': '@I1240@', // Avrum Vulis M'skvira -> Avrum (1789) in Vulis branch
   '@I4069@': '@I1240@', // R' Avrum Gershkov ... Vulis -> Avrum (1789) in Vulis branch
+  // Terry Dubrow duplicate: @I1025@ is the same person as @I588@; merge into primary.
+  '@I1025@': '@I588@', // Terry J. Dubrow — Los Angeles profile → primary
 };
 
 const SUPPLEMENTAL_RTF_FILES = [
