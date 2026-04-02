@@ -548,6 +548,18 @@ const MANUAL_MERGE_TO_PRIMARY: Record<string, string> = {
   '@I1128@': '@I1240@', // Avrum Gershkov* M'skvira -> Avrum (1789) in Vulis branch
   '@I1653@': '@I1240@', // Avrum Vulis M'skvira -> Avrum (1789) in Vulis branch
   '@I4069@': '@I1240@', // R' Avrum Gershkov ... Vulis -> Avrum (1789) in Vulis branch
+
+  // Transliteration variant duplicates (confirmed by matching birth years + family context).
+  '@I711@': '@I1172@',   // Boruch Vulis- → Baruch Vulis (b. 1848)
+  '@I3949@': '@I1301@',  // Leiba Alperovich (1801) → Liba Alperovich (1802)
+
+  // Kasden name cluster: same person, different transliterations, matching birth years.
+  '@I939@': '@I619@',    // Sarah Kasden (1893) → Sarah-Laia Kasden (1893)
+  '@I1153@': '@I619@',   // Shra-Laia Kasden (1895) → Sarah-Laia Kasden (1893)
+
+  // Placeholder "Wife" records → merge into the named person record.
+  '@I3763@': '@I1414@',  // Wife Ashkenazi → Sime Ashkenazi
+  '@I1957@': '@I1956@',  // Wife Ashkenazi → Sime Ashkenazi
 };
 
 const SUPPLEMENTAL_RTF_FILES = [
@@ -1126,7 +1138,51 @@ function isMeaningfulPersonName(value: string): boolean {
   if (!n) return false;
   if (/^child \d+/.test(n)) return false;
   if (/^(unknown|fnu|lnu|none|n\/a)$/i.test(n)) return false;
+  // Placeholder given names followed by a surname should NOT auto-merge:
+  // multiple distinct people may share the same placeholder+surname combo
+  // (e.g. "Fnu Alperovich" × 12 are 12 different unknown Alperovich children).
+  if (/^(fnu|lnu|unknown|unk|d\d|s\d|nn|wife|husband)\s/i.test(n)) return false;
   return n.length >= 3;
+}
+
+/**
+ * Normalize common Eastern European Jewish surname transliteration variants
+ * for deduplication comparison. Maps related spellings to a canonical form.
+ */
+function normalizeSurnameForDedup(value: string): string {
+  let s = normalizeForDedup(value);
+  if (!s) return s;
+  // Remove trailing hyphens (e.g. "Vulis-" → "Vulis")
+  s = s.replace(/-+$/, '').trim();
+  // Common Ashkenazi surname suffix variants
+  s = s.replace(/sohn\b/g, 'son');       // Levinsohn → Levinson
+  s = s.replace(/ovitch\b/g, 'ovich');    // Alperovitch → Alperovich
+  s = s.replace(/owicz\b/g, 'ovich');     // Alperowicz → Alperovich
+  s = s.replace(/owich\b/g, 'ovich');     // Alperowich → Alperovich
+  s = s.replace(/ovitz\b/g, 'ovich');     // Alperovitz → Alperovich
+  // Common prefix/letter variants
+  s = s.replace(/\bsch/g, 'sh');          // Schwartz → Shwartz
+  return s;
+}
+
+/**
+ * Normalize common Yiddish/Hebrew given name transliteration variants
+ * for deduplication comparison. Maps related spellings to a canonical form.
+ */
+function normalizeGivenNameForDedup(value: string): string {
+  let s = normalizeForDedup(value);
+  if (!s) return s;
+  // Common digraph/letter variants
+  s = s.replace(/kh/g, 'ch');             // Mordukh → Morduch
+  // Common Yiddish↔Hebrew given name equivalences
+  s = s.replace(/\bboruch\b/g, 'baruch');
+  s = s.replace(/\bleiba\b/g, 'liba');
+  s = s.replace(/\bruchel\b/g, 'rachel');
+  s = s.replace(/\bsura\b/g, 'sarah');
+  s = s.replace(/\bshifra\b/g, 'shifrah');
+  s = s.replace(/\bmordechai\b/g, 'mordecai');
+  s = s.replace(/\byakov\b/g, 'yaakov');
+  return s;
 }
 
 function nonEmptyStringCount(values: Array<string | null | undefined>): number {
@@ -1478,16 +1534,28 @@ function deduplicatePersons(persons: Person[], families: Family[]): {
     ].join('|');
   });
 
-  // Pass 3: given name + surname + sex + birth year (captures punctuation/format variants).
-  runMergePass(person => {
+  // Helper for name-based merge passes: builds a dedup key from given + surname + sex + year
+  // using the specified normalization functions.
+  const nameBasedKeyBuilder = (
+    givenNorm: (v: string) => string,
+    surnameNorm: (v: string) => string,
+  ) => (person: Person): string | null => {
     if (!person.sex) return null;
-    const given = normalizeForDedup(person.givenName || '');
-    const surname = normalizeForDedup(person.surnameFinal || person.surname || '');
+    const given = givenNorm(person.givenName || '');
+    const surname = surnameNorm(person.surnameFinal || person.surname || '');
     const year = person.birthDate?.match(/\d{4}/)?.[0] || '';
     if (!given || !surname || !year) return null;
     if (!isMeaningfulPersonName(given) || !isMeaningfulPersonName(surname)) return null;
     return [given, surname, person.sex, year].join('|');
-  });
+  };
+
+  // Pass 3: given name + surname + sex + birth year (captures punctuation/format variants).
+  runMergePass(nameBasedKeyBuilder(normalizeForDedup, normalizeForDedup));
+
+  // Pass 4: normalized given name + normalized surname + sex + birth year.
+  // Catches transliteration variants (Boruch/Baruch, Levinsohn/Levinson,
+  // Mordukh/Morduch, Alperovitch/Alperovich, etc.).
+  runMergePass(nameBasedKeyBuilder(normalizeGivenNameForDedup, normalizeSurnameForDedup));
 
   // Apply explicit manual merges for known branches with fuzzy/partial identity records.
   for (const [duplicateId, requestedPrimaryId] of Object.entries(MANUAL_MERGE_TO_PRIMARY)) {
