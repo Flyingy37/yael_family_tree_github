@@ -8,6 +8,8 @@ import { SearchBar } from './components/SearchBar';
 import { FilterPanel, applyFilters, DEFAULT_FILTERS, type Filters } from './components/FilterPanel';
 import { StatsPanel } from './components/StatsPanel';
 import { TreeView } from './components/TreeView';
+import { D3TreeView } from './components/D3TreeView';
+import { GenerationsListView } from './components/GenerationsListView';
 import { Breadcrumb } from './components/Breadcrumb';
 import { MapView } from './components/MapView';
 import { TimelineView } from './components/TimelineView';
@@ -19,24 +21,28 @@ import {
   getLastWebVitalsSnapshot,
 } from './performance/webVitals';
 
-type ViewMode = 'tree' | 'map' | 'timeline' | 'stats';
+type ViewMode = 'tree' | 'd3tree' | 'generations' | 'map' | 'timeline' | 'stats';
 
 const VIEW_TABS: Record<'en' | 'he', { id: ViewMode; label: string; icon: string }[]> = {
   en: [
     { id: 'tree', label: 'Tree', icon: '🌳' },
+    { id: 'd3tree', label: 'D3 Tree', icon: '🌲' },
+    { id: 'generations', label: 'Generations', icon: '📋' },
     { id: 'map', label: 'Map', icon: '🗺️' },
     { id: 'timeline', label: 'Timeline', icon: '📅' },
     { id: 'stats', label: 'Statistics', icon: '📊' },
   ],
   he: [
     { id: 'tree', label: 'עץ', icon: '🌳' },
+    { id: 'd3tree', label: 'עץ D3', icon: '🌲' },
+    { id: 'generations', label: 'דורות', icon: '📋' },
     { id: 'map', label: 'מפה', icon: '🗺️' },
     { id: 'timeline', label: 'ציר זמן', icon: '📅' },
     { id: 'stats', label: 'סטטיסטיקות', icon: '📊' },
   ],
 };
 
-const VALID_VIEWS: ViewMode[] = ['tree', 'map', 'timeline', 'stats'];
+const VALID_VIEWS: ViewMode[] = ['tree', 'd3tree', 'generations', 'map', 'timeline', 'stats'];
 const INCLUDE_SPOUSE_BRANCHES_STORAGE_KEY = 'includeSpouseBranches';
 
 /** Below this count, the loaded graph is almost certainly a dev sample, not the full export. */
@@ -406,8 +412,8 @@ export default function FamilyExplorer() {
           role="tabpanel"
           aria-labelledby={`explorer-tab-${viewMode}`}
         >
-          {/* Breadcrumb — only visible when a person is selected in tree view */}
-          {viewMode === 'tree' && (
+          {/* Breadcrumb — only visible when a person is selected in tree views */}
+          {(viewMode === 'tree' || viewMode === 'd3tree') && (
             <Breadcrumb
               selectedPersonId={selectedPersonId}
               persons={persons}
@@ -431,6 +437,29 @@ export default function FamilyExplorer() {
                   language={language}
                 />
               </ReactFlowProvider>
+            </div>
+          )}
+          {viewMode === 'd3tree' && (
+            <div className="flex-1 min-h-0 flex flex-col">
+              <D3TreeView
+                persons={persons}
+                families={families}
+                filteredIds={displayIds}
+                rootPersonId={subtreeRootId || rootPersonId}
+                selectedPersonId={selectedPersonId}
+                onSelectPerson={handleSelectPerson}
+                language={language}
+              />
+            </div>
+          )}
+          {viewMode === 'generations' && (
+            <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+              <GenerationsListView
+                persons={persons}
+                filteredIds={displayIds}
+                onSelectPerson={handleSelectPerson}
+                language={language}
+              />
             </div>
           )}
           {viewMode === 'map' && (
