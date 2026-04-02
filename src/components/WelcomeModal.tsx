@@ -40,6 +40,8 @@ export function WelcomeModal({ language }: WelcomeModalProps) {
     try {
       if (localStorage.getItem(STORAGE_KEY)) return;
     } catch {
+      // localStorage לא נגיש — מציגים את המודל בכל זאת (המשתמש לא ראה אותו)
+      setIsVisible(true);
       return;
     }
     setIsVisible(true);
