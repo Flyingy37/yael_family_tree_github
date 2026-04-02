@@ -1294,6 +1294,7 @@ function isMissingSurname(value: string | null | undefined): boolean {
   if (!value) return true;
   const normalized = normalizeForDedup(value);
   if (!normalized) return true;
+  // 'u' matches the GEDCOM "Unknown" placeholder for sex that can leak into surname fields
   return /^(unknown|fnu|lnu|none|n\/a|na|u|-+)$/i.test(normalized);
 }
 
