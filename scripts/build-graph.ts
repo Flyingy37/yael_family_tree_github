@@ -684,7 +684,7 @@ function rtfToRoughPlainText(rtf: string): string {
 }
 
 function extractNamePrefix(fragment: string): string | null {
-  const m = fragment.match(/([A-Z][A-Za-z .,'()\-]{2,90})\s+(?:was|perished|died|escaped|joined)/);
+  const m = fragment.match(/([A-Z][A-Za-z .,'()-]{2,90})\s+(?:was|perished|died|escaped|joined)/);
   if (!m) return null;
   const candidate = m[1].trim();
   if (candidate.length < 3) return null;
