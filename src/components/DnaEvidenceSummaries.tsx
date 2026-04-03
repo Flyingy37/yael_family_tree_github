@@ -42,7 +42,7 @@ export function DnaEvidenceSummaries({ language = 'he' }: Props) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/dna-evidence-summaries.json')
+    fetch(`${import.meta.env.BASE_URL}dna-evidence-summaries.json`)
       .then(r => r.json())
       .then(setData)
       .catch(console.error)

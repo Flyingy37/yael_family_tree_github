@@ -50,7 +50,7 @@ export function useFamilyData(): FamilyData {
 
       // ── 2. Fallback: static /family-graph.json ─────────────────────────
       try {
-        const res = await fetch('/family-graph.json', { signal: controller.signal });
+        const res = await fetch(`${import.meta.env.BASE_URL}family-graph.json`, { signal: controller.signal });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data: FamilyGraph = await res.json();
         if (!controller.signal.aborted) setGraph(data);
