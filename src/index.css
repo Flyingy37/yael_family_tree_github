@@ -110,6 +110,12 @@ html, body, #root {
   direction: ltr;
 }
 
+/* Leaflet overrides for RTL — Leaflet's internal tile/marker positioning
+   assumes LTR; without this the map layout breaks in RTL documents. */
+.leaflet-container {
+  direction: ltr;
+}
+
 /* Hot Sync toast slide-in */
 @keyframes slideDown {
   from { opacity: 0; transform: translateX(-50%) translateY(-16px); }
