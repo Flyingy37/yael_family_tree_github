@@ -7,7 +7,7 @@
  * - Else if `public/family-graph.json` exists → skip (pre-built artifact, e.g. copied before deploy).
  * - Else → write an empty placeholder so the app can start without data.
  */
-import { existsSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
@@ -36,5 +36,6 @@ if (existsSync(canonicalPath)) {
   console.log(
     'prebuild-graph: no canonical CSV and no family-graph.json — writing empty placeholder',
   );
+  mkdirSync(dirname(graphPath), { recursive: true });
   writeFileSync(graphPath, JSON.stringify({ persons: [], families: [], rootPersonId: '' }));
 }
