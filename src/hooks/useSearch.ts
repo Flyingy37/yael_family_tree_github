@@ -13,7 +13,7 @@ export interface SearchState {
 }
 
 export function useSearch(maxResults = 50): SearchState {
-  const { searchIndex, personList } = useFamilyData();
+  const { searchIndex } = useFamilyData();
   const [query, setQuery] = useState('');
 
   const results = useMemo(() => {

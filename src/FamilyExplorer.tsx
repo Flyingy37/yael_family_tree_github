@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ReactFlowProvider } from '@xyflow/react';
 import { useFamilyData } from './hooks/useFamilyData';
 import { useLang } from './app/[lang]/layout';
@@ -83,7 +83,7 @@ export default function FamilyExplorer() {
   const [subtreeRootId, setSubtreeRootId] = useState<string | null>(null);
   const [subtreeDepth, setSubtreeDepth] = useState(4);
   const [includeSpouseBranches, setIncludeSpouseBranches] = useState(true);
-  const { lang: language, setLang: setLanguage } = useLang();
+  const { lang: language } = useLang();
   const [hasVitalsSnapshot, setHasVitalsSnapshot] = useState(false);
   const viewTabs = VIEW_TABS[language];
   const basePath = `/${langParam || language}`;
