@@ -1,13 +1,13 @@
 /**
- * Runs before `vite build`. On Vercel there is no private `data/canonical.csv`, so we must not
- * regenerate the graph from the tiny sample CSV (that would ship a near-empty tree).
+ * Runs before `vite build`. Private genealogy CSVs are NOT tracked in the
+ * public repo — they live locally or in a private data store.
  *
- * - If `data/canonical.csv` exists → run `build-graph.ts` (local / CI with secrets).
- * - Else if `data/canonical_final_clean.csv` exists → run `build-graph.ts` (real data, committed to repo).
- * - Else if `public/family-graph.json` exists → skip (use committed deployment artifact).
- * - Else → run `build-graph.ts` (sample or empty graph for greenfield clones).
+ * - If `data/canonical.csv` exists → run `build-graph.ts` (local build with private data).
+ * - Else if `data/canonical_final_clean.csv` exists → run `build-graph.ts` (local fallback).
+ * - Else if `public/family-graph.json` exists → skip (pre-built artifact, e.g. copied before deploy).
+ * - Else → write an empty placeholder so the app can start without data.
  */
-import { existsSync } from 'fs';
+import { existsSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
@@ -30,11 +30,11 @@ if (existsSync(canonicalPath)) {
   runBuildGraph();
 } else if (existsSync(graphPath)) {
   console.log(
-    'prebuild-graph: no canonical CSV — keeping committed public/family-graph.json (Vercel / CI deploy)',
+    'prebuild-graph: no canonical CSV — keeping existing public/family-graph.json',
   );
 } else {
   console.log(
-    'prebuild-graph: no canonical CSV and no family-graph.json — running build-graph (sample fallback)',
+    'prebuild-graph: no canonical CSV and no family-graph.json — writing empty placeholder',
   );
-  runBuildGraph();
+  writeFileSync(graphPath, JSON.stringify({ persons: [], families: [], rootPersonId: '' }));
 }
