@@ -17,9 +17,14 @@ const ROOT = join(__dirname, '..');
 const canonicalPath = join(ROOT, 'data/canonical.csv');
 const canonicalFinalPath = join(ROOT, 'data/canonical_final_clean.csv');
 const graphPath = join(ROOT, 'public/family-graph.json');
+const updatesPath = join(ROOT, 'data/family-updates.json');
 
 function runBuildGraph() {
   execSync('npx tsx scripts/build-graph.ts', { cwd: ROOT, stdio: 'inherit', env: process.env });
+}
+
+function runApplyUpdates() {
+  execSync('npx tsx scripts/apply-updates.ts', { cwd: ROOT, stdio: 'inherit', env: process.env });
 }
 
 if (existsSync(canonicalPath)) {
@@ -37,4 +42,10 @@ if (existsSync(canonicalPath)) {
     'prebuild-graph: no canonical CSV and no family-graph.json — running build-graph (sample fallback)',
   );
   runBuildGraph();
+}
+
+// Always apply manual updates on top of whatever graph was produced/kept above.
+if (existsSync(updatesPath)) {
+  console.log('prebuild-graph: found data/family-updates.json — applying updates');
+  runApplyUpdates();
 }

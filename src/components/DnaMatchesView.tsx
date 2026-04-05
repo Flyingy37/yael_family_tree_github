@@ -70,7 +70,7 @@ export function DnaMatchesView({ language = 'he', onNavigateToPerson }: Props) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/dna-matches.json')
+    fetch(`${import.meta.env.BASE_URL}dna-matches.json`)
       .then(r => r.json())
       .then(setData)
       .catch(console.error)
