@@ -15,46 +15,60 @@ __pycache__/
 # Build output
 dist/
 
-# Generated data — family-graph.json is tracked for Vercel (no private CSV on server).
-# Regenerate locally: npm run build-graph (requires data/canonical.csv).
-
 # Environment
 .env
 .env.local
+.env.*.local
 
 # IDE / assistants
 .vscode/
 .idea/
 .claude/
+.cursor/
 
-# Excel/binary data files (keep CSVs only)
+# MCP config (may contain project references)
+.mcp.json
+
+# Excel / binary data files
 *.xlsx
 *.xlsm
 *.numbers
 *.docx
 
-# --- Public-repo safety: raw genealogy + DNA + internal reports ---
-# Master person data (contains living people, minors, DNA in notes) - keep locally or in a PRIVATE repo only.
-/data/canonical.csv
-/data/curated.csv
+# ===========================================================================
+# PRIVACY: deny-by-default for genealogy data, DNA, and generated graphs
+# ===========================================================================
 
-# Pipeline outputs / review dumps (names, DNA hints)
-/reports/
+# ── Private genealogy CSV data (deny all CSVs under data/) ──────────────
+/data/*.csv
 
-# Generated / review CSV in public/ (PII)
+# ── Generated graph / data JSON files (contain PII — build locally) ─────
+/public/family-graph.json
+/public/dna-matches.json
+/public/dna-evidence-summaries.json
+/public/livnat-report.json
 /public/unlinked-people-review.csv
 
-# Root-level exports (not used by build-graph; often contain DNA columns)
+# ── GRAMPS / genealogy desktop exports ──────────────────────────────────
+/GRAMPS/
+*.ps
+*.ged
+*.gedcom
+
+# ── Pipeline outputs / review dumps ─────────────────────────────────────
+/reports/
+
+# ── Root-level genealogy exports (not used by build; often contain PII) ─
 /Family_Tree_Yael_Livnat*.csv
 /Family_Tree_Yael_Livnat_github.xlsx
 /canonical_genealogy_master*.csv
 /heritage_6_mar_26*.csv
 /genealogy_exports_cleaned*.xlsx
 
-# One-off research note files at repo root (rename if you need a different pattern)
+# ── One-off research note files ─────────────────────────────────────────
 /Resolved a repeated identity mix-up*
 
-# Typical genetic-genealogy export filenames (adjust if you add public-safe summaries with different names)
+# ── DNA / genetic-genealogy filenames (any location) ────────────────────
 *23andMe*
 *23andme*
 *FTDNA*
@@ -71,9 +85,10 @@ dist/
 *DNA_results*
 *dna_relatives*
 
-# Playwright
+# ── Playwright ──────────────────────────────────────────────────────────
 test-results/
 playwright-report/
 blob-report/
 
+# ── Vercel ──────────────────────────────────────────────────────────────
 .vercel
