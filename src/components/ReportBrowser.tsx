@@ -297,7 +297,7 @@ export function ReportBrowser({ lang }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    fetch('/livnat-report.json')
+    fetch(`${import.meta.env.BASE_URL}livnat-report.json`)
       .then(r => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json() as Promise<ReportData>;

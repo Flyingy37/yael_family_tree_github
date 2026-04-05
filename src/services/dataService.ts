@@ -7,7 +7,7 @@
  */
 import type { FamilyGraph } from '../types';
 
-const GRAPH_URL = '/family-graph.json';
+const GRAPH_URL = `${import.meta.env.BASE_URL}family-graph.json`;
 
 let _cache: FamilyGraph | null = null;
 
