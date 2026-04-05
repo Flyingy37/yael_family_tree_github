@@ -12,7 +12,7 @@ type TabId = 'cards' | 'report';
 const TAB_LABELS = {
   he: {
     cards: '📇 כרטיסים',
-    report: '📋 ירידת דורות',
+    report: '📋 ירידת הדורות',
   },
   en: {
     cards: '📇 Cards',
