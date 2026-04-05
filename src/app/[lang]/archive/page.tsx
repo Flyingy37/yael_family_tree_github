@@ -16,7 +16,7 @@ const TAB_LABELS = {
   },
   en: {
     cards: '📇 Cards',
-    report: '📋 Report',
+    report: '📋 Generation Order',
   },
 } as const;
 

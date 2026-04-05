@@ -64,7 +64,7 @@ const LABELS = {
     genRanges: ['1–3', '4–8', '9–13', '14–18', '19+'],
   },
   en: {
-    title: 'Descendant Report',
+    title: 'Generation Order',
     families: 'Families',
     search: 'Search name...',
     branches: 'branches',
