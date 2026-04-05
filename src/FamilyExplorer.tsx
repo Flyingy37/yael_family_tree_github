@@ -12,6 +12,7 @@ import { Breadcrumb } from './components/Breadcrumb';
 import { MapView } from './components/MapView';
 import { TimelineView } from './components/TimelineView';
 import { StatisticsView } from './components/StatisticsView';
+import { PedigreeFanView } from './components/PedigreeFanView';
 import { WelcomeModal } from './components/WelcomeModal';
 import { getSubtreeIds } from './utils/subtree';
 import {
@@ -19,7 +20,7 @@ import {
   getLastWebVitalsSnapshot,
 } from './performance/webVitals';
 
-type ViewMode = 'tree' | 'map' | 'timeline' | 'stats';
+type ViewMode = 'tree' | 'map' | 'timeline' | 'stats' | 'sunburst';
 
 const VIEW_TABS: Record<'en' | 'he', { id: ViewMode; label: string; icon: string }[]> = {
   en: [
@@ -27,16 +28,18 @@ const VIEW_TABS: Record<'en' | 'he', { id: ViewMode; label: string; icon: string
     { id: 'map', label: 'Map', icon: '🗺️' },
     { id: 'timeline', label: 'Timeline', icon: '📅' },
     { id: 'stats', label: 'Statistics', icon: '📊' },
+    { id: 'sunburst', label: 'Fan', icon: '🌀' },
   ],
   he: [
     { id: 'tree', label: 'עץ', icon: '🌳' },
     { id: 'map', label: 'מפה', icon: '🗺️' },
     { id: 'timeline', label: 'ציר זמן', icon: '📅' },
     { id: 'stats', label: 'סטטיסטיקות', icon: '📊' },
+    { id: 'sunburst', label: 'פן', icon: '🌀' },
   ],
 };
 
-const VALID_VIEWS: ViewMode[] = ['tree', 'map', 'timeline', 'stats'];
+const VALID_VIEWS: ViewMode[] = ['tree', 'map', 'timeline', 'stats', 'sunburst'];
 const INCLUDE_SPOUSE_BRANCHES_STORAGE_KEY = 'includeSpouseBranches';
 
 /** Below this count, the loaded graph is almost certainly a dev sample, not the full export. */
@@ -459,6 +462,17 @@ export default function FamilyExplorer() {
                 personList={personList}
                 filteredIds={displayIds}
                 connectedToYaelIds={connectedToYaelIds}
+                onSelectPerson={handleSelectPerson}
+                language={language}
+              />
+            </div>
+          )}
+          {viewMode === 'sunburst' && (
+            <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+              <PedigreeFanView
+                persons={persons}
+                families={families}
+                rootPersonId={selectedPersonId ?? rootPersonId}
                 onSelectPerson={handleSelectPerson}
                 language={language}
               />

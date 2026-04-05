@@ -1,8 +1,6 @@
 /**
  * ReportBrowser.tsx
  * Descendant Report Browser — Livnat Family Tree.
- * Upgraded visual design: rich generation legend, improved typography,
- * polished sidebar, card-style branch sections, hover actions.
  */
 
 import { useEffect, useState, useMemo, useCallback } from 'react';
@@ -45,7 +43,7 @@ interface Props {
 
 const LABELS = {
   he: {
-    title: 'ירידת הדורות',
+    title: 'סדר הדורות',
     families: 'משפחות',
     search: 'חפש שם...',
     branches: 'ענפים',
@@ -59,12 +57,13 @@ const LABELS = {
     focusTree: 'הצג בעץ',
     persons: 'אנשים',
     spouse: 'בן/בת זוג',
-    legendTitle: 'מפת דורות',
-    genLabels: ['אבות קדמונים', 'עידן היסטורי', 'ראשית המודרני', 'דורות מודרניים', 'דור נוכחי'],
+    filterLabel: 'סינון לפי דור:',
+    allGens: 'הכל',
+    genLabels: ['אבות קדמונים', 'היסטורי', 'מוקדם', 'מודרני', 'נוכחי'],
     genRanges: ['1–3', '4–8', '9–13', '14–18', '19+'],
   },
   en: {
-    title: 'Descendant Report',
+    title: 'Generation Order',
     families: 'Families',
     search: 'Search name...',
     branches: 'branches',
@@ -78,44 +77,82 @@ const LABELS = {
     focusTree: 'Show in tree',
     persons: 'persons',
     spouse: 'spouse',
-    legendTitle: 'Generation Map',
+    filterLabel: 'Filter by generation:',
+    allGens: 'All',
     genLabels: ['Ancestors', 'Historical', 'Early Modern', 'Modern', 'Living'],
     genRanges: ['1–3', '4–8', '9–13', '14–18', '19+'],
   },
 } as const;
 
-// ─── Generation palette ────────────────────────────────────────────────────────
+// ─── Generation tiers ─────────────────────────────────────────────────────────
 
 const GEN_TIERS = [
-  // [maxGen, badgeClass, dotClass, label index]
-  { max: 3,  badge: 'bg-stone-800 text-stone-100',        dot: 'bg-stone-700',    idx: 0 },
-  { max: 8,  badge: 'bg-amber-800 text-amber-50',         dot: 'bg-amber-700',    idx: 1 },
-  { max: 13, badge: 'bg-amber-500 text-white',            dot: 'bg-amber-400',    idx: 2 },
-  { max: 18, badge: 'bg-teal-700 text-white',             dot: 'bg-teal-600',     idx: 3 },
-  { max: Infinity, badge: 'bg-indigo-600 text-white',     dot: 'bg-indigo-500',   idx: 4 },
+  { min: 1,  max: 3,        activeBg: 'bg-stone-800',  activeText: 'text-white', inactiveBg: 'bg-stone-100',  inactiveText: 'text-stone-700', dot: 'bg-stone-700',   badge: 'bg-stone-800 text-stone-100' },
+  { min: 4,  max: 8,        activeBg: 'bg-amber-800',  activeText: 'text-white', inactiveBg: 'bg-amber-50',   inactiveText: 'text-amber-900', dot: 'bg-amber-700',   badge: 'bg-amber-800 text-amber-50' },
+  { min: 9,  max: 13,       activeBg: 'bg-amber-500',  activeText: 'text-white', inactiveBg: 'bg-amber-50',   inactiveText: 'text-amber-800', dot: 'bg-amber-400',   badge: 'bg-amber-500 text-white' },
+  { min: 14, max: 18,       activeBg: 'bg-teal-700',   activeText: 'text-white', inactiveBg: 'bg-teal-50',    inactiveText: 'text-teal-900',  dot: 'bg-teal-600',    badge: 'bg-teal-700 text-white' },
+  { min: 19, max: Infinity, activeBg: 'bg-indigo-600', activeText: 'text-white', inactiveBg: 'bg-indigo-50',  inactiveText: 'text-indigo-900',dot: 'bg-indigo-500',  badge: 'bg-indigo-600 text-white' },
 ] as const;
 
 function getTier(gen: number | null) {
-  if (gen === null) return { badge: 'bg-stone-300 text-stone-600', dot: 'bg-stone-300', idx: -1 };
-  return GEN_TIERS.find(t => gen <= t.max) ?? GEN_TIERS[GEN_TIERS.length - 1];
+  if (gen === null) return { badge: 'bg-stone-300 text-stone-600', dot: 'bg-stone-300' };
+  return GEN_TIERS.find(t => gen >= t.min && gen <= t.max) ?? GEN_TIERS[GEN_TIERS.length - 1];
 }
 
-// ─── Generation Legend ────────────────────────────────────────────────────────
+function personMatchesTier(gen: number | null, tierIdx: number | null): boolean {
+  if (tierIdx === null) return true;
+  if (gen === null) return false;
+  const tier = GEN_TIERS[tierIdx];
+  return gen >= tier.min && gen <= tier.max;
+}
 
-function GenLegend({ lbl }: { lbl: (typeof LABELS)['en' | 'he'] }) {
+// ─── Generation filter bar ────────────────────────────────────────────────────
+
+function GenFilterBar({
+  lbl,
+  activeTier,
+  onSelect,
+}: {
+  lbl: (typeof LABELS)['en' | 'he'];
+  activeTier: number | null;
+  onSelect: (tier: number | null) => void;
+}) {
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 px-4 py-2 bg-white border-b border-stone-100">
-      <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wide mr-1 shrink-0">
-        {lbl.legendTitle}
+    <div className="flex flex-wrap items-center gap-2 px-4 py-2.5 bg-white border-b border-stone-200">
+      <span className="text-[11px] font-semibold text-stone-400 shrink-0">
+        {lbl.filterLabel}
       </span>
-      {GEN_TIERS.map((tier, i) => (
-        <span key={i} className="flex items-center gap-1">
-          <span className={`inline-flex items-center justify-center w-6 h-4 rounded text-[9px] font-bold ${tier.badge}`}>
-            {lbl.genRanges[i]}
-          </span>
-          <span className="text-[10px] text-stone-500">{lbl.genLabels[i]}</span>
-        </span>
-      ))}
+
+      {/* All button */}
+      <button
+        onClick={() => onSelect(null)}
+        className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all ${
+          activeTier === null
+            ? 'bg-stone-800 text-white border-stone-800 shadow-sm'
+            : 'bg-stone-100 text-stone-600 border-stone-200 hover:bg-stone-200'
+        }`}
+      >
+        {lbl.allGens}
+      </button>
+
+      {/* One button per tier */}
+      {GEN_TIERS.map((tier, i) => {
+        const isActive = activeTier === i;
+        return (
+          <button
+            key={i}
+            onClick={() => onSelect(isActive ? null : i)}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all ${
+              isActive
+                ? `${tier.activeBg} ${tier.activeText} border-transparent shadow-sm scale-105`
+                : `${tier.inactiveBg} ${tier.inactiveText} border-stone-200 hover:opacity-80`
+            }`}
+          >
+            <span className="font-bold tabular-nums">{lbl.genRanges[i]}</span>
+            <span className="hidden sm:inline">{lbl.genLabels[i]}</span>
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -140,7 +177,6 @@ function PersonRow({
   const tier = getTier(person.generation);
   const isSpouse = person.isSpouse;
 
-  // Highlight matched text
   const displayName = useMemo(() => {
     if (!highlight) return <>{person.name}</>;
     const idx = person.name.toLowerCase().indexOf(highlight.toLowerCase());
@@ -162,12 +198,8 @@ function PersonRow({
         isSpouse ? 'ms-6 opacity-80' : ''
       }`}
     >
-      {/* Connector line for spouse */}
-      {isSpouse && (
-        <span className="shrink-0 text-stone-300 text-xs select-none">⚭</span>
-      )}
+      {isSpouse && <span className="shrink-0 text-stone-300 text-xs select-none">⚭</span>}
 
-      {/* Generation badge */}
       {!isSpouse && (
         <span
           className={`shrink-0 inline-flex items-center justify-center w-7 h-5 rounded text-[10px] font-bold tracking-tight ${tier.badge}`}
@@ -177,12 +209,8 @@ function PersonRow({
         </span>
       )}
 
-      {/* Dot for spouse */}
-      {isSpouse && (
-        <span className={`shrink-0 w-2 h-2 rounded-full mt-0.5 ${tier.dot}`} />
-      )}
+      {isSpouse && <span className={`shrink-0 w-2 h-2 rounded-full mt-0.5 ${tier.dot}`} />}
 
-      {/* Name + dates */}
       <div className="flex-1 min-w-0 flex flex-wrap items-baseline gap-x-2">
         <span className={`text-sm leading-snug font-medium ${isSpouse ? 'text-stone-600' : 'text-stone-800'}`}>
           {displayName}
@@ -194,7 +222,6 @@ function PersonRow({
         </span>
       </div>
 
-      {/* Focus button — visible on hover */}
       <button
         onClick={handleFocus}
         title={lbl.focusTree}
@@ -213,37 +240,40 @@ function BranchSection({
   branch,
   defaultOpen,
   searchQuery,
+  activeTier,
   lbl,
 }: {
   branch: ReportBranch;
   defaultOpen: boolean;
   searchQuery: string;
+  activeTier: number | null;
   lbl: (typeof LABELS)['en' | 'he'];
 }) {
   const [open, setOpen] = useState(defaultOpen);
 
   const filteredPersons = useMemo(() => {
-    if (!searchQuery) return branch.persons;
-    const q = searchQuery.toLowerCase();
-    return branch.persons.filter(p => p.name.toLowerCase().includes(q));
-  }, [branch.persons, searchQuery]);
+    return branch.persons.filter(p => {
+      const matchesSearch = !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase());
+      // For spouses, use the generation from the person they're linked to (approximate: show if parent passes)
+      const matchesTier = p.isSpouse ? true : personMatchesTier(p.generation, activeTier);
+      return matchesSearch && matchesTier;
+    });
+  }, [branch.persons, searchQuery, activeTier]);
 
   useEffect(() => {
-    if (searchQuery && filteredPersons.length > 0) setOpen(true);
-  }, [searchQuery, filteredPersons.length]);
+    if ((searchQuery || activeTier !== null) && filteredPersons.length > 0) setOpen(true);
+  }, [searchQuery, activeTier, filteredPersons.length]);
 
-  if (searchQuery && filteredPersons.length === 0) return null;
+  if (filteredPersons.length === 0) return null;
 
   const maxGen = branch.persons.reduce(
     (m, p) => (p.generation !== null ? Math.max(m, p.generation) : m),
     0
   );
-
   const personCount = filteredPersons.filter(p => !p.isSpouse).length;
 
   return (
     <div className="border border-stone-200 rounded-xl mb-3 overflow-hidden shadow-sm">
-      {/* Branch header */}
       <button
         onClick={() => setOpen(o => !o)}
         className="w-full flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-stone-50 to-amber-50 hover:from-amber-50 hover:to-amber-100 transition-colors text-left border-b border-stone-100"
@@ -259,16 +289,10 @@ function BranchSection({
           {maxGen > 0 && (
             <span className="text-stone-400">{maxGen} {lbl.generations}</span>
           )}
-          <span
-            className={`text-stone-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
-            aria-hidden
-          >
-            ▾
-          </span>
+          <span className={`text-stone-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} aria-hidden>▾</span>
         </div>
       </button>
 
-      {/* Person list */}
       {open && (
         <div className="px-2 py-2 space-y-0.5 bg-white">
           {filteredPersons.map(person => (
@@ -295,6 +319,7 @@ export function ReportBrowser({ lang }: Props) {
   const [loadError, setLoadError] = useState(false);
   const [selectedFamily, setSelectedFamily] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTier, setActiveTier] = useState<number | null>(null);
 
   useEffect(() => {
     fetch(`${import.meta.env.BASE_URL}livnat-report.json`)
@@ -311,28 +336,29 @@ export function ReportBrowser({ lang }: Props) {
 
   const familiesWithMatches = useMemo(() => {
     if (!data) return [];
-    if (!searchQuery) return data.families;
     const q = searchQuery.toLowerCase();
     return data.families.filter(fam =>
       fam.branches.some(branch =>
-        branch.persons.some(p => p.name.toLowerCase().includes(q))
+        branch.persons.some(p => {
+          const matchesSearch = !searchQuery || p.name.toLowerCase().includes(q);
+          const matchesTier = p.isSpouse ? true : personMatchesTier(p.generation, activeTier);
+          return matchesSearch && matchesTier;
+        })
       )
     );
-  }, [data, searchQuery]);
+  }, [data, searchQuery, activeTier]);
 
   useEffect(() => {
-    if (searchQuery && familiesWithMatches.length > 0) {
+    if (familiesWithMatches.length > 0) {
       const stillMatches = familiesWithMatches.some(f => f.name === selectedFamily);
       if (!stillMatches) setSelectedFamily(familiesWithMatches[0].name);
     }
-  }, [searchQuery, familiesWithMatches, selectedFamily]);
+  }, [familiesWithMatches, selectedFamily]);
 
   const currentFamily = useMemo(
     () => (data?.families ?? []).find(f => f.name === selectedFamily) ?? null,
     [data, selectedFamily]
   );
-
-  // ── Loading / Error ─────────────────────────────────────────────────────────
 
   if (loadError) {
     return (
@@ -351,8 +377,6 @@ export function ReportBrowser({ lang }: Props) {
       </div>
     );
   }
-
-  // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
     <div dir={isRtl ? 'rtl' : 'ltr'} className="flex flex-col h-full min-h-0 bg-stone-50">
@@ -387,8 +411,8 @@ export function ReportBrowser({ lang }: Props) {
         </div>
       </div>
 
-      {/* ── Generation legend ────────────────────────────────────────────────── */}
-      <GenLegend lbl={lbl} />
+      {/* ── Generation filter buttons ────────────────────────────────────────── */}
+      <GenFilterBar lbl={lbl} activeTier={activeTier} onSelect={setActiveTier} />
 
       {/* ── Body ────────────────────────────────────────────────────────────── */}
       <div className="flex flex-1 min-h-0 overflow-hidden">
@@ -399,7 +423,7 @@ export function ReportBrowser({ lang }: Props) {
             {lbl.families}
           </div>
           <ul className="pb-4">
-            {(searchQuery ? familiesWithMatches : data.families).map(fam => {
+            {(familiesWithMatches.length > 0 ? familiesWithMatches : data.families).map(fam => {
               const isSelected = fam.name === selectedFamily;
               const totalPersons = fam.branches.reduce((s, b) => s + b.persons.length, 0);
               return (
@@ -424,7 +448,7 @@ export function ReportBrowser({ lang }: Props) {
                 </li>
               );
             })}
-            {searchQuery && familiesWithMatches.length === 0 && (
+            {familiesWithMatches.length === 0 && (
               <li className="px-3 py-4 text-xs text-stone-400">{lbl.noResults}</li>
             )}
           </ul>
@@ -434,12 +458,16 @@ export function ReportBrowser({ lang }: Props) {
         <main className="flex-1 overflow-y-auto px-4 py-4">
           {currentFamily ? (
             <>
-              {/* Family header */}
               <div className="flex items-center gap-2 mb-4">
                 <h3 className="text-lg font-bold text-stone-900">{currentFamily.name}</h3>
                 <span className="text-xs text-stone-400 bg-stone-100 rounded-full px-2 py-0.5">
                   {currentFamily.branches.length} {lbl.branches}
                 </span>
+                {activeTier !== null && (
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${GEN_TIERS[activeTier].activeBg} ${GEN_TIERS[activeTier].activeText}`}>
+                    {lbl.genRanges[activeTier]} {lbl.genLabels[activeTier]}
+                  </span>
+                )}
               </div>
 
               {currentFamily.branches.map((branch, idx) => (
@@ -448,6 +476,7 @@ export function ReportBrowser({ lang }: Props) {
                   branch={branch}
                   defaultOpen={idx === 0}
                   searchQuery={searchQuery}
+                  activeTier={activeTier}
                   lbl={lbl}
                 />
               ))}

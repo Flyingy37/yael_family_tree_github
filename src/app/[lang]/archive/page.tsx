@@ -12,11 +12,11 @@ type TabId = 'cards' | 'report';
 const TAB_LABELS = {
   he: {
     cards: '📇 כרטיסים',
-    report: '📋 ירידת דורות',
+    report: '📋 סדר הדורות',
   },
   en: {
     cards: '📇 Cards',
-    report: '📋 Report',
+    report: '📋 Generation Order',
   },
 } as const;
 
