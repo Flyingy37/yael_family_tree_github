@@ -287,10 +287,10 @@ export default function FamilyExplorer() {
                     document.getElementById(`explorer-tab-${nextId}`)?.focus({ preventScroll: true });
                   });
                 }}
-                className={`px-3 py-1.5 rounded-md text-sm transition-colors whitespace-nowrap ${
+                className={`px-3 py-1.5 rounded-md text-sm transition-all whitespace-nowrap ${
                   viewMode === tab.id
-                    ? 'bg-white shadow-sm font-medium text-gray-800'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'bg-white shadow font-semibold text-stone-900'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-white/60'
                 }`}
               >
                 {tab.icon} {tab.label}
