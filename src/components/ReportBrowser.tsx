@@ -45,7 +45,7 @@ interface Props {
 
 const LABELS = {
   he: {
-    title: 'ירידת הדורות',
+    title: 'סדר הדורות',
     families: 'משפחות',
     search: 'חפש שם...',
     branches: 'ענפים',
