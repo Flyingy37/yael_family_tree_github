@@ -8,6 +8,9 @@ import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 import type { Person } from '../types';
 import { approximateCoordinatesForBirthPlace } from '../utils/birthPlaceCoordinates';
 
+// Vite bundles image imports as full URLs; delete the prototype method
+// that auto-constructs the path from the CSS imagePath (which doubles the URL).
+delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl,
   iconUrl,
