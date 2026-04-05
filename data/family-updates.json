@@ -1,0 +1,6 @@
+{
+  "version": "1.0",
+  "comment": "Manual additions and overrides for the family tree. Edit this file to add new people or update existing ones. DO NOT edit public/family-graph.json directly.",
+  "persons": [],
+  "overrides": {}
+}
