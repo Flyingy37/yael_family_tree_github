@@ -185,18 +185,22 @@ function main() {
     }
   }
 
-  // Build families array
-  // Group "Unknown" branches together; all others by their family name
+  // Build families array — exclude the Unknown bucket entirely.
+  // Branches whose source family name is missing/invalid land in UNKNOWN_LABEL;
+  // we normalise and drop them so no raw "Unknown" category is ever rendered.
   const families = [];
 
-  // Sort family names: known surnames first, then Unknown
-  const sortedFamilyNames = [...familyMap.keys()].sort((a, b) => {
-    const aIsUnknown = a === UNKNOWN_LABEL;
-    const bIsUnknown = b === UNKNOWN_LABEL;
-    if (aIsUnknown && !bIsUnknown) return 1;
-    if (!aIsUnknown && bIsUnknown) return -1;
-    return a.localeCompare(b);
-  });
+  /** Returns true for any placeholder family name that should be hidden. */
+  function isPlaceholderFamily(name) {
+    if (!name) return true;
+    const clean = name.trim().toLowerCase();
+    return !clean || clean === 'unknown' || clean === 'undefined' || clean === 'null';
+  }
+
+  // Sort valid family names alphabetically; Unknown bucket is simply skipped.
+  const sortedFamilyNames = [...familyMap.keys()]
+    .filter(name => !isPlaceholderFamily(name))
+    .sort((a, b) => a.localeCompare(b));
 
   for (const familyName of sortedFamilyNames) {
     const branches = familyMap.get(familyName);
@@ -206,11 +210,16 @@ function main() {
     });
   }
 
-  const totalBranches = [...familyMap.values()].reduce((sum, branches) => sum + branches.length, 0);
+  // Totals reflect only the included (named) families.
+  const totalBranches = families.reduce((sum, fam) => sum + fam.branches.length, 0);
+  const totalNamedPersons = families.reduce(
+    (sum, fam) => sum + fam.branches.reduce((s2, b) => s2 + b.persons.length, 0),
+    0,
+  );
 
   const output = {
     meta: {
-      totalPersons,
+      totalPersons: totalNamedPersons,
       totalBranches,
     },
     families,
