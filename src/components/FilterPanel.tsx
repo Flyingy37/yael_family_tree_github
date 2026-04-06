@@ -160,7 +160,7 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
               className="rounded"
             />
             <span className="text-xs text-gray-600">
-              {t ? '🙈 הסתר רשומות לא מזוהות (Unknown/FNU)' : '🙈 Hide unknown placeholders (Unknown/FNU)'}
+              {t ? 'הסתר רשומות לא מזוהות (Unknown/FNU)' : 'Hide unknown placeholders (Unknown/FNU)'}
             </span>
           </label>
         </CollapsibleSection>

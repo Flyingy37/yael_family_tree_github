@@ -14,7 +14,7 @@ interface Props {
 }
 
 // Top-N surnames get individual slices; the rest are grouped as "Other"
-const MAX_SLICES = 35;
+const MAX_SLICES = 100;
 
 // Warm palette for family branches
 const PALETTE = [
@@ -71,11 +71,9 @@ export function FamilyBranchSunburst({ personList, filteredIds, language = 'he',
       counts.set(label, (counts.get(label) ?? 0) + 1);
     }
 
-    // Sort descending, take top MAX_SLICES
+    // Sort descending, take top MAX_SLICES (no "Other" bucket)
     const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);
     const top = sorted.slice(0, MAX_SLICES);
-    const otherCount = sorted.slice(MAX_SLICES).reduce((s, [, n]) => s + n, 0);
-    if (otherCount > 0) top.push([t ? 'אחר' : 'Other', otherCount]);
 
     const total = top.reduce((s, [, n]) => s + n, 0);
     let cursor = -Math.PI / 2;
