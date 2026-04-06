@@ -359,17 +359,25 @@ export function PedigreeFanView({
         const ringWidthPx = outerR - innerRing;
 
         if (arcWidthPx > 22 && ringWidthPx > 12) {
-          const arcR   = innerRing + ringWidthPx * 0.38;
+          const arcR   = innerRing + ringWidthPx * 0.4;
           const pathId = `arc-${node.id}-${gen}`;
 
-          // Left half → reverse path so text reads correctly
-          const isLeft = midAngle > Math.PI / 2 || midAngle < -Math.PI / 2;
+          // Left half (cos < 0) → counter-clockwise arc so text reads left-to-right
+          const isLeft = Math.cos(midAngle) < 0;
           const ta = slotStart + 0.015, tb = slotEnd - 0.015;
-          const pathD = isLeft
-            ? describeArc(cx, cy, arcR, tb, ta)
-            : describeArc(cx, cy, arcR, ta, tb);
 
-          defs.append('path').attr('id', pathId).attr('d', pathD);
+          // Build arc path: CW for right side, CCW for left side.
+          // All segments span < 180° so largeArc is always 0.
+          const arcPath = (r: number, reversed: boolean) => {
+            const a1 = reversed ? tb : ta;
+            const a2 = reversed ? ta : tb;
+            const x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
+            const x2 = cx + r * Math.cos(a2), y2 = cy + r * Math.sin(a2);
+            const sweep = reversed ? 0 : 1;   // CCW for left, CW for right
+            return `M ${x1} ${y1} A ${r} ${r} 0 0 ${sweep} ${x2} ${y2}`;
+          };
+
+          defs.append('path').attr('id', pathId).attr('d', arcPath(arcR, isLeft));
 
           const fontSize = Math.max(7, Math.min(13.5, Math.min(arcWidthPx / 4.5, ringWidthPx * 0.36)));
           const charW    = fontSize * 0.55;
@@ -391,16 +399,13 @@ export function PedigreeFanView({
               .attr('fill', '#1c1917')
               .text(label);
 
-          // Year range below name
+          // Year range (second text line)
           if (ringWidthPx > fontSize * 2.8 && arcWidthPx > 40) {
             const yr = yearRange(node.birthDate, node.deathDate);
             if (yr) {
-              const arcR2   = innerRing + ringWidthPx * 0.62;
+              const arcR2   = innerRing + ringWidthPx * 0.65;
               const pathId2 = `arc2-${node.id}-${gen}`;
-              const pathD2  = isLeft
-                ? describeArc(cx, cy, arcR2, tb, ta)
-                : describeArc(cx, cy, arcR2, ta, tb);
-              defs.append('path').attr('id', pathId2).attr('d', pathD2);
+              defs.append('path').attr('id', pathId2).attr('d', arcPath(arcR2, isLeft));
 
               g.append('text')
                 .attr('pointer-events', 'none')
