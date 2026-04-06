@@ -93,23 +93,81 @@
   }
 }
 
+/* ── Typography ─────────────────────────────────────────────────────────────
+   Hebrew : Heebo (body) + Frank Ruhl Libre (display headings)
+   English: Inter (body/UI) — modern, very legible at small sizes
+   Fallbacks: system-ui → Arial → sans-serif
+   ───────────────────────────────────────────────────────────────────────── */
+
+:lang(he), [dir="rtl"] {
+  font-family: 'Heebo', 'Frank Ruhl Libre', system-ui, Arial, sans-serif;
+  font-feature-settings: "kern" 1;
+  letter-spacing: 0.01em;
+  line-height: 1.65;
+}
+
+:lang(en), [dir="ltr"] {
+  font-family: 'Inter', system-ui, Arial, sans-serif;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  letter-spacing: -0.01em;
+  line-height: 1.6;
+}
+
 html, body, #root {
   height: 100%;
   margin: 0;
   padding: 0;
-  font-family: 'Heebo', Arial, sans-serif;
+  /* Default: Hebrew */
+  font-family: 'Heebo', 'Frank Ruhl Libre', system-ui, Arial, sans-serif;
   direction: rtl;
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 @layer base {
-  h1 { @apply text-3xl font-bold; color: var(--color-text-primary); }
-  h2 { @apply text-2xl font-semibold; color: var(--color-text-primary); }
-  h3 { @apply text-xl font-semibold; color: var(--color-text-secondary); }
-  h4 { @apply text-lg font-medium; color: var(--color-text-secondary); }
-  p  { @apply text-base; color: var(--color-text-secondary); }
+  h1 {
+    @apply font-bold;
+    font-size: 1.75rem;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+  h2 {
+    @apply font-semibold;
+    font-size: 1.375rem;
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+    color: var(--color-text-primary);
+  }
+  h3 {
+    @apply font-semibold;
+    font-size: 1.125rem;
+    line-height: 1.4;
+    color: var(--color-text-secondary);
+  }
+  h4 {
+    @apply font-medium;
+    font-size: 0.9375rem;
+    color: var(--color-text-secondary);
+  }
+  p  { @apply text-base; color: var(--color-text-secondary); line-height: 1.7; }
   small { @apply text-sm; color: var(--color-text-muted); }
+}
+
+/* Hebrew display headings use Frank Ruhl Libre (serif, elegant) */
+.font-display-he {
+  font-family: 'Frank Ruhl Libre', 'Heebo', serif;
+  font-weight: 700;
+}
+
+/* English display headings use Inter with tight tracking */
+.font-display-en {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
 }
 
 @layer utilities {

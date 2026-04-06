@@ -334,18 +334,27 @@ export function ReportBrowser({ lang }: Props) {
       .catch(() => setLoadError(true));
   }, []);
 
+  /** Returns true for any placeholder/invalid family name that must never be shown. */
+  const isPlaceholderFamily = (name: string): boolean => {
+    if (!name) return true;
+    const clean = name.trim().toLowerCase();
+    return clean === '' || clean === 'unknown' || clean === 'undefined' || clean === 'null';
+  };
+
   const familiesWithMatches = useMemo(() => {
     if (!data) return [];
     const q = searchQuery.toLowerCase();
-    return data.families.filter(fam =>
-      fam.branches.some(branch =>
-        branch.persons.some(p => {
-          const matchesSearch = !searchQuery || p.name.toLowerCase().includes(q);
-          const matchesTier = p.isSpouse ? true : personMatchesTier(p.generation, activeTier);
-          return matchesSearch && matchesTier;
-        })
-      )
-    );
+    return data.families
+      .filter(fam => !isPlaceholderFamily(fam.name))   // ← never render Unknown bucket
+      .filter(fam =>
+        fam.branches.some(branch =>
+          branch.persons.some(p => {
+            const matchesSearch = !searchQuery || p.name.toLowerCase().includes(q);
+            const matchesTier = p.isSpouse ? true : personMatchesTier(p.generation, activeTier);
+            return matchesSearch && matchesTier;
+          })
+        )
+      );
   }, [data, searchQuery, activeTier]);
 
   useEffect(() => {
