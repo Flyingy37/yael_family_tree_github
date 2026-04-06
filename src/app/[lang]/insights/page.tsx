@@ -203,7 +203,7 @@ export default function InsightsPage() {
             )}
             accent="violet"
           >
-            <div style={{ height: 520 }} className="rounded-xl overflow-hidden border border-stone-100">
+            <div style={{ height: 520 }} className="rounded-xl overflow-hidden border border-stone-100 flex flex-col">
               <PedigreeFanView
                 persons={persons}
                 families={families}
