@@ -1294,8 +1294,7 @@ function isMissingSurname(value: string | null | undefined): boolean {
   if (!value) return true;
   const normalized = normalizeForDedup(value);
   if (!normalized) return true;
-  // 'u' matches the GEDCOM "Unknown" placeholder for sex that can leak into surname fields
-  return /^(unknown|fnu|lnu|none|n\/a|na|u|-+)$/i.test(normalized);
+  return /^(unknown|fnu|lnu|none|n\/a|na|-+)$/i.test(normalized);
 }
 
 function pickMostCommonSurname(candidates: string[]): string | null {
@@ -1316,23 +1315,6 @@ function pickMostCommonSurname(candidates: string[]): string | null {
       if (b.count !== a.count) return b.count - a.count;
       return b.value.length - a.value.length;
     })[0].value;
-}
-
-/**
- * Extract a surname from the last word of a full name as a fallback
- * when both surname fields are missing and family inference fails.
- * Returns null for single-word names, placeholder names, or empty input.
- */
-function extractSurnameFromFullName(fullName: string | null | undefined): string | null {
-  if (!fullName) return null;
-  // Strip parenthesized content (e.g. nicknames) before splitting
-  const cleaned = fullName.replace(/\([^)]*\)/g, '').trim();
-  const parts = cleaned.split(/\s+/).filter(Boolean);
-  if (parts.length < 2) return null;
-  const candidate = parts[parts.length - 1];
-  if (isMissingSurname(candidate)) return null;
-  if (!isMeaningfulPersonName(candidate)) return null;
-  return candidate;
 }
 
 function enrichMissingSurnames(persons: Person[], families: Family[]): Person[] {
@@ -1379,8 +1361,7 @@ function enrichMissingSurnames(persons: Person[], families: Family[]): Person[] 
 
     const inferredSurname =
       pickMostCommonSurname(parentCandidates) ||
-      pickMostCommonSurname(spouseCandidates) ||
-      extractSurnameFromFullName(person.fullName);
+      pickMostCommonSurname(spouseCandidates);
 
     if (!inferredSurname) return person;
     return {
@@ -1838,8 +1819,21 @@ function buildGraph() {
       return overrides ? { ...person, ...overrides } : person;
     });
 
+  // BFS-based generation fallback: if curated.csv was absent, all persons have
+  // generation=null. Compute relative generation from the root (@I1@) via BFS
+  // so that Statistics / Generation Distribution charts have real data.
+  const bfsGenerations = computeGenerationsBFS(enrichedPersons, deduped.families, '@I1@');
+  const nullGenCount = enrichedPersons.filter(p => p.generation === null).length;
+  if (nullGenCount > 0) {
+    console.log(`Enriching ${nullGenCount} persons with BFS-computed generation values`);
+  }
+  const finalPersons = enrichedPersons.map(person => ({
+    ...person,
+    generation: person.generation ?? (bfsGenerations.get(person.id) ?? null),
+  }));
+
   const graph = {
-    persons: enrichedPersons,
+    persons: finalPersons,
     families: deduped.families,
     rootPersonId: '@I1@',
   };
@@ -1853,6 +1847,77 @@ function buildGraph() {
     `Built graph: ${deduped.persons.length} persons, ${deduped.families.length} families (merged ${deduped.mergedCount} duplicates)`
   );
   console.log(`Output: ${outputPath}`);
+}
+
+/**
+ * BFS from rootPersonId through parent-child edges to assign a relative
+ * generation to every reachable person.
+ *
+ * Root = 0 (Yael), parents = -1, -2 …, children = +1, +2 …
+ * Spouses are linked to each other via shared family entries and receive
+ * the same generation as the parent who is already assigned.
+ */
+function computeGenerationsBFS(persons: Person[], families: Family[], rootPersonId: string): Map<string, number> {
+  const personIds = new Set(persons.map(p => p.id));
+  // childId → parentIds
+  const parentOf = new Map<string, string[]>();
+  // parentId → childIds
+  const childrenOf = new Map<string, string[]>();
+  // spouseId → partnerIds (same generation)
+  const spousesOf = new Map<string, string[]>();
+
+  for (const fam of families) {
+    const validSpouses  = fam.spouses.filter(id => personIds.has(id));
+    const validChildren = fam.children.filter(id => personIds.has(id));
+
+    for (const childId of validChildren) {
+      if (!parentOf.has(childId)) parentOf.set(childId, []);
+      parentOf.get(childId)!.push(...validSpouses);
+    }
+    for (const spouseId of validSpouses) {
+      if (!childrenOf.has(spouseId)) childrenOf.set(spouseId, []);
+      childrenOf.get(spouseId)!.push(...validChildren);
+    }
+    // Link spouses together so they receive the same generation
+    for (const spouseId of validSpouses) {
+      if (!spousesOf.has(spouseId)) spousesOf.set(spouseId, []);
+      spousesOf.get(spouseId)!.push(...validSpouses.filter(id => id !== spouseId));
+    }
+  }
+
+  const genMap = new Map<string, number>();
+  if (!personIds.has(rootPersonId)) return genMap;
+
+  const queue: Array<[string, number]> = [[rootPersonId, 0]];
+  genMap.set(rootPersonId, 0);
+
+  while (queue.length > 0) {
+    const [current, gen] = queue.shift()!;
+
+    // Parents are one generation earlier
+    for (const parentId of (parentOf.get(current) ?? [])) {
+      if (!genMap.has(parentId)) {
+        genMap.set(parentId, gen - 1);
+        queue.push([parentId, gen - 1]);
+      }
+    }
+    // Children are one generation later
+    for (const childId of (childrenOf.get(current) ?? [])) {
+      if (!genMap.has(childId)) {
+        genMap.set(childId, gen + 1);
+        queue.push([childId, gen + 1]);
+      }
+    }
+    // Spouses share the same generation
+    for (const spouseId of (spousesOf.get(current) ?? [])) {
+      if (!genMap.has(spouseId)) {
+        genMap.set(spouseId, gen);
+        queue.push([spouseId, gen]);
+      }
+    }
+  }
+
+  return genMap;
 }
 
 buildGraph();

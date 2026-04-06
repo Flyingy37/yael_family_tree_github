@@ -14,7 +14,7 @@ interface Props {
 }
 
 // Top-N surnames get individual slices; the rest are grouped as "Other"
-const MAX_SLICES = 14;
+const MAX_SLICES = 35;
 
 // Warm palette for family branches
 const PALETTE = [
@@ -22,6 +22,9 @@ const PALETTE = [
   '#0e7490', '#a16207', '#be185d', '#4338ca', '#047857',
   '#9a3412', '#1e40af', '#166534', '#6d28d9', '#9f1239',
   '#155e75', '#92400e', '#831843', '#3730a3', '#065f46',
+  '#78350f', '#1d4ed8', '#14532d', '#5b21b6', '#881337',
+  '#164e63', '#854d0e', '#9d174d', '#312e81', '#064e3b',
+  '#7c2d12', '#1e3a8a', '#052e16', '#4c1d95', '#4d7c0f',
 ];
 
 function polarToCartesian(cx: number, cy: number, r: number, angle: number) {
