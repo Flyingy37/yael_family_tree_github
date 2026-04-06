@@ -7,9 +7,20 @@ function normalizeForMatch(value: string): string {
     .trim();
 }
 
+/** Placeholder surnames that carry no genealogical meaning. */
+const PLACEHOLDER_RE = /^(unknown|fnu|lnu|unk|none|n\/a|na|-+|unnamed|unbekannt)$/i;
+
+export function isPlaceholderSurname(value: string | null | undefined): boolean {
+  if (!value) return true;
+  return PLACEHOLDER_RE.test(value.trim());
+}
+
 export function getCanonicalSurnameLabel(value: string): string {
   const normalized = normalizeForMatch(value);
   if (!normalized) return '';
+
+  // Suppress placeholder surnames — return empty so callers can skip them
+  if (PLACEHOLDER_RE.test(normalized)) return '';
 
   // Family transliteration cluster: Alperovich and common Latin/Hebrew/Cyrillic variants.
   if (

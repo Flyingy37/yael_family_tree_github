@@ -4,6 +4,7 @@
  */
 import { useMemo, useState } from 'react';
 import type { Person } from '../types';
+import { isPlaceholderSurname } from '../utils/surname';
 
 interface Props {
   personList: Person[];
@@ -61,8 +62,9 @@ export function FamilyBranchSunburst({ personList, filteredIds, language = 'he',
     const counts = new Map<string, number>();
     for (const person of personList) {
       if (!filteredIds.has(person.id)) continue;
-      const label = (person.surnameFinal || person.surname || '').trim();
-      if (!label) continue;
+      const raw = (person.surnameFinal || person.surname || '').trim();
+      const label = raw;
+      if (!label || isPlaceholderSurname(label)) continue;
       counts.set(label, (counts.get(label) ?? 0) + 1);
     }
 

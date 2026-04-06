@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { Person } from '../types';
-import { getCanonicalSurnameLabel } from '../utils/surname';
+import { getCanonicalSurnameLabel, isPlaceholderSurname } from '../utils/surname';
 import { FamilyBranchSunburst } from './FamilyBranchSunburst';
 
 interface Props {
@@ -101,7 +101,9 @@ export function StatisticsView({ personList, filteredIds, connectedToYaelIds, on
     const tagValues = source.flatMap(p => p.tags || []);
     const topTags = topCounts(tagValues, 12);
     const topSurnames = topCounts(
-      source.map(p => getCanonicalSurnameLabel(p.surnameFinal || p.surname || '')),
+      source
+        .map(p => getCanonicalSurnameLabel(p.surnameFinal || p.surname || ''))
+        .filter(label => label && !isPlaceholderSurname(label)),
       12
     );
     const topBirthPlaces = topCounts(source.map(p => p.birthPlace || ''), 10);
