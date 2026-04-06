@@ -146,6 +146,14 @@ export function PedigreeFanView({
   const [chartType,   setChartType]   = useState<ChartType>('fan');
   const [search,      setSearch]      = useState('');
   const [searchOpen,  setSearchOpen]  = useState(false);
+  const [zoom,        setZoom]        = useState(1.0);
+
+  const ZOOM_MIN = 0.4;
+  const ZOOM_MAX = 3.0;
+  const ZOOM_STEP = 0.2;
+  const zoomIn  = () => setZoom(z => Math.min(ZOOM_MAX, parseFloat((z + ZOOM_STEP).toFixed(2))));
+  const zoomOut = () => setZoom(z => Math.max(ZOOM_MIN, parseFloat((z - ZOOM_STEP).toFixed(2))));
+  const zoomReset = () => setZoom(1.0);
 
   const t = language === 'he';
 
@@ -780,8 +788,57 @@ export function PedigreeFanView({
       )}
 
       {/* ── SVG canvas ───────────────────────────────────────────────────────── */}
-      <div ref={containerRef} className="flex-1 min-h-0 flex items-center justify-center p-2">
-        <svg ref={svgRef} className="w-full h-full" style={{ maxWidth: '100%', maxHeight: '100%' }} />
+      <div
+        ref={containerRef}
+        className="flex-1 min-h-0 flex items-center justify-center p-2 relative overflow-hidden"
+        onWheel={e => { e.preventDefault(); e.deltaY < 0 ? zoomIn() : zoomOut(); }}
+      >
+        <svg
+          ref={svgRef}
+          className="w-full h-full"
+          style={{
+            maxWidth: '100%',
+            maxHeight: '100%',
+            transform: `scale(${zoom})`,
+            transformOrigin: 'center center',
+            transition: 'transform 0.15s ease',
+          }}
+        />
+
+        {/* ── Zoom buttons (bottom-left corner) ─────────────────────────── */}
+        <div className="absolute bottom-4 start-4 flex flex-col gap-1 z-10">
+          <button
+            onClick={zoomIn}
+            disabled={zoom >= ZOOM_MAX}
+            title={t ? 'הגדל' : 'Zoom in'}
+            className="w-8 h-8 rounded-lg bg-white border border-stone-200 shadow-sm text-stone-700
+                       hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed
+                       flex items-center justify-center font-bold text-base transition-colors"
+          >+</button>
+          <button
+            onClick={zoomOut}
+            disabled={zoom <= ZOOM_MIN}
+            title={t ? 'הקטן' : 'Zoom out'}
+            className="w-8 h-8 rounded-lg bg-white border border-stone-200 shadow-sm text-stone-700
+                       hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed
+                       flex items-center justify-center font-bold text-base transition-colors"
+          >−</button>
+          {zoom !== 1.0 && (
+            <button
+              onClick={zoomReset}
+              title={t ? 'אפס זום' : 'Reset zoom'}
+              className="w-8 h-8 rounded-lg bg-white border border-stone-200 shadow-sm text-stone-400
+                         hover:bg-stone-50 flex items-center justify-center text-[10px] font-bold transition-colors"
+            >1:1</button>
+          )}
+        </div>
+
+        {/* Zoom level indicator */}
+        {zoom !== 1.0 && (
+          <div className="absolute bottom-4 start-14 bg-white/90 border border-stone-200 rounded-lg px-2 py-1 text-[11px] text-stone-500 font-medium shadow-sm">
+            {Math.round(zoom * 100)}%
+          </div>
+        )}
       </div>
 
       {/* ── Footer legend ─────────────────────────────────────────────────────── */}
