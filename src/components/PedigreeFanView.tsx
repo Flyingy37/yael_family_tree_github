@@ -251,7 +251,7 @@ export function PedigreeFanView({
     const ch  = containerRef.current!.clientHeight || 580;
     const size = Math.min(cw, ch);
     const cx = size / 2;
-    const cy = size * 0.56;   // center sits slightly below midpoint so fan opens upward
+    const cy = size * 0.62;   // center near bottom so full semicircle is visible
 
     d3.select(el).selectAll('*').remove();
     el.setAttribute('viewBox', `0 0 ${size} ${size}`);
@@ -265,13 +265,13 @@ export function PedigreeFanView({
     bg.append('rect').attr('width', size).attr('height', size).attr('fill', '#f8f7f4');
 
     const maxGen    = Math.max(...nodes.map(n => n.generation), 1);
-    const innerR    = size * 0.095;
-    const outerMaxR = size * 0.475;
+    const innerR    = size * 0.10;
+    const outerMaxR = size * 0.58;   // use more of the height since fan is semicircle
     const ringWidth = (outerMaxR - innerR) / maxGen;
 
-    // Fan spans 210° centred at the top (opening upward)
-    const SPAN = 210 * (Math.PI / 180);
-    const startOffset = -Math.PI / 2 - SPAN / 2;  // starts at left
+    // Fan spans 180° centred at the top (half-circle, opening upward)
+    const SPAN = 180 * (Math.PI / 180);
+    const startOffset = -Math.PI;  // starts at left (9 o'clock), ends at right (3 o'clock)
 
     const byGen = new Map<number, FanNode[]>();
     for (const n of nodes) {
@@ -354,71 +354,79 @@ export function PedigreeFanView({
           continue;
         }
 
-        // ── Curved text (name) ────────────────────────────────────────────
+        // ── Radial text (MyHeritage style) ───────────────────────────────
+        // Text points outward from center along the radius — not curved.
+        // For left-half segments we flip 180° so text reads left-to-right.
         const arcWidthPx  = anglePerSlot * ((innerRing + outerR) / 2);
         const ringWidthPx = outerR - innerRing;
 
-        if (arcWidthPx > 22 && ringWidthPx > 12) {
-          const arcR   = innerRing + ringWidthPx * 0.4;
-          const pathId = `arc-${node.id}-${gen}`;
+        if (arcWidthPx > 14 && ringWidthPx > 14) {
+          // Text position: center of segment (radially and angularly)
+          const textR   = innerRing + ringWidthPx * 0.5;
+          const tx      = cx + textR * Math.cos(midAngle);
+          const ty      = cy + textR * Math.sin(midAngle);
 
-          // Left half (cos < 0) → counter-clockwise arc so text reads left-to-right
-          const isLeft = Math.cos(midAngle) < 0;
-          const ta = slotStart + 0.015, tb = slotEnd - 0.015;
+          // Rotation: midAngle in degrees + 90° so text points outward.
+          // Left half (cos < 0): flip 180° so it's not upside-down.
+          const isLeft  = Math.cos(midAngle) < 0;
+          const baseDeg = midAngle * 180 / Math.PI;
+          const rotateDeg = isLeft ? baseDeg + 90 + 180 : baseDeg + 90;
 
-          // Build arc path: CW for right side, CCW for left side.
-          // All segments span < 180° so largeArc is always 0.
-          const arcPath = (r: number, reversed: boolean) => {
-            const a1 = reversed ? tb : ta;
-            const a2 = reversed ? ta : tb;
-            const x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
-            const x2 = cx + r * Math.cos(a2), y2 = cy + r * Math.sin(a2);
-            const sweep = reversed ? 0 : 1;   // CCW for left, CW for right
-            return `M ${x1} ${y1} A ${r} ${r} 0 0 ${sweep} ${x2} ${y2}`;
-          };
+          const fontSize = Math.max(6.5, Math.min(12, Math.min(arcWidthPx * 0.38, ringWidthPx * 0.30)));
+          const charW    = fontSize * 0.58;
+          const maxChars = Math.max(3, Math.floor(ringWidthPx * 0.82 / charW));
 
-          defs.append('path').attr('id', pathId).attr('d', arcPath(arcR, isLeft));
+          // Build display name (first+last if room, else first only)
+          const parts = node.name.split(' ');
+          const givenName = parts[0];
+          const familyName = parts.slice(1).join(' ');
+          const nameLabel = arcWidthPx > 30
+            ? (givenName.length > maxChars ? givenName.slice(0, maxChars - 1) + '…' : givenName)
+            : (givenName.slice(0, maxChars - 1) + (givenName.length > maxChars - 1 ? '…' : ''));
 
-          const fontSize = Math.max(7, Math.min(13.5, Math.min(arcWidthPx / 4.5, ringWidthPx * 0.36)));
-          const charW    = fontSize * 0.55;
-          const maxChars = Math.max(4, Math.floor(arcWidthPx * 0.85 / charW));
-          const displayName = arcWidthPx > 60 ? node.name : node.name.split(' ')[0];
-          const label = displayName.length > maxChars
-            ? displayName.slice(0, maxChars - 1) + '…'
-            : displayName;
+          const yr = yearRange(node.birthDate, node.deathDate);
+          const hasYear = yr && ringWidthPx > fontSize * 3.2;
+          const hasSurname = familyName && ringWidthPx > fontSize * (hasYear ? 4.8 : 3.2) && arcWidthPx > 28;
 
-          g.append('text')
+          // Vertical offset: center all lines
+          const lineH   = fontSize * 1.25;
+          const lineCount = 1 + (hasSurname ? 1 : 0) + (hasYear ? 1 : 0);
+          const yStart  = -((lineCount - 1) * lineH) / 2;
+
+          const tg = g.append('g')
             .attr('pointer-events', 'none')
-            .append('textPath')
-              .attr('href', `#${pathId}`)
-              .attr('startOffset', '50%')
-              .attr('text-anchor', 'middle')
-              .attr('dominant-baseline', 'middle')
-              .attr('font-size', `${fontSize}px`)
-              .attr('font-weight', gen <= 2 ? '700' : '600')
-              .attr('fill', '#1c1917')
-              .text(label);
+            .attr('transform', `translate(${tx},${ty}) rotate(${rotateDeg})`);
 
-          // Year range (second text line)
-          if (ringWidthPx > fontSize * 2.8 && arcWidthPx > 40) {
-            const yr = yearRange(node.birthDate, node.deathDate);
-            if (yr) {
-              const arcR2   = innerRing + ringWidthPx * 0.65;
-              const pathId2 = `arc2-${node.id}-${gen}`;
-              defs.append('path').attr('id', pathId2).attr('d', arcPath(arcR2, isLeft));
+          // Given name
+          tg.append('text')
+            .attr('x', 0).attr('y', yStart)
+            .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
+            .attr('font-size', `${fontSize}px`)
+            .attr('font-weight', gen <= 2 ? '700' : '600')
+            .attr('fill', '#1c1917')
+            .text(nameLabel);
 
-              g.append('text')
-                .attr('pointer-events', 'none')
-                .append('textPath')
-                  .attr('href', `#${pathId2}`)
-                  .attr('startOffset', '50%')
-                  .attr('text-anchor', 'middle')
-                  .attr('dominant-baseline', 'middle')
-                  .attr('font-size', `${Math.max(5.5, fontSize * 0.75)}px`)
-                  .attr('font-weight', '400')
-                  .attr('fill', '#6b7280')
-                  .text(yr);
-            }
+          // Family name (line 2)
+          if (hasSurname) {
+            const surLabel = familyName.length > maxChars ? familyName.slice(0, maxChars - 1) + '…' : familyName;
+            tg.append('text')
+              .attr('x', 0).attr('y', yStart + lineH)
+              .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
+              .attr('font-size', `${Math.max(5.5, fontSize * 0.85)}px`)
+              .attr('font-weight', '500')
+              .attr('fill', '#374151')
+              .text(surLabel);
+          }
+
+          // Year range (last line)
+          if (hasYear) {
+            tg.append('text')
+              .attr('x', 0).attr('y', yStart + lineH * (hasSurname ? 2 : 1))
+              .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
+              .attr('font-size', `${Math.max(5, fontSize * 0.72)}px`)
+              .attr('font-weight', '400')
+              .attr('fill', '#6b7280')
+              .text(yr);
           }
         }
 
