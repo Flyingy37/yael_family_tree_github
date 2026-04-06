@@ -646,9 +646,10 @@ function extractFromNotes(notePlain: string) {
 }
 
 // Split pipe-separated date/place fields (birth | death | burial)
+// Handles both " | " (spaced) and "|" (unspaced) pipe separators.
 function splitPipeField(value: string): { birth: string | null; death: string | null } {
   if (!value) return { birth: null, death: null };
-  const parts = value.split(' | ').map(s => s.trim());
+  const parts = value.split(/\s*\|\s*/).map(s => s.trim()).filter(Boolean);
   return {
     birth: parts[0] || null,
     death: parts[1] || null,
