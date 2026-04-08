@@ -608,7 +608,7 @@ export function PersonDetailPanel({
                 key={alias}
                 className={`rounded-full px-2.5 py-1 text-xs ${
                   branchProfile
-                    ? 'border border-[rgba(130,120,104,0.18)] bg-[rgba(252,250,246,0.92)] text-[var(--atlas-text)]'
+                    ? 'atlas-pill text-[var(--atlas-text)]'
                     : 'border border-stone-200 bg-stone-50 text-stone-700'
                 }`}
               >
@@ -619,7 +619,7 @@ export function PersonDetailPanel({
               <span
                 className={`rounded-full px-2.5 py-1 text-xs ${
                   branchProfile
-                    ? 'border border-[rgba(130,120,104,0.18)] bg-[rgba(252,250,246,0.92)] text-[var(--atlas-text)]'
+                    ? 'atlas-pill text-[var(--atlas-text)]'
                     : 'border border-stone-200 bg-stone-50 text-stone-700'
                 }`}
               >

@@ -24,11 +24,11 @@ export function EvidenceBadge({
   variant?: 'default' | 'atlas';
 }) {
   const atlasStyles: Record<EvidenceType, string> = {
-    'family-photo': 'bg-[rgba(221,235,239,0.75)] text-[rgb(70,103,114)] border-[rgba(121,150,158,0.32)]',
-    testimony: 'bg-[rgba(241,229,226,0.8)] text-[rgb(145,95,90)] border-[rgba(181,138,132,0.28)]',
-    document: 'bg-[rgba(241,238,231,0.95)] text-[rgb(101,92,78)] border-[rgba(160,147,125,0.28)]',
-    'dna-clue': 'bg-[rgba(233,229,239,0.85)] text-[rgb(100,87,128)] border-[rgba(139,126,166,0.3)]',
-    'external-tree-reference': 'bg-[rgba(239,234,221,0.9)] text-[rgb(133,109,72)] border-[rgba(179,154,114,0.3)]',
+    'family-photo': 'bg-[linear-gradient(180deg,rgba(229,238,241,0.86),rgba(218,231,236,0.76))] text-[rgb(70,103,114)] border-[rgba(121,150,158,0.2)]',
+    testimony: 'bg-[linear-gradient(180deg,rgba(245,233,230,0.9),rgba(240,223,219,0.8))] text-[rgb(145,95,90)] border-[rgba(181,138,132,0.2)]',
+    document: 'bg-[linear-gradient(180deg,rgba(245,242,235,0.96),rgba(238,232,223,0.9))] text-[rgb(101,92,78)] border-[rgba(160,147,125,0.2)]',
+    'dna-clue': 'bg-[linear-gradient(180deg,rgba(237,233,241,0.94),rgba(229,224,236,0.86))] text-[rgb(100,87,128)] border-[rgba(139,126,166,0.22)]',
+    'external-tree-reference': 'bg-[linear-gradient(180deg,rgba(242,236,225,0.94),rgba(234,227,213,0.88))] text-[rgb(133,109,72)] border-[rgba(179,154,114,0.2)]',
   };
 
   return (

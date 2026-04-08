@@ -15,10 +15,10 @@ export function RelationshipChip({
   } as const;
 
   const atlasStyles = {
-    stone: 'bg-[rgba(241,238,233,0.96)] text-[rgb(95,91,83)] border-[rgba(156,147,134,0.25)]',
-    rose: 'bg-[rgba(241,229,226,0.82)] text-[rgb(145,95,90)] border-[rgba(181,138,132,0.25)]',
-    violet: 'bg-[rgba(233,229,239,0.85)] text-[rgb(100,87,128)] border-[rgba(139,126,166,0.28)]',
-    lime: 'bg-[rgba(231,237,227,0.9)] text-[rgb(91,112,89)] border-[rgba(135,156,132,0.26)]',
+    stone: 'bg-[linear-gradient(180deg,rgba(246,243,237,0.98),rgba(239,234,226,0.9))] text-[rgb(95,91,83)] border-[rgba(156,147,134,0.16)]',
+    rose: 'bg-[linear-gradient(180deg,rgba(245,233,230,0.92),rgba(240,223,219,0.82))] text-[rgb(145,95,90)] border-[rgba(181,138,132,0.18)]',
+    violet: 'bg-[linear-gradient(180deg,rgba(237,233,241,0.94),rgba(229,224,236,0.86))] text-[rgb(100,87,128)] border-[rgba(139,126,166,0.2)]',
+    lime: 'bg-[linear-gradient(180deg,rgba(235,240,231,0.95),rgba(227,234,222,0.88))] text-[rgb(91,112,89)] border-[rgba(135,156,132,0.18)]',
   } as const;
 
   return (

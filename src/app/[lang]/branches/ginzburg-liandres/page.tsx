@@ -87,7 +87,7 @@ export default function GinzburgLiandresBranchPage() {
           <div className="atlas-panel rounded-[1.75rem] p-6">
             <div className="atlas-kicker mb-4">Root couple</div>
             <div className="flex flex-col items-center text-center">
-              <div className="rounded-full border border-[rgba(130,120,104,0.22)] bg-[rgba(252,250,246,0.98)] px-5 py-2 text-sm text-[var(--atlas-text)]">
+              <div className="atlas-pill rounded-full px-5 py-2 text-sm text-[var(--atlas-text)]">
                 <PersonName
                   personId={rootHusband?.id || null}
                   fallback={renderPersonLabel(rootHusband?.id || null, 'Arie-Leib Ginzburg')}
@@ -97,7 +97,7 @@ export default function GinzburgLiandresBranchPage() {
               <div className="archival-connector-v h-8 my-2" />
               <div className="atlas-node-dot" />
               <div className="archival-connector-v h-8 my-2" />
-              <div className="rounded-full border border-[rgba(181,150,132,0.28)] bg-[rgba(244,239,232,0.95)] px-5 py-2 text-sm text-[rgb(128,95,76)]">
+              <div className="atlas-pill rounded-full px-5 py-2 text-sm text-[rgb(128,95,76)]">
                 <PersonName
                   personId={rootWife?.id || null}
                   fallback={renderPersonLabel(rootWife?.id || null, 'Basia Liandres')}
@@ -131,7 +131,7 @@ export default function GinzburgLiandresBranchPage() {
                           <Link
                             key={id}
                             to={`/${lang}/person/${encodeURIComponent(id)}`}
-                            className="rounded-full border border-[rgba(130,120,104,0.18)] bg-[rgba(252,250,246,0.92)] px-2.5 py-1 text-xs text-[var(--atlas-text)] hover:bg-[rgba(248,244,236,0.98)]"
+                            className="atlas-pill rounded-full px-2.5 py-1 text-xs text-[var(--atlas-text)]"
                           >
                             {renderPersonLabel(id, id)}
                           </Link>
@@ -193,7 +193,7 @@ export default function GinzburgLiandresBranchPage() {
                       <Link
                         key={id}
                         to={`/${lang}/person/${encodeURIComponent(id)}`}
-                        className="rounded-full border border-[rgba(130,120,104,0.18)] bg-[rgba(252,250,246,0.92)] px-2.5 py-1 text-xs text-[var(--atlas-text)] hover:bg-[rgba(248,244,236,0.98)]"
+                        className="atlas-pill rounded-full px-2.5 py-1 text-xs text-[var(--atlas-text)]"
                       >
                         {renderPersonLabel(id, id)}
                       </Link>

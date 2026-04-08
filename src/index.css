@@ -77,18 +77,20 @@
   --transition-slow: 300ms;
 
   /* Ginzburg-Liandres atlas */
-  --atlas-bg: #f7f4ee;
-  --atlas-surface: rgba(252, 250, 246, 0.94);
+  --atlas-bg: #f6f2ea;
+  --atlas-surface: rgba(253, 249, 243, 0.88);
   --atlas-surface-strong: rgba(255, 253, 249, 0.98);
-  --atlas-border: rgba(148, 137, 121, 0.18);
-  --atlas-border-strong: rgba(130, 120, 104, 0.26);
-  --atlas-line: rgba(137, 145, 151, 0.42);
+  --atlas-border: rgba(146, 133, 116, 0.14);
+  --atlas-border-strong: rgba(124, 112, 97, 0.22);
+  --atlas-line: rgba(137, 145, 151, 0.28);
   --atlas-text: #4f4a41;
   --atlas-text-muted: #7b7367;
-  --atlas-accent: #7b938b;
-  --atlas-accent-soft: rgba(123, 147, 139, 0.1);
-  --atlas-secondary: #b59684;
-  --atlas-secondary-soft: rgba(181, 150, 132, 0.12);
+  --atlas-accent: #80968d;
+  --atlas-accent-soft: rgba(128, 150, 141, 0.08);
+  --atlas-secondary: #b99c88;
+  --atlas-secondary-soft: rgba(185, 156, 136, 0.1);
+  --atlas-wash-sage: rgba(128, 150, 141, 0.08);
+  --atlas-wash-amber: rgba(185, 156, 136, 0.08);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -200,49 +202,90 @@ html, body, #root {
 
   .archival-connector-v {
     width: 1px;
-    background: linear-gradient(to bottom, rgba(148, 163, 184, 0.15), rgba(148, 163, 184, 0.7), rgba(148, 163, 184, 0.15));
+    border-radius: 9999px;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgba(137, 145, 151, 0.14) 8%,
+      rgba(128, 150, 141, 0.26) 50%,
+      rgba(185, 156, 136, 0.18) 84%,
+      transparent
+    );
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
   }
 
   .archival-connector-h {
     height: 1px;
-    background: linear-gradient(to right, rgba(148, 163, 184, 0.15), rgba(148, 163, 184, 0.7), rgba(148, 163, 184, 0.15));
+    border-radius: 9999px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(137, 145, 151, 0.14) 8%,
+      rgba(128, 150, 141, 0.26) 50%,
+      rgba(185, 156, 136, 0.18) 84%,
+      transparent
+    );
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
   }
 
   .archival-node-dot {
     width: 0.625rem;
     height: 0.625rem;
     border-radius: 9999px;
-    border: 1px solid rgba(148, 163, 184, 0.55);
-    background-color: rgba(248, 250, 252, 0.95);
+    border: 1px solid rgba(130, 120, 104, 0.18);
+    background:
+      radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.92), rgba(246, 241, 233, 0.98) 54%, rgba(128, 150, 141, 0.12) 100%);
+    box-shadow: 0 0 0 4px rgba(128, 150, 141, 0.04), 0 8px 18px -16px rgba(91, 82, 66, 0.34);
   }
 
   .atlas-page {
     background:
-      radial-gradient(circle at top left, rgba(123, 147, 139, 0.06), transparent 28%),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0)),
+      radial-gradient(circle at 14% 8%, var(--atlas-wash-sage), transparent 26%),
+      radial-gradient(circle at 86% 10%, var(--atlas-wash-amber), transparent 22%),
+      radial-gradient(circle at 50% 104%, rgba(255, 255, 255, 0.34), transparent 34%),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.12)),
       var(--atlas-bg);
   }
 
   .atlas-panel {
-    border: 1px solid var(--atlas-border);
-    background: var(--atlas-surface);
-    box-shadow: 0 12px 30px -24px rgba(91, 82, 66, 0.35);
+    border: 1px solid rgba(146, 133, 116, 0.14);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.08)),
+      radial-gradient(circle at top left, var(--atlas-accent-soft), transparent 42%),
+      radial-gradient(circle at bottom right, var(--atlas-secondary-soft), transparent 38%),
+      var(--atlas-surface);
+    box-shadow: 0 12px 30px -26px rgba(91, 82, 66, 0.28);
   }
 
   .atlas-card {
-    border: 1px solid var(--atlas-border);
-    background: var(--atlas-surface);
-    box-shadow: 0 12px 26px -24px rgba(91, 82, 66, 0.34);
+    border: 1px solid rgba(146, 133, 116, 0.14);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.08)),
+      radial-gradient(circle at top left, var(--atlas-accent-soft), transparent 42%),
+      radial-gradient(circle at bottom right, var(--atlas-secondary-soft), transparent 38%),
+      var(--atlas-surface);
+    box-shadow: 0 12px 26px -26px rgba(91, 82, 66, 0.3);
   }
 
   .atlas-card-subtle {
-    border: 1px solid var(--atlas-border);
-    background: rgba(252, 250, 246, 0.78);
+    border: 1px solid rgba(146, 133, 116, 0.1);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.04)),
+      radial-gradient(circle at 14% 10%, rgba(128, 150, 141, 0.05), transparent 40%),
+      rgba(252, 250, 246, 0.7);
   }
 
   .atlas-divider {
     height: 1px;
-    background: linear-gradient(to right, transparent, var(--atlas-line), transparent);
+    border-radius: 9999px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(137, 145, 151, 0.12),
+      rgba(128, 150, 141, 0.22),
+      rgba(185, 156, 136, 0.14),
+      transparent
+    );
   }
 
   .atlas-kicker {
@@ -256,19 +299,32 @@ html, body, #root {
     width: 0.625rem;
     height: 0.625rem;
     border-radius: 9999px;
-    border: 1px solid rgba(130, 120, 104, 0.28);
-    background-color: rgba(255, 253, 249, 0.95);
+    border: 1px solid rgba(130, 120, 104, 0.18);
+    background:
+      radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.92), rgba(246, 241, 233, 0.98) 54%, rgba(128, 150, 141, 0.12) 100%);
+    box-shadow: 0 0 0 4px rgba(128, 150, 141, 0.04), 0 8px 18px -16px rgba(91, 82, 66, 0.34);
+  }
+
+  .atlas-pill {
+    border: 1px solid rgba(146, 133, 116, 0.14);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.08)),
+      radial-gradient(circle at 18% 18%, rgba(128, 150, 141, 0.08), transparent 40%),
+      radial-gradient(circle at 82% 78%, rgba(185, 156, 136, 0.07), transparent 42%),
+      rgba(252, 249, 244, 0.92);
+    box-shadow: 0 10px 18px -20px rgba(91, 82, 66, 0.28);
   }
 
   .atlas-link {
     color: var(--atlas-text);
     text-decoration: underline;
-    text-decoration-color: rgba(123, 147, 139, 0.38);
+    text-decoration-color: rgba(128, 150, 141, 0.28);
     text-underline-offset: 0.22rem;
   }
 
   .atlas-link:hover {
     color: #2f3b38;
+    text-decoration-color: rgba(128, 150, 141, 0.52);
   }
 }
 
