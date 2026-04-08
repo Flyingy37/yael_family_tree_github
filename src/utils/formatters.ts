@@ -24,6 +24,73 @@ export function formatDate(dateStr: string | null | undefined): string {
     .trim();
 }
 
+const GEDCOM_MONTHS: Record<string, string> = {
+  JAN: '01',
+  FEB: '02',
+  MAR: '03',
+  APR: '04',
+  MAY: '05',
+  JUN: '06',
+  JUL: '07',
+  AUG: '08',
+  SEP: '09',
+  OCT: '10',
+  NOV: '11',
+  DEC: '12',
+};
+
+/**
+ * Format a GEDCOM-style date into a concise year-first display.
+ * Examples:
+ * - "18 APR 1926" -> "1926-04-18"
+ * - "ABT 1950" -> "c. 1950"
+ * - "AFT 1888" -> "> 1888"
+ * - "1895" -> "1895"
+ */
+export function formatDateConcise(dateStr: string | null | undefined): string {
+  if (!dateStr) return '';
+
+  const trimmed = dateStr.trim();
+  if (!trimmed || trimmed === 'Y') return '';
+
+  const qualifierMatch = trimmed.match(/^(ABT|BEF|AFT|CAL|EST)\s+(.+)$/i);
+  const qualifier = qualifierMatch?.[1]?.toUpperCase() || null;
+  const raw = qualifierMatch?.[2] || trimmed;
+
+  const fullDate = raw.match(/^(\d{1,2})\s+([A-Z]{3})\s+(\d{4})$/i);
+  const monthYear = raw.match(/^([A-Z]{3})\s+(\d{4})$/i);
+  const yearOnly = raw.match(/^(\d{4})$/);
+
+  let formatted = raw;
+
+  if (fullDate) {
+    const [, day, month, year] = fullDate;
+    const monthNumber = GEDCOM_MONTHS[month.toUpperCase()];
+    formatted = `${year}-${monthNumber}-${day.padStart(2, '0')}`;
+  } else if (monthYear) {
+    const [, month, year] = monthYear;
+    const monthNumber = GEDCOM_MONTHS[month.toUpperCase()];
+    formatted = `${year}-${monthNumber}`;
+  } else if (yearOnly) {
+    formatted = yearOnly[1];
+  }
+
+  switch (qualifier) {
+    case 'ABT':
+      return `c. ${formatted}`;
+    case 'BEF':
+      return `< ${formatted}`;
+    case 'AFT':
+      return `> ${formatted}`;
+    case 'CAL':
+      return `cal. ${formatted}`;
+    case 'EST':
+      return `est. ${formatted}`;
+    default:
+      return formatted;
+  }
+}
+
 /**
  * Build a short lifespan string, e.g. "1920–1985" or "b. 1920".
  */

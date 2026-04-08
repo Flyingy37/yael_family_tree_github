@@ -9,6 +9,7 @@ const TreePage = lazy(() => import('./app/[lang]/tree/page'));
 const PersonPage = lazy(() => import('./app/[lang]/person/[id]/page'));
 const InsightsPage = lazy(() => import('./app/[lang]/insights/page'));
 const ArchivePage = lazy(() => import('./app/[lang]/archive/page'));
+const GinzburgLiandresBranchPage = lazy(() => import('./app/[lang]/branches/ginzburg-liandres/page'));
 
 function RouteFallback() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
             <Route index element={<Navigate to="tree" replace />} />
             <Route path="tree" element={<TreePage />} />
             <Route path="person/:id" element={<PersonPage />} />
+            <Route path="branches/ginzburg-liandres" element={<GinzburgLiandresBranchPage />} />
             <Route path="insights" element={<InsightsPage />} />
             <Route path="archive" element={<ArchivePage />} />
           </Route>

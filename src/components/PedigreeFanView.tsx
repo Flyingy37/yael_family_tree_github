@@ -570,7 +570,7 @@ export function PedigreeFanView({
       .sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
 
     const partition = d3.partition<SunDatum>().size([2 * Math.PI, hierarchy.height + 1]);
-    const root: never = partition(hierarchy as never);
+    const root: d3.HierarchyRectangularNode<SunDatum> = partition(hierarchy);
 
     const topCount = (sunData.children?.length ?? 1) + 1;
     const color = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, topCount));

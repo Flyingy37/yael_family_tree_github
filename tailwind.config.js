@@ -13,9 +13,8 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'Heebo', 'Arial', 'sans-serif'],
-        // שימוש בפונט סריף עברי (כמו Frank Ruhl Libre)
-        serif: ['"Frank Ruhl Libre"', 'serif'],
+        sans: ['"Noto Sans"', '"Noto Sans Hebrew"', 'system-ui', 'sans-serif'],
+        serif: ['"Noto Sans"', '"Noto Sans Hebrew"', 'system-ui', 'sans-serif'],
       },
       colors: {
         brand: {

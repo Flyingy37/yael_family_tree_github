@@ -150,7 +150,7 @@ export default function InsightsPage() {
         <div className="flex flex-col gap-1">
           <h1
             className="text-3xl font-bold text-stone-900 tracking-tight"
-            style={{ fontFamily: isHe ? "'Frank Ruhl Libre', 'Heebo', serif" : "'Inter', system-ui, sans-serif" }}
+            style={{ fontFamily: "'Noto Sans', 'Noto Sans Hebrew', system-ui, sans-serif" }}
           >
             {t('תובנות משפחתיות', 'Family Insights')}
           </h1>

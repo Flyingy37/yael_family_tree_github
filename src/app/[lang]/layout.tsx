@@ -130,6 +130,13 @@ export default function LangLayout() {
 
           <nav className="hidden md:flex items-center gap-2 text-sm">
             <Link
+              to={`/${lang}/branches/ginzburg-liandres`}
+              className="flex items-center gap-1 text-gray-600 hover:text-gray-900 px-2 py-1 rounded hover:bg-gray-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
+            >
+              <span aria-hidden="true">🧭</span>
+              <span>{t('ענפים', 'Branches')}</span>
+            </Link>
+            <Link
               to={`/${lang}/tree`}
               className="flex items-center gap-1 text-gray-600 hover:text-gray-900 px-2 py-1 rounded hover:bg-gray-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
             >
@@ -248,6 +255,14 @@ export default function LangLayout() {
                 </button>
               </div>
               <nav className="flex flex-col gap-2">
+                <Link
+                  to={`/${lang}/branches/ginzburg-liandres`}
+                  onClick={closeMobileMenu}
+                  className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
+                >
+                  <span aria-hidden="true">🧭</span>
+                  <span className="text-base font-medium">{t('ענפים', 'Branches')}</span>
+                </Link>
                 <Link
                   to={`/${lang}/tree`}
                   onClick={closeMobileMenu}

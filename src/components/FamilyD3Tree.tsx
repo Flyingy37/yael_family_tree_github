@@ -172,7 +172,7 @@ export function FamilyD3Tree({ rootPersonId, persons, families, language = 'he',
         .attr('text-anchor', d => d.children ? 'end' : 'start')
         .attr('fill', '#374151')
         .attr('font-size', '11px')
-        .attr('font-family', 'Heebo, sans-serif')
+        .attr('font-family', 'Noto Sans, Noto Sans Hebrew, system-ui, sans-serif')
         .text(d => {
           const name = d.data.name.split(' ')[0];
           return d.data.birthYear ? `${name} (${d.data.birthYear})` : name;
@@ -273,7 +273,7 @@ export function FamilyD3Tree({ rootPersonId, persons, families, language = 'he',
       <svg
         ref={svgRef}
         className="w-full h-full cursor-grab active:cursor-grabbing"
-        style={{ fontFamily: 'Heebo, sans-serif' }}
+        style={{ fontFamily: "'Noto Sans', 'Noto Sans Hebrew', system-ui, sans-serif" }}
       />
 
       <div className="absolute bottom-4 start-4 bg-white/80 backdrop-blur-sm rounded-lg px-3 py-2 text-xs text-stone-600 shadow-sm">

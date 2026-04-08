@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import type { Person, Family } from '../types';
 import { DEFAULT_FILTERS, isUnknownPlaceholderPerson, type Filters } from './FilterPanel';
 import { getCanonicalSurnameLabel } from '../utils/surname';
-import { HolocaustMemorialPatchIcon } from './HolocaustMemorialPatchIcon';
+import { formatDateConcise } from '../utils/formatters';
 import { StoryModal } from './StoryModal';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { X } from 'lucide-react';
@@ -11,6 +12,18 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import CollapsibleSection from './CollapsibleSection';
+import { ArchivalCard } from './ArchivalCard';
+import { EvidenceBadge } from './EvidenceBadge';
+import { RelationshipChip } from './RelationshipChip';
+import {
+  getCanonicalGinzburgLiandresDisplayName,
+  getGinzburgLiandresAliases,
+  getGinzburgLiandresDisplayProfile,
+  getGinzburgLiandresEvidenceForPerson,
+  getGinzburgLiandresRelationshipOverlay,
+  getGinzburgLiandresRelationshipNotes,
+  isGinzburgLiandresBranchPerson,
+} from '../branches/ginzburgLiandres';
 
 const TAG_ICONS: Record<string, { Icon: LucideIcon; color: string; bg: string; labelEn: string; labelHe: string }> = {
   DNA:       { Icon: Dna,          color: '#065f46', bg: '#d1fae5', labelEn: 'DNA',             labelHe: 'DNA' },
@@ -50,12 +63,15 @@ function InfoRow({ label, value }: { label: string; value: string | null | undef
 function PersonLink({ id, persons, onNavigate }: { id: string; persons: Map<string, Person>; onNavigate: (id: string) => void }) {
   const p = persons.get(id);
   if (!p) return <span className="text-gray-400 text-sm">{id}</span>;
+  const label = isGinzburgLiandresBranchPerson(p)
+    ? getCanonicalGinzburgLiandresDisplayName(p)
+    : p.fullName;
   return (
     <button
       className="text-blue-600 hover:text-blue-800 text-sm underline text-right"
       onClick={() => onNavigate(id)}
     >
-      {p.fullName}
+      {label}
     </button>
   );
 }
@@ -280,9 +296,14 @@ export function PersonDetailPanel({
   const [showWhyShown, setShowWhyShown] = useState(false);
   const [showStory, setShowStory] = useState(false);
   const isUnknownPlaceholder = isUnknownPlaceholderPerson(person);
+  const branchProfile = useMemo(() => getGinzburgLiandresDisplayProfile(person), [person]);
+  const branchAliases = useMemo(() => getGinzburgLiandresAliases(person), [person]);
+  const branchEvidence = useMemo(() => getGinzburgLiandresEvidenceForPerson(person.id), [person.id]);
+  const branchOverlay = useMemo(() => getGinzburgLiandresRelationshipOverlay(person.id), [person.id]);
+  const branchRelationshipNotes = useMemo(() => getGinzburgLiandresRelationshipNotes(person.id), [person.id]);
   const personDisplayName = isUnknownPlaceholder
     ? (t ? 'אדם לא מזוהה' : 'Unknown person')
-    : person.fullName;
+    : branchProfile?.canonicalDisplayName || person.fullName;
 
   // Find parents
   const parentFamily = person.familyAsChild ? families.get(person.familyAsChild) : null;
@@ -425,6 +446,33 @@ export function PersonDetailPanel({
   }, [activeFilters, person, isConnectedToYael, t]);
 
   const isMobile = useIsMobile();
+  const displayBirthDate = branchProfile?.conciseBirthDate || formatDateConcise(person.birthDate);
+  const displayDeathDate = branchProfile?.conciseDeathDate || formatDateConcise(person.deathDate);
+  const timelineItems = [
+    displayBirthDate
+      ? {
+          label: t ? 'לידה' : 'Birth',
+          value: [displayBirthDate, person.birthPlace].filter(Boolean).join(' - '),
+        }
+      : null,
+    displayDeathDate
+      ? {
+          label: t ? 'פטירה' : 'Death',
+          value: displayDeathDate,
+        }
+      : null,
+    person.migrationInfo
+      ? {
+          label: t ? 'הגירה' : 'Migration',
+          value: person.migrationInfo,
+        }
+      : null,
+  ].filter(Boolean) as Array<{ label: string; value: string }>;
+  const confidenceLabels: Record<string, string> = {
+    direct: t ? 'ישיר' : 'Direct',
+    partial: t ? 'חלקי' : 'Partial',
+    contextual: t ? 'הקשרי' : 'Contextual',
+  };
 
   return (
     <div 
@@ -467,6 +515,43 @@ export function PersonDetailPanel({
         <div className="text-xs text-gray-500 mb-2">{formerSurnameInline}</div>
       )}
 
+      {branchProfile && (
+        <div className="atlas-card mb-4 rounded-2xl p-3">
+          <div className="atlas-kicker mb-2">
+            Ginzburg-Liandres branch
+          </div>
+          {branchOverlay?.relationshipChips?.length ? (
+            <div className="mb-2 flex flex-wrap gap-1.5">
+              {branchOverlay.relationshipChips.map((chip) => (
+                <RelationshipChip key={chip} label={chip} tone="violet" variant="atlas" />
+              ))}
+            </div>
+          ) : null}
+          <div className="text-sm text-[var(--atlas-text)]">
+            {branchProfile.birthSurname ? (
+              <div>{t ? 'שם לידה:' : 'Birth surname:'} <span className="font-medium">{branchProfile.birthSurname}</span></div>
+            ) : null}
+            {branchProfile.marriedSurname ? (
+              <div>{t ? 'שם נישואין:' : 'Married surname:'} <span className="font-medium">{branchProfile.marriedSurname}</span></div>
+            ) : null}
+            {branchProfile.identityWarnings.map((warning) => (
+              <div key={warning} className="mt-2 text-xs text-amber-700">{warning}</div>
+            ))}
+            {branchOverlay?.notes?.map((note) => (
+              <div key={note} className="mt-2 text-xs text-stone-500">{note}</div>
+            ))}
+            <div className="mt-3">
+              <Link
+                to={`/${language}/branches/ginzburg-liandres`}
+                className="atlas-link text-xs"
+              >
+                {t ? 'פתח חבילת ענף' : 'Open branch package'}
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
       {trustBadges.length > 0 && (
         <div className="mb-3">
           <div className="text-[11px] text-gray-500 mb-1">{t ? 'אמינות נתון' : 'Data trust'}</div>
@@ -487,27 +572,81 @@ export function PersonDetailPanel({
         </button>
       )}
 
-      <div className="space-y-0">
-        <InfoRow label={t ? 'קרבה ליעל' : 'Relation to Yael'} value={person.relationToYael} />
-        <InfoRow label={t ? 'דור' : 'Generation'} value={person.generation?.toString()} />
-        <InfoRow label={t ? 'קפיצות' : 'Hops'} value={person.hops?.toString()} />
-        <InfoRow label={t ? 'מין' : 'Sex'} value={person.sex === 'M' ? (t ? 'זכר' : 'Male') : person.sex === 'F' ? (t ? 'נקבה' : 'Female') : (t ? 'לא ידוע' : 'Unknown')} />
-        <InfoRow label={t ? 'תאריך לידה' : 'Birth date'} value={person.birthDate} />
-        <InfoRow label={t ? 'מקום לידה' : 'Birth place'} value={person.birthPlace} />
-        {person.deathDate && <InfoRow label={t ? 'תאריך פטירה' : 'Death date'} value={person.deathDate} />}
-        <InfoRow label={t ? 'שם בלידה' : 'Birth name'} value={person.birthName} />
-        <InfoRow label={t ? 'שם משפחה' : 'Surname'} value={person.surnameFinal} />
-        <InfoRow label={t ? 'שם משפחה קודם' : 'Former surname'} value={originalSurname} />
-        <InfoRow
-          label={t ? 'שם משפחה נוכחי/נישואין' : 'Current/Married surname'}
-          value={marriedSurname}
-        />
-        <InfoRow label={t ? 'מוצא משפחתי היסטורי' : 'Family heritage origin'} value={person.surnameOrigin} />
-        <InfoRow label={t ? 'ייחוס יהודי' : 'Jewish lineage'} value={person.jewishLineage} />
-        <InfoRow label={t ? 'הגירה' : 'Migration'} value={person.migrationInfo} />
-        <InfoRow label={t ? 'מסלולי קרבה ליעל' : 'Connection paths to Yael'} value={person.connectionPathCount?.toString()} />
-        {person.title && <InfoRow label={t ? 'תיאור' : 'Title'} value={person.title} />}
-      </div>
+      <CollapsibleSection
+        title={t ? 'זהות' : 'Identity'}
+        icon="🪪"
+        defaultOpen={true}
+      >
+        <div className="space-y-0">
+          <InfoRow label={t ? 'קרבה ליעל' : 'Relation to Yael'} value={person.relationToYael} />
+          <InfoRow label={t ? 'דור' : 'Generation'} value={person.generation?.toString()} />
+          <InfoRow label={t ? 'קפיצות' : 'Hops'} value={person.hops?.toString()} />
+          <InfoRow label={t ? 'מין' : 'Sex'} value={person.sex === 'M' ? (t ? 'זכר' : 'Male') : person.sex === 'F' ? (t ? 'נקבה' : 'Female') : (t ? 'לא ידוע' : 'Unknown')} />
+          <InfoRow label={t ? 'תאריך לידה' : 'Birth date'} value={displayBirthDate} />
+          <InfoRow label={t ? 'מקום לידה' : 'Birth place'} value={person.birthPlace} />
+          <InfoRow label={t ? 'תאריך פטירה' : 'Death date'} value={displayDeathDate} />
+          <InfoRow label={t ? 'שם בלידה' : 'Birth name'} value={person.birthName || branchProfile?.birthSurname} />
+          <InfoRow label={t ? 'שם משפחה' : 'Surname'} value={branchProfile?.primarySurname || person.surnameFinal} />
+          <InfoRow label={t ? 'שם משפחה קודם' : 'Former surname'} value={originalSurname || branchProfile?.birthSurname} />
+          <InfoRow
+            label={t ? 'שם משפחה נוכחי/נישואין' : 'Current/Married surname'}
+            value={marriedSurname || branchProfile?.marriedSurname}
+          />
+          <InfoRow label={t ? 'מוצא משפחתי היסטורי' : 'Family heritage origin'} value={person.surnameOrigin} />
+          <InfoRow label={t ? 'ייחוס יהודי' : 'Jewish lineage'} value={person.jewishLineage} />
+          <InfoRow label={t ? 'הגירה' : 'Migration'} value={person.migrationInfo} />
+          <InfoRow label={t ? 'מסלולי קרבה ליעל' : 'Connection paths to Yael'} value={person.connectionPathCount?.toString()} />
+          {person.title && <InfoRow label={t ? 'תיאור' : 'Title'} value={person.title} />}
+        </div>
+      </CollapsibleSection>
+
+      {(branchAliases.length > 0 || person.hebrewName) && (
+        <CollapsibleSection title={t ? 'שמות ווריאנטים' : 'Name variants / aliases'} icon="🏷️">
+          <div className="flex flex-wrap gap-2">
+            {branchAliases.map((alias) => (
+              <span
+                key={alias}
+                className={`rounded-full px-2.5 py-1 text-xs ${
+                  branchProfile
+                    ? 'border border-[rgba(130,120,104,0.18)] bg-[rgba(252,250,246,0.92)] text-[var(--atlas-text)]'
+                    : 'border border-stone-200 bg-stone-50 text-stone-700'
+                }`}
+              >
+                {alias}
+              </span>
+            ))}
+            {person.hebrewName ? (
+              <span
+                className={`rounded-full px-2.5 py-1 text-xs ${
+                  branchProfile
+                    ? 'border border-[rgba(130,120,104,0.18)] bg-[rgba(252,250,246,0.92)] text-[var(--atlas-text)]'
+                    : 'border border-stone-200 bg-stone-50 text-stone-700'
+                }`}
+              >
+                {person.hebrewName}
+              </span>
+            ) : null}
+          </div>
+        </CollapsibleSection>
+      )}
+
+      {timelineItems.length > 0 && (
+        <CollapsibleSection title={t ? 'ציר זמן' : 'Timeline'} icon="🕰️">
+          <div className="space-y-2">
+            {timelineItems.map((item) => (
+              <div
+                key={`${item.label}-${item.value}`}
+                className={`rounded-xl p-3 ${
+                  branchProfile ? 'atlas-card-subtle' : 'border border-stone-200 bg-stone-50/80'
+                }`}
+              >
+                <div className={`text-xs uppercase tracking-[0.14em] ${branchProfile ? 'text-[var(--atlas-text-muted)]' : 'text-stone-400'}`}>{item.label}</div>
+                <div className={`mt-1 text-sm ${branchProfile ? 'text-[var(--atlas-text)]' : 'text-stone-700'}`}>{item.value}</div>
+              </div>
+            ))}
+          </div>
+        </CollapsibleSection>
+      )}
 
       {activeFilterReasons.length > 0 && (
         <div className="mt-3 p-2 bg-slate-50 border border-slate-200 rounded text-xs text-slate-700">
@@ -682,7 +821,7 @@ export function PersonDetailPanel({
 
       {(parents.length > 0 || spouses.size > 0 || children.length > 0 || siblings.length > 0) && (
         <CollapsibleSection 
-          title={t ? 'משפחה' : 'Family'} 
+          title={t ? 'קישורי משפחה' : 'Family links'} 
           icon="👨‍👩‍👧‍👦" 
           defaultOpen={true}
         >
@@ -741,6 +880,73 @@ export function PersonDetailPanel({
               </div>
             </div>
           )}
+        </CollapsibleSection>
+      )}
+
+      {(branchProfile || branchEvidence.length > 0 || person.tags.includes('DNA') || !!person.story) && (
+        <CollapsibleSection title={t ? 'ראיות ומקורות' : 'Evidence'} icon="🧾">
+          <div className="space-y-3">
+            {branchEvidence.map((item) => (
+              <ArchivalCard
+                key={item.id}
+                title={item.title}
+                variant={branchProfile ? 'atlas' : 'default'}
+                eyebrow={<EvidenceBadge type={item.type} variant={branchProfile ? 'atlas' : 'default'} />}
+              >
+                <p>{item.description}</p>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <RelationshipChip label={confidenceLabels[item.confidence]} tone="stone" variant={branchProfile ? 'atlas' : 'default'} />
+                  <span className="text-xs text-stone-500">{item.source}</span>
+                </div>
+                {item.note ? (
+                  <p className="mt-2 text-xs text-stone-500">{item.note}</p>
+                ) : null}
+              </ArchivalCard>
+            ))}
+            {person.tags.includes('DNA') && !branchEvidence.some((item) => item.type === 'dna-clue') ? (
+              <ArchivalCard
+                title={t ? 'אות DNA' : 'DNA clue'}
+                variant={branchProfile ? 'atlas' : 'default'}
+                eyebrow={<EvidenceBadge type="dna-clue" variant={branchProfile ? 'atlas' : 'default'} />}
+              >
+                <p>{t ? 'הרשומה מסומנת בתג DNA במאגר הקיים.' : 'This record is already tagged with DNA evidence in the existing archive.'}</p>
+              </ArchivalCard>
+            ) : null}
+            {branchProfile && branchEvidence.length === 0 && !person.tags.includes('DNA') && !person.story ? (
+              <ArchivalCard
+                title={t ? 'אין כרגע פריט ראיה מצורף' : 'No branch evidence attached yet'}
+                variant="atlas"
+              >
+                <p>
+                  {t
+                    ? 'נכון לעכשיו אין לפרופיל זה פריט ראיה ייעודי בחבילת הענף. מידע גולמי והערות מחקר עשויים עדיין להופיע בסעיפים אחרים.'
+                    : 'No dedicated evidence item is currently attached to this profile in the branch package. Raw profile data and research notes may still appear elsewhere.'}
+                </p>
+              </ArchivalCard>
+            ) : null}
+          </div>
+        </CollapsibleSection>
+      )}
+
+      {(branchRelationshipNotes.length > 0 || person.note_plain || person.title) && (
+        <CollapsibleSection title={t ? 'הערות מחקר' : 'Research notes'} icon="🔎">
+          <div className="space-y-3">
+            {branchRelationshipNotes.map((note) => (
+              <ArchivalCard key={note.id} title={note.title} variant={branchProfile ? 'atlas' : 'default'}>
+                {note.detail}
+              </ArchivalCard>
+            ))}
+            {person.note_plain ? (
+              <ArchivalCard title={t ? 'הערת מקור גולמית' : 'Raw source note'} variant={branchProfile ? 'atlas' : 'default'}>
+                <div className="whitespace-pre-wrap break-words">{person.note_plain}</div>
+              </ArchivalCard>
+            ) : null}
+            {person.title ? (
+              <ArchivalCard title={t ? 'תיאור מחקרי קיים' : 'Existing research title'} variant={branchProfile ? 'atlas' : 'default'}>
+                {person.title}
+              </ArchivalCard>
+            ) : null}
+          </div>
         </CollapsibleSection>
       )}
 

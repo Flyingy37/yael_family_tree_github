@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, type ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Compass, MapPinned, Network, Search as SearchIcon, Sparkles } from 'lucide-react';
 import { SearchBar } from '../components/SearchBar';
@@ -20,7 +20,7 @@ type ResearchPath = {
   items: { label: string; hint: string }[];
   href: string;
   accent: string;
-  icon: JSX.Element;
+  icon: ReactNode;
 };
 
 const COPY = {

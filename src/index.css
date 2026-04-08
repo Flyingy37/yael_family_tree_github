@@ -75,6 +75,20 @@
   --transition-fast: 150ms;
   --transition-base: 200ms;
   --transition-slow: 300ms;
+
+  /* Ginzburg-Liandres atlas */
+  --atlas-bg: #f7f4ee;
+  --atlas-surface: rgba(252, 250, 246, 0.94);
+  --atlas-surface-strong: rgba(255, 253, 249, 0.98);
+  --atlas-border: rgba(148, 137, 121, 0.18);
+  --atlas-border-strong: rgba(130, 120, 104, 0.26);
+  --atlas-line: rgba(137, 145, 151, 0.42);
+  --atlas-text: #4f4a41;
+  --atlas-text-muted: #7b7367;
+  --atlas-accent: #7b938b;
+  --atlas-accent-soft: rgba(123, 147, 139, 0.1);
+  --atlas-secondary: #b59684;
+  --atlas-secondary-soft: rgba(181, 150, 132, 0.12);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -94,31 +108,36 @@
 }
 
 /* ── Typography ─────────────────────────────────────────────────────────────
-   Hebrew : Heebo (body) + Frank Ruhl Libre (display headings)
-   English: Inter (body/UI) — modern, very legible at small sizes
-   Fallbacks: system-ui → Arial → sans-serif
+   Restraint-first system:
+   - Body: Noto Sans / Noto Sans Hebrew
+   - Headings: same family stack, heavier weight only
+   No decorative or serif display faces.
    ───────────────────────────────────────────────────────────────────────── */
 
+:root {
+  --font-body: 'Noto Sans', 'Noto Sans Hebrew', system-ui, sans-serif;
+  --font-heading: 'Noto Sans', 'Noto Sans Hebrew', system-ui, sans-serif;
+}
+
 :lang(he), [dir="rtl"] {
-  font-family: 'Heebo', 'Frank Ruhl Libre', system-ui, Arial, sans-serif;
+  font-family: var(--font-body);
   font-feature-settings: "kern" 1;
-  letter-spacing: 0.01em;
-  line-height: 1.65;
+  letter-spacing: 0;
+  line-height: 1.68;
 }
 
 :lang(en), [dir="ltr"] {
-  font-family: 'Inter', system-ui, Arial, sans-serif;
+  font-family: var(--font-body);
   font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
-  letter-spacing: -0.01em;
-  line-height: 1.6;
+  letter-spacing: 0;
+  line-height: 1.65;
 }
 
 html, body, #root {
   height: 100%;
   margin: 0;
   padding: 0;
-  /* Default: Hebrew */
-  font-family: 'Heebo', 'Frank Ruhl Libre', system-ui, Arial, sans-serif;
+  font-family: var(--font-body);
   direction: rtl;
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
@@ -130,49 +149,126 @@ html, body, #root {
 @layer base {
   h1 {
     @apply font-bold;
+    font-family: var(--font-heading);
     font-size: 1.75rem;
     line-height: 1.25;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
     color: var(--color-text-primary);
   }
   h2 {
     @apply font-semibold;
+    font-family: var(--font-heading);
     font-size: 1.375rem;
     line-height: 1.3;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.01em;
     color: var(--color-text-primary);
   }
   h3 {
     @apply font-semibold;
+    font-family: var(--font-heading);
     font-size: 1.125rem;
     line-height: 1.4;
     color: var(--color-text-secondary);
   }
   h4 {
     @apply font-medium;
+    font-family: var(--font-heading);
     font-size: 0.9375rem;
     color: var(--color-text-secondary);
   }
-  p  { @apply text-base; color: var(--color-text-secondary); line-height: 1.7; }
+  p  { @apply text-base; font-family: var(--font-body); color: var(--color-text-secondary); line-height: 1.7; }
   small { @apply text-sm; color: var(--color-text-muted); }
 }
 
-/* Hebrew display headings use Frank Ruhl Libre (serif, elegant) */
+/* Display heading aliases kept for compatibility; both now use the same restrained sans stack. */
 .font-display-he {
-  font-family: 'Frank Ruhl Libre', 'Heebo', serif;
+  font-family: var(--font-heading);
   font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
-/* English display headings use Inter with tight tracking */
 .font-display-en {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-heading);
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.01em;
 }
 
 @layer utilities {
   .focus-ring {
     @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2;
+  }
+
+  .archival-connector-v {
+    width: 1px;
+    background: linear-gradient(to bottom, rgba(148, 163, 184, 0.15), rgba(148, 163, 184, 0.7), rgba(148, 163, 184, 0.15));
+  }
+
+  .archival-connector-h {
+    height: 1px;
+    background: linear-gradient(to right, rgba(148, 163, 184, 0.15), rgba(148, 163, 184, 0.7), rgba(148, 163, 184, 0.15));
+  }
+
+  .archival-node-dot {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(148, 163, 184, 0.55);
+    background-color: rgba(248, 250, 252, 0.95);
+  }
+
+  .atlas-page {
+    background:
+      radial-gradient(circle at top left, rgba(123, 147, 139, 0.06), transparent 28%),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0)),
+      var(--atlas-bg);
+  }
+
+  .atlas-panel {
+    border: 1px solid var(--atlas-border);
+    background: var(--atlas-surface);
+    box-shadow: 0 12px 30px -24px rgba(91, 82, 66, 0.35);
+  }
+
+  .atlas-card {
+    border: 1px solid var(--atlas-border);
+    background: var(--atlas-surface);
+    box-shadow: 0 12px 26px -24px rgba(91, 82, 66, 0.34);
+  }
+
+  .atlas-card-subtle {
+    border: 1px solid var(--atlas-border);
+    background: rgba(252, 250, 246, 0.78);
+  }
+
+  .atlas-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--atlas-line), transparent);
+  }
+
+  .atlas-kicker {
+    color: var(--atlas-text-muted);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-size: 0.6875rem;
+  }
+
+  .atlas-node-dot {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(130, 120, 104, 0.28);
+    background-color: rgba(255, 253, 249, 0.95);
+  }
+
+  .atlas-link {
+    color: var(--atlas-text);
+    text-decoration: underline;
+    text-decoration-color: rgba(123, 147, 139, 0.38);
+    text-underline-offset: 0.22rem;
+  }
+
+  .atlas-link:hover {
+    color: #2f3b38;
   }
 }
 
