@@ -39,6 +39,7 @@ function formatRelationshipLabel(value: string): string {
 export default function GinzburgLiandresBranchPage() {
   const { persons } = useFamilyData();
   const { lang } = useLang();
+  const isHebrew = lang === 'he';
   const summary = getGinzburgLiandresBranchSummary();
   const branchEvidence = getGinzburgLiandresBranchEvidence();
   const rootHusband = persons.get(summary.rootCouple.husbandId) || null;
@@ -51,41 +52,115 @@ export default function GinzburgLiandresBranchPage() {
     return person ? getCanonicalGinzburgLiandresDisplayName(person) : fallback;
   };
 
+  const ui = isHebrew
+    ? {
+        treeLink: 'עץ המשפחה',
+        title: 'Ginzburg-Liandres',
+        intro:
+          'תצוגת ענף תמציתית למשפחת Ginzburg-Liandres, עם שמות אנגליים מנורמלים, כללי הצגה מתועדים, ומבנה ארכיוני נקי.',
+        rootCouple: 'הזוג המרכזי',
+        firstMarriage: 'נישואין ראשונים',
+        secondMarriage: 'נישואין שניים',
+        thirdMarriage: 'נישואין שלישיים',
+        firstMarriageTag: 'בן/בת זוג לא ידוע/ה',
+        secondMarriageTag: 'צאצאים ביולוגיים',
+        thirdMarriageTag: 'שלב־משפחה',
+        firstMarriageNote: 'תיקון תצוגה בלבד: במידע הגולמי מופיע "First wife Ginzburg". שם הלידה נותר לא ידוע.',
+        secondMarriageNote: undefined,
+        thirdMarriageNote:
+          'שכבת ההצגה מתעדת את Esther Lipschitz כאישה שלישית, אך בגרף הגולמי עדיין אין רשומת אדם קנונית מקושרת עבורה.',
+        maternalLine: 'הקו האימהי',
+        maternalChain: 'שרשרת אימהית',
+        borisovBranch: 'ענף בוריסוב',
+        gershonLine: 'קו Gershon',
+        borisovSummary:
+          'האשכול הזה מדגיש את ענף בוריסוב, עם התמקדות בקו Gershon ובהקשר המנורמל הקרוב אליו.',
+        evidence: 'ראיות',
+        evidenceFirst: 'ראיות תחילה',
+        relationshipSummary: 'סיכום יחסים',
+        presentationRules: 'כללי הצגה',
+        confidenceLabels: {
+          direct: 'ישיר',
+          partial: 'חלקי',
+          contextual: 'הקשרי',
+        },
+        typeEmptyLabels: {
+          'family-photo': 'עדיין אין תצלום משפחתי מצורף לחבילת הענף.',
+          testimony: 'עדיין אין בלוק עדות נוסף ברמת הענף מעבר להערות הקיימות.',
+          document: 'אין מסמך ענפי נוסף מעבר לסיכום המחקר הקיים.',
+          'dna-clue': 'אין רמז DNA נוסף מעבר לרשומות חבילת הענף הקיימות.',
+          'external-tree-reference': 'אין בשלב זה הפניה חיצונית נוספת ברמת הענף.',
+        } as const,
+      }
+    : {
+        treeLink: 'Family Tree',
+        title: 'Ginzburg-Liandres',
+        intro:
+          'A concise branch view for the Ginzburg-Liandres family, using normalized English names and documented presentation rules.',
+        rootCouple: 'Root couple',
+        firstMarriage: 'First marriage',
+        secondMarriage: 'Second marriage',
+        thirdMarriage: 'Third marriage',
+        firstMarriageTag: 'Unknown spouse',
+        secondMarriageTag: 'Biological children',
+        thirdMarriageTag: 'Stepfamily',
+        firstMarriageNote: 'Display correction only: raw data currently uses "First wife Ginzburg". Maiden name remains unknown.',
+        secondMarriageNote: undefined,
+        thirdMarriageNote:
+          'Presentation correction layer only: branch display records Esther Lipschitz as a third-wife identity, but the current raw graph does not yet contain a canonical linked person record for her.',
+        maternalLine: 'Maternal line',
+        maternalChain: 'Maternal chain',
+        borisovBranch: 'Borisov branch',
+        gershonLine: 'Gershon line',
+        borisovSummary:
+          'This cluster highlights the Borisov-side grouping, centered here on the Gershon line and its immediate normalized branch context.',
+        evidence: 'Evidence',
+        evidenceFirst: 'Evidence-first',
+        relationshipSummary: 'Relationship summary',
+        presentationRules: 'Presentation rules',
+        confidenceLabels: {
+          direct: 'Direct',
+          partial: 'Partial',
+          contextual: 'Contextual',
+        },
+        typeEmptyLabels: {
+          'family-photo': 'No family photo is attached to this branch package yet.',
+          testimony: 'No additional testimony block is attached at branch level beyond current notes.',
+          document: 'No further branch document is attached beyond the current research summary.',
+          'dna-clue': 'No additional DNA clue is attached beyond the current branch package entries.',
+          'external-tree-reference': 'No further external tree or research reference is attached at branch level.',
+        } as const,
+      };
+
   const evidenceByType = EVIDENCE_TYPE_ORDER.map((type) => ({
     type,
     items: branchEvidence.filter((item) => item.type === type),
   }));
-
-  const confidenceLabels: Record<string, string> = {
-    direct: 'Direct',
-    partial: 'Partial',
-    contextual: 'Contextual',
-  };
-
-  const typeEmptyLabels: Record<EvidenceType, string> = {
-    'family-photo': 'No family photo is attached to this branch package yet.',
-    testimony: 'No additional testimony block is attached at branch level beyond current notes.',
-    document: 'No further branch document is attached beyond the current research summary.',
-    'dna-clue': 'No additional DNA clue is attached beyond the current branch package entries.',
-    'external-tree-reference': 'No further external tree or research reference is attached at branch level.',
-  };
+  const relationshipSummary = isHebrew
+    ? [
+        'Eti Ginzburg Charny מוצגת כאחות למחצה של Sofia, Gershon, Aharon, Yankel Berl ו־Isaak.',
+        'שמות הלידה נשמרים גלויים בתצוגה ואינם מוחלפים על ידי שמות נישואין.',
+        'וריאנטים של כינויים מאוחדים בתור כינויים חלופיים, ולא כאנשים נפרדים.',
+        'Druzia Lyandres נשמרת בחבילת הענף כאמו של Basia לצורך רצף הקו האימהי, אף שהגרף הגולמי עדיין אינו מכיל רשומת אדם קנונית ומקושרת עבורה.',
+      ]
+    : summary.relationshipSummary;
 
   return (
-    <div className="atlas-page h-full overflow-auto" dir="ltr">
+    <div className="atlas-page h-full overflow-auto" dir={isHebrew ? 'rtl' : 'ltr'}>
       <div className="max-w-6xl mx-auto px-4 py-8 md:py-10">
         <div className="mb-8">
           <Link to={`/${lang}/tree`} className="atlas-link text-sm">
-            Family Tree
+            {ui.treeLink}
           </Link>
-          <h1 className="mt-3 text-4xl text-stone-800 font-display-en">Ginzburg-Liandres</h1>
+          <h1 className="mt-3 text-4xl text-stone-800 font-display-en">{ui.title}</h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-stone-600">
-            A concise branch view for the Ginzburg-Liandres family, using normalized English names and documented presentation rules.
+            {ui.intro}
           </p>
         </div>
 
         <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
           <div className="atlas-panel rounded-[1.75rem] p-6">
-            <div className="atlas-kicker mb-4">Root couple</div>
+            <div className="atlas-kicker mb-4">{ui.rootCouple}</div>
             <div className="flex flex-col items-center text-center">
               <div className="atlas-pill rounded-full px-5 py-2 text-sm text-[var(--atlas-text)]">
                 <PersonName
@@ -112,18 +187,40 @@ export default function GinzburgLiandresBranchPage() {
               {summary.familyStructure.map((family) => (
                 <ArchivalCard
                   key={family.label}
-                  title={family.label}
+                  title={
+                    family.label === 'First marriage'
+                      ? ui.firstMarriage
+                      : family.label === 'Second marriage'
+                        ? ui.secondMarriage
+                        : ui.thirdMarriage
+                  }
                   variant="atlas"
                   eyebrow={
                     <RelationshipChip
-                      label={formatRelationshipLabel(family.relationshipType)}
+                      label={
+                        isHebrew
+                          ? family.label === 'First marriage'
+                            ? ui.firstMarriageTag
+                            : family.label === 'Second marriage'
+                              ? ui.secondMarriageTag
+                              : ui.thirdMarriageTag
+                          : formatRelationshipLabel(family.relationshipType)
+                      }
                       variant="atlas"
                       tone={family.label === 'Second marriage' ? 'rose' : family.label === 'Third marriage' ? 'violet' : 'stone'}
                     />
                   }
                 >
                   <p>{family.spouseLabel}</p>
-                  {'note' in family && family.note ? <p className="mt-2 text-xs text-stone-500">{family.note}</p> : null}
+                  {'note' in family && family.note ? (
+                    <p className="mt-2 text-xs text-stone-500">
+                      {isHebrew && family.label === 'First marriage'
+                        ? ui.firstMarriageNote
+                        : isHebrew && family.label === 'Third marriage'
+                          ? ui.thirdMarriageNote
+                          : family.note}
+                    </p>
+                  ) : null}
                   {'children' in family && family.children ? (
                     <div className="mt-3 flex flex-wrap gap-2">
                       {family.children.map((id) => {
@@ -152,7 +249,7 @@ export default function GinzburgLiandresBranchPage() {
           </div>
 
           <div className="space-y-6">
-            <ArchivalCard title="Maternal line" variant="atlas" eyebrow={<RelationshipChip label="Maternal chain" tone="violet" variant="atlas" />}>
+            <ArchivalCard title={ui.maternalLine} variant="atlas" eyebrow={<RelationshipChip label={ui.maternalChain} tone="violet" variant="atlas" />}>
               <div className="space-y-2">
                 {summary.maternalLine.map((item, index) => (
                   <div key={`${item.label}-${index}`} className="flex items-center gap-3">
@@ -169,9 +266,9 @@ export default function GinzburgLiandresBranchPage() {
               </div>
             </ArchivalCard>
 
-            <ArchivalCard title="Borisov branch" variant="atlas" eyebrow={<RelationshipChip label="Gershon line" tone="lime" variant="atlas" />}>
+            <ArchivalCard title={ui.borisovBranch} variant="atlas" eyebrow={<RelationshipChip label={ui.gershonLine} tone="lime" variant="atlas" />}>
               <p className="text-sm leading-6 text-stone-600">
-                This cluster highlights the Borisov-side grouping, centered here on the Gershon line and its immediate normalized branch context.
+                {ui.borisovSummary}
               </p>
               <div className="mt-4 space-y-3">
                 {gershon ? (
@@ -205,12 +302,12 @@ export default function GinzburgLiandresBranchPage() {
         </section>
 
         <section className="mt-8 grid gap-6 lg:grid-cols-[1fr_1fr]">
-          <ArchivalCard title="Evidence" variant="atlas" eyebrow={<RelationshipChip label="Evidence-first" tone="rose" variant="atlas" />}>
+          <ArchivalCard title={ui.evidence} variant="atlas" eyebrow={<RelationshipChip label={ui.evidenceFirst} tone="rose" variant="atlas" />}>
             <div className="space-y-4">
               {evidenceByType.map(({ type, items }) => (
                 <div key={type} className="atlas-card-subtle rounded-2xl px-4 py-3">
                   <div className="flex items-center gap-2">
-                    <EvidenceBadge type={type} variant="atlas" />
+                    <EvidenceBadge type={type} variant="atlas" language={lang} />
                   </div>
                   {items.length > 0 ? (
                     <div className="mt-3 space-y-3">
@@ -219,7 +316,7 @@ export default function GinzburgLiandresBranchPage() {
                           <div className="text-sm font-medium text-[var(--atlas-text)]">{item.title}</div>
                           <p className="mt-1 text-sm leading-6 text-stone-600">{item.description}</p>
                           <div className="mt-2 flex flex-wrap items-center gap-2">
-                            <RelationshipChip label={confidenceLabels[item.confidence]} tone="stone" variant="atlas" />
+                            <RelationshipChip label={ui.confidenceLabels[item.confidence]} tone="stone" variant="atlas" />
                             <span className="text-xs text-stone-500">{item.source}</span>
                           </div>
                           {item.note ? (
@@ -229,16 +326,16 @@ export default function GinzburgLiandresBranchPage() {
                       ))}
                     </div>
                   ) : (
-                    <p className="mt-3 text-sm leading-6 text-stone-500">{typeEmptyLabels[type]}</p>
+                    <p className="mt-3 text-sm leading-6 text-stone-500">{ui.typeEmptyLabels[type]}</p>
                   )}
                 </div>
               ))}
             </div>
           </ArchivalCard>
 
-          <ArchivalCard title="Relationship summary" variant="atlas" eyebrow={<RelationshipChip label="Presentation rules" tone="violet" variant="atlas" />}>
+          <ArchivalCard title={ui.relationshipSummary} variant="atlas" eyebrow={<RelationshipChip label={ui.presentationRules} tone="violet" variant="atlas" />}>
             <ul className="space-y-2">
-              {summary.relationshipSummary.map((line) => (
+              {relationshipSummary.map((line) => (
                 <li key={line} className="text-sm leading-6 text-stone-600">
                   {line}
                 </li>

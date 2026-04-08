@@ -473,6 +473,62 @@ export function PersonDetailPanel({
     partial: t ? 'חלקי' : 'Partial',
     contextual: t ? 'הקשרי' : 'Contextual',
   };
+  const branchUi = t
+    ? {
+        packageLabel: 'חבילת ענף',
+        branchName: 'ענף Ginzburg-Liandres',
+        openBranchPage: 'פתח את דף הענף',
+        halfSister: 'אחות למחצה',
+        thirdMarriageCluster: 'אשכול נישואין שלישי',
+        maternalLine: 'הקו האימהי',
+        secondMarriageCluster: 'אשכול נישואין שניים',
+        borisovCluster: 'אשכול בוריסוב',
+        branchPackageSection: 'חבילת ענף',
+      }
+    : {
+        packageLabel: 'Branch package',
+        branchName: 'Ginzburg-Liandres branch',
+        openBranchPage: 'Open branch page',
+        halfSister: 'Half-sister',
+        thirdMarriageCluster: 'Third marriage cluster',
+        maternalLine: 'Maternal line',
+        secondMarriageCluster: 'Second marriage cluster',
+        borisovCluster: 'Borisov cluster',
+        branchPackageSection: 'Branch package',
+      };
+  const translateBranchChip = (value: string): string => {
+    if (!t) return value;
+    const map: Record<string, string> = {
+      'Half-sister': branchUi.halfSister,
+      'Third marriage cluster': branchUi.thirdMarriageCluster,
+      'Maternal line': branchUi.maternalLine,
+      'Second marriage cluster': branchUi.secondMarriageCluster,
+      'Borisov cluster': branchUi.borisovCluster,
+    };
+    return map[value] || value;
+  };
+  const translateBranchNote = (value: string): string => {
+    if (!t) return value;
+    const map: Record<string, string> = {
+      'Current graph may under-specify this identity; display layer merges Ruve/Ruven/Roman variants for this branch.':
+        'הגרף הנוכחי עשוי להגדיר את הזהות הזו באופן חסר; שכבת התצוגה מאחדת את הווריאנטים Ruve / Ruven / Roman עבור הענף הזה.',
+      'Raw record currently uses variants that may collapse Aharon/Ore; branch display keeps Aharon as canonical.':
+        'הרשומה הגולמית משתמשת בווריאנטים שעשויים לאחד את Aharon / Ore; תצוגת הענף שומרת על Aharon כצורה הקנונית.',
+      'Eti is displayed as a half-sister of Sofia, Gershon, Aharon, Yankel Berl, and Isaak.':
+        'Eti מוצגת כאחות למחצה של Sofia, Gershon, Aharon, Yankel Berl ו־Isaak.',
+      'Sofia is displayed as a biological child of Arie-Leib Ginzburg and Basia Liandres.':
+        'Sofia מוצגת כילדה ביולוגית של Arie-Leib Ginzburg ושל Basia Liandres.',
+      'Aharon is displayed in the Basia Liandres child cluster.':
+        'Aharon מוצג באשכול הילדים של Basia Liandres.',
+      'Gershon/Grigory is displayed in the Basia Liandres child cluster with merged aliases.':
+        'Gershon / Grigory מוצג באשכול הילדים של Basia Liandres עם כינויים מאוחדים.',
+      'Yankel Berl remains a single display identity despite shortened-name variants.':
+        'Yankel Berl נשאר זהות תצוגה אחת, למרות וריאנטים של שם מקוצר.',
+      'Isaak remains in the Basia Liandres biological-child cluster.':
+        'Isaak נשאר באשכול הילדים הביולוגיים של Basia Liandres.',
+    };
+    return map[value] || value;
+  };
 
   return (
     <div 
@@ -517,13 +573,12 @@ export function PersonDetailPanel({
 
       {branchProfile && (
         <div className="atlas-card mb-4 rounded-2xl p-3">
-          <div className="atlas-kicker mb-2">
-            Ginzburg-Liandres branch
-          </div>
+          <div className="atlas-kicker mb-2">{branchUi.packageLabel}</div>
+          <div className="text-sm text-[var(--atlas-text)]">{branchUi.branchName}</div>
           {branchOverlay?.relationshipChips?.length ? (
             <div className="mb-2 flex flex-wrap gap-1.5">
               {branchOverlay.relationshipChips.map((chip) => (
-                <RelationshipChip key={chip} label={chip} tone="violet" variant="atlas" />
+                <RelationshipChip key={chip} label={translateBranchChip(chip)} tone="violet" variant="atlas" />
               ))}
             </div>
           ) : null}
@@ -535,17 +590,17 @@ export function PersonDetailPanel({
               <div>{t ? 'שם נישואין:' : 'Married surname:'} <span className="font-medium">{branchProfile.marriedSurname}</span></div>
             ) : null}
             {branchProfile.identityWarnings.map((warning) => (
-              <div key={warning} className="mt-2 text-xs text-amber-700">{warning}</div>
+              <div key={warning} className="mt-2 text-xs text-amber-700">{translateBranchNote(warning)}</div>
             ))}
             {branchOverlay?.notes?.map((note) => (
-              <div key={note} className="mt-2 text-xs text-stone-500">{note}</div>
+              <div key={note} className="mt-2 text-xs text-stone-500">{translateBranchNote(note)}</div>
             ))}
             <div className="mt-3">
               <Link
                 to={`/${language}/branches/ginzburg-liandres`}
                 className="atlas-link text-xs"
               >
-                {t ? 'פתח חבילת ענף' : 'Open branch package'}
+                {branchUi.openBranchPage}
               </Link>
             </div>
           </div>
@@ -891,7 +946,7 @@ export function PersonDetailPanel({
                 key={item.id}
                 title={item.title}
                 variant={branchProfile ? 'atlas' : 'default'}
-                eyebrow={<EvidenceBadge type={item.type} variant={branchProfile ? 'atlas' : 'default'} />}
+                eyebrow={<EvidenceBadge type={item.type} variant={branchProfile ? 'atlas' : 'default'} language={language} />}
               >
                 <p>{item.description}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -907,7 +962,7 @@ export function PersonDetailPanel({
               <ArchivalCard
                 title={t ? 'אות DNA' : 'DNA clue'}
                 variant={branchProfile ? 'atlas' : 'default'}
-                eyebrow={<EvidenceBadge type="dna-clue" variant={branchProfile ? 'atlas' : 'default'} />}
+                eyebrow={<EvidenceBadge type="dna-clue" variant={branchProfile ? 'atlas' : 'default'} language={language} />}
               >
                 <p>{t ? 'הרשומה מסומנת בתג DNA במאגר הקיים.' : 'This record is already tagged with DNA evidence in the existing archive.'}</p>
               </ArchivalCard>

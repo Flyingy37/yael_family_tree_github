@@ -19,9 +19,11 @@ const EVIDENCE_LABELS: Record<EvidenceType, string> = {
 export function EvidenceBadge({
   type,
   variant = 'default',
+  language = 'en',
 }: {
   type: EvidenceType;
   variant?: 'default' | 'atlas';
+  language?: 'en' | 'he';
 }) {
   const atlasStyles: Record<EvidenceType, string> = {
     'family-photo': 'bg-[linear-gradient(180deg,rgba(229,238,241,0.86),rgba(218,231,236,0.76))] text-[rgb(70,103,114)] border-[rgba(121,150,158,0.2)]',
@@ -31,13 +33,21 @@ export function EvidenceBadge({
     'external-tree-reference': 'bg-[linear-gradient(180deg,rgba(242,236,225,0.94),rgba(234,227,213,0.88))] text-[rgb(133,109,72)] border-[rgba(179,154,114,0.2)]',
   };
 
+  const atlasLabelsHe: Record<EvidenceType, string> = {
+    'family-photo': 'תצלום משפחתי',
+    testimony: 'עדות / סיפור',
+    document: 'מסמך',
+    'dna-clue': 'רמז DNA',
+    'external-tree-reference': 'עץ חיצוני / הפניה מחקרית',
+  };
+
   return (
     <span
       className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${
         variant === 'atlas' ? atlasStyles[type] : EVIDENCE_STYLES[type]
       }`}
     >
-      {EVIDENCE_LABELS[type]}
+      {variant === 'atlas' && language === 'he' ? atlasLabelsHe[type] : EVIDENCE_LABELS[type]}
     </span>
   );
 }
