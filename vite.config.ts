@@ -12,6 +12,37 @@ export default defineConfig({
   resolve: {
     dedupe: ['react', 'react-dom'],
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined;
+
+          if (id.includes('@xyflow/react') || id.includes('@dagrejs/dagre')) {
+            return 'tree-vendor';
+          }
+
+          if (id.includes('leaflet') || id.includes('react-leaflet')) {
+            return 'map-vendor';
+          }
+
+          if (id.includes('d3')) {
+            return 'charts-vendor';
+          }
+
+          if (id.includes('framer-motion') || id.includes('lucide-react')) {
+            return 'ui-vendor';
+          }
+
+          if (id.includes('react-router-dom')) {
+            return 'router-vendor';
+          }
+
+          return 'vendor';
+        },
+      },
+    },
+  },
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts'],

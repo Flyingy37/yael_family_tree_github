@@ -3,13 +3,14 @@
  * Validates the lang param (he | en), syncs with localStorage,
  * provides LangContext to all child pages via <Outlet />.
  */
-import { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, useCallback, Suspense, lazy } from 'react';
 import { Outlet, useParams, useNavigate, Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useUiLanguage, type UiLanguage } from '../../hooks/useUiLanguage';
-import ChatWidget from '../../components/ChatWidget';
 import { useHotSync } from '../../hooks/useHotSync';
 import { Menu, X, Moon } from 'lucide-react';
+
+const ChatWidget = lazy(() => import('../../components/ChatWidget'));
 
 // ── Language context ──────────────────────────────────────────────────────────
 interface LangContextValue {
@@ -278,7 +279,9 @@ export default function LangLayout() {
         </AnimatePresence>
 
         {/* ── Floating chat widget ───────────────────────────────────── */}
-        <ChatWidget language={lang} />
+        <Suspense fallback={null}>
+          <ChatWidget language={lang} />
+        </Suspense>
 
         {/* ── Hot Sync toast ────────────────────────────────────────── */}
         {syncToast && (

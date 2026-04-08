@@ -9,11 +9,18 @@ interface Props {
   language?: 'en' | 'he';
   /** When set, only people in this set appear in results (same as current graph filters). */
   allowedPersonIds?: Set<string>;
+  className?: string;
 }
 
 const VISIBLE_RESULTS = 8;
 
-export function SearchBar({ searchIndex, onSelect, language = 'en', allowedPersonIds }: Props) {
+export function SearchBar({
+  searchIndex,
+  onSelect,
+  language = 'en',
+  allowedPersonIds,
+  className = '',
+}: Props) {
   const t = language === 'he';
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Person[]>([]);
@@ -93,7 +100,11 @@ export function SearchBar({ searchIndex, onSelect, language = 'en', allowedPerso
   }
 
   return (
-    <div ref={containerRef} className="relative flex-shrink-0 z-20 w-72 max-w-[min(18rem,100vw-8rem)]" dir={t ? 'rtl' : 'ltr'}>
+    <div
+      ref={containerRef}
+      className={`relative flex-shrink-0 z-20 w-72 max-w-[min(18rem,100vw-8rem)] ${className}`.trim()}
+      dir={t ? 'rtl' : 'ltr'}
+    >
       <div className="relative bg-white rounded-full shadow-md border border-slate-200 flex items-center px-3 py-1.5 gap-0.5">
         <Search size={18} className="text-slate-400 flex-shrink-0 pointer-events-none" aria-hidden />
         <input
