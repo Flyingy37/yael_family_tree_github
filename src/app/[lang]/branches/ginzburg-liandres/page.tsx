@@ -3,6 +3,7 @@ import { useFamilyData } from '../../../../hooks/useFamilyData';
 import { useLang } from '../../layout';
 import {
   EVIDENCE_TYPE_ORDER,
+  type BranchEvidenceItem,
   getCanonicalGinzburgLiandresDisplayName,
   getGinzburgLiandresBranchEvidence,
   getGinzburgLiandresBranchSummary,
@@ -34,6 +35,53 @@ function PersonName({
 
 function formatRelationshipLabel(value: string): string {
   return value.replace(/-/g, ' ');
+}
+
+function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean): BranchEvidenceItem {
+  if (!isHebrew) return item;
+
+  const copy: Record<string, Partial<BranchEvidenceItem>> = {
+    'maternal-line-mtdna': {
+      title: 'עוגן mtDNA לקו האימהי',
+      description:
+        'Sofia נחשבת כאן לנקודת העיגון האימהית המוקדמת ביותר בסיכום הנוכחי, ושכבת התצוגה משמרת את השרשרת Basia -> Sofia -> Tzila Cilia -> Pola -> Yael.',
+      note: 'ראיה חלקית בלבד. רמז ה-mtDNA תומך במסגרת הקו האימהי אך אינו פותר לבדו כל קשר היסטורי ביניים.',
+    },
+    'daniel-ginzburg-dna': {
+      title: 'רמז DNA לאשכול שם המשפחה Ginzburg-Liandres',
+      description:
+        'הערות ההתאמה מציינות את Landres / Liandres בתוך אשכול שם המשפחה Ginzburg, ולכן שכבת התצוגה יכולה לאחד וריאנטים מבלי לפצל זהויות תצוגה נפרדות.',
+      note: 'רמז הקשרי בלבד. הוא תומך בקיבוץ וריאנטים של שם המשפחה, אך אינו מספיק לבדו לשחזור מלא של הענף.',
+    },
+    'cilia-migration-note': {
+      title: 'הערת הגירה ל-Cilia / Tzila',
+      description:
+        'המידע הקיים מציין לידה בחיפה בתקופת המנדט הבריטי, מוצא משפחתי מאזור Pleshchenitsy, וחזרה לבלרוס סביב 1930.',
+      note: 'נשמר כטיפוס הערת מחקר מן שכבת הנתונים הקיימת. יש לקרוא אותו כהקשר ארכיוני, לא כהוכחה עצמאית.',
+    },
+    'cilia-myheritage-summary': {
+      title: 'סיכום עדכון MyHeritage ל-Cilia Sara Duberstein',
+      description:
+        'סיכום ביקורת מקומית מציין עדכון אחד נוסף הקשור לאחים עבור Cilia Sara Duberstein (Alperovitch), הסבתא האימהית בהקשר ענפי זה.',
+      note: 'זהו סיכום מסמך מחקר משני, לא רשומת המקור הראשונית עצמה.',
+    },
+    'raw-family-structure': {
+      title: 'הפניה מבנית לגרף המשפחה',
+      description:
+        'חבילת הענף שומרת את הגרף הגולמי כפי שהוא, ומעליו מוסיפה תיקוני תצוגה עבור מזהי המשפחה F19 / F71 לצורך סדר בני זוג ופרשנות אחים למחצה.',
+    },
+    'livnat-report-cross-reference': {
+      title: 'הפניה צולבת מדוח Livnat לשמות Ginzburg ו-Duberstein',
+      description:
+        'הדוח שנוצר כולל צורות שם מקבילות כגון Bashete Basia Ginzburg, Sofia Soshe Duberstein ו-Gershon Grigory Ginzburg, ולכן הוא תומך בקיבוץ וריאנטים לפי כינוי.',
+      note: 'שימושי כהפניה לשמות וריאנטים; אין להתייחס אליו כמקור היסטורי ראשוני בפני עצמו.',
+    },
+  };
+
+  return {
+    ...item,
+    ...(copy[item.id] || {}),
+  } as BranchEvidenceItem;
 }
 
 export default function GinzburgLiandresBranchPage() {
@@ -144,6 +192,9 @@ export default function GinzburgLiandresBranchPage() {
         'Druzia Lyandres נשמרת בחבילת הענף כאמו של Basia לצורך רצף הקו האימהי, אף שהגרף הגולמי עדיין אינו מכיל רשומת אדם קנונית ומקושרת עבורה.',
       ]
     : summary.relationshipSummary;
+  const localizedStepchildren = isHebrew
+    ? 'שלושת ילדי החורגים ממשפחת Esther Lipschitz נשמרים בתצוגה כ-stepchildren ולא כילדים ביולוגיים.'
+    : null;
 
   return (
     <div className="atlas-page h-full overflow-auto" dir={isHebrew ? 'rtl' : 'ltr'}>
@@ -239,7 +290,7 @@ export default function GinzburgLiandresBranchPage() {
                   {'stepchildren' in family && family.stepchildren ? (
                     <div className="mt-3 space-y-1">
                       {family.stepchildren.map((line) => (
-                        <p key={line} className="text-xs text-stone-500">{line}</p>
+                        <p key={line} className="text-xs text-stone-500">{localizedStepchildren || line}</p>
                       ))}
                     </div>
                   ) : null}
@@ -311,19 +362,22 @@ export default function GinzburgLiandresBranchPage() {
                   </div>
                   {items.length > 0 ? (
                     <div className="mt-3 space-y-3">
-                      {items.map((item) => (
+                      {items.map((item) => {
+                        const displayItem = translateEvidenceItem(item, isHebrew);
+                        return (
                         <div key={item.id} className="border-t border-[rgba(130,120,104,0.12)] pt-3 first:border-t-0 first:pt-0">
-                          <div className="text-sm font-medium text-[var(--atlas-text)]">{item.title}</div>
-                          <p className="mt-1 text-sm leading-6 text-stone-600">{item.description}</p>
+                          <div className="text-sm font-medium text-[var(--atlas-text)]">{displayItem.title}</div>
+                          <p className="mt-1 text-sm leading-6 text-stone-600">{displayItem.description}</p>
                           <div className="mt-2 flex flex-wrap items-center gap-2">
                             <RelationshipChip label={ui.confidenceLabels[item.confidence]} tone="stone" variant="atlas" />
                             <span className="text-xs text-stone-500">{item.source}</span>
                           </div>
-                          {item.note ? (
-                            <p className="mt-2 text-xs text-stone-500">{item.note}</p>
+                          {displayItem.note ? (
+                            <p className="mt-2 text-xs text-stone-500">{displayItem.note}</p>
                           ) : null}
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   ) : (
                     <p className="mt-3 text-sm leading-6 text-stone-500">{ui.typeEmptyLabels[type]}</p>

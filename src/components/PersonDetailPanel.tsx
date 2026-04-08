@@ -16,6 +16,8 @@ import { ArchivalCard } from './ArchivalCard';
 import { EvidenceBadge } from './EvidenceBadge';
 import { RelationshipChip } from './RelationshipChip';
 import {
+  type BranchEvidenceItem,
+  type BranchRelationshipNote,
   getCanonicalGinzburgLiandresDisplayName,
   getGinzburgLiandresAliases,
   getGinzburgLiandresDisplayProfile,
@@ -496,6 +498,64 @@ export function PersonDetailPanel({
         borisovCluster: 'Borisov cluster',
         branchPackageSection: 'Branch package',
       };
+  const branchEvidenceCopy: Record<string, Partial<BranchEvidenceItem>> = t
+    ? {
+        'maternal-line-mtdna': {
+          title: 'עוגן mtDNA לקו האימהי',
+          description:
+            'Sofia נחשבת כאן לנקודת העיגון האימהית המוקדמת ביותר בסיכום הנוכחי, ושכבת התצוגה משמרת את השרשרת Basia -> Sofia -> Tzila Cilia -> Pola -> Yael.',
+          note: 'ראיה חלקית בלבד. רמז ה-mtDNA תומך במסגרת הקו האימהי אך אינו פותר לבדו כל קשר היסטורי ביניים.',
+        },
+        'daniel-ginzburg-dna': {
+          title: 'רמז DNA לאשכול שם המשפחה Ginzburg-Liandres',
+          description:
+            'הערות ההתאמה מציינות את Landres / Liandres בתוך אשכול שם המשפחה Ginzburg, ולכן שכבת התצוגה יכולה לאחד וריאנטים מבלי לפצל זהויות תצוגה נפרדות.',
+          note: 'רמז הקשרי בלבד. הוא תומך בקיבוץ וריאנטים של שם המשפחה, אך אינו מספיק לבדו לשחזור מלא של הענף.',
+        },
+        'cilia-migration-note': {
+          title: 'הערת הגירה ל-Cilia / Tzila',
+          description:
+            'המידע הקיים מציין לידה בחיפה בתקופת המנדט הבריטי, מוצא משפחתי מאזור Pleshchenitsy, וחזרה לבלרוס סביב 1930.',
+          note: 'נשמר כטיפוס הערת מחקר מן שכבת הנתונים הקיימת. יש לקרוא אותו כהקשר ארכיוני, לא כהוכחה עצמאית.',
+        },
+        'cilia-myheritage-summary': {
+          title: 'סיכום עדכון MyHeritage ל-Cilia Sara Duberstein',
+          description:
+            'סיכום ביקורת מקומית מציין עדכון אחד נוסף הקשור לאחים עבור Cilia Sara Duberstein (Alperovitch), הסבתא האימהית בהקשר ענפי זה.',
+          note: 'זהו סיכום מסמך מחקר משני, לא רשומת המקור הראשונית עצמה.',
+        },
+        'raw-family-structure': {
+          title: 'הפניה מבנית לגרף המשפחה',
+          description:
+            'חבילת הענף שומרת את הגרף הגולמי כפי שהוא, ומעליו מוסיפה תיקוני תצוגה עבור מזהי המשפחה F19 / F71 לצורך סדר בני זוג ופרשנות אחים למחצה.',
+        },
+        'livnat-report-cross-reference': {
+          title: 'הפניה צולבת מדוח Livnat לשמות Ginzburg ו-Duberstein',
+          description:
+            'הדוח שנוצר כולל צורות שם מקבילות כגון Bashete Basia Ginzburg, Sofia Soshe Duberstein ו-Gershon Grigory Ginzburg, ולכן הוא תומך בקיבוץ וריאנטים לפי כינוי.',
+          note: 'שימושי כהפניה לשמות וריאנטים; אין להתייחס אליו כמקור היסטורי ראשוני בפני עצמו.',
+        },
+      }
+    : {};
+  const branchResearchNoteCopy: Record<string, { title: string; detail: string }> = t
+    ? {
+        'arie-leib-marriages': {
+          title: 'תיקון סדר הנישואין',
+          detail:
+            'שכבת התצוגה מתייחסת ל-Arie-Leib כמי שנשא תחילה אישה ראשונה לא ידועה, אחר כך את Basia Liandres, ולבסוף את Esther Lipschitz. זהו תיקון הצגה המונח על הגרף הגולמי הקיים.',
+        },
+        'esther-stepchildren': {
+          title: 'ילדי החורגים אינם ילדים ביולוגיים',
+          detail:
+            'Esther Lipschitz אינה מוצגת כאם הביולוגית של שלושת הילדים שהגיעו עמה ממשפחה קודמת. הם נשמרים כ-stepchildren במסגרת פרשנות הענף.',
+        },
+        'eti-half-sister': {
+          title: 'Eti היא אחות למחצה',
+          detail:
+            'Eti Ginzburg Charny מוצגת כאחות למחצה של Sofia, Gershon, Aharon, Yankel Berl ו־Isaak, ולא כאחות מלאה.',
+        },
+      }
+    : {};
   const translateBranchChip = (value: string): string => {
     if (!t) return value;
     const map: Record<string, string> = {
@@ -529,6 +589,14 @@ export function PersonDetailPanel({
     };
     return map[value] || value;
   };
+  const translateBranchEvidence = (item: BranchEvidenceItem): BranchEvidenceItem => ({
+    ...item,
+    ...(branchEvidenceCopy[item.id] || {}),
+  } as BranchEvidenceItem);
+  const translateBranchResearchNote = (note: BranchRelationshipNote): BranchRelationshipNote => ({
+    ...note,
+    ...(branchResearchNoteCopy[note.id] || {}),
+  });
 
   return (
     <div 
@@ -941,23 +1009,26 @@ export function PersonDetailPanel({
       {(branchProfile || branchEvidence.length > 0 || person.tags.includes('DNA') || !!person.story) && (
         <CollapsibleSection title={t ? 'ראיות ומקורות' : 'Evidence'} icon="🧾">
           <div className="space-y-3">
-            {branchEvidence.map((item) => (
+            {branchEvidence.map((item) => {
+              const displayItem = translateBranchEvidence(item);
+              return (
               <ArchivalCard
                 key={item.id}
-                title={item.title}
+                title={displayItem.title}
                 variant={branchProfile ? 'atlas' : 'default'}
                 eyebrow={<EvidenceBadge type={item.type} variant={branchProfile ? 'atlas' : 'default'} language={language} />}
               >
-                <p>{item.description}</p>
+                <p>{displayItem.description}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   <RelationshipChip label={confidenceLabels[item.confidence]} tone="stone" variant={branchProfile ? 'atlas' : 'default'} />
                   <span className="text-xs text-stone-500">{item.source}</span>
                 </div>
-                {item.note ? (
-                  <p className="mt-2 text-xs text-stone-500">{item.note}</p>
+                {displayItem.note ? (
+                  <p className="mt-2 text-xs text-stone-500">{displayItem.note}</p>
                 ) : null}
               </ArchivalCard>
-            ))}
+              );
+            })}
             {person.tags.includes('DNA') && !branchEvidence.some((item) => item.type === 'dna-clue') ? (
               <ArchivalCard
                 title={t ? 'אות DNA' : 'DNA clue'}
@@ -986,11 +1057,14 @@ export function PersonDetailPanel({
       {(branchRelationshipNotes.length > 0 || person.note_plain || person.title) && (
         <CollapsibleSection title={t ? 'הערות מחקר' : 'Research notes'} icon="🔎">
           <div className="space-y-3">
-            {branchRelationshipNotes.map((note) => (
-              <ArchivalCard key={note.id} title={note.title} variant={branchProfile ? 'atlas' : 'default'}>
-                {note.detail}
+            {branchRelationshipNotes.map((note) => {
+              const displayNote = translateBranchResearchNote(note);
+              return (
+              <ArchivalCard key={note.id} title={displayNote.title} variant={branchProfile ? 'atlas' : 'default'}>
+                {displayNote.detail}
               </ArchivalCard>
-            ))}
+              );
+            })}
             {person.note_plain ? (
               <ArchivalCard title={t ? 'הערת מקור גולמית' : 'Raw source note'} variant={branchProfile ? 'atlas' : 'default'}>
                 <div className="whitespace-pre-wrap break-words">{person.note_plain}</div>
