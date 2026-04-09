@@ -8,6 +8,7 @@ type Props = {
   item: BranchEvidenceItem;
   language: 'en' | 'he';
   variant?: 'default' | 'atlas';
+  compact?: boolean;
   resolvePersonLabel?: (personId: string) => string;
   resolvePersonHref?: (personId: string) => string | null | undefined;
 };
@@ -24,6 +25,7 @@ export function BranchEvidenceCard({
   item,
   language,
   variant = 'atlas',
+  compact = false,
   resolvePersonLabel,
   resolvePersonHref,
 }: Props) {
@@ -115,32 +117,33 @@ export function BranchEvidenceCard({
   const renderVideoTestimony = () => {
     if (item.type !== 'video-testimony') return null;
     const transcript = item.transcript?.trim() || '';
-    const { excerpt, hasMore } = transcript ? truncateTranscript(transcript) : { excerpt: '', hasMore: false };
+    const transcriptPreview = transcript ? truncateTranscript(transcript, compact ? 140 : 220) : null;
+    const excerpt = transcriptPreview?.excerpt || '';
     const relatedPersonIds = item.relatedPersonIds || [];
     const relatedPlaceIds = item.relatedPlaceIds || [];
     const topics = item.topics || [];
 
     return (
-      <div className="space-y-3">
+      <div className={compact ? 'space-y-2' : 'space-y-3'}>
         <p>{item.description}</p>
 
-        <div className="space-y-2 text-sm text-[var(--atlas-text)]">
-          <div className="flex flex-wrap items-start gap-2">
+        <div className={`${compact ? 'space-y-1.5' : 'space-y-2'} text-sm text-[var(--atlas-text)]`}>
+          <div className={`flex flex-wrap items-start ${compact ? 'gap-1.5' : 'gap-2'}`}>
             <span className="text-[11px] uppercase tracking-[0.16em] text-[var(--atlas-text-muted)]">{labels.speaker}</span>
             <div>{personLink(item.speakerPersonId)}</div>
           </div>
 
           {relatedPersonIds.length > 0 ? (
-            <div className="flex flex-wrap items-start gap-2">
+            <div className={`flex flex-wrap items-start ${compact ? 'gap-1.5' : 'gap-2'}`}>
               <span className="text-[11px] uppercase tracking-[0.16em] text-[var(--atlas-text-muted)]">{labels.relatedPeople}</span>
-              <div className="flex flex-wrap gap-1.5">{relatedPersonIds.map(personPill)}</div>
+              <div className={`flex flex-wrap ${compact ? 'gap-1' : 'gap-1.5'}`}>{relatedPersonIds.map(personPill)}</div>
             </div>
           ) : null}
 
           {relatedPlaceIds.length > 0 ? (
-            <div className="flex flex-wrap items-start gap-2">
+            <div className={`flex flex-wrap items-start ${compact ? 'gap-1.5' : 'gap-2'}`}>
               <span className="text-[11px] uppercase tracking-[0.16em] text-[var(--atlas-text-muted)]">{labels.relatedPlaces}</span>
-              <div className="flex flex-wrap gap-1.5">
+              <div className={`flex flex-wrap ${compact ? 'gap-1' : 'gap-1.5'}`}>
                 {relatedPlaceIds.map((placeId) => (
                   <span key={placeId} className="atlas-pill rounded-full px-2 py-0.5 text-[10px] text-[var(--atlas-text)]">
                     {placeId}
@@ -151,9 +154,9 @@ export function BranchEvidenceCard({
           ) : null}
 
           {topics.length > 0 ? (
-            <div className="flex flex-wrap items-start gap-2">
+            <div className={`flex flex-wrap items-start ${compact ? 'gap-1.5' : 'gap-2'}`}>
               <span className="text-[11px] uppercase tracking-[0.16em] text-[var(--atlas-text-muted)]">{labels.topics}</span>
-              <div className="flex flex-wrap gap-1.5">
+              <div className={`flex flex-wrap ${compact ? 'gap-1' : 'gap-1.5'}`}>
                 {topics.map((topic) => (
                   <RelationshipChip key={topic} label={topic} tone="violet" variant={variant} />
                 ))}
@@ -161,28 +164,28 @@ export function BranchEvidenceCard({
             </div>
           ) : null}
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className={`flex flex-wrap items-center ${compact ? 'gap-1.5' : 'gap-2'}`}>
             <span className="text-[11px] uppercase tracking-[0.16em] text-[var(--atlas-text-muted)]">{labels.language}</span>
             <RelationshipChip label={languageLabels[item.language]} tone="stone" variant={variant} />
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className={`flex flex-wrap items-center ${compact ? 'gap-1.5' : 'gap-2'}`}>
           <RelationshipChip
             label={confidenceLabels[item.confidence]}
             tone={item.confidence === 'direct' ? 'lime' : item.confidence === 'partial' ? 'stone' : 'rose'}
             variant={variant}
           />
-          <span className="text-xs text-stone-500">{labels.source}: {item.source}</span>
+          <span className={compact ? 'text-[11px] text-stone-500' : 'text-xs text-stone-500'}>{labels.source}: {item.source}</span>
         </div>
 
-        <div className="space-y-2">
+        <div className={compact ? 'space-y-1.5' : 'space-y-2'}>
           {item.url ? (
             <a
               href={item.url}
               target="_blank"
               rel="noreferrer"
-              className="atlas-link inline-flex text-sm"
+              className={compact ? 'atlas-link inline-flex text-xs' : 'atlas-link inline-flex text-sm'}
             >
               {labels.openVideo}
             </a>
@@ -191,35 +194,35 @@ export function BranchEvidenceCard({
           )}
 
           {transcript ? (
-            <details className="atlas-card-subtle rounded-2xl px-4 py-3">
+            <details className={`atlas-card-subtle rounded-2xl ${compact ? 'px-3 py-2' : 'px-4 py-3'}`}>
               <summary className="cursor-pointer list-none text-[11px] uppercase tracking-[0.16em] text-[var(--atlas-text-muted)]">
                 <span>{labels.transcript}</span>
-                <span className="ml-2 text-[11px] normal-case tracking-normal text-stone-600">{excerpt}</span>
+                <span className={`${compact ? 'ml-1.5' : 'ml-2'} text-[11px] normal-case tracking-normal text-stone-600`}>{excerpt}</span>
               </summary>
-              <p className={`mt-3 whitespace-pre-wrap text-sm leading-6 text-stone-600 ${hasMore ? '' : ''}`}>{transcript}</p>
+              <p className={`mt-3 whitespace-pre-wrap ${compact ? 'text-xs leading-5' : 'text-sm leading-6'} text-stone-600`}>{transcript}</p>
             </details>
           ) : (
             <p className="text-xs text-stone-500">{labels.noTranscript}</p>
           )}
         </div>
 
-        {item.note ? <p className="text-xs text-stone-500">{item.note}</p> : null}
+        {item.note ? <p className={compact ? 'text-[11px] text-stone-500' : 'text-xs text-stone-500'}>{item.note}</p> : null}
       </div>
     );
   };
 
   const renderGenericEvidence = () => (
-    <div className="space-y-3">
+    <div className={compact ? 'space-y-2' : 'space-y-3'}>
       <p>{item.description}</p>
-      <div className="flex flex-wrap items-center gap-2">
+      <div className={`flex flex-wrap items-center ${compact ? 'gap-1.5' : 'gap-2'}`}>
         <RelationshipChip
           label={confidenceLabels[item.confidence]}
           tone={item.confidence === 'direct' ? 'lime' : item.confidence === 'partial' ? 'stone' : 'rose'}
           variant={variant}
         />
-        <span className="text-xs text-stone-500">{labels.source}: {item.source}</span>
+        <span className={compact ? 'text-[11px] text-stone-500' : 'text-xs text-stone-500'}>{labels.source}: {item.source}</span>
       </div>
-      {item.note ? <p className="text-xs text-stone-500">{item.note}</p> : null}
+      {item.note ? <p className={compact ? 'text-[11px] text-stone-500' : 'text-xs text-stone-500'}>{item.note}</p> : null}
     </div>
   );
 

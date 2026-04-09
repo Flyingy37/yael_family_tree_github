@@ -38,43 +38,77 @@ function formatRelationshipLabel(value: string): string {
 }
 
 function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean): BranchEvidenceItem {
-  if (!isHebrew || item.type === 'video-testimony') return item;
+  if (!isHebrew) return item;
 
   const copy: Record<string, Partial<BranchEvidenceItem>> = {
     'maternal-line-mtdna': {
       title: 'עוגן mtDNA לקו האימהי',
       description:
-        'Sofia נחשבת כאן לנקודת העיגון האימהית המוקדמת ביותר בסיכום הנוכחי, ושכבת התצוגה משמרת את השרשרת Basia -> Sofia -> Tzila Cilia -> Pola -> Yael.',
-      note: 'ראיה חלקית בלבד. רמז ה-mtDNA תומך במסגרת הקו האימהי אך אינו פותר לבדו כל קשר היסטורי ביניים.',
+        'Sofia היא נקודת העיגון האימהית המוקדמת בסיכום הנוכחי, ושכבת התצוגה משמרת את השרשרת Basia -> Sofia -> Tzila Cilia -> Pola -> Yael.',
+      note: 'ראיה חלקית. רמז ה-mtDNA תומך בקו האימהי אך אינו פותר לבדו את כל החיבורים ההיסטוריים.',
+      source: 'עוגן mtDNA לקו האימהי',
     },
     'daniel-ginzburg-dna': {
       title: 'רמז DNA לאשכול שם המשפחה Ginzburg-Liandres',
       description:
-        'הערות ההתאמה מציינות את Landres / Liandres בתוך אשכול שם המשפחה Ginzburg, ולכן שכבת התצוגה יכולה לאחד וריאנטים מבלי לפצל זהויות תצוגה נפרדות.',
-      note: 'רמז הקשרי בלבד. הוא תומך בקיבוץ וריאנטים של שם המשפחה, אך אינו מספיק לבדו לשחזור מלא של הענף.',
+        'הערות ההתאמה מציינות את Landres / Liandres בתוך אשכול שם המשפחה Ginzburg, ולכן שכבת התצוגה מאחדת וריאנטים מבלי לפצל זהויות תצוגה נפרדות.',
+      note: 'רמז הקשרי. הוא תומך בקיבוץ וריאנטים של שם המשפחה, אך אינו מספיק לבדו לשחזור מלא של הענף.',
+      source: 'רמז DNA לאשכול השם',
     },
     'cilia-migration-note': {
       title: 'הערת הגירה ל-Cilia / Tzila',
       description:
-        'המידע הקיים מציין לידה בחיפה בתקופת המנדט הבריטי, מוצא משפחתי מאזור Pleshchenitsy, וחזרה לבלרוס סביב 1930.',
-      note: 'נשמר כטיפוס הערת מחקר מן שכבת הנתונים הקיימת. יש לקרוא אותו כהקשר ארכיוני, לא כהוכחה עצמאית.',
+        'המידע הקיים מציין לידה בחיפה בתקופת המנדט הבריטי, מוצא משפחתי מאזור Pleshchenitsy וחזרה לבלרוס סביב 1930.',
+      note: 'נשמר כהערת מחקר. יש לקרוא אותו כהקשר ארכיוני, לא כהוכחה עצמאית.',
+      source: 'הערת הגירה',
     },
     'cilia-myheritage-summary': {
       title: 'סיכום עדכון MyHeritage ל-Cilia Sara Duberstein',
       description:
-        'סיכום ביקורת מקומית מציין עדכון אחד נוסף הקשור לאחים עבור Cilia Sara Duberstein (Alperovitch), הסבתא האימהית בהקשר ענפי זה.',
-      note: 'זהו סיכום מסמך מחקר משני, לא רשומת המקור הראשונית עצמה.',
+        'סיכום ביקורת מקומית מציין עדכון נוסף הקשור לאחים עבור Cilia Sara Duberstein (Alperovitch), הסבתא האימהית בהקשר ענפי זה.',
+      note: 'זהו סיכום של מסמך מחקר משני, לא רשומת המקור הראשונית.',
+      source: 'סיכום MyHeritage',
     },
     'raw-family-structure': {
       title: 'הפניה מבנית לגרף המשפחה',
       description:
         'חבילת הענף שומרת את הגרף הגולמי כפי שהוא, ומעליו מוסיפה תיקוני תצוגה עבור מזהי המשפחה F19 / F71 לצורך סדר בני זוג ופרשנות אחים למחצה.',
+      source: 'גרף המשפחה הגולמי',
     },
     'livnat-report-cross-reference': {
       title: 'הפניה צולבת מדוח Livnat לשמות Ginzburg ו-Duberstein',
       description:
-        'הדוח שנוצר כולל צורות שם מקבילות כגון Bashete Basia Ginzburg, Sofia Soshe Duberstein ו-Gershon Grigory Ginzburg, ולכן הוא תומך בקיבוץ וריאנטים לפי כינוי.',
+        'הדוח כולל צורות שם מקבילות כגון Bashete Basia Ginzburg, Sofia Soshe Duberstein ו-Gershon Grigory Ginzburg, ולכן הוא תומך בקיבוץ וריאנטים לפי כינוי.',
       note: 'שימושי כהפניה לשמות וריאנטים; אין להתייחס אליו כמקור היסטורי ראשוני בפני עצמו.',
+      source: 'דוח Livnat',
+    },
+    'ev-video-tzila-duberstein-01': {
+      title: 'עדות מצולמת: מבנה משפחת דוברשטיין',
+      description:
+        'עדות מצולמת על Vladimir Duberstein, Sofia Duberstein וילדיהם: Ruven/Rube, Michael, Bashata Ema, Tzila Sara Tzipora ו־Vola.',
+      note: 'עדות בעל־פה. עמימות ניסוחית נשמרת במכוון.',
+      source: 'תמלול עדות משפחת Tzila',
+    },
+    'ev-video-tzila-duberstein-02': {
+      title: 'עדות מצולמת: מלחמה, בריחה וסיפור הבנק',
+      description:
+        'עדות מצולמת על תפקידו של Vladimir בבנק, ניסיונות הבריחה, ההפצצות, בריחת המשפחה וההקשר של גטו Pleshchenitsy.',
+      note: 'יש לשמור את רצף האירועים כעדות עד לאימות חיצוני עצמאי.',
+      source: 'תמלול עדות משפחת Tzila',
+    },
+    'ev-video-tzila-ginzburg-01': {
+      title: 'עדות מצולמת: ענף Ginzburg',
+      description:
+        'עדות מצולמת על Leiba Ginzburg, נשותיו, הילדים שיוחסו לענף Bashata, והמשק המאוחר של Gershon ו־Fania Feigl.',
+      note: 'העדות כוללת עמימויות סביב נשות הבית, שיוך הילדים ושמות חוזרים.',
+      source: 'תמלול עדות משפחת Tzila',
+    },
+    'ev-video-tzila-photo-memory-01': {
+      title: 'עדות מצולמת: זיכרון התמונה המשפחתית',
+      description:
+        'זיכרון של תצלום משפחתי שבו Tzila מופיעה לצד אחותה, כנראה Ema Meirson née Duberstein / Bashata Ema Duberstein.',
+      note: 'שימושי לקישור זהויות, אך יש לשמור על קירוב בלבד עד להתאמה לתצלום מתועד.',
+      source: 'תמלול עדות משפחת Tzila',
     },
   };
 
@@ -110,7 +144,7 @@ export default function GinzburgLiandresBranchPage() {
         firstMarriage: 'נישואין ראשונים',
         secondMarriage: 'נישואין שניים',
         thirdMarriage: 'נישואין שלישיים',
-        firstMarriageTag: 'אישה לא ידועה',
+        firstMarriageTag: 'אישה לא ידועה (השם הפרטי ושם הנעורים אינם ידועים)',
         secondMarriageTag: 'צאצאים ביולוגיים',
         thirdMarriageTag: 'שלב־משפחה',
         firstMarriageNote: 'הילדה הידועה מנישואין אלה: Eti Ginzburg Charny.',
@@ -127,12 +161,12 @@ export default function GinzburgLiandresBranchPage() {
         relationshipSummary: 'סיכום יחסים',
         presentationRules: 'כללי הצגה',
         typeEmptyLabels: {
-          'family-photo': 'עדיין אין תצלום משפחתי מצורף לחבילת הענף.',
-          testimony: 'עדיין אין בלוק עדות נוסף ברמת הענף מעבר להערות הקיימות.',
-          'video-testimony': 'עדיין אין עדות וידאו נוספת ברמת הענף מעבר לסט העדויות המוכנס.',
-          document: 'אין מסמך ענפי נוסף מעבר לסיכום המחקר הקיים.',
-          'dna-clue': 'אין רמז DNA נוסף מעבר לרשומות חבילת הענף הקיימות.',
-          'external-tree-reference': 'אין בשלב זה הפניה חיצונית נוספת ברמת הענף.',
+          'family-photo': 'אין תצלום משפחתי נוסף בחבילת הענף.',
+          testimony: 'אין עדות נוספת ברמת הענף בשלב זה.',
+          'video-testimony': 'אין עדות וידאו נוספת ברמת הענף בשלב זה.',
+          document: 'אין מסמך ענפי נוסף מעבר לסיכום המחקר.',
+          'dna-clue': 'אין רמז DNA נוסף ברמת הענף.',
+          'external-tree-reference': 'אין הפניה חיצונית נוספת ברמת הענף.',
         } as const,
       }
     : {
@@ -144,7 +178,7 @@ export default function GinzburgLiandresBranchPage() {
         firstMarriage: 'First marriage',
         secondMarriage: 'Second marriage',
         thirdMarriage: 'Third marriage',
-        firstMarriageTag: 'Unknown wife',
+        firstMarriageTag: 'Unknown wife (given name and maiden name unknown)',
         secondMarriageTag: 'Biological children',
         thirdMarriageTag: 'Stepfamily',
         firstMarriageNote: 'Known child from this marriage: Eti Ginzburg Charny.',
@@ -162,10 +196,10 @@ export default function GinzburgLiandresBranchPage() {
         presentationRules: 'Presentation rules',
         typeEmptyLabels: {
           'family-photo': 'No family photo is attached to this branch package yet.',
-          testimony: 'No additional testimony block is attached at branch level beyond current notes.',
-          'video-testimony': 'No additional video testimony is attached at branch level beyond the seeded Tzila testimony set.',
+          testimony: 'No additional testimony is attached at branch level yet.',
+          'video-testimony': 'No additional video testimony is attached at branch level yet.',
           document: 'No further branch document is attached beyond the current research summary.',
-          'dna-clue': 'No additional DNA clue is attached beyond the current branch package entries.',
+          'dna-clue': 'No additional DNA clue is attached at branch level yet.',
           'external-tree-reference': 'No further external tree or research reference is attached at branch level.',
         } as const,
       };
@@ -346,9 +380,9 @@ export default function GinzburgLiandresBranchPage() {
           <ArchivalCard title={ui.evidence} variant="atlas" eyebrow={<RelationshipChip label={ui.evidenceFirst} tone="rose" variant="atlas" />}>
             <div className="space-y-4">
               {evidenceByType.map(({ type, items }) => (
-                <div key={type} className="atlas-card-subtle rounded-2xl px-4 py-3">
+                <div key={type} className="atlas-card-subtle rounded-2xl px-3 py-2.5">
                   {items.length > 0 ? (
-                    <div className="mt-3 space-y-3">
+                    <div className="mt-2 space-y-2">
                       {items.map((item) => {
                         const displayItem = translateEvidenceItem(item, isHebrew);
                         return (
@@ -357,6 +391,7 @@ export default function GinzburgLiandresBranchPage() {
                             item={displayItem}
                             language={lang}
                             variant="atlas"
+                            compact
                             resolvePersonLabel={(personId) => renderPersonLabel(personId, personId)}
                             resolvePersonHref={(personId) => `/${lang}/person/${encodeURIComponent(personId)}`}
                           />
