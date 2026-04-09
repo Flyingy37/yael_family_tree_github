@@ -92,28 +92,28 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
       title: 'עדות מצולמת: מבנה משפחת דוברשטיין',
       description:
         'עדות מצולמת על Vladimir Duberstein, Sofia Duberstein וילדיהם: Ruven/Rube, Michael, Bashata Ema, Tzila Sara Tzipora ו־Vola.',
-      note: 'עדות בעל־פה. עמימות ניסוחית נשמרת במכוון.',
+      note: 'עדות בעל־פה; עמימות ניסוח נשמרת במכוון.',
       source: 'תמלול עדות משפחת Tzila',
     },
     'ev-video-tzila-duberstein-02': {
       title: 'עדות מצולמת: מלחמה, בריחה וסיפור הבנק',
       description:
-        'עדות מצולמת על תפקידו של Vladimir בבנק, ניסיונות הבריחה, ההפצצות, בריחת המשפחה וההקשר של גטו Pleshchenitsy.',
-      note: 'יש לשמור את רצף האירועים כעדות עד לאימות חיצוני עצמאי.',
+        'עדות מצולמת על תפקידו של Vladimir בבנק, ניסיונות הבריחה, ההפצצות, בריחת המשפחה והקשר לגטו Pleshchenitsy.',
+      note: 'יש לשמור את רצף האירועים כעדות עד לאימות נוסף.',
       source: 'תמלול עדות משפחת Tzila',
     },
     'ev-video-tzila-ginzburg-01': {
       title: 'עדות מצולמת: ענף Ginzburg',
       description:
-        'עדות מצולמת על Leiba Ginzburg, נשותיו, הילדים שיוחסו לענף Bashata, והמשק המאוחר של Gershon ו־Fania Feigl.',
-      note: 'העדות כוללת עמימויות סביב נשות הבית, שיוך הילדים ושמות חוזרים.',
+        'עדות מצולמת על Leiba Ginzburg, נשותיו, שיוך הילדים לענף Bashata, ובית Gershon–Fania Feigl.',
+      note: 'נשמרות כאן עמימויות סביב נשות הבית, שיוך הילדים ושמות חוזרים.',
       source: 'תמלול עדות משפחת Tzila',
     },
     'ev-video-tzila-photo-memory-01': {
       title: 'עדות מצולמת: זיכרון התמונה המשפחתית',
       description:
-        'זיכרון של תצלום משפחתי שבו Tzila מופיעה לצד אחותה, כנראה Ema Meirson née Duberstein / Bashata Ema Duberstein.',
-      note: 'שימושי לקישור זהויות, אך יש לשמור על קירוב בלבד עד להתאמה לתצלום מתועד.',
+        'זיכרון של תצלום משפחתי שבו Tzila מופיעה לצד אחותה, כנראה Ema Meirson née Duberstein.',
+      note: 'שימושי לקישור זהויות, אך נשמר כאן כקירוב בלבד.',
       source: 'תמלול עדות משפחת Tzila',
     },
   };
@@ -401,11 +401,11 @@ export default function GinzburgLiandresBranchPage() {
 
         <section className="mt-8 grid gap-6 lg:grid-cols-[1fr_1fr]">
           <ArchivalCard title={ui.evidence} variant="atlas" eyebrow={<RelationshipChip label={ui.evidenceFirst} tone="rose" variant="atlas" />}>
-            <div className="space-y-4">
+            <div className="space-y-3">
               {evidenceByType.map(({ type, items }) => (
-                <div key={type} className="atlas-card-subtle rounded-2xl px-3 py-2.5">
+                <div key={type} className="atlas-card-subtle rounded-2xl px-3 py-2">
                   {items.length > 0 ? (
-                    <div className="mt-2 space-y-2">
+                    <div className="mt-1.5 space-y-2">
                       {items.map((item) => {
                         const displayItem = translateEvidenceItem(item, isHebrew, `/${lang}/branches/ginzburg-liandres`);
                         return (
