@@ -566,6 +566,8 @@ export function PersonDetailPanel({
         parent: 'הורות',
         spouse: 'בן/בת זוג',
         maternalLine: 'קו אימהי',
+        branchContext: 'הקשר ענפי',
+        siblingStatus: 'סטטוס אחאות',
         confidenceLabel: 'ודאות',
         evidenceLabel: 'מזהי ראיות',
         noClaims: 'אין כרגע טענות גנאלוגיות מצורפות.',
@@ -576,6 +578,8 @@ export function PersonDetailPanel({
         parent: 'Parent',
         spouse: 'Spouse',
         maternalLine: 'Maternal line',
+        branchContext: 'Branch context',
+        siblingStatus: 'Sibling status',
         confidenceLabel: 'Confidence',
         evidenceLabel: 'Evidence ids',
         noClaims: 'No genealogy claims attached yet.',
@@ -593,28 +597,18 @@ export function PersonDetailPanel({
       };
   const branchClaimNoteCopy: Record<string, string> = t
     ? {
-        'Display correction only. Maiden name remains unknown.':
-          'תיקון תצוגה בלבד. שם הלידה נותר לא ידוע.',
-        'Presentation-layer correction; raw graph does not yet contain a canonical linked person record for Esther.':
-          'תיקון שכבת תצוגה; הגרף הגולמי עדיין אינו מכיל רשומת אדם קנונית ומקושרת עבור Esther.',
-        'Second marriage in the branch package.':
-          'נישואין שניים בחבילת הענף.',
-        'Basia is treated as Sofia’s biological mother in the branch package.':
-          'Basia מוצגת כאמה הביולוגית של Sofia בחבילת הענף.',
-        'Maternal-line anchor in the normalized branch chain.':
-          'עוגן הקו האימהי בשרשרת המנורמלת של הענף.',
-        'Sofia appears in the branch as the parent of Tzila / Cilia.':
-          'Sofia מופיעה בענף כהורה של Tzila / Cilia.',
-        'Displays Sofia as part of the maternal chain leading to Tzila.':
-          'ממקמת את Sofia כחלק משרשרת הקו האימהי המובילה ל-Tzila.',
-        'Alias-aware display keeps Gershon / Grigory as one identity in this branch package.':
-          'תצוגה מודעת־כינויים מאחדת את Gershon / Grigory לזהות אחת בחבילת הענף.',
-        'Spouse link preserved from the raw family cluster.':
-          'קשר בן/בת זוג שנשמר מאשכול המשפחה הגולמי.',
-        'Branch presentation treats Eti as a half-sister of Sofia, Gershon, Aharon, Yankel Berl, and Isaak.':
-          'תצוגת הענף מציגה את Eti כאחות למחצה של Sofia, Gershon, Aharon, Yankel Berl ו־Isaak.',
-        'Tzila is positioned within the maternal chain that leads to Pola.':
-          'Tzila ממוקמת בתוך שרשרת הקו האימהי המובילה ל-Pola.',
+        'Canonical branch display name. Married surname should not replace maiden surname in normalized presentation.':
+          'שם תצוגה קנוני של הענף. שם הנישואין לא אמור להחליף את שם הלידה בהצגה מנורמלת.',
+        'Maternal-line anchor in the normalized branch chain. Preserve ambiguity if the raw graph does not yet contain a canonical linked person record for Druzia Lyandres.':
+          'עוגן קו אימהי בשרשרת הענף המנורמלת. יש לשמר את העמימות אם הגרף הגולמי עדיין אינו מכיל רשומת אדם קנונית ומקושרת עבור Druzia Lyandres.',
+        'Canonical normalized English display name for branch presentation.':
+          'שם תצוגה אנגלי קנוני ומנורמל להצגת הענף.',
+        'Presentation-layer correction only. Current raw graph may not yet contain a canonical linked person record for Esther Lipschitz.':
+          'תיקון שכבת תצוגה בלבד. הגרף הגולמי הנוכחי עדיין אינו מכיל רשומת אדם קנונית ומקושרת עבור Esther Lipschitz.',
+        'Branch-context only. Preserve stepchildren as non-biological in the presentation layer.':
+          'הקשר ענפי בלבד. יש לשמר את ילדי החורגים כלא־ביולוגיים בשכבת התצוגה.',
+        'This should be rendered explicitly as half-sibling status, not full sibling status.':
+          'יש להציג זאת במפורש כסטטוס אחאות למחצה ולא כאחאות מלאה.',
       }
     : {};
   const translateBranchChip = (value: string): string => {
@@ -675,7 +669,13 @@ export function PersonDetailPanel({
       case 'spouse':
         return `${branchClaimUi.spouse}: ${subjectLabel}${targetLabel ? ` ↔ ${targetLabel}` : ''}`;
       case 'maternal-line':
-        return `${branchClaimUi.maternalLine}: ${subjectLabel}${targetLabel ? ` → ${targetLabel}` : ''}`;
+        return claim.objectId
+          ? `${branchClaimUi.maternalLine}: ${subjectLabel}${targetLabel ? ` → ${targetLabel}` : ''}`
+          : `${branchClaimUi.maternalLine}: ${targetLabel || subjectLabel}${subjectLabel ? ` → ${subjectLabel}` : ''}`;
+      case 'branch-context':
+        return `${branchClaimUi.branchContext}: ${subjectLabel}`;
+      case 'sibling-status':
+        return `${branchClaimUi.siblingStatus}: ${subjectLabel}`;
       default:
         return subjectLabel;
     }
