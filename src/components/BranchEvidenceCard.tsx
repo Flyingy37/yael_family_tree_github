@@ -87,9 +87,9 @@ export function BranchEvidenceCard({
 
   const confidenceLabels = isHebrew
     ? {
-        direct: 'ישיר',
-        partial: 'חלקי',
-        contextual: 'הקשרי',
+        direct: 'תיעוד ישיר',
+        partial: 'תיעוד חלקי',
+        contextual: 'תיעוד הקשרי',
       }
     : {
         direct: 'Direct',

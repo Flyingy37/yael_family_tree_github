@@ -111,11 +111,41 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
       note: 'זהו צילום מחקרי מסומן. יש להתייחס לזיהויים האישיים כאל תוויות עבודה משפחתיות, אלא אם יאומתו בכיתוב מקורי או במקור מקביל.',
       source: 'תצלום הפניה מסומן מתוך הארכיון המשפחתי',
     },
+    'ev-image-ginzburg-family-group-1946-a': {
+      title: 'תצלום משפחתי של Ginzburg, בלארוס שלאחר המלחמה',
+      description: 'תצלום משפחתי נקי מהתקופה שלאחר המלחמה, שנשמר ללא שכבת הכיתוב בכתב יד.',
+      note: 'יש להשתמש בתמונה יחד עם הגרסה המסומנת לצורך תמיכה בזיהוי; אין להפוך הנחות על מיקום בתמונה לעובדות גנאלוגיות חד-משמעיות ללא אימות נפרד.',
+      source: 'ארכיון משפחתי',
+    },
+    'ev-image-ginzburg-family-group-1946-b': {
+      title: 'תצלום משפחתי חלופי של Ginzburg, בלארוס שלאחר המלחמה',
+      description: 'תצלום משפחתי שני מאותו הקשר משפחתי רחב יותר שלאחר המלחמה, כנראה קשור לסט הזיהוי המסומן.',
+      note: 'יש לשמור את הזיהוי ברמת אדם כמשוער אלא אם הוא מעוגן בגרסה המסומנת או במקור נוסף.',
+      source: 'ארכיון משפחתי',
+    },
+    'ev-document-yankel-berl-ginzburg-autobiography': {
+      title: 'מסמך אוטוביוגרפי סרוק המקושר ל-Yankel Berl Ginzburg',
+      description: 'סריקה ארכיונית של טופס ביוגרפי או אוטוביוגרפי ברוסית הכולל מידע משפחתי ופרטי הורים.',
+      note: 'המסמך הוא ראיה ראשונית כפריט ארכיוני, אך כל תמלול או פרשנות ממנו צריכים להישאר ניתנים לבדיקה נפרדת.',
+      source: 'סריקת מסמך מארכיון משפחתי',
+    },
     'ev-image-tzila-family-testimony-scan': {
       title: 'עמוד סרוק מעדות משפחת Tzila',
       description: 'עמוד עדות סרוק בעברית, המשמר את הסיפור המשפחתי כצילום מסמך.',
       note: 'יש להתייחס אליו כצילום של ראיה תיעודית, לא כתמלול.',
       source: 'חומרי Ginzburg שהועלו',
+    },
+    'ev-image-cilia-alperovitz-liri-livnat-tal': {
+      title: 'Tzila Cilia Alperovitz לבית Dubershtein עם Liri Livnat-Tal',
+      description: 'צילום משפחתי מאוחר שבו Tzila Cilia Alperovitz לבית Dubershtein מחזיקה את Liri Livnat-Tal.',
+      note: 'צילום משפחתי מודרני מארכיון הקו האימהי.',
+      source: 'ארכיון משפחתי',
+    },
+    'ev-image-isaak-ginzburg-1936': {
+      title: 'דיוקן המיוחס ל-Iche Isaak Ginzburg',
+      description: 'דיוקן ארכיוני המקושר בתוויות המשפחתיות ל-Iche Isaak Ginzburg.',
+      note: 'השנה משקפת את הזיהוי המשפחתי הקיים.',
+      source: 'ארכיון משפחתי',
     },
     'raw-family-structure': {
       title: 'הפניה מבנית לגרף המשפחה',
@@ -213,8 +243,8 @@ export default function GinzburgLiandresBranchPage() {
         gershonLine: 'קו Gershon',
         borisovSummary:
           'האשכול הזה מדגיש את ענף בוריסוב, עם התמקדות בקו Gershon ובהקשר המנורמל הקרוב אליו.',
-        evidence: 'ראיות',
-        evidenceFirst: 'ראיות תחילה',
+        evidence: 'תיעוד',
+        evidenceFirst: 'תיעוד תחילה',
         relationshipSummary: 'סיכום יחסים',
         presentationRules: 'כללי הצגה',
         typeEmptyLabels: {
