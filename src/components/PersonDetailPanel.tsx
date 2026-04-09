@@ -18,7 +18,6 @@ import { EvidenceBadge } from './EvidenceBadge';
 import { RelationshipChip } from './RelationshipChip';
 import {
   type BranchEvidenceItem,
-  type GenealogyClaim,
   type BranchRelationshipNote,
   getCanonicalGinzburgLiandresDisplayName,
   getGinzburgLiandresAliases,
@@ -29,6 +28,7 @@ import {
   getGinzburgLiandresRelationshipNotes,
   isGinzburgLiandresBranchPerson,
 } from '../branches/ginzburgLiandres';
+import type { GenealogyClaim } from '../types/genealogy';
 
 const TAG_ICONS: Record<string, { Icon: LucideIcon; color: string; bg: string; labelEn: string; labelHe: string }> = {
   DNA:       { Icon: Dna,          color: '#065f46', bg: '#d1fae5', labelEn: 'DNA',             labelHe: 'DNA' },

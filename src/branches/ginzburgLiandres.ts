@@ -1,4 +1,5 @@
 import type { Person } from '../types';
+import type { GenealogyClaim } from '../types/genealogy';
 import { formatDateConcise, formatLifespan } from '../utils/formatters';
 
 export type EvidenceType =
@@ -77,17 +78,6 @@ export interface BranchRelationshipOverlay {
   relationshipChips: string[];
   notes: string[];
 }
-
-export type GenealogyClaim = {
-  id: string;
-  type: 'identity' | 'parent' | 'spouse' | 'maternal-line' | 'sibling-status' | 'branch-context';
-  subjectId: string;
-  objectId?: string;
-  value?: string;
-  evidenceIds: string[];
-  confidence: 'direct' | 'partial' | 'conflicting';
-  note?: string;
-};
 
 export interface BranchVirtualPerson {
   id: string;

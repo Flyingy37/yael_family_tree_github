@@ -5,6 +5,17 @@
  */
 export type { Person, Family, FamilyGraph } from '../types';
 
+export type GenealogyClaim = {
+  id: string;
+  type: 'identity' | 'parent' | 'spouse' | 'maternal-line' | 'sibling-status' | 'branch-context';
+  subjectId: string;
+  objectId?: string;
+  value?: string;
+  evidenceIds: string[];
+  confidence: 'direct' | 'partial' | 'conflicting';
+  note?: string;
+};
+
 /** Relationship category labels used in curated CSV */
 export type RelationshipCategory =
   | 'direct'
