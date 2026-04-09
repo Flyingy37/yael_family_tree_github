@@ -1145,6 +1145,57 @@ export function PersonDetailPanel({
         </CollapsibleSection>
       )}
 
+      {branchProfile && (
+        <CollapsibleSection title={branchClaimUi.sectionTitle} icon="📎">
+          <div className="space-y-3">
+            {branchClaims.length > 0 ? (
+              branchClaims.map((claim) => (
+                <ArchivalCard
+                  key={claim.id}
+                  title={getBranchClaimLabel(claim)}
+                  variant="atlas"
+                  eyebrow={
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] uppercase tracking-[0.16em] text-[var(--atlas-text-muted)]">
+                        {branchClaimUi.confidenceLabel}
+                      </span>
+                      <RelationshipChip
+                        label={claimConfidenceLabels[claim.confidence]}
+                        tone={claim.confidence === 'direct' ? 'lime' : claim.confidence === 'partial' ? 'stone' : 'rose'}
+                        variant="atlas"
+                      />
+                    </div>
+                  }
+                >
+                  <div className="text-[11px] text-[var(--atlas-text-muted)]">{branchClaimUi.evidenceLabel}</div>
+                  <div className="mt-1 flex flex-wrap gap-1.5">
+                    {claim.evidenceIds.map((evidenceId) => (
+                      <span
+                        key={evidenceId}
+                        className="atlas-pill rounded-full px-2 py-0.5 text-[10px] font-mono text-[var(--atlas-text)]"
+                      >
+                        {evidenceId}
+                      </span>
+                    ))}
+                  </div>
+                  {translateBranchClaimNote(claim.note) ? (
+                    <p className="mt-2 text-xs text-stone-500">
+                      {translateBranchClaimNote(claim.note)}
+                    </p>
+                  ) : null}
+                </ArchivalCard>
+              ))
+            ) : (
+              <ArchivalCard title={branchClaimUi.noClaims} variant="atlas">
+                {t
+                  ? 'בשלב זה אין רשומות claim ייעודיות עבור הפרופיל הזה בחבילת הענף.'
+                  : 'No branch-scoped claim records are attached to this profile yet.'}
+              </ArchivalCard>
+            )}
+          </div>
+        </CollapsibleSection>
+      )}
+
       {(branchRelationshipNotes.length > 0 || person.note_plain || person.title) && (
         <CollapsibleSection title={t ? 'הערות מחקר' : 'Research notes'} icon="🔎">
           <div className="space-y-3">
