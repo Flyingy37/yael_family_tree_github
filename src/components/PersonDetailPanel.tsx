@@ -17,10 +17,12 @@ import { EvidenceBadge } from './EvidenceBadge';
 import { RelationshipChip } from './RelationshipChip';
 import {
   type BranchEvidenceItem,
+  type GenealogyClaim,
   type BranchRelationshipNote,
   getCanonicalGinzburgLiandresDisplayName,
   getGinzburgLiandresAliases,
   getGinzburgLiandresDisplayProfile,
+  getGinzburgLiandresClaimsForPerson,
   getGinzburgLiandresEvidenceForPerson,
   getGinzburgLiandresRelationshipOverlay,
   getGinzburgLiandresRelationshipNotes,
@@ -301,6 +303,7 @@ export function PersonDetailPanel({
   const branchProfile = useMemo(() => getGinzburgLiandresDisplayProfile(person), [person]);
   const branchAliases = useMemo(() => getGinzburgLiandresAliases(person), [person]);
   const branchEvidence = useMemo(() => getGinzburgLiandresEvidenceForPerson(person.id), [person.id]);
+  const branchClaims = useMemo(() => getGinzburgLiandresClaimsForPerson(person.id), [person.id]);
   const branchOverlay = useMemo(() => getGinzburgLiandresRelationshipOverlay(person.id), [person.id]);
   const branchRelationshipNotes = useMemo(() => getGinzburgLiandresRelationshipNotes(person.id), [person.id]);
   const personDisplayName = isUnknownPlaceholder
@@ -556,6 +559,64 @@ export function PersonDetailPanel({
         },
       }
     : {};
+  const branchClaimUi = t
+    ? {
+        sectionTitle: 'טענות גנאלוגיות',
+        identity: 'זהות',
+        parent: 'הורות',
+        spouse: 'בן/בת זוג',
+        maternalLine: 'קו אימהי',
+        confidenceLabel: 'ודאות',
+        evidenceLabel: 'מזהי ראיות',
+        noClaims: 'אין כרגע טענות גנאלוגיות מצורפות.',
+      }
+    : {
+        sectionTitle: 'Genealogy claims',
+        identity: 'Identity',
+        parent: 'Parent',
+        spouse: 'Spouse',
+        maternalLine: 'Maternal line',
+        confidenceLabel: 'Confidence',
+        evidenceLabel: 'Evidence ids',
+        noClaims: 'No genealogy claims attached yet.',
+      };
+  const claimConfidenceLabels: Record<GenealogyClaim['confidence'], string> = t
+    ? {
+        direct: 'ישיר',
+        partial: 'חלקי',
+        conflicting: 'סותר',
+      }
+    : {
+        direct: 'Direct',
+        partial: 'Partial',
+        conflicting: 'Conflicting',
+      };
+  const branchClaimNoteCopy: Record<string, string> = t
+    ? {
+        'Display correction only. Maiden name remains unknown.':
+          'תיקון תצוגה בלבד. שם הלידה נותר לא ידוע.',
+        'Presentation-layer correction; raw graph does not yet contain a canonical linked person record for Esther.':
+          'תיקון שכבת תצוגה; הגרף הגולמי עדיין אינו מכיל רשומת אדם קנונית ומקושרת עבור Esther.',
+        'Second marriage in the branch package.':
+          'נישואין שניים בחבילת הענף.',
+        'Basia is treated as Sofia’s biological mother in the branch package.':
+          'Basia מוצגת כאמה הביולוגית של Sofia בחבילת הענף.',
+        'Maternal-line anchor in the normalized branch chain.':
+          'עוגן הקו האימהי בשרשרת המנורמלת של הענף.',
+        'Sofia appears in the branch as the parent of Tzila / Cilia.':
+          'Sofia מופיעה בענף כהורה של Tzila / Cilia.',
+        'Displays Sofia as part of the maternal chain leading to Tzila.':
+          'ממקמת את Sofia כחלק משרשרת הקו האימהי המובילה ל-Tzila.',
+        'Alias-aware display keeps Gershon / Grigory as one identity in this branch package.':
+          'תצוגה מודעת־כינויים מאחדת את Gershon / Grigory לזהות אחת בחבילת הענף.',
+        'Spouse link preserved from the raw family cluster.':
+          'קשר בן/בת זוג שנשמר מאשכול המשפחה הגולמי.',
+        'Branch presentation treats Eti as a half-sister of Sofia, Gershon, Aharon, Yankel Berl, and Isaak.':
+          'תצוגת הענף מציגה את Eti כאחות למחצה של Sofia, Gershon, Aharon, Yankel Berl ו־Isaak.',
+        'Tzila is positioned within the maternal chain that leads to Pola.':
+          'Tzila ממוקמת בתוך שרשרת הקו האימהי המובילה ל-Pola.',
+      }
+    : {};
   const translateBranchChip = (value: string): string => {
     if (!t) return value;
     const map: Record<string, string> = {
@@ -566,6 +627,11 @@ export function PersonDetailPanel({
       'Borisov cluster': branchUi.borisovCluster,
     };
     return map[value] || value;
+  };
+  const translateBranchClaimNote = (value?: string): string | undefined => {
+    if (!value) return undefined;
+    if (!t) return value;
+    return branchClaimNoteCopy[value] || value;
   };
   const translateBranchNote = (value: string): string => {
     if (!t) return value;
@@ -588,6 +654,31 @@ export function PersonDetailPanel({
         'Isaak נשאר באשכול הילדים הביולוגיים של Basia Liandres.',
     };
     return map[value] || value;
+  };
+  const getBranchClaimPersonLabel = (personId: string): string => {
+    const p = persons.get(personId);
+    if (!p) return personId;
+    return isGinzburgLiandresBranchPerson(p)
+      ? getCanonicalGinzburgLiandresDisplayName(p)
+      : p.fullName;
+  };
+  const getBranchClaimLabel = (claim: GenealogyClaim): string => {
+    const subjectLabel = getBranchClaimPersonLabel(claim.subjectId);
+    const targetLabel = claim.objectId
+      ? getBranchClaimPersonLabel(claim.objectId)
+      : claim.value || '';
+    switch (claim.type) {
+      case 'identity':
+        return `${branchClaimUi.identity}: ${claim.value || subjectLabel}`;
+      case 'parent':
+        return `${branchClaimUi.parent}: ${subjectLabel}${targetLabel ? ` → ${targetLabel}` : ''}`;
+      case 'spouse':
+        return `${branchClaimUi.spouse}: ${subjectLabel}${targetLabel ? ` ↔ ${targetLabel}` : ''}`;
+      case 'maternal-line':
+        return `${branchClaimUi.maternalLine}: ${subjectLabel}${targetLabel ? ` → ${targetLabel}` : ''}`;
+      default:
+        return subjectLabel;
+    }
   };
   const translateBranchEvidence = (item: BranchEvidenceItem): BranchEvidenceItem => ({
     ...item,

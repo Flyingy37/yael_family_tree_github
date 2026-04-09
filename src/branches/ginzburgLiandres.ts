@@ -55,6 +55,17 @@ export interface BranchRelationshipOverlay {
   notes: string[];
 }
 
+export type GenealogyClaim = {
+  id: string;
+  type: 'identity' | 'parent' | 'spouse' | 'maternal-line';
+  subjectId: string;
+  objectId?: string;
+  value?: string;
+  evidenceIds: string[];
+  confidence: 'direct' | 'partial' | 'conflicting';
+  note?: string;
+};
+
 export interface BranchVirtualPerson {
   id: string;
   canonicalDisplayName: string;
@@ -323,6 +334,212 @@ const BRANCH_RELATIONSHIP_NOTES: BranchRelationshipNote[] = [
   },
 ];
 
+const BRANCH_GENEALOGY_CLAIMS: GenealogyClaim[] = [
+  {
+    id: 'claim-arie-leib-identity',
+    type: 'identity',
+    subjectId: '@I86@',
+    value: 'Arie-Leib Ginzburg',
+    evidenceIds: ['raw-family-structure', 'livnat-report-cross-reference'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-arie-leib-first-wife',
+    type: 'spouse',
+    subjectId: '@I86@',
+    value: 'Unknown first wife',
+    evidenceIds: ['raw-family-structure'],
+    confidence: 'partial',
+    note: 'Display correction only. Maiden name remains unknown.',
+  },
+  {
+    id: 'claim-arie-leib-basia',
+    type: 'spouse',
+    subjectId: '@I86@',
+    objectId: '@I87@',
+    evidenceIds: ['raw-family-structure'],
+    confidence: 'direct',
+    note: 'Second marriage in the branch package.',
+  },
+  {
+    id: 'claim-arie-leib-esther',
+    type: 'spouse',
+    subjectId: '@I86@',
+    value: 'Esther Lipschitz',
+    evidenceIds: ['raw-family-structure'],
+    confidence: 'partial',
+    note: 'Presentation-layer correction; raw graph does not yet contain a canonical linked person record for Esther.',
+  },
+  {
+    id: 'claim-basia-identity',
+    type: 'identity',
+    subjectId: '@I87@',
+    value: 'Basia Liandres',
+    evidenceIds: ['raw-family-structure', 'livnat-report-cross-reference'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-basia-spouse-arie-leib',
+    type: 'spouse',
+    subjectId: '@I87@',
+    objectId: '@I86@',
+    evidenceIds: ['raw-family-structure'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-basia-parent-sofia',
+    type: 'parent',
+    subjectId: '@I87@',
+    objectId: '@I37@',
+    evidenceIds: ['raw-family-structure'],
+    confidence: 'direct',
+    note: 'Basia is treated as Sofia’s biological mother in the branch package.',
+  },
+  {
+    id: 'claim-basia-maternal-line-sofia',
+    type: 'maternal-line',
+    subjectId: '@I87@',
+    objectId: '@I37@',
+    evidenceIds: ['maternal-line-mtdna', 'raw-family-structure'],
+    confidence: 'partial',
+    note: 'Maternal-line anchor in the normalized branch chain.',
+  },
+  {
+    id: 'claim-sofia-identity',
+    type: 'identity',
+    subjectId: '@I37@',
+    value: 'Sofia Ginzburg Duberstein',
+    evidenceIds: ['raw-family-structure', 'maternal-line-mtdna'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-sofia-spouse-vladimir',
+    type: 'spouse',
+    subjectId: '@I37@',
+    objectId: '@I36@',
+    evidenceIds: ['raw-family-structure'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-sofia-parent-tzila',
+    type: 'parent',
+    subjectId: '@I37@',
+    objectId: '@I12@',
+    evidenceIds: ['raw-family-structure'],
+    confidence: 'direct',
+    note: 'Sofia appears in the branch as the parent of Tzila / Cilia.',
+  },
+  {
+    id: 'claim-sofia-maternal-line-tzila',
+    type: 'maternal-line',
+    subjectId: '@I37@',
+    objectId: '@I12@',
+    evidenceIds: ['maternal-line-mtdna'],
+    confidence: 'partial',
+    note: 'Displays Sofia as part of the maternal chain leading to Tzila.',
+  },
+  {
+    id: 'claim-vladimir-identity',
+    type: 'identity',
+    subjectId: '@I36@',
+    value: 'Vladimir Reuvenovich Duberstein',
+    evidenceIds: ['raw-family-structure', 'livnat-report-cross-reference'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-vladimir-spouse-sofia',
+    type: 'spouse',
+    subjectId: '@I36@',
+    objectId: '@I37@',
+    evidenceIds: ['raw-family-structure'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-vladimir-parent-tzila',
+    type: 'parent',
+    subjectId: '@I36@',
+    objectId: '@I12@',
+    evidenceIds: ['raw-family-structure'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-tzila-identity',
+    type: 'identity',
+    subjectId: '@I12@',
+    value: 'Tzila Cilia Duberstein Alperovitz',
+    evidenceIds: ['raw-family-structure', 'cilia-migration-note'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-tzila-spouse-nachum',
+    type: 'spouse',
+    subjectId: '@I12@',
+    objectId: '@I11@',
+    evidenceIds: ['raw-family-structure'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-tzila-parent-pola',
+    type: 'parent',
+    subjectId: '@I12@',
+    objectId: '@I5@',
+    evidenceIds: ['raw-family-structure'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-tzila-maternal-line-pola',
+    type: 'maternal-line',
+    subjectId: '@I12@',
+    objectId: '@I5@',
+    evidenceIds: ['maternal-line-mtdna', 'cilia-migration-note'],
+    confidence: 'partial',
+    note: 'Tzila is positioned within the maternal chain that leads to Pola.',
+  },
+  {
+    id: 'claim-gershon-identity',
+    type: 'identity',
+    subjectId: '@I132@',
+    value: 'Gershon (Grigory) Ginzburg',
+    evidenceIds: ['raw-family-structure', 'livnat-report-cross-reference'],
+    confidence: 'direct',
+    note: 'Alias-aware display keeps Gershon / Grigory as one identity in this branch package.',
+  },
+  {
+    id: 'claim-gershon-spouse',
+    type: 'spouse',
+    subjectId: '@I132@',
+    objectId: '@I315@',
+    evidenceIds: ['raw-family-structure'],
+    confidence: 'direct',
+    note: 'Spouse link preserved from the raw family cluster.',
+  },
+  {
+    id: 'claim-eti-identity',
+    type: 'identity',
+    subjectId: '@I203@',
+    value: 'Eti Ginzburg Charny',
+    evidenceIds: ['raw-family-structure', 'livnat-report-cross-reference'],
+    confidence: 'direct',
+    note: 'Branch presentation treats Eti as a half-sister of Sofia, Gershon, Aharon, Yankel Berl, and Isaak.',
+  },
+  {
+    id: 'claim-eti-spouse',
+    type: 'spouse',
+    subjectId: '@I203@',
+    objectId: '@I416@',
+    evidenceIds: ['raw-family-structure'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-eti-parent-child',
+    type: 'parent',
+    subjectId: '@I203@',
+    objectId: '@I350@',
+    evidenceIds: ['raw-family-structure'],
+    confidence: 'direct',
+  },
+];
+
 const BRANCH_RELATIONSHIP_OVERLAYS: Record<string, BranchRelationshipOverlay> = {
   '@I203@': {
     personId: '@I203@',
@@ -472,6 +689,14 @@ export function getGinzburgLiandresRelationshipNotes(personId: string): BranchRe
 
 export function getGinzburgLiandresRelationshipOverlay(personId: string): BranchRelationshipOverlay | null {
   return BRANCH_RELATIONSHIP_OVERLAYS[personId] || null;
+}
+
+export function getGinzburgLiandresClaimsForPerson(personId: string): GenealogyClaim[] {
+  return BRANCH_GENEALOGY_CLAIMS.filter((claim) => claim.subjectId === personId);
+}
+
+export function getGinzburgLiandresBranchClaims(): GenealogyClaim[] {
+  return BRANCH_GENEALOGY_CLAIMS;
 }
 
 export function getGinzburgLiandresBranchSummary() {
