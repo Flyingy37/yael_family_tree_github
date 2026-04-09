@@ -539,7 +539,7 @@ export function PersonDetailPanel({
         'arie-leib-marriages': {
           title: 'תיקון סדר הנישואין',
           detail:
-            'שכבת התצוגה מתייחסת ל-Arie-Leib כמי שנשא תחילה אישה ראשונה לא ידועה, אחר כך את Basia Liandres, ולבסוף את Esther Lipschitz. זהו תיקון הצגה המונח על הגרף הגולמי הקיים.',
+            'שכבת התצוגה מתייחסת ל-Arie-Leib כמי שנשא תחילה אישה לא ידועה (השם הפרטי ושם הנעורים אינם ידועים) עם ילדה ידועה אחת, Eti Ginzburg Charny, אחר כך את Basia Liandres, ולבסוף את Esther Lipschitz. זהו תיקון הצגה המונח על הגרף הגולמי הקיים.',
         },
         'esther-stepchildren': {
           title: 'ילדי החורגים אינם ילדים ביולוגיים',
@@ -625,11 +625,13 @@ export function PersonDetailPanel({
           'עוגן קו אימהי בשרשרת הענף המנורמלת. יש לשמר את העמימות אם הגרף הגולמי עדיין אינו מכיל רשומת אדם קנונית ומקושרת עבור Druzia Lyandres.',
         'Canonical normalized English display name for branch presentation.':
           'שם תצוגה אנגלי קנוני ומנורמל להצגת הענף.',
-        'Presentation-layer correction only. Current raw graph may not yet contain a canonical linked person record for Esther Lipschitz.':
+      'Presentation-layer correction only. Current raw graph may not yet contain a canonical linked person record for Esther Lipschitz.':
           'תיקון שכבת תצוגה בלבד. הגרף הגולמי הנוכחי עדיין אינו מכיל רשומת אדם קנונית ומקושרת עבור Esther Lipschitz.',
-        'Branch-context only. Preserve stepchildren as non-biological in the presentation layer.':
+      'Known child from this marriage: Eti Ginzburg Charny.':
+          'הילדה הידועה מנישואין אלה: Eti Ginzburg Charny.',
+      'Branch-context only. Preserve stepchildren as non-biological in the presentation layer.':
           'הקשר ענפי בלבד. יש לשמר את ילדי החורגים כלא־ביולוגיים בשכבת התצוגה.',
-        'This should be rendered explicitly as half-sibling status, not full sibling status.':
+      'This should be rendered explicitly as half-sibling status, not full sibling status.':
           'יש להציג זאת במפורש כסטטוס אחאות למחצה ולא כאחאות מלאה.',
       }
     : {};
@@ -668,6 +670,8 @@ export function PersonDetailPanel({
         'Yankel Berl נשאר זהות תצוגה אחת, למרות וריאנטים של שם מקוצר.',
       'Isaak remains in the Basia Liandres biological-child cluster.':
         'Isaak נשאר באשכול הילדים הביולוגיים של Basia Liandres.',
+      'Display logic treats Arie-Leib as having an unknown first wife (given name and maiden name unknown) with known child Eti Ginzburg Charny, Basia Liandres as second wife, and Esther Lipschitz as third wife. This is a presentation correction layered over the current raw graph.':
+        'שכבת התצוגה מתייחסת ל-Arie-Leib כמי שנשא תחילה אישה לא ידועה (השם הפרטי ושם הנעורים אינם ידועים) עם ילדה ידועה אחת, Eti Ginzburg Charny, אחר כך את Basia Liandres, ולבסוף את Esther Lipschitz. זהו תיקון הצגה המונח על הגרף הגולמי הקיים.',
     };
     return map[value] || value;
   };

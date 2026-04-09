@@ -213,9 +213,10 @@ export const GINZBURG_LIANDRES_BRANCH_SUMMARY = {
   familyStructure: [
     {
       label: 'First marriage',
-      spouseLabel: 'Unknown first wife',
+      spouseLabel: 'Unknown wife (given name and maiden name unknown).',
       spousePersonId: null,
-      note: 'Display correction only: raw data currently uses "First wife Ginzburg". Maiden name remains unknown.',
+      children: ['@I203@'],
+      note: 'Known child from this marriage: Eti Ginzburg Charny.',
       relationshipType: 'unknown-first-wife',
     },
     {
@@ -274,7 +275,7 @@ const BRANCH_RELATIONSHIP_NOTES: BranchRelationshipNote[] = [
     id: 'arie-leib-marriages',
     title: 'Marriage order correction',
     detail:
-      'Display logic treats Arie-Leib as having an unknown first wife, Basia Liandres as second wife, and Esther Lipschitz as third wife. This is a presentation correction layered over the current raw graph.',
+      'Display logic treats Arie-Leib as having an unknown first wife (given name and maiden name unknown) with known child Eti Ginzburg Charny, Basia Liandres as second wife, and Esther Lipschitz as third wife. This is a presentation correction layered over the current raw graph.',
     personIds: ['@I86@', '@I87@'],
   },
   {
@@ -619,9 +620,10 @@ const BRANCH_GENEALOGY_CLAIMS: GenealogyClaim[] = [
     id: 'claim-arie-leib-first-wife-unknown',
     type: 'branch-context',
     subjectId: '@I86@',
-    value: 'Unknown first wife',
+    value: 'Unknown wife (given name and maiden name unknown)',
     evidenceIds: ['raw-family-structure'],
     confidence: 'partial',
+    note: 'Known child from this marriage: Eti Ginzburg Charny.',
   },
   {
     id: 'claim-arie-leib-spouse-basia',
