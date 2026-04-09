@@ -38,6 +38,8 @@ export interface BranchTextEvidence extends BranchEvidenceBase {
 
 export interface VideoTestimonyEvidence extends BranchEvidenceBase {
   type: 'video-testimony';
+  shortTitleHe?: string;
+  descriptionHe?: string;
   speakerPersonId: string;
   relatedPersonIds?: string[];
   relatedPlaceIds?: string[];
@@ -153,6 +155,13 @@ const BRANCH_PERSON_CONFIG: Record<string, BranchPersonConfig> = {
     marriedSurname: 'Axelrod',
     primarySurname: 'Duberstein',
   },
+  '@I61@': {
+    canonicalDisplayName: 'Ema Duberstein Meirson',
+    aliases: ['Ema Meirson', 'Ema Bash Eta Duberstein'],
+    birthSurname: 'Duberstein',
+    marriedSurname: 'Meirson',
+    primarySurname: 'Duberstein',
+  },
   '@I131@': {
     canonicalDisplayName: 'Aharon Ginzburg',
     aliases: ['Ore Ginzburg'],
@@ -263,7 +272,103 @@ export const GINZBURG_LIANDRES_BRANCH_SUMMARY = {
   ] as BranchVirtualPerson[],
 } as const;
 
+const BRANCH_RELATIONSHIP_NOTES: BranchRelationshipNote[] = [
+  {
+    id: 'arie-leib-marriages',
+    title: 'Marriage order correction',
+    detail:
+      'Display logic treats Arie-Leib as having an unknown first wife, Basia Liandres as second wife, and Esther Lipschitz as third wife. This is a presentation correction layered over the current raw graph.',
+    personIds: ['@I86@', '@I87@'],
+  },
+  {
+    id: 'esther-stepchildren',
+    title: 'Stepchildren are not biological children',
+    detail:
+      'Esther Lipschitz is not presented as the biological mother of the three children who came with her from a previous family. They remain stepchildren in branch-level interpretation.',
+    personIds: ['@I203@'],
+  },
+  {
+    id: 'eti-half-sister',
+    title: 'Eti is a half-sister',
+    detail:
+      'Eti Ginzburg Charny is displayed as a half-sister of Sofia, Gershon, Aharon, Yankel Berl, and Isaak rather than a full sibling.',
+    personIds: ['@I203@', '@I37@', '@I131@', '@I132@', '@I133@', '@I134@'],
+  },
+];
+
+export const tzilaVideoEvidence: VideoTestimonyEvidence[] = [
+  {
+    id: 'ev-video-tzila-duberstein-01',
+    type: 'video-testimony',
+    title: 'Tzila Alperovitz on the Duberstein family structure',
+    shortTitleHe: 'מבנה משפחת דוברשטיין',
+    speakerPersonId: '@I12@',
+    relatedPersonIds: ['@I36@', '@I37@', '@I58@', '@I59@', '@I60@', '@I61@', '@I12@'],
+    topics: ['family structure', 'parents', 'siblings', 'childhood'],
+    description:
+      'Video testimony describing Vladimir Duberstein, Sofia Duberstein, and their children: Ruven/Rube, Michael, Bashata Ema, Tzila Sara Tzipora, and Vola.',
+    descriptionHe: 'עדות מצולמת המתארת את ולדימיר דוברשטיין, סופיה דוברשטיין וילדיהם.',
+    source: 'Tzila family testimony transcript',
+    language: 'he',
+    confidence: 'direct',
+    note: 'Use as oral-history evidence. Preserve uncertainty where wording is approximate.',
+    personIds: ['@I12@', '@I36@', '@I37@', '@I58@', '@I59@', '@I60@', '@I61@'],
+  },
+  {
+    id: 'ev-video-tzila-duberstein-02',
+    type: 'video-testimony',
+    title: 'Tzila Alperovitz on war, flight, and the bank story',
+    shortTitleHe: 'מלחמה, בריחה וסיפור הבנק',
+    speakerPersonId: '@I12@',
+    relatedPersonIds: ['@I12@', '@I36@', '@I37@'],
+    topics: ['war', 'flight', 'bank', 'bombing', 'pogrom', 'Pleshchenitsy ghetto'],
+    description:
+      'Video testimony recounting Vladimir’s bank role, attempted escape with bank funds, military interception, bombing, family flight, and the Pleshchenitsy ghetto context.',
+    descriptionHe: 'עדות מצולמת על תפקידו של ולדימיר בבנק, הבריחה, ההפצצות וההקשר של גטו פלשניץ.',
+    source: 'Tzila family testimony transcript',
+    language: 'he',
+    confidence: 'direct',
+    note: 'Historical sequence should remain marked as testimony unless independently corroborated.',
+    personIds: ['@I12@', '@I36@', '@I37@'],
+  },
+  {
+    id: 'ev-video-tzila-ginzburg-01',
+    type: 'video-testimony',
+    title: 'Tzila Alperovitz on the Ginzburg branch',
+    shortTitleHe: 'ענף גינזבורג',
+    speakerPersonId: '@I12@',
+    relatedPersonIds: ['@I86@', '@I87@', '@I131@', '@I132@', '@I133@', '@I134@', '@I203@'],
+    topics: ['Ginzburg branch', 'Leiba Ginzburg', 'wives', 'children', 'family memory'],
+    description:
+      'Video testimony describing Leiba Ginzburg, his wives, the children attributed to the Bashata branch, and the later Gershon–Fania Feigl household.',
+    descriptionHe: 'עדות מצולמת על לייבה גינזבורג, נשותיו, ילדיו, ועל בית גרשון ופאניה פייגל.',
+    source: 'Tzila family testimony transcript',
+    language: 'he',
+    confidence: 'partial',
+    note: 'Contains oral-history ambiguities around wives, child attribution, and repeated names.',
+    personIds: ['@I12@', '@I86@', '@I87@', '@I131@', '@I132@', '@I133@', '@I134@', '@I203@'],
+  },
+  {
+    id: 'ev-video-tzila-photo-memory-01',
+    type: 'video-testimony',
+    title: 'Tzila Alperovitz on the family photo and Ema Meirson',
+    shortTitleHe: 'זיכרון התמונה המשפחתית',
+    speakerPersonId: '@I12@',
+    relatedPersonIds: ['@I12@', '@I61@'],
+    topics: ['family photo', 'sisters', 'identity matching', 'memory'],
+    description:
+      'Video testimony recalling a family photograph in which Tzila appears alongside her sister, probably Ema Meirson née Duberstein / Bashata Ema Duberstein.',
+    descriptionHe: 'עדות מצולמת על תמונה משפחתית שבה צילה מופיעה לצד אחותה, כנראה אמה מאירסון לבית דוברשטיין.',
+    source: 'Tzila family testimony transcript',
+    language: 'he',
+    confidence: 'partial',
+    note: 'Useful for identity linkage, but should remain explicitly probabilistic until matched to a documented photo record.',
+    personIds: ['@I12@', '@I61@'],
+  },
+];
+
 const BRANCH_EVIDENCE: BranchEvidenceItem[] = [
+  ...tzilaVideoEvidence,
   {
     id: 'maternal-line-mtdna',
     type: 'dna-clue',
@@ -304,7 +409,7 @@ const BRANCH_EVIDENCE: BranchEvidenceItem[] = [
     type: 'document',
     title: 'MyHeritage update summary for Cilia Sara Duberstein',
     description:
-      'A local review summary notes one new sibling-related update for Cilia Sara Duberstein (Alperovitch), the maternal grandmother in this branch context.',
+      'A local review summary notes one new sibling-related update for Cilia Sara Duberstein (Alperovitz), the maternal grandmother in this branch context.',
     source: 'data/myheritage_new_info_summary_2026-03-29.csv',
     confidence: 'partial',
     note: 'This is a secondary research document summary, not the original source record itself.',
@@ -330,30 +435,6 @@ const BRANCH_EVIDENCE: BranchEvidenceItem[] = [
     confidence: 'contextual',
     note: 'Useful as a cross-reference for name variants; it should not be treated as an original historical source on its own.',
     personIds: ['@I87@', '@I37@', '@I132@'],
-  },
-];
-
-const BRANCH_RELATIONSHIP_NOTES: BranchRelationshipNote[] = [
-  {
-    id: 'arie-leib-marriages',
-    title: 'Marriage order correction',
-    detail:
-      'Display logic treats Arie-Leib as having an unknown first wife, Basia Liandres as second wife, and Esther Lipschitz as third wife. This is a presentation correction layered over the current raw graph.',
-    personIds: ['@I86@', '@I87@'],
-  },
-  {
-    id: 'esther-stepchildren',
-    title: 'Stepchildren are not biological children',
-    detail:
-      'Esther Lipschitz is not presented as the biological mother of the three children who came with her from a previous family. They remain stepchildren in branch-level interpretation.',
-    personIds: ['@I203@'],
-  },
-  {
-    id: 'eti-half-sister',
-    title: 'Eti is a half-sister',
-    detail:
-      'Eti Ginzburg Charny is displayed as a half-sister of Sofia, Gershon, Aharon, Yankel Berl, and Isaak rather than a full sibling.',
-    personIds: ['@I203@', '@I37@', '@I131@', '@I132@', '@I133@', '@I134@'],
   },
 ];
 
