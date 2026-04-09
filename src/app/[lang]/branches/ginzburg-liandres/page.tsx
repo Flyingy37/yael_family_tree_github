@@ -114,7 +114,6 @@ export default function GinzburgLiandresBranchPage() {
         secondMarriageTag: 'צאצאים ביולוגיים',
         thirdMarriageTag: 'שלב־משפחה',
         firstMarriageNote: 'תיקון תצוגה בלבד: במידע הגולמי מופיע "First wife Ginzburg". שם הלידה נותר לא ידוע.',
-        secondMarriageNote: undefined,
         thirdMarriageNote:
           'שכבת ההצגה מתעדת את Esther Lipschitz כאישה שלישית, אך בגרף הגולמי עדיין אין רשומת אדם קנונית מקושרת עבורה.',
         maternalLine: 'הקו האימהי',
@@ -149,7 +148,6 @@ export default function GinzburgLiandresBranchPage() {
         secondMarriageTag: 'Biological children',
         thirdMarriageTag: 'Stepfamily',
         firstMarriageNote: 'Display correction only: raw data currently uses "First wife Ginzburg". Maiden name remains unknown.',
-        secondMarriageNote: undefined,
         thirdMarriageNote:
           'Presentation correction layer only: branch display records Esther Lipschitz as a third-wife identity, but the current raw graph does not yet contain a canonical linked person record for her.',
         maternalLine: 'Maternal line',

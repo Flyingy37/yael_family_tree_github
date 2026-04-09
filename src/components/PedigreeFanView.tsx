@@ -128,6 +128,18 @@ function describeArc(cx: number, cy: number, r: number, a1: number, a2: number):
   return `M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2}`;
 }
 
+function countSunNodes(node: SunDatum | null | undefined): number {
+  if (!node) return 0;
+  return 1 + (node.children?.reduce((sum, child) => sum + countSunNodes(child), 0) ?? 0);
+}
+
+function shortenLabel(label: string, maxLength: number): string {
+  const trimmed = label.trim();
+  if (trimmed.length <= maxLength) return trimmed;
+  if (maxLength <= 1) return trimmed.slice(0, 1);
+  return `${trimmed.slice(0, Math.max(1, maxLength - 1))}…`;
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function PedigreeFanView({
@@ -242,6 +254,54 @@ export function PedigreeFanView({
       .slice(0, 8);
   }, [search, persons]);
 
+  const focusedPerson = persons.get(centerId) ?? null;
+  const focusLabel = focusedPerson?.fullName ?? (t ? 'לא ידוע' : 'Unknown');
+  const currentViewLabel = chartType === 'fan'
+    ? (t ? 'אבות' : 'Ancestors')
+    : (t ? 'צאצאים' : 'Descendants');
+  const generationSpanLabel = `0–${Math.min(generations, MAX_GENERATIONS)}`;
+  const visiblePeopleCount = useMemo(() => {
+    if (chartType === 'sunburst') return countSunNodes(sunData);
+    return nodes.filter(n => n.id).length;
+  }, [chartType, nodes, sunData]);
+
+  const getAncestorPathIds = useCallback((targetId: string) => {
+    function walk(currentId: string, seen: Set<string>): string[] | null {
+      if (seen.has(currentId)) return null;
+      const nextSeen = new Set(seen);
+      nextSeen.add(currentId);
+      if (currentId === targetId) return [currentId];
+
+      const current = persons.get(currentId);
+      const fam = current?.familyAsChild ? families.get(current.familyAsChild) : null;
+      if (!fam) return null;
+
+      for (const parentId of fam.spouses) {
+        if (!parentId || !persons.has(parentId)) continue;
+        const branch = walk(parentId, nextSeen);
+        if (branch) return [currentId, ...branch];
+      }
+      return null;
+    }
+
+    return walk(centerId, new Set<string>());
+  }, [centerId, families, persons]);
+
+  const hoveredPathIds = useMemo(() => {
+    if (!hoveredId) return new Set<string>();
+    if (chartType === 'fan') {
+      return new Set(getAncestorPathIds(hoveredId) ?? [hoveredId]);
+    }
+    if (!sunData) return new Set<string>();
+    const hierarchy = d3.hierarchy<SunDatum>(sunData as never)
+      .sum((d: SunDatum) => d.value ?? 0)
+      .sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
+    const partition = d3.partition<SunDatum>().size([2 * Math.PI, hierarchy.height + 1]);
+    const root = partition(hierarchy);
+    const target = root.descendants().find(d => d.data.id === hoveredId);
+    return new Set(target?.ancestors().map(d => d.data.id) ?? [hoveredId]);
+  }, [chartType, getAncestorPathIds, hoveredId, sunData]);
+
   // ── Draw ───────────────────────────────────────────────────────────────────
 
   useEffect(() => {
@@ -259,7 +319,7 @@ export function PedigreeFanView({
     const ch  = containerRef.current!.clientHeight || 580;
     const size = Math.min(cw, ch);
     const cx = size / 2;
-    const cy = size * 0.62;   // center near bottom so full semicircle is visible
+    const cy = size * 0.72;   // lower center so the fan fills more of the canvas
 
     d3.select(el).selectAll('*').remove();
     el.setAttribute('viewBox', `0 0 ${size} ${size}`);
@@ -273,8 +333,8 @@ export function PedigreeFanView({
     bg.append('rect').attr('width', size).attr('height', size).attr('fill', '#f8f7f4');
 
     const maxGen    = Math.max(...nodes.map(n => n.generation), 1);
-    const innerR    = size * 0.10;
-    const outerMaxR = size * 0.58;   // use more of the height since fan is semicircle
+    const innerR    = size * 0.13;
+    const outerMaxR = size * 0.70;   // enlarge fan radius to better use the canvas
     const ringWidth = (outerMaxR - innerR) / maxGen;
 
     // Fan spans 180° centred at the top (half-circle, opening upward)
@@ -309,6 +369,8 @@ export function PedigreeFanView({
         const fillColor = node.id ? lighten(base, lightAmt) : '#f0f0ee';
         const strokeCol = node.id ? lighten(base, 0.45) : '#d1d5db';
         const isHov     = node.id !== null && node.id === hoveredId;
+        const isPath    = node.id !== null && hoveredPathIds.has(node.id);
+        const isDimmed  = hoveredId ? !isPath : false;
 
         const arcGen = d3.arc<void>()
           .innerRadius(innerRing + 1)
@@ -319,19 +381,28 @@ export function PedigreeFanView({
           .cornerRadius(gen <= 1 ? 3 : 2);
 
         const seg = g.append('g').style('cursor', node.id ? 'pointer' : 'default');
+        seg.attr('opacity', isDimmed ? 0.16 : 1);
 
         seg.append('path')
           .attr('transform', `translate(${cx},${cy})`)
           .attr('d', arcGen(undefined as unknown as void) ?? '')
           .attr('fill', fillColor)
           .attr('stroke', strokeCol)
-          .attr('stroke-width', isHov ? 1.5 : 0.8)
-          .style('filter', isHov ? 'drop-shadow(0 2px 8px rgba(0,0,0,0.18))' : 'none')
+          .attr('stroke-width', isHov ? 1.8 : isPath ? 1.2 : 0.8)
+          .style('filter', isHov
+            ? 'drop-shadow(0 2px 8px rgba(0,0,0,0.18))'
+            : isPath
+              ? 'drop-shadow(0 1px 4px rgba(0,0,0,0.10))'
+              : 'none')
           .on('mouseenter', () => { if (node.id) setHoveredId(node.id); })
           .on('mouseleave', () => setHoveredId(null))
           .on('click', () => {
             if (node.id) { setCenterId(node.id); onSelectPerson(node.id); }
           });
+        seg.append('title')
+          .text(node.id
+            ? `${node.name}${node.birthDate ? `\n${node.birthDate}` : ''}${node.deathDate ? `\n${node.deathDate}` : ''}`
+            : (t ? 'לא ידוע' : 'Unknown'));
 
         // ── Outer coloured border arc ─────────────────────────────────────
         if (gen === 1) {
@@ -368,7 +439,7 @@ export function PedigreeFanView({
         const arcWidthPx  = anglePerSlot * ((innerRing + outerR) / 2);
         const ringWidthPx = outerR - innerRing;
 
-        if (arcWidthPx > 14 && ringWidthPx > 14) {
+        if (arcWidthPx > 18 && ringWidthPx > 15) {
           // Text position: center of segment (radially and angularly)
           const textR   = innerRing + ringWidthPx * 0.5;
           const tx      = cx + textR * Math.cos(midAngle);
@@ -380,7 +451,7 @@ export function PedigreeFanView({
           const baseDeg = midAngle * 180 / Math.PI;
           const rotateDeg = isLeft ? baseDeg + 90 + 180 : baseDeg + 90;
 
-          const fontSize = Math.max(6.5, Math.min(12, Math.min(arcWidthPx * 0.38, ringWidthPx * 0.30)));
+          const fontSize = Math.max(6.5, Math.min(12.5, Math.min(arcWidthPx * 0.4, ringWidthPx * 0.32)));
           const charW    = fontSize * 0.58;
           const maxChars = Math.max(3, Math.floor(ringWidthPx * 0.82 / charW));
 
@@ -388,13 +459,17 @@ export function PedigreeFanView({
           const parts = node.name.split(' ');
           const givenName = parts[0];
           const familyName = parts.slice(1).join(' ');
-          const nameLabel = arcWidthPx > 30
+          const nameLabel = arcWidthPx > 58
             ? (givenName.length > maxChars ? givenName.slice(0, maxChars - 1) + '…' : givenName)
-            : (givenName.slice(0, maxChars - 1) + (givenName.length > maxChars - 1 ? '…' : ''));
+            : arcWidthPx > 34
+              ? shortenLabel(givenName, Math.max(3, Math.min(maxChars, 8)))
+              : arcWidthPx > 24
+                ? shortenLabel(givenName, 3)
+                : shortenLabel(givenName, 2);
 
           const yr = yearRange(node.birthDate, node.deathDate);
-          const hasYear = yr && ringWidthPx > fontSize * 3.2;
-          const hasSurname = familyName && ringWidthPx > fontSize * (hasYear ? 4.8 : 3.2) && arcWidthPx > 28;
+          const hasYear = Boolean(yr && ringWidthPx > fontSize * 3.8 && arcWidthPx > 56);
+          const hasSurname = Boolean(familyName && ringWidthPx > fontSize * (hasYear ? 5.1 : 3.8) && arcWidthPx > 50);
 
           // Vertical offset: center all lines
           const lineH   = fontSize * 1.25;
@@ -411,7 +486,7 @@ export function PedigreeFanView({
             .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
             .attr('font-size', `${fontSize}px`)
             .attr('font-weight', gen <= 2 ? '700' : '600')
-            .attr('fill', '#1c1917')
+            .attr('fill', isPath ? '#111827' : '#1c1917')
             .text(nameLabel);
 
           // Family name (line 2)
@@ -480,12 +555,12 @@ export function PedigreeFanView({
     // Shadow ring
     top.append('circle')
       .attr('cx', cx).attr('cy', cy).attr('r', innerR + 1)
-      .attr('fill', 'none').attr('stroke', '#e5e7eb').attr('stroke-width', 3)
+      .attr('fill', 'none').attr('stroke', '#e7e2d8').attr('stroke-width', 3)
       .style('pointer-events', 'none');
 
     top.append('circle')
       .attr('cx', cx).attr('cy', cy).attr('r', innerR)
-      .attr('fill', 'white').attr('stroke', '#d1d5db').attr('stroke-width', 1.5)
+      .attr('fill', '#fffdf9').attr('stroke', '#d8cec0').attr('stroke-width', 1.5)
       .style('cursor', 'pointer')
       .on('click', () => onSelectPerson(centerId));
 
@@ -571,6 +646,11 @@ export function PedigreeFanView({
 
     const partition = d3.partition<SunDatum>().size([2 * Math.PI, hierarchy.height + 1]);
     const root: d3.HierarchyRectangularNode<SunDatum> = partition(hierarchy);
+    const hoveredRootPath = new Set<string>();
+    if (hoveredId) {
+      const hoveredNode = root.descendants().find(d => d.data.id === hoveredId);
+      hoveredNode?.ancestors().forEach(a => hoveredRootPath.add(a.data.id));
+    }
 
     const topCount = (sunData.children?.length ?? 1) + 1;
     const color = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, topCount));
@@ -587,7 +667,16 @@ export function PedigreeFanView({
     const g   = svg.append('g');
 
     function arcVisible(d: never) { const n = d as { y1: number; y0: number; x1: number; x0: number }; return n.y1 <= generations + 1 && n.y0 >= 1 && n.x1 > n.x0; }
-    function labelVisible(d: never) { const n = d as { y1: number; y0: number; x1: number; x0: number }; return n.y1 <= generations + 1 && n.y0 >= 1 && (n.y1 - n.y0) * (n.x1 - n.x0) > 0.025; }
+    function labelVisible(d: never) { const n = d as { y1: number; y0: number; x1: number; x0: number }; return n.y1 <= generations + 1 && n.y0 >= 1 && (n.y1 - n.y0) * (n.x1 - n.x0) > 0.04; }
+    function labelText(d: never) {
+      const n = d as { data: { name: string }; y1: number; y0: number; x1: number; x0: number };
+      const full = n.data.name;
+      const span = (n.y1 - n.y0) * (n.x1 - n.x0);
+      if (span > 0.13) return full;
+      if (span > 0.08) return full.split(' ')[0];
+      if (span > 0.055) return shortenLabel(full.split(' ')[0], 8);
+      return '';
+    }
     function labelTransform(d: never) {
       const n = d as { x0: number; x1: number; y0: number; y1: number };
       const x = ((n.x0 + n.x1) / 2) * 180 / Math.PI;
@@ -603,10 +692,16 @@ export function PedigreeFanView({
         let n: never = d; while ((n as { depth: number }).depth > 1) n = (n as { parent: never }).parent;
         return color((n as { data: { name: string } }).data.name);
       })
-      .attr('fill-opacity', (d: never) => arcVisible(d) ? ((d as { children?: unknown }).children ? 0.68 : 0.45) : 0)
+      .attr('fill-opacity', (d: never) => {
+        if (!arcVisible(d)) return 0;
+        const id = (d as { data: { id: string } }).data.id;
+        if (hoveredId) return hoveredRootPath.has(id) ? 0.95 : 0.14;
+        return ((d as { children?: unknown }).children ? 0.68 : 0.45);
+      })
       .attr('pointer-events', (d: never) => arcVisible(d) ? 'auto' : 'none')
       .attr('d', arc)
-      .attr('stroke', 'white').attr('stroke-width', 0.5)
+      .attr('stroke', (d: never) => hoveredRootPath.has((d as { data: { id: string } }).data.id) ? '#d6c7af' : 'white')
+      .attr('stroke-width', (d: never) => hoveredRootPath.has((d as { data: { id: string } }).data.id) ? 1.2 : 0.5)
       .style('cursor', 'pointer')
       .on('click', (_: unknown, d: never) => { setCenterId((d as { data: { id: string } }).data.id); onSelectPerson((d as { data: { id: string } }).data.id); })
       .on('mouseenter', (_: unknown, d: never) => setHoveredId((d as { data: { id: string } }).data.id))
@@ -623,7 +718,7 @@ export function PedigreeFanView({
       .style('text-shadow', '0 1px 2px rgba(255,255,255,0.8)')
       .attr('fill-opacity', (d: never) => +labelVisible(d))
       .attr('transform', (d: never) => labelTransform(d))
-      .text((d: never) => (d as { data: { name: string } }).data.name.split(' ')[0]);
+      .text((d: never) => labelText(d));
 
     g.append('circle')
       .attr('r', radius).attr('fill', 'white').attr('stroke', '#d1d5db').attr('stroke-width', 1.5)
@@ -658,10 +753,10 @@ export function PedigreeFanView({
       dir={t ? 'rtl' : 'ltr'}
     >
       {/* ── Top bar ─────────────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-2 px-4 py-2 bg-white border-b border-stone-200 flex-shrink-0 flex-wrap shadow-sm">
+      <div className="flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-sm border-b border-stone-200 flex-shrink-0 flex-wrap shadow-sm">
 
         {/* Chart type toggle */}
-        <div className="flex items-center rounded-lg bg-stone-100 p-0.5 gap-0.5">
+        <div className="flex items-center rounded-full bg-stone-100/90 p-0.5 gap-0.5 ring-1 ring-stone-200/80">
           {([
             { id: 'fan',      icon: '🌀', labelHe: 'אבות',   labelEn: 'Ancestors'   },
             { id: 'sunburst', icon: '☀️', labelHe: 'צאצאים', labelEn: 'Descendants' },
@@ -669,7 +764,7 @@ export function PedigreeFanView({
             <button
               key={ct.id}
               onClick={() => setChartType(ct.id)}
-              className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
                 chartType === ct.id
                   ? 'bg-white text-stone-900 shadow-sm border border-stone-200'
                   : 'text-stone-500 hover:text-stone-800'
@@ -704,17 +799,17 @@ export function PedigreeFanView({
           </div>
         </div>
 
-        {/* Back button */}
-        {centerId !== rootPersonId && (
-          <button
-            onClick={handleBack}
-            className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium
-                       bg-stone-100 text-stone-700 hover:bg-stone-200
-                       rounded-full transition-all border border-stone-200"
-          >
-            ← {t ? 'חזרה' : 'Back'}
-          </button>
-        )}
+        {/* Center/reset button */}
+        <button
+          onClick={handleBack}
+          disabled={centerId === rootPersonId}
+          className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium
+                     bg-stone-100 text-stone-700 hover:bg-stone-200
+                     rounded-full transition-all border border-stone-200 disabled:opacity-50 disabled:cursor-default"
+          title={t ? 'חזרה למרכז' : 'Center on root'}
+        >
+          ⟲ {t ? 'מרכז' : 'Center'}
+        </button>
 
         {/* Search */}
         <div className="ms-auto relative">
@@ -735,7 +830,7 @@ export function PedigreeFanView({
           ) : (
             <button
               onClick={() => setSearchOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs text-stone-500 border border-stone-200 rounded-lg bg-white hover:border-stone-400 transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 text-xs text-stone-500 border border-stone-200 rounded-full bg-white hover:border-stone-400 transition-colors"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -770,9 +865,33 @@ export function PedigreeFanView({
         </div>
       </div>
 
+      {/* ── Context summary ─────────────────────────────────────────────── */}
+      <div className="flex-shrink-0 flex flex-wrap items-center gap-2 px-3 py-2 border-b border-stone-200/80 bg-stone-50/85 backdrop-blur-sm text-xs text-stone-600">
+        <div className="min-w-0 flex-1">
+          <div className="text-[10px] uppercase tracking-[0.22em] text-stone-400">
+            {t ? 'הקשר נוכחי' : 'Current context'}
+          </div>
+          <div className="mt-0.5 truncate text-sm font-semibold text-stone-800">
+            {focusLabel}
+          </div>
+        </div>
+        <span className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-2.5 py-1 text-[11px] font-medium text-stone-600">
+          <span className="text-stone-400">{t ? 'תצוגה' : 'View'}</span>
+          {currentViewLabel}
+        </span>
+        <span className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-2.5 py-1 text-[11px] font-medium text-stone-600">
+          <span className="text-stone-400">{t ? 'טווח דורות' : 'Generation span'}</span>
+          {generationSpanLabel}
+        </span>
+        <span className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-2.5 py-1 text-[11px] font-medium text-stone-600">
+          <span className="text-stone-400">{t ? 'אנשים גלויים' : 'Visible people'}</span>
+          {visiblePeopleCount.toLocaleString()}
+        </span>
+      </div>
+
       {/* ── Hover tooltip ────────────────────────────────────────────────────── */}
       {hoveredPerson && (
-        <div className="flex-shrink-0 mx-4 mt-1.5 px-4 py-2 bg-white border border-stone-200 text-stone-800 rounded-xl text-sm shadow-md flex items-center gap-3">
+        <div className="flex-shrink-0 mx-3 mt-1.5 px-4 py-2 bg-white/95 border border-stone-200 text-stone-800 rounded-2xl text-sm shadow-md flex items-center gap-3">
           <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
             hoveredPerson.sex === 'F' ? 'bg-pink-400' : hoveredPerson.sex === 'M' ? 'bg-blue-400' : 'bg-stone-400'
           }`} />
@@ -790,7 +909,7 @@ export function PedigreeFanView({
       {/* ── SVG canvas ───────────────────────────────────────────────────────── */}
       <div
         ref={containerRef}
-        className="flex-1 min-h-0 flex items-center justify-center p-2 relative overflow-hidden"
+        className="flex-1 min-h-0 flex items-center justify-center p-1 relative overflow-hidden"
         onWheel={e => { e.preventDefault(); e.deltaY < 0 ? zoomIn() : zoomOut(); }}
       >
         <svg
@@ -806,12 +925,12 @@ export function PedigreeFanView({
         />
 
         {/* ── Zoom buttons (bottom-left corner) ─────────────────────────── */}
-        <div className="absolute bottom-4 start-4 flex flex-col gap-1 z-10">
+        <div className="absolute bottom-3 start-3 flex flex-col gap-1 z-10">
           <button
             onClick={zoomIn}
             disabled={zoom >= ZOOM_MAX}
             title={t ? 'הגדל' : 'Zoom in'}
-            className="w-8 h-8 rounded-lg bg-white border border-stone-200 shadow-sm text-stone-700
+            className="w-8 h-8 rounded-full bg-white/95 border border-stone-200 shadow-sm text-stone-700
                        hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed
                        flex items-center justify-center font-bold text-base transition-colors"
           >+</button>
@@ -819,7 +938,7 @@ export function PedigreeFanView({
             onClick={zoomOut}
             disabled={zoom <= ZOOM_MIN}
             title={t ? 'הקטן' : 'Zoom out'}
-            className="w-8 h-8 rounded-lg bg-white border border-stone-200 shadow-sm text-stone-700
+            className="w-8 h-8 rounded-full bg-white/95 border border-stone-200 shadow-sm text-stone-700
                        hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed
                        flex items-center justify-center font-bold text-base transition-colors"
           >−</button>
@@ -827,22 +946,22 @@ export function PedigreeFanView({
             <button
               onClick={zoomReset}
               title={t ? 'אפס זום' : 'Reset zoom'}
-              className="w-8 h-8 rounded-lg bg-white border border-stone-200 shadow-sm text-stone-400
-                         hover:bg-stone-50 flex items-center justify-center text-[10px] font-bold transition-colors"
-            >1:1</button>
+              className="min-w-8 h-8 px-2 rounded-full bg-white/95 border border-stone-200 shadow-sm text-stone-500
+                         hover:bg-stone-50 flex items-center justify-center text-[10px] font-semibold transition-colors"
+            >{t ? 'איפוס' : 'Reset'}</button>
           )}
         </div>
 
         {/* Zoom level indicator */}
         {zoom !== 1.0 && (
-          <div className="absolute bottom-4 start-14 bg-white/90 border border-stone-200 rounded-lg px-2 py-1 text-[11px] text-stone-500 font-medium shadow-sm">
+          <div className="absolute bottom-3 start-16 bg-white/90 border border-stone-200 rounded-full px-2 py-1 text-[11px] text-stone-500 font-medium shadow-sm">
             {Math.round(zoom * 100)}%
           </div>
         )}
       </div>
 
       {/* ── Footer legend ─────────────────────────────────────────────────────── */}
-      <div className="flex-shrink-0 flex items-center justify-center gap-4 px-4 py-1.5 border-t border-stone-200 bg-white/80 text-xs text-stone-500">
+      <div className="flex-shrink-0 flex items-center justify-center gap-4 px-3 py-1 border-t border-stone-200 bg-white/80 text-[11px] text-stone-500">
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-400" />{t ? 'גבר' : 'Male'}</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-pink-400" />{t ? 'אישה' : 'Female'}</span>
         <span className="text-stone-300">·</span>

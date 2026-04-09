@@ -327,7 +327,7 @@ export default function FamilyExplorer() {
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        <div className="w-64 p-3 space-y-3 overflow-y-auto border-l border-gray-200 bg-gray-50 flex-shrink-0">
+        <div className="w-60 p-2.5 space-y-3 overflow-y-auto border-l border-gray-200 bg-gray-50 flex-shrink-0">
           {subtreeRootId && (
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm" dir={language === 'he' ? 'rtl' : 'ltr'}>
               <div className="flex items-center justify-between mb-1">

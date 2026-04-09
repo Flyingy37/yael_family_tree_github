@@ -763,7 +763,7 @@ const BRANCH_GENEALOGY_CLAIMS: GenealogyClaim[] = [
     subjectId: '@I12@',
     value: 'Tzila Sara Tzipora Duberstein later Alperovitz (born 1926; probably in Haifa)',
     evidenceIds: ['ev-video-tzila-duberstein-01', 'ev-video-tzila-duberstein-02', 'cilia-migration-note'],
-    confidence: 'direct',
+    confidence: 'partial',
   },
   {
     id: 'claim-vola-identity',
@@ -771,7 +771,7 @@ const BRANCH_GENEALOGY_CLAIMS: GenealogyClaim[] = [
     subjectId: '@I60@',
     value: 'Vola Duberstein (born 1928; probably in Tel Aviv)',
     evidenceIds: ['ev-video-tzila-duberstein-01', 'raw-family-structure'],
-    confidence: 'direct',
+    confidence: 'partial',
   },
   {
     id: 'claim-arie-leib-third-wife-esther',

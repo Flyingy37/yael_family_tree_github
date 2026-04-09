@@ -484,7 +484,6 @@ export function PersonDetailPanel({
         maternalLine: 'הקו האימהי',
         secondMarriageCluster: 'אשכול נישואין שניים',
         borisovCluster: 'אשכול בוריסוב',
-        branchPackageSection: 'חבילת ענף',
       }
     : {
         packageLabel: 'Branch package',
@@ -495,7 +494,6 @@ export function PersonDetailPanel({
         maternalLine: 'Maternal line',
         secondMarriageCluster: 'Second marriage cluster',
         borisovCluster: 'Borisov cluster',
-        branchPackageSection: 'Branch package',
       };
   const branchEvidenceCopy: Record<string, Partial<BranchEvidenceItem>> = t
     ? {

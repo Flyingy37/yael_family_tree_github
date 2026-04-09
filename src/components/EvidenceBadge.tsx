@@ -27,6 +27,7 @@ export function EvidenceBadge({
   variant?: 'default' | 'atlas';
   language?: 'en' | 'he';
 }) {
+  const baseClasses = 'inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium';
   const atlasStyles: Record<EvidenceType, string> = {
     'family-photo': 'bg-[linear-gradient(180deg,rgba(232,239,242,0.84),rgba(223,233,237,0.74))] text-[rgb(70,103,114)] border-[rgba(121,150,158,0.18)]',
     testimony: 'bg-[linear-gradient(180deg,rgba(247,236,232,0.88),rgba(241,227,223,0.78))] text-[rgb(145,95,90)] border-[rgba(181,138,132,0.18)]',
@@ -47,9 +48,7 @@ export function EvidenceBadge({
 
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium ${
-        variant === 'atlas' ? atlasStyles[type] : EVIDENCE_STYLES[type]
-      }`}
+      className={`${baseClasses} ${variant === 'atlas' ? atlasStyles[type] : EVIDENCE_STYLES[type]}`}
     >
       {variant === 'atlas' && language === 'he' ? atlasLabelsHe[type] : EVIDENCE_LABELS[type]}
     </span>

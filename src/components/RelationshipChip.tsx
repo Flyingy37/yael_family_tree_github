@@ -7,6 +7,7 @@ export function RelationshipChip({
   tone?: 'stone' | 'rose' | 'violet' | 'lime';
   variant?: 'default' | 'atlas';
 }) {
+  const baseClasses = 'inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-medium';
   const styles = {
     stone: 'bg-stone-100 text-stone-700 border-stone-300',
     rose: 'bg-rose-50 text-rose-700 border-rose-200',
@@ -23,9 +24,7 @@ export function RelationshipChip({
 
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-medium ${
-        variant === 'atlas' ? atlasStyles[tone] : styles[tone]
-      }`}
+      className={`${baseClasses} ${variant === 'atlas' ? atlasStyles[tone] : styles[tone]}`}
     >
       {label}
     </span>

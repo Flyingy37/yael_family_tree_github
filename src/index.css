@@ -79,10 +79,7 @@
   /* Ginzburg-Liandres atlas */
   --atlas-bg: #f6f2eb;
   --atlas-surface: rgba(255, 251, 246, 0.78);
-  --atlas-surface-strong: rgba(255, 253, 249, 0.98);
   --atlas-border: rgba(146, 133, 116, 0.1);
-  --atlas-border-strong: rgba(124, 112, 97, 0.18);
-  --atlas-line: rgba(137, 145, 151, 0.2);
   --atlas-text: #4f4a41;
   --atlas-text-muted: #7b7367;
   --atlas-accent: #80968d;
@@ -183,12 +180,7 @@ html, body, #root {
 }
 
 /* Display heading aliases kept for compatibility; both now use the same restrained sans stack. */
-.font-display-he {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
+.font-display-he,
 .font-display-en {
   font-family: var(--font-heading);
   font-weight: 700;
@@ -223,16 +215,7 @@ html, body, #root {
       var(--atlas-bg);
   }
 
-  .atlas-panel {
-    border: 1px solid rgba(146, 133, 116, 0.1);
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.06)),
-      radial-gradient(circle at top left, var(--atlas-accent-soft), transparent 44%),
-      radial-gradient(circle at bottom right, var(--atlas-secondary-soft), transparent 40%),
-      var(--atlas-surface);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.42), 0 12px 28px -30px rgba(91, 82, 66, 0.22);
-  }
-
+  .atlas-panel,
   .atlas-card {
     border: 1px solid rgba(146, 133, 116, 0.1);
     background:
@@ -240,6 +223,13 @@ html, body, #root {
       radial-gradient(circle at top left, var(--atlas-accent-soft), transparent 44%),
       radial-gradient(circle at bottom right, var(--atlas-secondary-soft), transparent 40%),
       var(--atlas-surface);
+  }
+
+  .atlas-panel {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.42), 0 12px 28px -30px rgba(91, 82, 66, 0.22);
+  }
+
+  .atlas-card {
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.42), 0 12px 24px -30px rgba(91, 82, 66, 0.24);
   }
 

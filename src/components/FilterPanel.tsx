@@ -69,6 +69,28 @@ interface Props {
 
 export function FilterPanel({ filters, onChange, personList, language = 'en' }: Props) {
   const t = language === 'he';
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (filters.generationMin !== DEFAULT_FILTERS.generationMin) count += 1;
+    if (filters.generationMax !== DEFAULT_FILTERS.generationMax) count += 1;
+    if (filters.sex !== DEFAULT_FILTERS.sex) count += 1;
+    if (filters.surname !== DEFAULT_FILTERS.surname) count += 1;
+    if (filters.connectedToYaelOnly !== DEFAULT_FILTERS.connectedToYaelOnly) count += 1;
+    if (filters.hasDna !== DEFAULT_FILTERS.hasDna) count += 1;
+    if (filters.holocaustVictimsOnly !== DEFAULT_FILTERS.holocaustVictimsOnly) count += 1;
+    if (filters.hasHeritageTag !== DEFAULT_FILTERS.hasHeritageTag) count += 1;
+    if (filters.hasPartisanTag !== DEFAULT_FILTERS.hasPartisanTag) count += 1;
+    if (filters.hasFamousTag !== DEFAULT_FILTERS.hasFamousTag) count += 1;
+    if (filters.hasRabbiTag !== DEFAULT_FILTERS.hasRabbiTag) count += 1;
+    if (filters.hasLineageTag !== DEFAULT_FILTERS.hasLineageTag) count += 1;
+    if (filters.hasMigrationTag !== DEFAULT_FILTERS.hasMigrationTag) count += 1;
+    if (filters.hasDoubleBloodTieTag !== DEFAULT_FILTERS.hasDoubleBloodTieTag) count += 1;
+    if (filters.doubleBloodTieMinPaths !== DEFAULT_FILTERS.doubleBloodTieMinPaths) count += 1;
+    if (filters.maxHops !== DEFAULT_FILTERS.maxHops) count += 1;
+    if (filters.hideUnknownPlaceholders !== DEFAULT_FILTERS.hideUnknownPlaceholders) count += 1;
+    return count;
+  }, [filters]);
+
   const surnames = useMemo(() => {
     const counts = new Map<string, number>();
     for (const p of personList) {
@@ -81,9 +103,43 @@ export function FilterPanel({ filters, onChange, personList, language = 'en' }: 
       .slice(0, 50);
   }, [personList]);
 
+  const reset = () => onChange(DEFAULT_FILTERS);
+
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-3 space-y-3 text-sm" dir={t ? 'rtl' : 'ltr'}>
-      <div className="font-bold text-gray-700">{t ? 'סינון' : 'Filters'}</div>
+    <div className="space-y-3 rounded-2xl border border-stone-200 bg-white/90 p-3 text-sm shadow-sm backdrop-blur-sm" dir={t ? 'rtl' : 'ltr'}>
+      <div className="rounded-xl border border-stone-200/80 bg-stone-50/80 p-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="text-[10px] uppercase tracking-[0.22em] text-stone-400">
+              {t ? 'בקרות מחקר' : 'Research controls'}
+            </div>
+            <div className="mt-1 text-sm font-semibold text-stone-800">
+              {t ? 'סינון ותצוגה' : 'Filters and scope'}
+            </div>
+          </div>
+          <button
+            className="shrink-0 rounded-full border border-stone-200 bg-white px-3 py-1 text-[11px] font-semibold text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-800 disabled:opacity-40"
+            onClick={reset}
+            disabled={activeFilterCount === 0}
+          >
+            {t ? 'איפוס' : 'Reset'}
+          </button>
+        </div>
+        <div className="mt-2 flex flex-wrap gap-1.5 text-[11px] text-stone-500">
+          <span className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-2.5 py-1">
+            <span className="text-stone-400">{t ? 'דורות' : 'Generations'}</span>
+            {filters.generationMin}–{filters.generationMax}
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-2.5 py-1">
+            <span className="text-stone-400">{t ? 'קשר ליעל' : 'Yael scope'}</span>
+            {filters.connectedToYaelOnly ? (t ? 'בלבד' : 'Only') : (t ? 'כולל הכל' : 'All')}
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-2.5 py-1">
+            <span className="text-stone-400">{t ? 'פעילים' : 'Active'}</span>
+            {activeFilterCount}
+          </span>
+        </div>
+      </div>
 
       <div className="space-y-3">
         <CollapsibleSection title={t ? 'זהות' : 'Identity'} icon="🏷️" defaultOpen={true}>
