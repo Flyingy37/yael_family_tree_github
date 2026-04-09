@@ -582,7 +582,17 @@ export function getGinzburgLiandresDisplayProfile(person: Person): BranchPersonD
 }
 
 export function getGinzburgLiandresEvidenceForPerson(personId: string): BranchEvidenceItem[] {
-  return BRANCH_EVIDENCE.filter((item) => item.personIds.includes(personId));
+  return BRANCH_EVIDENCE.filter((item) => {
+    if (item.personIds.includes(personId)) return true;
+    if (item.type === 'video-testimony') {
+      return (
+        item.speakerPersonId === personId ||
+        item.relatedPersonIds?.includes(personId) ||
+        item.personIds.includes(personId)
+      );
+    }
+    return false;
+  });
 }
 
 export function getGinzburgLiandresBranchEvidence(): BranchEvidenceItem[] {
