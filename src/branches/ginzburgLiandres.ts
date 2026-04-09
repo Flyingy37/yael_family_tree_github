@@ -570,6 +570,19 @@ export const tzilaImageEvidence: ImageEvidenceItem[] = [
     confidence: 'partial',
     note: 'Year follows the current family identification.',
   },
+  {
+    id: 'ev-image-tzila-prewar-class-photo-1941',
+    type: 'annotated-photo',
+    title: 'Prewar class photo linked to Tzila Cilia Alperovitz née Dubershtein',
+    description: 'A family-annotated class photo from before June 1941, associated in the archive with the girl at the lower right, with braids.',
+    assetPath: '/images/ginzburg/tzila_prewar_class_photo_1941_original.jpg',
+    relatedPersonIds: ['@I12@'],
+    relatedPersonDisplayNames: ['Tzila Cilia Alperovitz née Dubershtein'],
+    yearApprox: 'before June 1941',
+    source: 'Family archive annotation',
+    confidence: 'partial',
+    note: 'The identification remains family-supplied and should stay tentative; family notes also state that about half of her classmates perished during the war in Belarus.',
+  },
 ];
 
 const BRANCH_EVIDENCE: BranchEvidenceItem[] = [

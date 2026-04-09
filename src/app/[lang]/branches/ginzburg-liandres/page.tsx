@@ -147,6 +147,12 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
       note: 'השנה משקפת את הזיהוי המשפחתי הקיים.',
       source: 'ארכיון משפחתי',
     },
+    'ev-image-tzila-prewar-class-photo-1941': {
+      title: 'תצלום כיתתי שלפני המלחמה המקושר ל-Tzila Cilia Alperovitz לבית Dubershtein',
+      description: 'תצלום כיתתי מסומן במשפחה מתקופה שלפני יוני 1941, ומזוהה בארכיון עם הילדה בפינה הימנית התחתונה, עם הצמות.',
+      note: 'הזיהוי נשאר משפחתי ומשוער; לפי הערות המשפחה, כ-חצי מחברותיה לכיתה נספו במהלך המלחמה בבלארוס.',
+      source: 'הערת ארכיון משפחתי',
+    },
     'raw-family-structure': {
       title: 'הפניה מבנית לגרף המשפחה',
       description:
