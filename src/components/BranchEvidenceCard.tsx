@@ -13,12 +13,12 @@ type Props = {
   resolvePersonHref?: (personId: string) => string | null | undefined;
 };
 
-function truncateTranscript(transcript: string, limit: number = 220): { excerpt: string; hasMore: boolean } {
+function truncateTranscript(transcript: string, limit: number = 220): string {
   const normalized = transcript.trim();
   if (normalized.length <= limit) {
-    return { excerpt: normalized, hasMore: false };
+    return normalized;
   }
-  return { excerpt: `${normalized.slice(0, limit).trimEnd()}…`, hasMore: true };
+  return `${normalized.slice(0, limit).trimEnd()}…`;
 }
 
 export function BranchEvidenceCard({
@@ -117,11 +117,28 @@ export function BranchEvidenceCard({
   const renderVideoTestimony = () => {
     if (item.type !== 'video-testimony') return null;
     const transcript = item.transcript?.trim() || '';
-    const transcriptPreview = transcript ? truncateTranscript(transcript, compact ? 140 : 220) : null;
-    const excerpt = transcriptPreview?.excerpt || '';
+    const excerpt = transcript ? truncateTranscript(transcript, compact ? 140 : 220) : '';
     const relatedPersonIds = item.relatedPersonIds || [];
     const relatedPlaceIds = item.relatedPlaceIds || [];
     const topics = item.topics || [];
+    const openVideoLink = item.url ? (
+      item.url.startsWith('/') ? (
+        <Link to={item.url} className={compact ? 'atlas-link inline-flex text-xs' : 'atlas-link inline-flex text-sm'}>
+          {labels.openVideo}
+        </Link>
+      ) : (
+        <a
+          href={item.url}
+          target="_blank"
+          rel="noreferrer"
+          className={compact ? 'atlas-link inline-flex text-xs' : 'atlas-link inline-flex text-sm'}
+        >
+          {labels.openVideo}
+        </a>
+      )
+    ) : (
+      <p className="text-xs text-stone-500">{labels.noUrl}</p>
+    );
 
     return (
       <div className={compact ? 'space-y-2' : 'space-y-3'}>
@@ -180,18 +197,7 @@ export function BranchEvidenceCard({
         </div>
 
         <div className={compact ? 'space-y-1.5' : 'space-y-2'}>
-          {item.url ? (
-            <a
-              href={item.url}
-              target="_blank"
-              rel="noreferrer"
-              className={compact ? 'atlas-link inline-flex text-xs' : 'atlas-link inline-flex text-sm'}
-            >
-              {labels.openVideo}
-            </a>
-          ) : (
-            <p className="text-xs text-stone-500">{labels.noUrl}</p>
-          )}
+          {openVideoLink}
 
           {transcript ? (
             <details className={`atlas-card-subtle rounded-2xl ${compact ? 'px-3 py-2' : 'px-4 py-3'}`}>
@@ -227,12 +233,14 @@ export function BranchEvidenceCard({
   );
 
   return (
-    <ArchivalCard
-      title={item.title}
-      variant={variant}
-      eyebrow={<EvidenceBadge type={item.type} variant={variant} language={language} />}
-    >
-      {item.type === 'video-testimony' ? renderVideoTestimony() : renderGenericEvidence()}
-    </ArchivalCard>
+    <div id={item.id} className="scroll-mt-24">
+      <ArchivalCard
+        title={item.title}
+        variant={variant}
+        eyebrow={<EvidenceBadge type={item.type} variant={variant} language={language} />}
+      >
+        {item.type === 'video-testimony' ? renderVideoTestimony() : renderGenericEvidence()}
+      </ArchivalCard>
+    </div>
   );
 }

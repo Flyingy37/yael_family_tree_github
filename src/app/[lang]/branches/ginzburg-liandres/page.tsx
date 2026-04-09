@@ -37,8 +37,14 @@ function formatRelationshipLabel(value: string): string {
   return value.replace(/-/g, ' ');
 }
 
-function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean): BranchEvidenceItem {
-  if (!isHebrew) return item;
+function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, branchUrlBase?: string): BranchEvidenceItem {
+  if (!isHebrew) {
+    if (item.type !== 'video-testimony') return item;
+    return {
+      ...item,
+      url: item.url || (branchUrlBase ? `${branchUrlBase}#${item.id}` : undefined),
+    } as BranchEvidenceItem;
+  }
 
   const copy: Record<string, Partial<BranchEvidenceItem>> = {
     'maternal-line-mtdna': {
@@ -112,10 +118,18 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean): Bra
     },
   };
 
-  return {
+  const translated = {
     ...item,
     ...(copy[item.id] || {}),
   } as BranchEvidenceItem;
+  if (translated.type === 'video-testimony') {
+    return {
+      ...translated,
+      title: translated.shortTitleHe || translated.title,
+      url: translated.url || (branchUrlBase ? `${branchUrlBase}#${translated.id}` : translated.url),
+    };
+  }
+  return translated;
 }
 
 export default function GinzburgLiandresBranchPage() {
@@ -138,16 +152,17 @@ export default function GinzburgLiandresBranchPage() {
     ? {
         treeLink: 'עץ המשפחה',
         title: 'ענף Ginzburg-Liandres',
+        firstMarriageSentence: 'נישואין ראשונים: אישה לא ידועה (השם הפרטי ושם הנעורים אינם ידועים).',
+        firstMarriageChild: 'הילדה הידועה מנישואין אלה: Eti Ginzburg Charny.',
         intro:
           'תצוגת ענף תמציתית למשפחת Ginzburg-Liandres, עם שמות אנגליים מנורמלים, כללי הצגה מתועדים, ומבנה ארכיוני נקי.',
         rootCouple: 'הזוג המרכזי',
         firstMarriage: 'נישואין ראשונים',
         secondMarriage: 'נישואין שניים',
         thirdMarriage: 'נישואין שלישיים',
-        firstMarriageTag: 'אישה לא ידועה (השם הפרטי ושם הנעורים אינם ידועים)',
+        firstMarriageTag: 'אישה לא ידועה',
         secondMarriageTag: 'צאצאים ביולוגיים',
         thirdMarriageTag: 'שלב־משפחה',
-        firstMarriageNote: 'הילדה הידועה מנישואין אלה: Eti Ginzburg Charny.',
         thirdMarriageNote:
           'שכבת ההצגה מתעדת את Esther Lipschitz כאישה שלישית, אך בגרף הגולמי עדיין אין רשומת אדם קנונית מקושרת עבורה.',
         maternalLine: 'הקו האימהי',
@@ -172,16 +187,17 @@ export default function GinzburgLiandresBranchPage() {
     : {
         treeLink: 'Family Tree',
         title: 'Ginzburg-Liandres',
+        firstMarriageSentence: 'First marriage: unknown wife (given name and maiden name unknown).',
+        firstMarriageChild: 'Known child from this marriage: Eti Ginzburg Charny.',
         intro:
           'A concise branch view for the Ginzburg-Liandres family, using normalized English names and documented presentation rules.',
         rootCouple: 'Root couple',
         firstMarriage: 'First marriage',
         secondMarriage: 'Second marriage',
         thirdMarriage: 'Third marriage',
-        firstMarriageTag: 'Unknown wife (given name and maiden name unknown)',
+        firstMarriageTag: 'Unknown wife',
         secondMarriageTag: 'Biological children',
         thirdMarriageTag: 'Stepfamily',
-        firstMarriageNote: 'Known child from this marriage: Eti Ginzburg Charny.',
         thirdMarriageNote:
           'Presentation correction layer only: branch display records Esther Lipschitz as a third-wife identity, but the current raw graph does not yet contain a canonical linked person record for her.',
         maternalLine: 'Maternal line',
@@ -286,16 +302,23 @@ export default function GinzburgLiandresBranchPage() {
                     />
                   }
                 >
-                  <p>{family.spouseLabel}</p>
-                  {'note' in family && family.note ? (
-                    <p className="mt-2 text-xs text-stone-500">
-                      {isHebrew && family.label === 'First marriage'
-                        ? ui.firstMarriageNote
-                        : isHebrew && family.label === 'Third marriage'
-                          ? ui.thirdMarriageNote
-                          : family.note}
-                    </p>
-                  ) : null}
+                  {family.label === 'First marriage' ? (
+                    <div className="space-y-1.5">
+                      <p className="text-sm leading-6 text-[var(--atlas-text)]">{ui.firstMarriageSentence}</p>
+                      <p className="text-xs text-stone-500">{ui.firstMarriageChild}</p>
+                    </div>
+                  ) : (
+                    <>
+                      <p>{family.spouseLabel}</p>
+                      {'note' in family && family.note ? (
+                        <p className="mt-2 text-xs text-stone-500">
+                          {isHebrew && family.label === 'Third marriage'
+                            ? ui.thirdMarriageNote
+                            : family.note}
+                        </p>
+                      ) : null}
+                    </>
+                  )}
                   {'children' in family && family.children ? (
                     <div className="mt-3 flex flex-wrap gap-2">
                       {family.children.map((id) => {
@@ -384,7 +407,7 @@ export default function GinzburgLiandresBranchPage() {
                   {items.length > 0 ? (
                     <div className="mt-2 space-y-2">
                       {items.map((item) => {
-                        const displayItem = translateEvidenceItem(item, isHebrew);
+                        const displayItem = translateEvidenceItem(item, isHebrew, `/${lang}/branches/ginzburg-liandres`);
                         return (
                           <BranchEvidenceCard
                             key={item.id}

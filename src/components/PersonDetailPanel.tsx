@@ -707,11 +707,18 @@ export function PersonDetailPanel({
     }
   };
   const translateBranchEvidence = (item: BranchEvidenceItem): BranchEvidenceItem => {
-    if (item.type === 'video-testimony') return item;
-    return {
+    const translated = {
       ...item,
       ...(branchEvidenceCopy[item.id] || {}),
     } as BranchEvidenceItem;
+    if (translated.type === 'video-testimony') {
+      return {
+        ...translated,
+        title: translated.shortTitleHe || translated.title,
+        url: translated.url || `/${language}/branches/ginzburg-liandres#${translated.id}`,
+      };
+    }
+    return translated;
   };
   const translateBranchResearchNote = (note: BranchRelationshipNote): BranchRelationshipNote => ({
     ...note,
