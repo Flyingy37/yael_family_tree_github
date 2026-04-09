@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import CollapsibleSection from './CollapsibleSection';
 import { ArchivalCard } from './ArchivalCard';
+import { BranchEvidenceCard } from './BranchEvidenceCard';
 import { EvidenceBadge } from './EvidenceBadge';
 import { RelationshipChip } from './RelationshipChip';
 import {
@@ -473,11 +474,6 @@ export function PersonDetailPanel({
         }
       : null,
   ].filter(Boolean) as Array<{ label: string; value: string }>;
-  const confidenceLabels: Record<string, string> = {
-    direct: t ? 'ישיר' : 'Direct',
-    partial: t ? 'חלקי' : 'Partial',
-    contextual: t ? 'הקשרי' : 'Contextual',
-  };
   const branchUi = t
     ? {
         packageLabel: 'חבילת ענף',
@@ -680,10 +676,13 @@ export function PersonDetailPanel({
         return subjectLabel;
     }
   };
-  const translateBranchEvidence = (item: BranchEvidenceItem): BranchEvidenceItem => ({
-    ...item,
-    ...(branchEvidenceCopy[item.id] || {}),
-  } as BranchEvidenceItem);
+  const translateBranchEvidence = (item: BranchEvidenceItem): BranchEvidenceItem => {
+    if (item.type === 'video-testimony') return item;
+    return {
+      ...item,
+      ...(branchEvidenceCopy[item.id] || {}),
+    } as BranchEvidenceItem;
+  };
   const translateBranchResearchNote = (note: BranchRelationshipNote): BranchRelationshipNote => ({
     ...note,
     ...(branchResearchNoteCopy[note.id] || {}),
@@ -1103,21 +1102,14 @@ export function PersonDetailPanel({
             {branchEvidence.map((item) => {
               const displayItem = translateBranchEvidence(item);
               return (
-              <ArchivalCard
-                key={item.id}
-                title={displayItem.title}
-                variant={branchProfile ? 'atlas' : 'default'}
-                eyebrow={<EvidenceBadge type={item.type} variant={branchProfile ? 'atlas' : 'default'} language={language} />}
-              >
-                <p>{displayItem.description}</p>
-                <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <RelationshipChip label={confidenceLabels[item.confidence]} tone="stone" variant={branchProfile ? 'atlas' : 'default'} />
-                  <span className="text-xs text-stone-500">{item.source}</span>
-                </div>
-                {displayItem.note ? (
-                  <p className="mt-2 text-xs text-stone-500">{displayItem.note}</p>
-                ) : null}
-              </ArchivalCard>
+                <BranchEvidenceCard
+                  key={item.id}
+                  item={displayItem}
+                  language={language}
+                  variant={branchProfile ? 'atlas' : 'default'}
+                  resolvePersonLabel={(personId) => getBranchClaimPersonLabel(personId)}
+                  resolvePersonHref={(personId) => `/${language}/person/${encodeURIComponent(personId)}`}
+                />
               );
             })}
             {person.tags.includes('DNA') && !branchEvidence.some((item) => item.type === 'dna-clue') ? (

@@ -4,6 +4,7 @@ import { formatDateConcise, formatLifespan } from '../utils/formatters';
 export type EvidenceType =
   | 'family-photo'
   | 'testimony'
+  | 'video-testimony'
   | 'document'
   | 'dna-clue'
   | 'external-tree-reference';
@@ -13,12 +14,13 @@ export type EvidenceConfidence = 'direct' | 'partial' | 'contextual';
 export const EVIDENCE_TYPE_ORDER: EvidenceType[] = [
   'family-photo',
   'testimony',
+  'video-testimony',
   'document',
   'dna-clue',
   'external-tree-reference',
 ];
 
-export interface BranchEvidenceItem {
+interface BranchEvidenceBase {
   id: string;
   type: EvidenceType;
   title: string;
@@ -28,6 +30,25 @@ export interface BranchEvidenceItem {
   note?: string;
   personIds: string[];
 }
+
+export interface BranchTextEvidence extends BranchEvidenceBase {
+  id: string;
+  type: 'family-photo' | 'testimony' | 'document' | 'dna-clue' | 'external-tree-reference';
+}
+
+export interface VideoTestimonyEvidence extends BranchEvidenceBase {
+  type: 'video-testimony';
+  speakerPersonId: string;
+  relatedPersonIds?: string[];
+  relatedPlaceIds?: string[];
+  topics?: string[];
+  url?: string;
+  transcript?: string;
+  language: 'he' | 'en' | 'mixed';
+  confidence: 'direct';
+}
+
+export type BranchEvidenceItem = BranchTextEvidence | VideoTestimonyEvidence;
 
 export interface BranchRelationshipNote {
   id: string;
@@ -267,14 +288,16 @@ const BRANCH_EVIDENCE: BranchEvidenceItem[] = [
   },
   {
     id: 'cilia-migration-note',
-    type: 'testimony',
+    type: 'video-testimony',
     title: 'Cilia/Tzila migration note',
     description:
       'Current data states she was born in Haifa during the British Mandate, with family origin in the Pleshchenitsy area and a return to Belarus around 1930.',
     source: 'Existing migrationInfo on @I12@',
-    confidence: 'partial',
-    note: 'Retained as a testimony-style research note from the current data layer. It should be read as archival context, not as a standalone proof document.',
+    confidence: 'direct',
+    note: 'Documented testimony entry. No video URL or transcript is currently attached in the branch package.',
     personIds: ['@I12@'],
+    speakerPersonId: '@I12@',
+    language: 'en',
   },
   {
     id: 'cilia-myheritage-summary',

@@ -11,7 +11,7 @@ import {
   type EvidenceType,
 } from '../../../../branches/ginzburgLiandres';
 import { ArchivalCard } from '../../../../components/ArchivalCard';
-import { EvidenceBadge } from '../../../../components/EvidenceBadge';
+import { BranchEvidenceCard } from '../../../../components/BranchEvidenceCard';
 import { RelationshipChip } from '../../../../components/RelationshipChip';
 
 function PersonName({
@@ -38,7 +38,7 @@ function formatRelationshipLabel(value: string): string {
 }
 
 function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean): BranchEvidenceItem {
-  if (!isHebrew) return item;
+  if (!isHebrew || item.type === 'video-testimony') return item;
 
   const copy: Record<string, Partial<BranchEvidenceItem>> = {
     'maternal-line-mtdna': {
@@ -127,14 +127,10 @@ export default function GinzburgLiandresBranchPage() {
         evidenceFirst: 'ראיות תחילה',
         relationshipSummary: 'סיכום יחסים',
         presentationRules: 'כללי הצגה',
-        confidenceLabels: {
-          direct: 'ישיר',
-          partial: 'חלקי',
-          contextual: 'הקשרי',
-        },
         typeEmptyLabels: {
           'family-photo': 'עדיין אין תצלום משפחתי מצורף לחבילת הענף.',
           testimony: 'עדיין אין בלוק עדות נוסף ברמת הענף מעבר להערות הקיימות.',
+          'video-testimony': 'עדיין אין עדות וידאו נוספת ברמת הענף מעבר לפריט הקיים.',
           document: 'אין מסמך ענפי נוסף מעבר לסיכום המחקר הקיים.',
           'dna-clue': 'אין רמז DNA נוסף מעבר לרשומות חבילת הענף הקיימות.',
           'external-tree-reference': 'אין בשלב זה הפניה חיצונית נוספת ברמת הענף.',
@@ -166,14 +162,10 @@ export default function GinzburgLiandresBranchPage() {
         evidenceFirst: 'Evidence-first',
         relationshipSummary: 'Relationship summary',
         presentationRules: 'Presentation rules',
-        confidenceLabels: {
-          direct: 'Direct',
-          partial: 'Partial',
-          contextual: 'Contextual',
-        },
         typeEmptyLabels: {
           'family-photo': 'No family photo is attached to this branch package yet.',
           testimony: 'No additional testimony block is attached at branch level beyond current notes.',
+          'video-testimony': 'No additional video testimony is attached at branch level beyond the seeded Tzila record.',
           document: 'No further branch document is attached beyond the current research summary.',
           'dna-clue': 'No additional DNA clue is attached beyond the current branch package entries.',
           'external-tree-reference': 'No further external tree or research reference is attached at branch level.',
@@ -357,25 +349,19 @@ export default function GinzburgLiandresBranchPage() {
             <div className="space-y-4">
               {evidenceByType.map(({ type, items }) => (
                 <div key={type} className="atlas-card-subtle rounded-2xl px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <EvidenceBadge type={type} variant="atlas" language={lang} />
-                  </div>
                   {items.length > 0 ? (
                     <div className="mt-3 space-y-3">
                       {items.map((item) => {
                         const displayItem = translateEvidenceItem(item, isHebrew);
                         return (
-                        <div key={item.id} className="border-t border-[rgba(130,120,104,0.12)] pt-3 first:border-t-0 first:pt-0">
-                          <div className="text-sm font-medium text-[var(--atlas-text)]">{displayItem.title}</div>
-                          <p className="mt-1 text-sm leading-6 text-stone-600">{displayItem.description}</p>
-                          <div className="mt-2 flex flex-wrap items-center gap-2">
-                            <RelationshipChip label={ui.confidenceLabels[item.confidence]} tone="stone" variant="atlas" />
-                            <span className="text-xs text-stone-500">{item.source}</span>
-                          </div>
-                          {displayItem.note ? (
-                            <p className="mt-2 text-xs text-stone-500">{displayItem.note}</p>
-                          ) : null}
-                        </div>
+                          <BranchEvidenceCard
+                            key={item.id}
+                            item={displayItem}
+                            language={lang}
+                            variant="atlas"
+                            resolvePersonLabel={(personId) => renderPersonLabel(personId, personId)}
+                            resolvePersonHref={(personId) => `/${lang}/person/${encodeURIComponent(personId)}`}
+                          />
                         );
                       })}
                     </div>

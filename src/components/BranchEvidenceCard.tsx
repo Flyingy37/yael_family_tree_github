@@ -1,0 +1,235 @@
+import { Link } from 'react-router-dom';
+import { ArchivalCard } from './ArchivalCard';
+import { EvidenceBadge } from './EvidenceBadge';
+import { RelationshipChip } from './RelationshipChip';
+import type { BranchEvidenceItem } from '../branches/ginzburgLiandres';
+
+type Props = {
+  item: BranchEvidenceItem;
+  language: 'en' | 'he';
+  variant?: 'default' | 'atlas';
+  resolvePersonLabel?: (personId: string) => string;
+  resolvePersonHref?: (personId: string) => string | null | undefined;
+};
+
+function truncateTranscript(transcript: string, limit: number = 220): { excerpt: string; hasMore: boolean } {
+  const normalized = transcript.trim();
+  if (normalized.length <= limit) {
+    return { excerpt: normalized, hasMore: false };
+  }
+  return { excerpt: `${normalized.slice(0, limit).trimEnd()}…`, hasMore: true };
+}
+
+export function BranchEvidenceCard({
+  item,
+  language,
+  variant = 'atlas',
+  resolvePersonLabel,
+  resolvePersonHref,
+}: Props) {
+  const isHebrew = language === 'he';
+  const labels = isHebrew
+    ? {
+        speaker: 'דובר/ת',
+        relatedPeople: 'אנשים קשורים',
+        relatedPlaces: 'מקומות קשורים',
+        topics: 'נושאים',
+        language: 'שפה',
+        transcript: 'תמלול',
+        openVideo: 'פתח/י את עדות הווידאו',
+        noUrl: 'אין קישור וידאו מצורף עדיין.',
+        noTranscript: 'אין תמלול מצורף עדיין.',
+        source: 'מקור',
+      }
+    : {
+        speaker: 'Speaker',
+        relatedPeople: 'Related people',
+        relatedPlaces: 'Related places',
+        topics: 'Topics',
+        language: 'Language',
+        transcript: 'Transcript',
+        openVideo: 'Open video testimony',
+        noUrl: 'No video URL is attached yet.',
+        noTranscript: 'No transcript is attached yet.',
+        source: 'Source',
+      };
+
+  const confidenceLabels = isHebrew
+    ? {
+        direct: 'ישיר',
+        partial: 'חלקי',
+        contextual: 'הקשרי',
+      }
+    : {
+        direct: 'Direct',
+        partial: 'Partial',
+        contextual: 'Contextual',
+      };
+
+  const languageLabels = isHebrew
+    ? {
+        he: 'עברית',
+        en: 'אנגלית',
+        mixed: 'מעורב',
+      }
+    : {
+        he: 'Hebrew',
+        en: 'English',
+        mixed: 'Mixed',
+      };
+
+  const personLink = (personId: string) => {
+    const label = resolvePersonLabel?.(personId) || personId;
+    const href = resolvePersonHref?.(personId);
+    if (!href) {
+      return <span className="font-medium text-[var(--atlas-text)]">{label}</span>;
+    }
+    return (
+      <Link to={href} className="atlas-link font-medium">
+        {label}
+      </Link>
+    );
+  };
+
+  const personPill = (personId: string) => {
+    const label = resolvePersonLabel?.(personId) || personId;
+    const href = resolvePersonHref?.(personId);
+    if (!href) {
+      return (
+        <span key={personId} className="atlas-pill rounded-full px-2 py-0.5 text-[10px] text-[var(--atlas-text)]">
+          {label}
+        </span>
+      );
+    }
+    return (
+      <Link
+        key={personId}
+        to={href}
+        className="atlas-pill rounded-full px-2 py-0.5 text-[10px] text-[var(--atlas-text)]"
+      >
+        {label}
+      </Link>
+    );
+  };
+
+  const renderVideoTestimony = () => {
+    if (item.type !== 'video-testimony') return null;
+    const transcript = item.transcript?.trim() || '';
+    const { excerpt, hasMore } = transcript ? truncateTranscript(transcript) : { excerpt: '', hasMore: false };
+    const relatedPersonIds = item.relatedPersonIds || [];
+    const relatedPlaceIds = item.relatedPlaceIds || [];
+    const topics = item.topics || [];
+
+    return (
+      <div className="space-y-3">
+        <p>{item.description}</p>
+
+        <div className="space-y-2 text-sm text-[var(--atlas-text)]">
+          <div className="flex flex-wrap items-start gap-2">
+            <span className="text-[11px] uppercase tracking-[0.16em] text-[var(--atlas-text-muted)]">{labels.speaker}</span>
+            <div>{personLink(item.speakerPersonId)}</div>
+          </div>
+
+          {relatedPersonIds.length > 0 ? (
+            <div className="flex flex-wrap items-start gap-2">
+              <span className="text-[11px] uppercase tracking-[0.16em] text-[var(--atlas-text-muted)]">{labels.relatedPeople}</span>
+              <div className="flex flex-wrap gap-1.5">{relatedPersonIds.map(personPill)}</div>
+            </div>
+          ) : null}
+
+          {relatedPlaceIds.length > 0 ? (
+            <div className="flex flex-wrap items-start gap-2">
+              <span className="text-[11px] uppercase tracking-[0.16em] text-[var(--atlas-text-muted)]">{labels.relatedPlaces}</span>
+              <div className="flex flex-wrap gap-1.5">
+                {relatedPlaceIds.map((placeId) => (
+                  <span key={placeId} className="atlas-pill rounded-full px-2 py-0.5 text-[10px] text-[var(--atlas-text)]">
+                    {placeId}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {topics.length > 0 ? (
+            <div className="flex flex-wrap items-start gap-2">
+              <span className="text-[11px] uppercase tracking-[0.16em] text-[var(--atlas-text-muted)]">{labels.topics}</span>
+              <div className="flex flex-wrap gap-1.5">
+                {topics.map((topic) => (
+                  <RelationshipChip key={topic} label={topic} tone="violet" variant={variant} />
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[11px] uppercase tracking-[0.16em] text-[var(--atlas-text-muted)]">{labels.language}</span>
+            <RelationshipChip label={languageLabels[item.language]} tone="stone" variant={variant} />
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <RelationshipChip
+            label={confidenceLabels[item.confidence]}
+            tone={item.confidence === 'direct' ? 'lime' : item.confidence === 'partial' ? 'stone' : 'rose'}
+            variant={variant}
+          />
+          <span className="text-xs text-stone-500">{labels.source}: {item.source}</span>
+        </div>
+
+        <div className="space-y-2">
+          {item.url ? (
+            <a
+              href={item.url}
+              target="_blank"
+              rel="noreferrer"
+              className="atlas-link inline-flex text-sm"
+            >
+              {labels.openVideo}
+            </a>
+          ) : (
+            <p className="text-xs text-stone-500">{labels.noUrl}</p>
+          )}
+
+          {transcript ? (
+            <details className="atlas-card-subtle rounded-2xl px-4 py-3">
+              <summary className="cursor-pointer list-none text-[11px] uppercase tracking-[0.16em] text-[var(--atlas-text-muted)]">
+                <span>{labels.transcript}</span>
+                <span className="ml-2 text-[11px] normal-case tracking-normal text-stone-600">{excerpt}</span>
+              </summary>
+              <p className={`mt-3 whitespace-pre-wrap text-sm leading-6 text-stone-600 ${hasMore ? '' : ''}`}>{transcript}</p>
+            </details>
+          ) : (
+            <p className="text-xs text-stone-500">{labels.noTranscript}</p>
+          )}
+        </div>
+
+        {item.note ? <p className="text-xs text-stone-500">{item.note}</p> : null}
+      </div>
+    );
+  };
+
+  const renderGenericEvidence = () => (
+    <div className="space-y-3">
+      <p>{item.description}</p>
+      <div className="flex flex-wrap items-center gap-2">
+        <RelationshipChip
+          label={confidenceLabels[item.confidence]}
+          tone={item.confidence === 'direct' ? 'lime' : item.confidence === 'partial' ? 'stone' : 'rose'}
+          variant={variant}
+        />
+        <span className="text-xs text-stone-500">{labels.source}: {item.source}</span>
+      </div>
+      {item.note ? <p className="text-xs text-stone-500">{item.note}</p> : null}
+    </div>
+  );
+
+  return (
+    <ArchivalCard
+      title={item.title}
+      variant={variant}
+      eyebrow={<EvidenceBadge type={item.type} variant={variant} language={language} />}
+    >
+      {item.type === 'video-testimony' ? renderVideoTestimony() : renderGenericEvidence()}
+    </ArchivalCard>
+  );
+}
