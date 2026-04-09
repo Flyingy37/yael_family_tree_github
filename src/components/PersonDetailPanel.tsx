@@ -527,6 +527,12 @@ export function PersonDetailPanel({
           note: 'יש לשמור כצילום פורטרט של Aharon Ginzburg.',
           source: 'חומרי Ginzburg שהועלו',
         },
+        'ev-image-berl-yakov-ginzburg-1944': {
+          title: 'דיוקן צבאי המיוחס ל-Yankel Berl Ginzburg',
+          description: 'דיוקן צבאי בסטודיו שנשמר בארכיון המשפחתי ומסומן כ-Yankel Berl Ginzburg, משנת 1944.',
+          note: 'הזיהוי נשמר כמשוער עד לאישור נוסף מתוך כתובת מתוארכת, כיתוב בצד האחורי או תיעוד משפחתי עצמאי.',
+          source: 'שם קובץ בארכיון המשפחתי והקשר מחקרי ענפי',
+        },
         'ev-image-cilia-two-person-portrait': {
           title: 'דיוקן של Tzila Cilia Duberstein Alperovitz עם תינוק',
           description: 'צילום זוגי שבו Cilia מופיעה עם תינוק. הזיהוי של המבוגר חזק; זהות התינוק נשמרת כמשוערת.',
@@ -544,6 +550,12 @@ export function PersonDetailPanel({
           description: 'גרסה נקייה של התצלום המשפחתי מתוך אותו סט חומרי Ginzburg לשנת 1946.',
           note: 'השתמשו בגרסה זו כנקודת ייחוס לא מסומנת של אותו מבנה משפחתי.',
           source: 'חומרי Ginzburg שהועלו',
+        },
+        'ev-image-ginzburg-family-annotated-group': {
+          title: 'תצלום משפחתי מסומן של Ginzburg',
+          description: 'תצלום משפחתי עם שורות זיהוי בכתב יד ושמות שנוספו מאוחר יותר לצורך זיהוי עבודה.',
+          note: 'זהו צילום מחקרי מסומן. יש להתייחס לזיהויים האישיים כאל תוויות עבודה משפחתיות, אלא אם יאומתו בכיתוב מקורי או במקור מקביל.',
+          source: 'תצלום הפניה מסומן מתוך הארכיון המשפחתי',
         },
         'ev-image-tzila-family-testimony-scan': {
           title: 'עמוד סרוק מעדות משפחת Tzila',
