@@ -47,7 +47,7 @@ export interface VideoTestimonyEvidence extends BranchEvidenceBase {
   url?: string;
   transcript?: string;
   language: 'he' | 'en' | 'mixed';
-  confidence: 'direct';
+  confidence: EvidenceConfidence;
 }
 
 export type BranchEvidenceItem = BranchTextEvidence | VideoTestimonyEvidence;
@@ -108,7 +108,7 @@ type BranchPersonConfig = {
 const BRANCH_PERSON_CONFIG: Record<string, BranchPersonConfig> = {
   '@I86@': {
     canonicalDisplayName: 'Arie-Leib Ginzburg',
-    aliases: ['Arie Leib Ginzburg', 'Arie-Leib Ginsburg', 'Arie-Leib Ginzberg'],
+    aliases: ['Arie Leib Ginzburg', 'Arie-Leib Ginsburg', 'Arie-Leib Ginzberg', 'Leiba Ginzburg'],
     primarySurname: 'Ginzburg',
   },
   '@I87@': {
@@ -132,14 +132,21 @@ const BRANCH_PERSON_CONFIG: Record<string, BranchPersonConfig> = {
   },
   '@I12@': {
     canonicalDisplayName: 'Tzila Cilia Duberstein Alperovitz',
-    aliases: ['Cilia Sara Cipora Duberstein', 'Cilia Duberstein', 'Tzila Duberstein', 'Cilia Sara Duberstein Alperovitch'],
+    aliases: [
+      'Cilia Sara Cipora Duberstein',
+      'Cilia Duberstein',
+      'Tzila Duberstein',
+      'Cilia Sara Duberstein Alperovitch',
+      'Tzila Sara Tzipora Duberstein',
+      'Tzila Sara Tzipora Duberstein Alperovitz',
+    ],
     birthSurname: 'Duberstein',
     marriedSurname: 'Alperovitz',
     primarySurname: 'Duberstein',
   },
   '@I58@': {
     canonicalDisplayName: 'Ruve Roman Duberstein',
-    aliases: ['Ruven Duberstein', 'Ruve Duberstein', 'Roman Duberstein'],
+    aliases: ['Ruven Duberstein', 'Ruve Duberstein', 'Roman Duberstein', 'Rube Duberstein', 'Ruven/Rube Duberstein'],
     primarySurname: 'Duberstein',
     identityWarnings: ['Current graph may under-specify this identity; display layer merges Ruve/Ruven/Roman variants for this branch.'],
   },
@@ -150,14 +157,14 @@ const BRANCH_PERSON_CONFIG: Record<string, BranchPersonConfig> = {
   },
   '@I60@': {
     canonicalDisplayName: 'Valentina "Valia" Duberstein',
-    aliases: ['Valia Axelrod', 'Valia Duberstein', 'Valentina Duberstein', 'Vala Duberstein'],
+    aliases: ['Valia Axelrod', 'Valia Duberstein', 'Valentina Duberstein', 'Vala Duberstein', 'Vola Duberstein'],
     birthSurname: 'Duberstein',
     marriedSurname: 'Axelrod',
     primarySurname: 'Duberstein',
   },
   '@I61@': {
     canonicalDisplayName: 'Ema Duberstein Meirson',
-    aliases: ['Ema Meirson', 'Ema Bash Eta Duberstein'],
+    aliases: ['Ema Meirson', 'Ema Bash Eta Duberstein', 'Bashata Ema Duberstein', 'Bashata Ema', 'Ema Duberstein'],
     birthSurname: 'Duberstein',
     marriedSurname: 'Meirson',
     primarySurname: 'Duberstein',
@@ -293,6 +300,34 @@ const BRANCH_RELATIONSHIP_NOTES: BranchRelationshipNote[] = [
     detail:
       'Eti Ginzburg Charny is displayed as a half-sister of Sofia, Gershon, Aharon, Yankel Berl, and Isaak rather than a full sibling.',
     personIds: ['@I203@', '@I37@', '@I131@', '@I132@', '@I133@', '@I134@'],
+  },
+  {
+    id: 'ela-iche-ambiguity',
+    title: 'Ela / Iche ambiguity',
+    detail:
+      'Ela / Iche may refer to one person or two people in the Duberstein generation; keep this ambiguous in the presentation layer.',
+    personIds: ['@I36@'],
+  },
+  {
+    id: 'iche-first-wife-household',
+    title: 'Iche in the first-wife household',
+    detail:
+      'Iche is kept as a low-confidence household placement under Leiba’s first-wife household.',
+    personIds: ['@I86@'],
+  },
+  {
+    id: 'asna-lifshitz-sister',
+    title: 'Asna Lifshitz uncertainty',
+    detail:
+      'Asna Lifshitz may be Esther’s sister; preserve this as uncertain.',
+    personIds: ['@I86@'],
+  },
+  {
+    id: 'dobe-dora-haim-stepchildren',
+    title: 'Later household stepchildren',
+    detail:
+      'Dobe, Dora, and Haim remain stepchildren in the later household, not biological children.',
+    personIds: ['@I86@'],
   },
 ];
 
@@ -438,7 +473,174 @@ const BRANCH_EVIDENCE: BranchEvidenceItem[] = [
   },
 ];
 
+export const tzilaTestimonyClaims: GenealogyClaim[] = [
+  {
+    id: 'claim-vladimir-sofia-spouse',
+    type: 'spouse',
+    subjectId: '@I36@',
+    objectId: '@I37@',
+    evidenceIds: ['ev-video-tzila-duberstein-01'],
+    confidence: 'direct',
+    note: 'Supported by oral testimony summary.',
+  },
+  {
+    id: 'claim-vladimir-parent-ruven',
+    type: 'parent',
+    subjectId: '@I36@',
+    objectId: '@I58@',
+    evidenceIds: ['ev-video-tzila-duberstein-01'],
+    confidence: 'direct',
+    note: 'Ruven/Rube listed as child of Vladimir and Sofia.',
+  },
+  {
+    id: 'claim-sofia-parent-ruven',
+    type: 'parent',
+    subjectId: '@I37@',
+    objectId: '@I58@',
+    evidenceIds: ['ev-video-tzila-duberstein-01'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-vladimir-parent-michael',
+    type: 'parent',
+    subjectId: '@I36@',
+    objectId: '@I59@',
+    evidenceIds: ['ev-video-tzila-duberstein-01'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-sofia-parent-michael',
+    type: 'parent',
+    subjectId: '@I37@',
+    objectId: '@I59@',
+    evidenceIds: ['ev-video-tzila-duberstein-01'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-vladimir-parent-ema',
+    type: 'parent',
+    subjectId: '@I36@',
+    objectId: '@I61@',
+    evidenceIds: ['ev-video-tzila-duberstein-01'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-sofia-parent-ema',
+    type: 'parent',
+    subjectId: '@I37@',
+    objectId: '@I61@',
+    evidenceIds: ['ev-video-tzila-duberstein-01'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-vladimir-parent-tzila',
+    type: 'parent',
+    subjectId: '@I36@',
+    objectId: '@I12@',
+    evidenceIds: ['ev-video-tzila-duberstein-01'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-sofia-parent-tzila',
+    type: 'parent',
+    subjectId: '@I37@',
+    objectId: '@I12@',
+    evidenceIds: ['ev-video-tzila-duberstein-01'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-vladimir-parent-vola',
+    type: 'parent',
+    subjectId: '@I36@',
+    objectId: '@I60@',
+    evidenceIds: ['ev-video-tzila-duberstein-01'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-sofia-parent-vola',
+    type: 'parent',
+    subjectId: '@I37@',
+    objectId: '@I60@',
+    evidenceIds: ['ev-video-tzila-duberstein-01'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-leiba-spouse-bashata',
+    type: 'spouse',
+    subjectId: '@I86@',
+    value: 'Bashata',
+    evidenceIds: ['ev-video-tzila-ginzburg-01'],
+    confidence: 'partial',
+    note: 'Oral testimony supports this pairing, but household history contains ambiguity.',
+  },
+  {
+    id: 'claim-gershon-spouse-fania-feigl',
+    type: 'spouse',
+    subjectId: '@I132@',
+    value: 'Fania Feigl',
+    evidenceIds: ['ev-video-tzila-ginzburg-01'],
+    confidence: 'partial',
+    note: 'Presentation-layer testimony reference only. Preserve uncertainty if the raw graph does not yet contain a canonical linked person record for Fania Feigl.',
+  },
+  {
+    id: 'claim-gershon-parent-boris',
+    type: 'parent',
+    subjectId: '@I132@',
+    objectId: '@I261@',
+    evidenceIds: ['ev-video-tzila-ginzburg-01'],
+    confidence: 'partial',
+  },
+  {
+    id: 'claim-gershon-parent-ema',
+    type: 'parent',
+    subjectId: '@I132@',
+    objectId: '@I268@',
+    evidenceIds: ['ev-video-tzila-ginzburg-01'],
+    confidence: 'partial',
+  },
+  {
+    id: 'claim-gershon-parent-sioma',
+    type: 'parent',
+    subjectId: '@I132@',
+    objectId: '@I262@',
+    evidenceIds: ['ev-video-tzila-ginzburg-01'],
+    confidence: 'partial',
+  },
+  {
+    id: 'claim-gershon-parent-yudik',
+    type: 'parent',
+    subjectId: '@I132@',
+    objectId: '@I3855@',
+    evidenceIds: ['ev-video-tzila-ginzburg-01'],
+    confidence: 'partial',
+  },
+];
+
 const BRANCH_GENEALOGY_CLAIMS: GenealogyClaim[] = [
+  {
+    id: 'claim-arie-leib-identity',
+    type: 'identity',
+    subjectId: '@I86@',
+    value: 'Arie-Leib Ginzburg',
+    evidenceIds: ['raw-family-structure', 'livnat-report-cross-reference'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-arie-leib-first-wife-unknown',
+    type: 'branch-context',
+    subjectId: '@I86@',
+    value: 'Unknown first wife',
+    evidenceIds: ['raw-family-structure'],
+    confidence: 'partial',
+  },
+  {
+    id: 'claim-arie-leib-spouse-basia',
+    type: 'spouse',
+    subjectId: '@I86@',
+    objectId: '@I87@',
+    evidenceIds: ['raw-family-structure'],
+    confidence: 'direct',
+  },
   {
     id: 'claim-basia-identity',
     type: 'identity',
@@ -498,6 +700,79 @@ const BRANCH_GENEALOGY_CLAIMS: GenealogyClaim[] = [
     evidenceIds: ['raw-family-structure', 'maternal-line-mtdna', 'cilia-migration-note'],
     confidence: 'direct',
   },
+  ...tzilaTestimonyClaims,
+  {
+    id: 'claim-vladimir-identity',
+    type: 'identity',
+    subjectId: '@I36@',
+    value: 'Vladimir Duberstein',
+    evidenceIds: ['ev-video-tzila-duberstein-01', 'ev-video-tzila-duberstein-02', 'raw-family-structure'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-vladimir-parent-couple',
+    type: 'branch-context',
+    subjectId: '@I36@',
+    value: 'Reuven and Rivka Duberstein',
+    evidenceIds: ['raw-family-structure'],
+    confidence: 'partial',
+  },
+  {
+    id: 'claim-vladimir-children-summary',
+    type: 'branch-context',
+    subjectId: '@I36@',
+    value: 'Ruven/Rube, Michael, Bashata Ema, Tzila Sara Tzipora, Vola',
+    evidenceIds: ['ev-video-tzila-duberstein-01', 'ev-video-tzila-duberstein-02', 'raw-family-structure'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-sofia-children-summary',
+    type: 'branch-context',
+    subjectId: '@I37@',
+    value: 'Ruven/Rube, Michael, Bashata Ema, Tzila Sara Tzipora, Vola',
+    evidenceIds: ['ev-video-tzila-duberstein-01', 'ev-video-tzila-duberstein-02', 'raw-family-structure'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-ruven-identity',
+    type: 'identity',
+    subjectId: '@I58@',
+    value: 'Ruven/Rube Duberstein (born 1920)',
+    evidenceIds: ['ev-video-tzila-duberstein-01', 'raw-family-structure'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-michael-identity',
+    type: 'identity',
+    subjectId: '@I59@',
+    value: 'Michael Duberstein (born 1922; died in Poland before age two)',
+    evidenceIds: ['ev-video-tzila-duberstein-01', 'raw-family-structure'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-bashata-identity',
+    type: 'identity',
+    subjectId: '@I61@',
+    value: 'Bashata Ema Duberstein (born 1924)',
+    evidenceIds: ['ev-video-tzila-duberstein-01', 'raw-family-structure'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-tzila-identity',
+    type: 'identity',
+    subjectId: '@I12@',
+    value: 'Tzila Sara Tzipora Duberstein later Alperovitz (born 1926; probably in Haifa)',
+    evidenceIds: ['ev-video-tzila-duberstein-01', 'ev-video-tzila-duberstein-02', 'cilia-migration-note'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-vola-identity',
+    type: 'identity',
+    subjectId: '@I60@',
+    value: 'Vola Duberstein (born 1928; probably in Tel Aviv)',
+    evidenceIds: ['ev-video-tzila-duberstein-01', 'raw-family-structure'],
+    confidence: 'direct',
+  },
   {
     id: 'claim-arie-leib-third-wife-esther',
     type: 'spouse',
@@ -506,6 +781,30 @@ const BRANCH_GENEALOGY_CLAIMS: GenealogyClaim[] = [
     evidenceIds: ['raw-family-structure'],
     confidence: 'partial',
     note: 'Presentation-layer correction only. Current raw graph may not yet contain a canonical linked person record for Esther Lipschitz.',
+  },
+  {
+    id: 'claim-leiba-multiple-wives',
+    type: 'branch-context',
+    subjectId: '@I86@',
+    value: 'Leiba Ginzburg, senior figure with multiple wives',
+    evidenceIds: ['ev-video-tzila-ginzburg-01', 'raw-family-structure'],
+    confidence: 'partial',
+  },
+  {
+    id: 'claim-gershon-identity',
+    type: 'identity',
+    subjectId: '@I132@',
+    value: 'Gershon (Grigory) Ginzburg',
+    evidenceIds: ['ev-video-tzila-ginzburg-01', 'raw-family-structure', 'livnat-report-cross-reference'],
+    confidence: 'direct',
+  },
+  {
+    id: 'claim-gershon-children-summary',
+    type: 'branch-context',
+    subjectId: '@I132@',
+    value: 'Boris, Ema, Sioma, and Yudik/Yudel',
+    evidenceIds: ['ev-video-tzila-ginzburg-01', 'raw-family-structure', 'livnat-report-cross-reference'],
+    confidence: 'partial',
   },
   {
     id: 'claim-esther-stepchildren-not-biological',

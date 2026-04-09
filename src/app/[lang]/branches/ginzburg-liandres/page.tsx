@@ -130,7 +130,7 @@ export default function GinzburgLiandresBranchPage() {
         typeEmptyLabels: {
           'family-photo': 'עדיין אין תצלום משפחתי מצורף לחבילת הענף.',
           testimony: 'עדיין אין בלוק עדות נוסף ברמת הענף מעבר להערות הקיימות.',
-          'video-testimony': 'עדיין אין עדות וידאו נוספת ברמת הענף מעבר לפריט הקיים.',
+          'video-testimony': 'עדיין אין עדות וידאו נוספת ברמת הענף מעבר לסט העדויות המוכנס.',
           document: 'אין מסמך ענפי נוסף מעבר לסיכום המחקר הקיים.',
           'dna-clue': 'אין רמז DNA נוסף מעבר לרשומות חבילת הענף הקיימות.',
           'external-tree-reference': 'אין בשלב זה הפניה חיצונית נוספת ברמת הענף.',
@@ -165,7 +165,7 @@ export default function GinzburgLiandresBranchPage() {
         typeEmptyLabels: {
           'family-photo': 'No family photo is attached to this branch package yet.',
           testimony: 'No additional testimony block is attached at branch level beyond current notes.',
-          'video-testimony': 'No additional video testimony is attached at branch level beyond the seeded Tzila record.',
+          'video-testimony': 'No additional video testimony is attached at branch level beyond the seeded Tzila testimony set.',
           document: 'No further branch document is attached beyond the current research summary.',
           'dna-clue': 'No additional DNA clue is attached beyond the current branch package entries.',
           'external-tree-reference': 'No further external tree or research reference is attached at branch level.',

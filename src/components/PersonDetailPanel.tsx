@@ -553,6 +553,26 @@ export function PersonDetailPanel({
           detail:
             'Eti Ginzburg Charny מוצגת כאחות למחצה של Sofia, Gershon, Aharon, Yankel Berl ו־Isaak, ולא כאחות מלאה.',
         },
+        'ela-iche-ambiguity': {
+          title: 'עמימות Ela / Iche',
+          detail:
+            'ייתכן ש־Ela / Iche מתייחס לאדם אחד או לשני אנשים בדור Duberstein; יש להשאיר זאת כעמימות בתצוגה.',
+        },
+        'iche-first-wife-household': {
+          title: 'Iche בבית האישה הראשונה',
+          detail:
+            'Iche נשמר כאן כשיוך ביתי בדרגת ודאות נמוכה תחת ביתה של האישה הראשונה של Leiba.',
+        },
+        'asna-lifshitz-sister': {
+          title: 'אי־ודאות סביב Asna Lifshitz',
+          detail:
+            'Asna Lifshitz עשויה להיות אחותה של Esther; יש לשמור זאת כקשר לא ודאי.',
+        },
+        'dobe-dora-haim-stepchildren': {
+          title: 'ילדי חורגים בבית המאוחר',
+          detail:
+            'Dobe, Dora ו־Haim נשמרים כילדי חורגים בבית המאוחר, ולא כילדים ביולוגיים.',
+        },
       }
     : {};
   const branchClaimUi = t
@@ -595,6 +615,14 @@ export function PersonDetailPanel({
     ? {
         'Canonical branch display name. Married surname should not replace maiden surname in normalized presentation.':
           'שם תצוגה קנוני של הענף. שם הנישואין לא אמור להחליף את שם הלידה בהצגה מנורמלת.',
+        'Supported by oral testimony summary.':
+          'נתמך בסיכום עדות בעל־פה.',
+        'Ruven/Rube listed as child of Vladimir and Sofia.':
+          'Ruven / Rube מופיע כילד של Vladimir ו־Sofia.',
+        'Oral testimony supports this pairing, but household history contains ambiguity.':
+          'העדות בעל־פה תומכת בזוגיות הזו, אך היסטוריית הבית כוללת עמימות.',
+        'Presentation-layer testimony reference only. Preserve uncertainty if the raw graph does not yet contain a canonical linked person record for Fania Feigl.':
+          'הפניה לעדות ברמת התצוגה בלבד. יש לשמר את העמימות אם הגרף הגולמי עדיין אינו מכיל רשומת אדם קנונית ומקושרת עבור Fania Feigl.',
         'Maternal-line anchor in the normalized branch chain. Preserve ambiguity if the raw graph does not yet contain a canonical linked person record for Druzia Lyandres.':
           'עוגן קו אימהי בשרשרת הענף המנורמלת. יש לשמר את העמימות אם הגרף הגולמי עדיין אינו מכיל רשומת אדם קנונית ומקושרת עבור Druzia Lyandres.',
         'Canonical normalized English display name for branch presentation.':
@@ -663,15 +691,15 @@ export function PersonDetailPanel({
       case 'parent':
         return `${branchClaimUi.parent}: ${subjectLabel}${targetLabel ? ` → ${targetLabel}` : ''}`;
       case 'spouse':
-        return `${branchClaimUi.spouse}: ${subjectLabel}${targetLabel ? ` ↔ ${targetLabel}` : ''}`;
+        return `${branchClaimUi.spouse}: ${subjectLabel}${targetLabel ? ` ↔ ${targetLabel}` : ''}${claim.value && claim.value !== targetLabel ? ` (${claim.value})` : ''}`;
       case 'maternal-line':
         return claim.objectId
           ? `${branchClaimUi.maternalLine}: ${subjectLabel}${targetLabel ? ` → ${targetLabel}` : ''}`
           : `${branchClaimUi.maternalLine}: ${targetLabel || subjectLabel}${subjectLabel ? ` → ${subjectLabel}` : ''}`;
       case 'branch-context':
-        return `${branchClaimUi.branchContext}: ${subjectLabel}`;
+        return `${branchClaimUi.branchContext}: ${subjectLabel}${claim.value ? ` — ${claim.value}` : ''}`;
       case 'sibling-status':
-        return `${branchClaimUi.siblingStatus}: ${subjectLabel}`;
+        return `${branchClaimUi.siblingStatus}: ${subjectLabel}${claim.value ? ` — ${claim.value}` : ''}`;
       default:
         return subjectLabel;
     }
