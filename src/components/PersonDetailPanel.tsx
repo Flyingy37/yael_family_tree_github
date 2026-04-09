@@ -547,7 +547,7 @@ export function PersonDetailPanel({
         'esther-stepchildren': {
           title: 'ילדי החורגים אינם ילדים ביולוגיים',
           detail:
-            'Esther Lipschitz אינה מוצגת כאם הביולוגית של שלושת הילדים שהגיעו עמה ממשפחה קודמת. הם נשמרים כ-stepchildren במסגרת פרשנות הענף.',
+            'Esther Lipschitz אינה מוצגת כאם הביולוגית של שלושת הילדים שהגיעו עמה ממשפחה קודמת. הם נשמרים כילדים חורגים במסגרת פרשנות הענף.',
         },
         'eti-half-sister': {
           title: 'Eti היא אחות למחצה',
@@ -640,7 +640,7 @@ export function PersonDetailPanel({
       )}
 
       {branchProfile && (
-        <div className="atlas-card mb-4 rounded-2xl p-3">
+        <div className="atlas-card-subtle mb-4 rounded-2xl p-3">
           <div className="atlas-kicker mb-2">{branchUi.packageLabel}</div>
           <div className="text-sm text-[var(--atlas-text)]">{branchUi.branchName}</div>
           {branchOverlay?.relationshipChips?.length ? (

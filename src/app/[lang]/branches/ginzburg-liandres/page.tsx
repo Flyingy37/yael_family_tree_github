@@ -103,7 +103,7 @@ export default function GinzburgLiandresBranchPage() {
   const ui = isHebrew
     ? {
         treeLink: 'עץ המשפחה',
-        title: 'Ginzburg-Liandres',
+        title: 'ענף Ginzburg-Liandres',
         intro:
           'תצוגת ענף תמציתית למשפחת Ginzburg-Liandres, עם שמות אנגליים מנורמלים, כללי הצגה מתועדים, ומבנה ארכיוני נקי.',
         rootCouple: 'הזוג המרכזי',
@@ -193,7 +193,7 @@ export default function GinzburgLiandresBranchPage() {
       ]
     : summary.relationshipSummary;
   const localizedStepchildren = isHebrew
-    ? 'שלושת ילדי החורגים ממשפחת Esther Lipschitz נשמרים בתצוגה כ-stepchildren ולא כילדים ביולוגיים.'
+    ? 'שלושת הילדים החורגים ממשפחת Esther Lipschitz נשמרים בתצוגה כילדים חורגים ולא כילדים ביולוגיים.'
     : null;
 
   return (
