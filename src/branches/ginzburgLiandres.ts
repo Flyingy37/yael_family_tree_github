@@ -46,6 +46,7 @@ export interface VideoTestimonyEvidence extends BranchEvidenceBase {
   relatedPlaceIds?: string[];
   topics?: string[];
   url?: string;
+  embedUrl?: string;
   transcript?: string;
   language: 'he' | 'en' | 'mixed';
   confidence: EvidenceConfidence;
@@ -336,6 +337,7 @@ export const tzilaVideoEvidence: VideoTestimonyEvidence[] = [
     descriptionHe: 'עדות מצולמת המתארת את ולדימיר דוברשטיין, סופיה דוברשטיין וילדיהם.',
     source: 'Tzila family testimony transcript',
     url: 'https://www.youtube.com/watch?v=xdzVR8kqcJE&t=1062s',
+    embedUrl: 'https://www.youtube.com/embed/xdzVR8kqcJE?si=f_du8oD1Ujiin_Fa',
     language: 'he',
     confidence: 'direct',
     note: 'Use as oral-history evidence. Preserve uncertainty where wording is approximate.',
@@ -354,6 +356,7 @@ export const tzilaVideoEvidence: VideoTestimonyEvidence[] = [
     descriptionHe: 'עדות מצולמת על תפקידו של ולדימיר בבנק, הבריחה, ההפצצות וההקשר של גטו פלשניץ.',
     source: 'Tzila family testimony transcript',
     url: 'https://www.youtube.com/watch?v=u5Ut8_JtsDE&t=996s',
+    embedUrl: 'https://www.youtube.com/embed/u5Ut8_JtsDE?si=m7GP8Yi1waZpLIoX',
     language: 'he',
     confidence: 'direct',
     note: 'Historical sequence should remain marked as testimony unless independently corroborated.',

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArchivalCard } from './ArchivalCard';
 import { EvidenceBadge } from './EvidenceBadge';
@@ -9,6 +10,7 @@ type Props = {
   language: 'en' | 'he';
   variant?: 'default' | 'atlas';
   compact?: boolean;
+  defaultEmbedOpen?: boolean;
   resolvePersonLabel?: (personId: string) => string;
   resolvePersonHref?: (personId: string) => string | null | undefined;
 };
@@ -26,9 +28,11 @@ export function BranchEvidenceCard({
   language,
   variant = 'atlas',
   compact = false,
+  defaultEmbedOpen = false,
   resolvePersonLabel,
   resolvePersonHref,
 }: Props) {
+  const [isEmbedOpen, setIsEmbedOpen] = useState(defaultEmbedOpen);
   const isHebrew = language === 'he';
   const labels = isHebrew
     ? {
@@ -38,7 +42,9 @@ export function BranchEvidenceCard({
         topics: 'נושאים',
         language: 'שפה',
         transcript: 'תמלול',
-        openVideo: 'פתח/י את עדות הווידאו',
+        watchOnYoutube: 'צפייה ב-YouTube',
+        showEmbed: 'הצג נגן מוטמע',
+        hideEmbed: 'הסתר נגן מוטמע',
         noUrl: 'אין קישור וידאו מצורף עדיין.',
         noTranscript: 'אין תמלול מצורף עדיין.',
         source: 'מקור',
@@ -50,7 +56,9 @@ export function BranchEvidenceCard({
         topics: 'Topics',
         language: 'Language',
         transcript: 'Transcript',
-        openVideo: 'Open video testimony',
+        watchOnYoutube: 'Watch on YouTube',
+        showEmbed: 'Show embedded player',
+        hideEmbed: 'Hide embedded player',
         noUrl: 'No video URL is attached yet.',
         noTranscript: 'No transcript is attached yet.',
         source: 'Source',
@@ -114,6 +122,8 @@ export function BranchEvidenceCard({
     );
   };
 
+  const displayTitle = item.type === 'video-testimony' && isHebrew && item.shortTitleHe ? item.shortTitleHe : item.title;
+
   const renderVideoTestimony = () => {
     if (item.type !== 'video-testimony') return null;
     const transcript = item.transcript?.trim() || '';
@@ -124,7 +134,7 @@ export function BranchEvidenceCard({
     const openVideoLink = item.url ? (
       item.url.startsWith('/') ? (
         <Link to={item.url} className={compact ? 'atlas-link inline-flex text-xs' : 'atlas-link inline-flex text-sm'}>
-          {labels.openVideo}
+          {labels.watchOnYoutube}
         </Link>
       ) : (
         <a
@@ -133,7 +143,7 @@ export function BranchEvidenceCard({
           rel="noreferrer"
           className={compact ? 'atlas-link inline-flex text-xs' : 'atlas-link inline-flex text-sm'}
         >
-          {labels.openVideo}
+          {labels.watchOnYoutube}
         </a>
       )
     ) : (
@@ -199,6 +209,34 @@ export function BranchEvidenceCard({
         <div className={compact ? 'space-y-1.5' : 'space-y-2'}>
           {openVideoLink}
 
+          {item.embedUrl ? (
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => setIsEmbedOpen((value) => !value)}
+                className={`atlas-link inline-flex text-xs ${compact ? 'leading-5' : 'leading-6'}`}
+                aria-expanded={isEmbedOpen}
+              >
+                {isEmbedOpen ? labels.hideEmbed : labels.showEmbed}
+              </button>
+              {isEmbedOpen ? (
+                <div className="atlas-card-subtle overflow-hidden rounded-2xl border border-[var(--atlas-border)]">
+                  <div className="aspect-video">
+                    <iframe
+                      src={item.embedUrl}
+                      title={item.title}
+                      className="h-full w-full"
+                      loading="lazy"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+
           {transcript ? (
             <details className={`atlas-card-subtle rounded-2xl ${compact ? 'px-3 py-2' : 'px-4 py-3'}`}>
               <summary className="cursor-pointer list-none text-[11px] uppercase tracking-[0.16em] text-[var(--atlas-text-muted)]">
@@ -235,7 +273,7 @@ export function BranchEvidenceCard({
   return (
     <div id={item.id} className="scroll-mt-24">
       <ArchivalCard
-        title={item.title}
+        title={displayTitle}
         variant={variant}
         eyebrow={<EvidenceBadge type={item.type} variant={variant} language={language} />}
       >
