@@ -75,6 +75,36 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
       note: 'זהו סיכום של מסמך מחקר משני, לא רשומת המקור הראשונית.',
       source: 'סיכום MyHeritage',
     },
+    'ev-image-aharon-military-portrait': {
+      title: 'דיוקן צבאי של Aharon Ginzburg',
+      description: 'דיוקן צבאי של Aharon Ginzburg במדים, מזוהה בבירור על פי קובץ המקור וההקשר הענפי.',
+      note: 'יש לשמור כצילום פורטרט של Aharon Ginzburg.',
+      source: 'חומרי Ginzburg שהועלו',
+    },
+    'ev-image-cilia-two-person-portrait': {
+      title: 'דיוקן של Tzila Cilia Duberstein Alperovitz עם תינוק',
+      description: 'צילום זוגי שבו Cilia מופיעה עם תינוק. הזיהוי של המבוגר חזק; זהות התינוק נשמרת כמשוערת.',
+      note: 'יש לשמור את זהות התינוק כמשוערת עד להתאמה חזקה יותר של הצילום.',
+      source: 'חומרי Ginzburg שהועלו',
+    },
+    'ev-image-ginzburg-family-1946-annotated': {
+      title: 'תצלום משפחתי מסומן של Ginzburg',
+      description: 'תצלום משפחתי מסומן מתוך סט חומרי Ginzburg לשנת 1946.',
+      note: 'סימוני ההערה הם חלק מהתמונה המקורית; חלק מהזיהויים נותרים פרשניים.',
+      source: 'חומרי Ginzburg שהועלו',
+    },
+    'ev-image-ginzburg-family-1946-clean': {
+      title: 'תצלום משפחתי נקי של Ginzburg',
+      description: 'גרסה נקייה של התצלום המשפחתי מתוך אותו סט חומרי Ginzburg לשנת 1946.',
+      note: 'השתמשו בגרסה זו כנקודת ייחוס לא מסומנת של אותו מבנה משפחתי.',
+      source: 'חומרי Ginzburg שהועלו',
+    },
+    'ev-image-tzila-family-testimony-scan': {
+      title: 'עמוד סרוק מעדות משפחת Tzila',
+      description: 'עמוד עדות סרוק בעברית, המשמר את הסיפור המשפחתי כצילום מסמך.',
+      note: 'יש להתייחס אליו כצילום של ראיה תיעודית, לא כתמלול.',
+      source: 'חומרי Ginzburg שהועלו',
+    },
     'raw-family-structure': {
       title: 'הפניה מבנית לגרף המשפחה',
       description:
@@ -176,12 +206,15 @@ export default function GinzburgLiandresBranchPage() {
         relationshipSummary: 'סיכום יחסים',
         presentationRules: 'כללי הצגה',
         typeEmptyLabels: {
-          'family-photo': 'אין תצלום משפחתי נוסף בחבילת הענף.',
-          testimony: 'אין עדות נוספת ברמת הענף בשלב זה.',
-          'video-testimony': 'אין עדות וידאו נוספת ברמת הענף בשלב זה.',
-          document: 'אין מסמך ענפי נוסף מעבר לסיכום המחקר.',
-          'dna-clue': 'אין רמז DNA נוסף ברמת הענף.',
-          'external-tree-reference': 'אין הפניה חיצונית נוספת ברמת הענף.',
+        'family-photo': 'אין תצלום משפחתי נוסף בחבילת הענף.',
+        portrait: 'אין דיוקן נוסף ברמת הענף בשלב זה.',
+        'annotated-photo': 'אין תצלום מסומן נוסף ברמת הענף בשלב זה.',
+        'document-scan': 'אין מסמך סרוק נוסף ברמת הענף בשלב זה.',
+        testimony: 'אין עדות נוספת ברמת הענף בשלב זה.',
+        'video-testimony': 'אין עדות וידאו נוספת ברמת הענף בשלב זה.',
+        document: 'אין מסמך ענפי נוסף מעבר לסיכום המחקר.',
+        'dna-clue': 'אין רמז DNA נוסף ברמת הענף.',
+        'external-tree-reference': 'אין הפניה חיצונית נוספת ברמת הענף.',
         } as const,
       }
     : {
@@ -211,12 +244,15 @@ export default function GinzburgLiandresBranchPage() {
         relationshipSummary: 'Relationship summary',
         presentationRules: 'Presentation rules',
         typeEmptyLabels: {
-          'family-photo': 'No family photo is attached to this branch package yet.',
-          testimony: 'No additional testimony is attached at branch level yet.',
-          'video-testimony': 'No additional video testimony is attached at branch level yet.',
-          document: 'No further branch document is attached beyond the current research summary.',
-          'dna-clue': 'No additional DNA clue is attached at branch level yet.',
-          'external-tree-reference': 'No further external tree or research reference is attached at branch level.',
+        'family-photo': 'No family photo is attached to this branch package yet.',
+        portrait: 'No portrait is attached at branch level yet.',
+        'annotated-photo': 'No annotated photo is attached at branch level yet.',
+        'document-scan': 'No scanned document is attached at branch level yet.',
+        testimony: 'No additional testimony is attached at branch level yet.',
+        'video-testimony': 'No additional video testimony is attached at branch level yet.',
+        document: 'No further branch document is attached beyond the current research summary.',
+        'dna-clue': 'No additional DNA clue is attached at branch level yet.',
+        'external-tree-reference': 'No further external tree or research reference is attached at branch level.',
         } as const,
       };
 

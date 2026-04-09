@@ -521,6 +521,36 @@ export function PersonDetailPanel({
             'סיכום ביקורת מקומית מציין עדכון אחד נוסף הקשור לאחים עבור Cilia Sara Duberstein (Alperovitch), הסבתא האימהית בהקשר ענפי זה.',
           note: 'זהו סיכום מסמך מחקר משני, לא רשומת המקור הראשונית עצמה.',
         },
+        'ev-image-aharon-military-portrait': {
+          title: 'דיוקן צבאי של Aharon Ginzburg',
+          description: 'דיוקן צבאי של Aharon Ginzburg במדים, מזוהה בבירור על פי קובץ המקור וההקשר הענפי.',
+          note: 'יש לשמור כצילום פורטרט של Aharon Ginzburg.',
+          source: 'חומרי Ginzburg שהועלו',
+        },
+        'ev-image-cilia-two-person-portrait': {
+          title: 'דיוקן של Tzila Cilia Duberstein Alperovitz עם תינוק',
+          description: 'צילום זוגי שבו Cilia מופיעה עם תינוק. הזיהוי של המבוגר חזק; זהות התינוק נשמרת כמשוערת.',
+          note: 'יש לשמור את זהות התינוק כמשוערת עד להתאמה חזקה יותר של הצילום.',
+          source: 'חומרי Ginzburg שהועלו',
+        },
+        'ev-image-ginzburg-family-1946-annotated': {
+          title: 'תצלום משפחתי מסומן של Ginzburg',
+          description: 'תצלום משפחתי מסומן מתוך סט חומרי Ginzburg לשנת 1946.',
+          note: 'סימוני ההערה הם חלק מהתמונה המקורית; חלק מהזיהויים נותרים פרשניים.',
+          source: 'חומרי Ginzburg שהועלו',
+        },
+        'ev-image-ginzburg-family-1946-clean': {
+          title: 'תצלום משפחתי נקי של Ginzburg',
+          description: 'גרסה נקייה של התצלום המשפחתי מתוך אותו סט חומרי Ginzburg לשנת 1946.',
+          note: 'השתמשו בגרסה זו כנקודת ייחוס לא מסומנת של אותו מבנה משפחתי.',
+          source: 'חומרי Ginzburg שהועלו',
+        },
+        'ev-image-tzila-family-testimony-scan': {
+          title: 'עמוד סרוק מעדות משפחת Tzila',
+          description: 'עמוד עדות סרוק בעברית, המשמר את הסיפור המשפחתי כצילום מסמך.',
+          note: 'יש להתייחס אליו כצילום של ראיה תיעודית, לא כתמלול.',
+          source: 'חומרי Ginzburg שהועלו',
+        },
         'raw-family-structure': {
           title: 'הפניה מבנית לגרף המשפחה',
           description:

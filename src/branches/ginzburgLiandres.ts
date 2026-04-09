@@ -4,6 +4,9 @@ import { formatDateConcise, formatLifespan } from '../utils/formatters';
 
 export type EvidenceType =
   | 'family-photo'
+  | 'portrait'
+  | 'annotated-photo'
+  | 'document-scan'
   | 'testimony'
   | 'video-testimony'
   | 'document'
@@ -14,6 +17,9 @@ export type EvidenceConfidence = 'direct' | 'partial' | 'contextual';
 
 export const EVIDENCE_TYPE_ORDER: EvidenceType[] = [
   'family-photo',
+  'portrait',
+  'annotated-photo',
+  'document-scan',
   'testimony',
   'video-testimony',
   'document',
@@ -29,12 +35,22 @@ interface BranchEvidenceBase {
   source: string;
   confidence: EvidenceConfidence;
   note?: string;
-  personIds: string[];
+  personIds?: string[];
 }
 
 export interface BranchTextEvidence extends BranchEvidenceBase {
   id: string;
-  type: 'family-photo' | 'testimony' | 'document' | 'dna-clue' | 'external-tree-reference';
+  type: 'testimony' | 'document' | 'dna-clue' | 'external-tree-reference';
+}
+
+export interface ImageEvidenceItem extends BranchEvidenceBase {
+  type: 'family-photo' | 'portrait' | 'annotated-photo' | 'document-scan';
+  assetPath: string;
+  relatedPersonIds?: string[];
+  relatedPersonDisplayNames?: string[];
+  relatedPlaceIds?: string[];
+  year?: number;
+  yearApprox?: string;
 }
 
 export interface VideoTestimonyEvidence extends BranchEvidenceBase {
@@ -52,7 +68,7 @@ export interface VideoTestimonyEvidence extends BranchEvidenceBase {
   confidence: EvidenceConfidence;
 }
 
-export type BranchEvidenceItem = BranchTextEvidence | VideoTestimonyEvidence;
+export type BranchEvidenceItem = BranchTextEvidence | ImageEvidenceItem | VideoTestimonyEvidence;
 
 export interface BranchRelationshipNote {
   id: string;
@@ -398,7 +414,70 @@ export const tzilaVideoEvidence: VideoTestimonyEvidence[] = [
   },
 ];
 
+export const tzilaImageEvidence: ImageEvidenceItem[] = [
+  {
+    id: 'ev-image-aharon-military-portrait',
+    type: 'portrait',
+    title: 'Military portrait of Aharon Ginzburg',
+    description: 'A military portrait of Aharon Ginzburg in uniform, identified confidently from the source file and branch context.',
+    assetPath: '/ginzburg-media/aharon-ginzburg-military-portrait.jpg',
+    relatedPersonIds: ['@I131@'],
+    yearApprox: '1935',
+    source: 'Uploaded Ginzburg materials',
+    confidence: 'direct',
+    note: 'Use as the branch portrait reference for Aharon Ginzburg.',
+  },
+  {
+    id: 'ev-image-cilia-two-person-portrait',
+    type: 'portrait',
+    title: 'Portrait of Tzila Cilia Duberstein Alperovitz with an infant',
+    description: 'A two-person portrait showing Cilia with a baby. The adult identification is strong; the infant remains tentative.',
+    assetPath: '/ginzburg-media/cilia-two-person-portrait.jpg',
+    relatedPersonIds: ['@I12@'],
+    relatedPersonDisplayNames: ['unidentified infant'],
+    source: 'Uploaded Ginzburg materials',
+    confidence: 'partial',
+    note: 'Keep the infant identification tentative until a firmer photo match is available.',
+  },
+  {
+    id: 'ev-image-ginzburg-family-1946-annotated',
+    type: 'annotated-photo',
+    title: 'Annotated Ginzburg family group photo',
+    description: 'An annotated family group photo from the 1946 Ginzburg material set.',
+    assetPath: '/ginzburg-media/ginzburg-family-1946-annotated-photo.jpg',
+    relatedPersonIds: ['@I86@', '@I87@', '@I37@', '@I131@', '@I132@', '@I133@', '@I134@', '@I203@'],
+    yearApprox: '1946',
+    source: 'Uploaded Ginzburg materials',
+    confidence: 'partial',
+    note: 'Annotation marks are part of the source image; some identifications remain interpretive.',
+  },
+  {
+    id: 'ev-image-ginzburg-family-1946-clean',
+    type: 'family-photo',
+    title: 'Ginzburg family group photo',
+    description: 'A clean family group photo from the 1946 Ginzburg material set.',
+    assetPath: '/ginzburg-media/ginzburg-family-1946-clean-photo.jpg',
+    relatedPersonIds: ['@I86@', '@I87@', '@I37@', '@I131@', '@I132@', '@I133@', '@I134@', '@I203@'],
+    yearApprox: '1946',
+    source: 'Uploaded Ginzburg materials',
+    confidence: 'partial',
+    note: 'Use as the unannotated reference version of the family grouping.',
+  },
+  {
+    id: 'ev-image-tzila-family-testimony-scan',
+    type: 'document-scan',
+    title: 'Scanned Tzila family testimony page',
+    description: 'A scanned testimony page in Hebrew that preserves the family story as a document image.',
+    assetPath: '/ginzburg-media/tzila-family-testimony-scan.png',
+    relatedPersonIds: ['@I12@', '@I36@', '@I37@'],
+    source: 'Uploaded Ginzburg materials',
+    confidence: 'direct',
+    note: 'Treat this as a scan of documentary evidence, not as a transcription.',
+  },
+];
+
 const BRANCH_EVIDENCE: BranchEvidenceItem[] = [
+  ...tzilaImageEvidence,
   ...tzilaVideoEvidence,
   {
     id: 'maternal-line-mtdna',
@@ -960,16 +1039,27 @@ export function getGinzburgLiandresDisplayProfile(person: Person): BranchPersonD
 
 export function getGinzburgLiandresEvidenceForPerson(personId: string): BranchEvidenceItem[] {
   return BRANCH_EVIDENCE.filter((item) => {
-    if (item.personIds.includes(personId)) return true;
-    if (item.type === 'video-testimony') {
-      return (
-        item.speakerPersonId === personId ||
-        item.relatedPersonIds?.includes(personId) ||
-        item.personIds.includes(personId)
-      );
-    }
-    return false;
+    const anchors = getEvidenceAnchors(item);
+    return anchors.includes(personId);
   });
+}
+
+function getEvidenceAnchors(item: BranchEvidenceItem): string[] {
+  switch (item.type) {
+    case 'video-testimony':
+      return [
+        item.speakerPersonId,
+        ...(item.relatedPersonIds || []),
+        ...(item.personIds || []),
+      ];
+    case 'family-photo':
+    case 'portrait':
+    case 'annotated-photo':
+    case 'document-scan':
+      return item.relatedPersonIds || [];
+    default:
+      return item.personIds || [];
+  }
 }
 
 export function getGinzburgLiandresBranchEvidence(): BranchEvidenceItem[] {

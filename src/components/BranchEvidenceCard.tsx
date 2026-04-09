@@ -5,6 +5,11 @@ import { EvidenceBadge } from './EvidenceBadge';
 import { RelationshipChip } from './RelationshipChip';
 import type { BranchEvidenceItem } from '../branches/ginzburgLiandres';
 
+type ImageEvidenceItem = Extract<
+  BranchEvidenceItem,
+  { type: 'family-photo' | 'portrait' | 'annotated-photo' | 'document-scan' }
+>;
+
 type Props = {
   item: BranchEvidenceItem;
   language: 'en' | 'he';
@@ -33,14 +38,25 @@ export function BranchEvidenceCard({
   resolvePersonHref,
 }: Props) {
   const [isEmbedOpen, setIsEmbedOpen] = useState(defaultEmbedOpen);
+  const [isImageOpen, setIsImageOpen] = useState(false);
   const isHebrew = language === 'he';
+  const isImageEvidence =
+    item.type === 'family-photo' ||
+    item.type === 'portrait' ||
+    item.type === 'annotated-photo' ||
+    item.type === 'document-scan';
   const labels = isHebrew
     ? {
         speaker: 'דובר/ת',
         relatedPeople: 'אנשים קשורים',
         relatedPlaces: 'מקומות קשורים',
+        tentativeIdentifications: 'זיהויים משוערים',
         topics: 'נושאים',
         language: 'שפה',
+        year: 'שנה',
+        approxYear: 'שנה משוערת',
+        openImage: 'הצג תמונה גדולה',
+        hideImage: 'הסתר תמונה גדולה',
         transcript: 'תמלול',
         watchOnYoutube: 'צפייה ב-YouTube',
         showEmbed: 'הצג נגן מוטמע',
@@ -53,8 +69,13 @@ export function BranchEvidenceCard({
         speaker: 'Speaker',
         relatedPeople: 'Related people',
         relatedPlaces: 'Related places',
+        tentativeIdentifications: 'Tentative identifications',
         topics: 'Topics',
         language: 'Language',
+        year: 'Year',
+        approxYear: 'Approx. year',
+        openImage: 'Open larger image',
+        hideImage: 'Hide larger image',
         transcript: 'Transcript',
         watchOnYoutube: 'Watch on YouTube',
         showEmbed: 'Show embedded player',
@@ -122,7 +143,132 @@ export function BranchEvidenceCard({
     );
   };
 
+  const textPill = (label: string, key: string) => (
+    <span
+      key={key}
+      className="atlas-pill rounded-full border-dashed px-2 py-0.5 text-[10px] italic text-stone-500"
+    >
+      {label}
+    </span>
+  );
+
   const displayTitle = item.type === 'video-testimony' && isHebrew && item.shortTitleHe ? item.shortTitleHe : item.title;
+
+  const formatYear = (image: ImageEvidenceItem) => {
+    if (typeof image.year === 'number') return String(image.year);
+    if (image.yearApprox) return image.yearApprox;
+    return null;
+  };
+
+  const renderRelatedPeople = (personIds: string[], displayOnlyNames: string[]) => {
+    if (personIds.length === 0 && displayOnlyNames.length === 0) return null;
+    return (
+      <div className={compact ? 'space-y-1' : 'space-y-1.5'}>
+        {personIds.length > 0 ? (
+          <>
+            <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--atlas-text-muted)]">
+              {labels.relatedPeople}
+            </div>
+            <div className={`flex flex-wrap ${compact ? 'gap-1' : 'gap-1.5'}`}>
+              {personIds.map(personPill)}
+            </div>
+          </>
+        ) : null}
+        {displayOnlyNames.length > 0 ? (
+          <>
+            <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--atlas-text-muted)]">
+              {labels.tentativeIdentifications}
+            </div>
+            <div className={`flex flex-wrap ${compact ? 'gap-1' : 'gap-1.5'}`}>
+              {displayOnlyNames.map((label, index) => textPill(label, `display-${index}`))}
+            </div>
+          </>
+        ) : null}
+      </div>
+    );
+  };
+
+  const renderImageEvidence = () => {
+    if (!isImageEvidence) return null;
+    const imageItem = item as ImageEvidenceItem;
+    const relatedPersonIds = imageItem.relatedPersonIds || [];
+    const relatedPlaceIds = imageItem.relatedPlaceIds || [];
+    const relatedPersonDisplayNames = imageItem.relatedPersonDisplayNames || [];
+    const yearText = formatYear(imageItem);
+    const previewMaxHeight = compact ? 'max-h-44' : 'max-h-56';
+
+    return (
+      <div className={compact ? 'space-y-2' : 'space-y-3'}>
+        <p>{item.description}</p>
+
+        <div className="space-y-2">
+          <div className="atlas-card-subtle overflow-hidden rounded-2xl border border-[var(--atlas-border)]">
+              <img
+              src={imageItem.assetPath}
+              alt={imageItem.title}
+              className={`w-full object-contain bg-[rgba(255,255,255,0.45)] ${previewMaxHeight}`}
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsImageOpen((value) => !value)}
+            className={`atlas-link inline-flex text-xs ${compact ? 'leading-5' : 'leading-6'}`}
+            aria-expanded={isImageOpen}
+          >
+            {isImageOpen ? labels.hideImage : labels.openImage}
+          </button>
+          {isImageOpen ? (
+            <div className="atlas-card-subtle overflow-hidden rounded-2xl border border-[var(--atlas-border)]">
+              <img
+                src={imageItem.assetPath}
+                alt={imageItem.title}
+                className="w-full max-h-[70vh] object-contain bg-[rgba(255,255,255,0.45)]"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          ) : null}
+        </div>
+
+        <div className={`flex flex-wrap items-center ${compact ? 'gap-1.5' : 'gap-2'}`}>
+          <RelationshipChip
+            label={confidenceLabels[item.confidence]}
+            tone={item.confidence === 'direct' ? 'lime' : item.confidence === 'partial' ? 'stone' : 'rose'}
+            variant={variant}
+          />
+          {yearText ? (
+            <span className={compact ? 'text-[11px] text-stone-500' : 'text-xs text-stone-500'}>
+              {item.year ? labels.year : labels.approxYear}: {yearText}
+            </span>
+          ) : null}
+          <span className={compact ? 'text-[11px] text-stone-500' : 'text-xs text-stone-500'}>
+            {labels.source}: {item.source}
+          </span>
+        </div>
+
+        {renderRelatedPeople(relatedPersonIds, relatedPersonDisplayNames)}
+
+        {relatedPlaceIds.length > 0 ? (
+          <div className={compact ? 'space-y-1' : 'space-y-1.5'}>
+            <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--atlas-text-muted)]">
+              {labels.relatedPlaces}
+            </div>
+            <div className={`flex flex-wrap ${compact ? 'gap-1' : 'gap-1.5'}`}>
+              {relatedPlaceIds.map((placeId) => (
+                <span key={placeId} className="atlas-pill rounded-full px-2 py-0.5 text-[10px] text-[var(--atlas-text)]">
+                  {placeId}
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {item.note ? <p className={compact ? 'text-[11px] text-stone-500' : 'text-xs text-stone-500'}>{item.note}</p> : null}
+      </div>
+    );
+  };
 
   const renderVideoTestimony = () => {
     if (item.type !== 'video-testimony') return null;
@@ -277,7 +423,7 @@ export function BranchEvidenceCard({
         variant={variant}
         eyebrow={<EvidenceBadge type={item.type} variant={variant} language={language} />}
       >
-        {item.type === 'video-testimony' ? renderVideoTestimony() : renderGenericEvidence()}
+        {isImageEvidence ? renderImageEvidence() : item.type === 'video-testimony' ? renderVideoTestimony() : renderGenericEvidence()}
       </ArchivalCard>
     </div>
   );
