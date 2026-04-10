@@ -146,11 +146,9 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
       source: 'סריקת מסמך מארכיון משפחתי',
     },
     'ev-document-yankel-berl-ginzburg-memoir-yiddish': {
-      title: 'זיכרון קצר של Yankel-Berl Ginzburg (כתב יד ביידיש)',
-      description:
-        'טקסט זיכרון ביידיש המשויך ל־Yankel-Berl Ginzburg, המתאר לידה ב־1894 ב־Pleshchenitsy ומציין את הוריו Arie-Leib Ginzburg ו־Basia-Bashata née Landres.',
-      note:
-        'זהו טקסט אוטוביוגרפי ראשוני מתוך המשפחה. לפי הזיכרון, Yankel-Berl Ginzburg נולד ב־1894 ב־Pleshchenitsy, מחוז Borisov, מחוז Minsk; אביו Arie-Leib Ginzburg שימש melamed לילדים קטנים; ואמו הייתה Basia-Bashata née Landres.',
+      title: 'זיכרונות Yankel-Berl Ginzburg ביידיש',
+      description: 'כתב זיכרונות משפחתי ביידיש, עם פרטים על הלידה ב־Pleshchenitsy ועל הוריו של Yankel-Berl Ginzburg.',
+      note: 'לפי הטקסט, אביו הוא Arie-Leib Ginzburg ואמו היא Basia-Bashata née Landres.',
       source: 'ארכיון משפחתי, טקסט זיכרון ביידיש ותרגום משפחתי',
     },
     'ev-document-haifa-voters-list-1930': {
