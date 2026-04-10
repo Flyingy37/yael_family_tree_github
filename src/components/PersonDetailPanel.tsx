@@ -592,6 +592,14 @@ export function PersonDetailPanel({
           note: 'המסמך הוא ראיה ראשונית כפריט ארכיוני, אך כל תמלול או פרשנות ממנו צריכים להישאר ניתנים לבדיקה נפרדת.',
           source: 'סריקת מסמך מארכיון משפחתי',
         },
+        'ev-document-yankel-berl-ginzburg-memoir-yiddish': {
+          title: 'זיכרון קצר של Yankel-Berl Ginzburg (כתב יד ביידיש)',
+          description:
+            'טקסט זיכרון ביידיש המשויך ל־Yankel-Berl Ginzburg, המתאר לידה ב־1894 ב־Pleshchenitsy ומציין את הוריו Arie-Leib Ginzburg ו־Basia-Bashata née Landres.',
+          note:
+            'זהו טקסט אוטוביוגרפי ראשוני מתוך המשפחה. לפי הזיכרון, Yankel-Berl Ginzburg נולד ב־1894 ב־Pleshchenitsy, מחוז Borisov, מחוז Minsk; אביו Arie-Leib Ginzburg שימש melamed לילדים קטנים; ואמו הייתה Basia-Bashata née Landres.',
+          source: 'ארכיון משפחתי, טקסט זיכרון ביידיש ותרגום משפחתי',
+        },
         'ev-image-tzila-family-testimony-scan': {
           title: 'עמוד סרוק מעדות משפחת Tzila',
           description: 'עמוד עדות סרוק בעברית, המשמר את הסיפור המשפחתי כצילום מסמך.',

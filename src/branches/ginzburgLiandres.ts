@@ -529,6 +529,21 @@ export const tzilaImageEvidence: ImageEvidenceItem[] = [
     note: 'The document is primary evidence as an archival record, but any extracted transcription or interpretation should remain separately reviewable.',
   },
   {
+    id: 'ev-document-yankel-berl-ginzburg-memoir-yiddish',
+    type: 'document-scan',
+    title: 'Short memoir of Yankel-Berl Ginzburg (Yiddish manuscript)',
+    description:
+      'Yiddish memoir text attributed to Yankel-Berl Ginzburg, describing his birth in 1894 in Pleshchenitsy and naming his parents as Arie-Leib Ginzburg and Basia-Bashata née Landres.',
+    assetPath: '/images/ginzburg/yankel-berl_ginzburg_autobiography_original(2).jpg',
+    relatedPersonIds: ['@I133@', '@I86@'],
+    relatedPersonDisplayNames: ['Yankel Berl Ginzburg', 'Arie-Leib Ginzburg', 'Basia-Bashata née Landres'],
+    yearApprox: '20th century manuscript / memoir copy',
+    source: 'Family archive, Yiddish memoir text and family translation',
+    confidence: 'direct',
+    note:
+      'Primary family-source autobiographical text. The memoir states that Yankel-Berl Ginzburg was born in 1894 in Pleshchenitsy, Borisov district, Minsk province; that his father Arie-Leib Ginzburg was a melamed for young children; and that his mother was Basia-Bashata née Landres.',
+  },
+  {
     id: 'ev-image-tzila-family-testimony-scan',
     type: 'document-scan',
     title: 'Scanned Tzila family testimony page',
