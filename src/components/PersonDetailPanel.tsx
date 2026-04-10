@@ -833,6 +833,9 @@ export function PersonDetailPanel({
       ...item,
       ...(branchEvidenceCopy[item.id] || {}),
     } as BranchEvidenceItem;
+    if (translated.titleHe) translated.title = translated.titleHe;
+    if (translated.descriptionHe) translated.description = translated.descriptionHe;
+    if (translated.noteHe) translated.note = translated.noteHe;
     if (translated.type === 'video-testimony') {
       return {
         ...translated,
