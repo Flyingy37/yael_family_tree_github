@@ -45,10 +45,13 @@ export interface BranchEvidenceBase {
   id: string;
   type: EvidenceType;
   title: string;
+  titleHe?: string;
   description: string;
+  descriptionHe?: string;
   source: string;
   confidence: EvidenceConfidence;
   note?: string;
+  noteHe?: string;
   personIds?: string[];
 }
 
