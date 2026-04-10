@@ -644,9 +644,9 @@ export function PersonDetailPanel({
             'שכבת התצוגה מתייחסת ל-Arie-Leib כמי שנשא תחילה אישה לא ידועה (השם הפרטי ושם הנעורים אינם ידועים) עם ילדה ידועה אחת, Eti Ginzburg Charny, אחר כך את Basia Liandres, ולבסוף את Esther Lipschitz. זהו תיקון הצגה המונח על הגרף הגולמי הקיים.',
         },
         'esther-stepchildren': {
-          title: 'ילדי החורגים אינם ילדים ביולוגיים',
+          title: 'שמות הילדים המשויכים לבית Esther Lipschitz',
           detail:
-            'Esther Lipschitz אינה מוצגת כאם הביולוגית של שלושת הילדים שהגיעו עמה ממשפחה קודמת. הם נשמרים כילדים חורגים במסגרת פרשנות הענף.',
+            'שמות הילדים המשויכים לבית Esther Lipschitz בתצוגה: Dobe, Dora, and Haim. התצוגה שומרת על הבחנה בינם לבין ילדים ביולוגיים.',
         },
         'eti-half-sister': {
           title: 'Eti היא אחות למחצה',
@@ -669,9 +669,9 @@ export function PersonDetailPanel({
             'Asna Lifshitz עשויה להיות אחותה של Esther; יש לשמור זאת כקשר לא ודאי.',
         },
         'dobe-dora-haim-stepchildren': {
-          title: 'ילדי חורגים בבית המאוחר',
+          title: 'שמות הילדים המשויכים לבית Esther Lipschitz',
           detail:
-            'Dobe, Dora ו־Haim נשמרים כילדי חורגים בבית המאוחר, ולא כילדים ביולוגיים.',
+            'שמות הילדים המשויכים לבית Esther Lipschitz בתצוגה: Dobe, Dora, and Haim. התצוגה שומרת על הבחנה בינם לבין ילדים ביולוגיים.',
         },
       }
     : {};
@@ -732,7 +732,7 @@ export function PersonDetailPanel({
       'Known child from this marriage: Eti Ginzburg Charny.':
           'הילדה הידועה מנישואין אלה: Eti Ginzburg Charny.',
       'Branch-context only. Preserve stepchildren as non-biological in the presentation layer.':
-          'הקשר ענפי בלבד. יש לשמר את ילדי החורגים כלא־ביולוגיים בשכבת התצוגה.',
+          'הקשר ענפי בלבד. שמות הילדים המשויכים לבית Esther Lipschitz בתצוגה: Dobe, Dora, and Haim. התצוגה שומרת על הבחנה בינם לבין ילדים ביולוגיים.',
       'This should be rendered explicitly as half-sibling status, not full sibling status.':
           'יש להציג זאת במפורש כסטטוס אחאות למחצה ולא כאחאות מלאה.',
       }

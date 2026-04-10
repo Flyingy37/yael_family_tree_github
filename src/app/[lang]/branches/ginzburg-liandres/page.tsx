@@ -341,7 +341,7 @@ export default function GinzburgLiandresBranchPage() {
       ]
     : summary.relationshipSummary;
   const localizedStepchildren = isHebrew
-    ? 'שלושת הילדים החורגים ממשפחת Esther Lipschitz נשמרים בתצוגה כילדים חורגים ולא כילדים ביולוגיים.'
+    ? 'שמות הילדים המשויכים לבית Esther Lipschitz בתצוגה: Dobe, Dora, and Haim. התצוגה שומרת על הבחנה בינם לבין ילדים ביולוגיים.'
     : null;
 
   return (
