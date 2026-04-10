@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import type { ArchiveTreeNode } from './archiveTreeNode';
 import { familyData } from './familyArchiveData';
 
@@ -191,6 +191,15 @@ export function filterTree(node: ArchiveTreeNode, query: string): ArchiveTreeNod
   return recurse(node);
 }
 
+function countTreeNodes(node: ArchiveTreeNode | null): number {
+  if (!node) return 0;
+  let n = 1;
+  if (node.children?.length) {
+    for (const c of node.children) n += countTreeNodes(c);
+  }
+  return n;
+}
+
 type ArchiveLang = 'he' | 'en';
 
 type CardVariant = 'dna' | 'hero' | 'victim' | 'survivor' | 'research' | 'default';
@@ -225,6 +234,15 @@ function StoryModal({
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [open, onClose]);
+
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
 
   if (!open) return null;
 
@@ -398,14 +416,64 @@ function TreeNode({ node, lang = 'he' }: { node: ArchiveTreeNode; lang?: Archive
  * Narrative archive application shell: holds `searchQuery` and passes filtered tree to `TreeNode`.
  * (Router application remains the default export from App.tsx.)
  */
+function ArchiveLegendBody({
+  copy,
+  className = '',
+}: {
+  copy: {
+    legendTitle: string;
+    legendLead: string;
+    legendDNA: string;
+    legendResearch: string;
+    legendVictim: string;
+    legendHero: string;
+    legendSurvivor: string;
+    legendStory: string;
+    legendStoryCard: string;
+  };
+  className?: string;
+}) {
+  return (
+    <div className={className}>
+      <h3 className="mb-2 font-semibold text-stone-900">{copy.legendTitle}</h3>
+      <p className="mb-2 text-xs font-medium text-stone-600">{copy.legendLead}</p>
+      <ul className="list-inside list-disc space-y-1.5 marker:text-amber-600/70 text-stone-700">
+        <li>{copy.legendDNA}</li>
+        <li>{copy.legendResearch}</li>
+        <li>{copy.legendVictim}</li>
+        <li>{copy.legendHero}</li>
+        <li>{copy.legendSurvivor}</li>
+        <li>{copy.legendStory}</li>
+        <li>{copy.legendStoryCard}</li>
+      </ul>
+    </div>
+  );
+}
+
 export function FamilyArchiveApp({ lang = 'he' }: { lang?: ArchiveLang } = {}) {
   const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const displayTree = useMemo(() => {
     const trimmed = searchQuery.trim();
     if (!trimmed) return familyData;
     return filterTree(familyData, searchQuery);
   }, [searchQuery]);
+
+  const visibleCardCount = useMemo(() => countTreeNodes(displayTree), [displayTree]);
+  const isFiltered = searchQuery.trim().length > 0;
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        searchInputRef.current?.select();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   const copy =
     lang === 'en'
@@ -416,6 +484,12 @@ export function FamilyArchiveApp({ lang = 'he' }: { lang?: ArchiveLang } = {}) {
           placeholder: 'Search by name or note text…',
           searchAria: 'Search the narrative archive',
           empty: 'No matching results.',
+          emptyHint: 'Try names like Castro, Kastroll, Alperovitz, Heilprin, or Fine.',
+          clear: 'Clear search',
+          legendToggle: 'Legend: card types',
+          resultsLabel: (n: number) => `${n.toLocaleString()} cards in view`,
+          filteredHint: 'Filtered tree',
+          keyboardHint: 'Ctrl or ⌘ K — focus search',
           legendTitle: 'Legend',
           legendLead: 'Card icons (headers):',
           legendDNA: '🧬 DNA verified (indigo)',
@@ -433,6 +507,12 @@ export function FamilyArchiveApp({ lang = 'he' }: { lang?: ArchiveLang } = {}) {
           placeholder: 'חפש לפי שם או טקסט בהערות…',
           searchAria: 'חיפוש בארכיון המשפחתי',
           empty: 'אין תוצאות התואמות לחיפוש.',
+          emptyHint: 'נסו למשל: קסטרו, קסטרול, אלפרוביץ, היילפרין, פיין.',
+          clear: 'נקה חיפוש',
+          legendToggle: 'מקרא: סוגי כרטיסים',
+          resultsLabel: (n: number) => `${n.toLocaleString()} כרטיסים בתצוגה`,
+          filteredHint: 'עץ מסונן',
+          keyboardHint: 'Ctrl או ⌘ K — מיקוד חיפוש',
           legendTitle: 'מקרא',
           legendLead: 'סמלים בכותרת הכרטיס:',
           legendDNA: '🧬 מאומת ב-DNA (אינדיגו)',
@@ -445,50 +525,93 @@ export function FamilyArchiveApp({ lang = 'he' }: { lang?: ArchiveLang } = {}) {
         };
 
   return (
-    <div className="py-6" dir={lang === 'en' ? 'ltr' : 'rtl'}>
-      <header className="mb-4">
-        <h2 className="text-xl font-bold text-stone-900">{copy.title}</h2>
-        <p className="mt-1 text-sm text-stone-600">{copy.subtitle}</p>
+    <div className="py-6 sm:py-8" dir={lang === 'en' ? 'ltr' : 'rtl'}>
+      <header className="mb-5 rounded-xl border border-stone-200/80 bg-white/90 px-4 py-4 shadow-sm sm:px-5">
+        <h1 className="text-2xl font-bold tracking-tight text-stone-900 sm:text-[1.65rem]">{copy.title}</h1>
+        <p className="mt-2 text-sm leading-relaxed text-stone-600">{copy.subtitle}</p>
       </header>
 
-      <div className="relative mx-auto mb-6 w-full max-w-md">
-        <Search
-          className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400"
-          strokeWidth={2}
-          aria-hidden
-        />
-        <input
-          type="search"
-          className="w-full rounded-lg border border-stone-300 bg-white py-2.5 ps-10 pe-3 text-sm text-stone-900 shadow-sm outline-none ring-stone-400 placeholder:text-stone-400 focus:border-amber-400 focus:ring-2 focus:ring-amber-200"
-          placeholder={copy.placeholder}
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-          autoComplete="off"
-          aria-label={copy.searchAria}
-        />
+      <div className="sticky top-0 z-10 -mx-1 mb-5 bg-gradient-to-b from-[rgb(250_250_249_/_0.97)] via-[rgb(250_250_249_/_0.92)] to-transparent pb-2 pt-1 backdrop-blur-sm px-1">
+        <div className="relative mx-auto w-full max-w-2xl">
+          <Search
+            className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400"
+            strokeWidth={2}
+            aria-hidden
+          />
+          <input
+            ref={searchInputRef}
+            type="search"
+            className="w-full rounded-xl border border-stone-300 bg-white py-3 ps-10 pe-11 text-sm text-stone-900 shadow-sm outline-none ring-stone-400 placeholder:text-stone-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
+            placeholder={copy.placeholder}
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            autoComplete="off"
+            aria-label={copy.searchAria}
+          />
+          {searchQuery.trim() ? (
+            <button
+              type="button"
+              className="absolute end-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-stone-500 hover:bg-stone-100 hover:text-stone-800"
+              onClick={() => {
+                setSearchQuery('');
+                searchInputRef.current?.focus();
+              }}
+              aria-label={copy.clear}
+            >
+              <X className="h-4 w-4" strokeWidth={2} aria-hidden />
+            </button>
+          ) : null}
+        </div>
+        <div className="mx-auto mt-2 flex max-w-2xl flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-500">
+          <span>{copy.keyboardHint}</span>
+          <span className="hidden sm:inline" aria-hidden>
+            ·
+          </span>
+          <span className={isFiltered ? 'font-medium text-amber-900/90' : ''}>
+            {isFiltered ? `${copy.filteredHint} · ` : ''}
+            {copy.resultsLabel(visibleCardCount)}
+          </span>
+        </div>
       </div>
 
+      <details className="mb-6 rounded-xl border border-stone-200 bg-white/90 shadow-sm md:hidden">
+        <summary className="cursor-pointer list-none px-4 py-3 text-sm font-semibold text-stone-800 [&::-webkit-details-marker]:hidden">
+          <span className="inline-flex w-full items-center justify-between gap-2">
+            {copy.legendToggle}
+            <span className="text-xs font-normal text-stone-500">{copy.legendTitle}</span>
+          </span>
+        </summary>
+        <div className="border-t border-stone-100 px-4 pb-4 pt-2 text-sm">
+          <ArchiveLegendBody copy={copy} />
+        </div>
+      </details>
+
       <aside
-        className="mb-6 rounded-lg border border-stone-200 bg-stone-50/80 p-4 text-sm text-stone-700"
+        className="mb-6 hidden rounded-xl border border-stone-200 bg-white/90 p-4 text-sm text-stone-700 shadow-sm md:block"
         aria-label={copy.legendTitle}
       >
-        <h3 className="mb-2 font-semibold text-stone-900">{copy.legendTitle}</h3>
-        <p className="mb-2 text-xs font-medium text-stone-600">{copy.legendLead}</p>
-        <ul className="list-inside list-disc space-y-1 marker:text-stone-400">
-          <li>{copy.legendDNA}</li>
-          <li>{copy.legendResearch}</li>
-          <li>{copy.legendVictim}</li>
-          <li>{copy.legendHero}</li>
-          <li>{copy.legendSurvivor}</li>
-          <li>{copy.legendStory}</li>
-          <li>{copy.legendStoryCard}</li>
-        </ul>
+        <ArchiveLegendBody copy={copy} />
       </aside>
 
       {!displayTree ? (
-        <p className="text-sm text-stone-500">{copy.empty}</p>
+        <div
+          className="rounded-xl border border-dashed border-stone-300 bg-stone-50/80 px-4 py-8 text-center"
+          role="status"
+        >
+          <p className="text-sm font-medium text-stone-700">{copy.empty}</p>
+          <p className="mt-2 text-xs leading-relaxed text-stone-500">{copy.emptyHint}</p>
+          <button
+            type="button"
+            className="mt-4 text-sm font-medium text-amber-800 underline-offset-2 hover:underline"
+            onClick={() => setSearchQuery('')}
+          >
+            {copy.clear}
+          </button>
+        </div>
       ) : (
-        <TreeNode node={displayTree} lang={lang} />
+        <section className="space-y-3" aria-label={lang === 'en' ? 'Archive tree' : 'עץ הארכיון'}>
+          <TreeNode node={displayTree} lang={lang} />
+        </section>
       )}
     </div>
   );

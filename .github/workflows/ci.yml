@@ -18,6 +18,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - run: npx tsx scripts/validate-canonical-csv.ts data/sample/canonical.sample.csv
       # System libs for headless Chromium (browsers come from postinstall → node_modules/.cache)
       - run: npx playwright install-deps chromium
       - run: npx tsc --noEmit

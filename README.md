@@ -40,6 +40,9 @@ cd yael_family_tree_github
 # התקנת תלויות
 npm install
 
+# אימות כותרות canonical.csv לפני בנייה (אופציונלי)
+npm run validate:canonical
+
 # הרצה בפיתוח (בונה את הנתונים ומפעיל שרת)
 npm run dev
 ```

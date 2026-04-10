@@ -1,5 +1,6 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { SlidersHorizontal, X } from 'lucide-react';
 import { ReactFlowProvider } from '@xyflow/react';
 import { useFamilyData } from './hooks/useFamilyData';
 import { useLang } from './app/[lang]/layout';
@@ -83,8 +84,10 @@ export default function FamilyExplorer() {
   const [subtreeRootId, setSubtreeRootId] = useState<string | null>(null);
   const [subtreeDepth, setSubtreeDepth] = useState(4);
   const [includeSpouseBranches, setIncludeSpouseBranches] = useState(true);
-  const { lang: language } = useLang();
+  const { lang: language, setLang: setLanguage } = useLang();
   const [hasVitalsSnapshot, setHasVitalsSnapshot] = useState(false);
+  const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+  const skipCloseDrawerOnFiltersMount = useRef(true);
   const viewTabs = VIEW_TABS[language];
   const basePath = `/${langParam || language}`;
 
@@ -178,7 +181,7 @@ export default function FamilyExplorer() {
       setSubtreeRootId(id);
       navigate(`${basePath}/tree`);
     },
-    [navigate, basePath]
+    [navigate]
   );
 
   const handleExportVitals = useCallback(() => {
@@ -209,6 +212,176 @@ export default function FamilyExplorer() {
   useEffect(() => {
     setHasVitalsSnapshot(getLastWebVitalsSnapshot() !== null);
   }, [loading, error]);
+
+  useEffect(() => {
+    if (!filterPanelOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setFilterPanelOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [filterPanelOpen]);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    const closeIfDesktop = () => {
+      if (mq.matches) setFilterPanelOpen(false);
+    };
+    mq.addEventListener('change', closeIfDesktop);
+    closeIfDesktop();
+    return () => mq.removeEventListener('change', closeIfDesktop);
+  }, []);
+
+  useEffect(() => {
+    if (skipCloseDrawerOnFiltersMount.current) {
+      skipCloseDrawerOnFiltersMount.current = false;
+      return;
+    }
+    setFilterPanelOpen(false);
+  }, [filters]);
+
+  useEffect(() => {
+    if (!filterPanelOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [filterPanelOpen]);
+
+  const renderViewTabList = (tabListClassName: string) => (
+    <div
+      className={tabListClassName}
+      role="tablist"
+      aria-label={language === 'he' ? 'בחירת תצוגה' : 'View mode'}
+    >
+      {viewTabs.map(tab => (
+        <button
+          key={tab.id}
+          type="button"
+          role="tab"
+          aria-selected={viewMode === tab.id}
+          aria-controls="explorer-main-panel"
+          id={`explorer-tab-${tab.id}`}
+          tabIndex={viewMode === tab.id ? 0 : -1}
+          onClick={() => setViewMode(tab.id)}
+          onKeyDown={e => {
+            if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+            e.preventDefault();
+            const i = viewTabs.findIndex(t => t.id === tab.id);
+            const delta =
+              language === 'he'
+                ? e.key === 'ArrowLeft'
+                  ? 1
+                  : -1
+                : e.key === 'ArrowRight'
+                  ? 1
+                  : -1;
+            const next = (i + delta + viewTabs.length) % viewTabs.length;
+            const nextId = viewTabs[next].id;
+            setViewMode(nextId);
+            queueMicrotask(() => {
+              document.getElementById(`explorer-tab-${nextId}`)?.focus({ preventScroll: true });
+            });
+          }}
+          className={`px-3 py-1.5 rounded-md text-sm transition-colors whitespace-nowrap shrink-0 ${
+            viewMode === tab.id
+              ? 'bg-white shadow-sm font-medium text-gray-800'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          <span aria-hidden>{tab.icon}</span> {tab.label}
+        </button>
+      ))}
+    </div>
+  );
+
+  const filterSidebarContent = (
+    <>
+      {subtreeRootId && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm" dir={language === 'he' ? 'rtl' : 'ltr'}>
+          <div className="flex items-center justify-between mb-1">
+            <span className="font-bold text-amber-700">{language === 'he' ? 'תצוגת עץ משנה' : 'Subtree view'}</span>
+            <button
+              type="button"
+              className="text-xs text-amber-600 hover:text-amber-800"
+              onClick={() => setSubtreeRootId(null)}
+            >
+              {language === 'he' ? '✕ ביטול' : '✕ Clear'}
+            </button>
+          </div>
+          <div className="text-amber-600 text-xs mb-2">
+            {language === 'he' ? 'מרוכז ב:' : 'Focused on:'} {persons.get(subtreeRootId)?.fullName}
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-amber-600">{language === 'he' ? 'עומק:' : 'Depth:'}</label>
+            <input
+              type="range"
+              min={1}
+              max={10}
+              value={subtreeDepth}
+              onChange={e => setSubtreeDepth(parseInt(e.target.value, 10))}
+              className="flex-1"
+            />
+            <span className="text-xs font-medium text-amber-700 w-4">{subtreeDepth}</span>
+          </div>
+          <label className="mt-2 flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={includeSpouseBranches}
+              onChange={e => setIncludeSpouseBranches(e.target.checked)}
+              className="rounded"
+            />
+            <span className="text-xs text-amber-700">{language === 'he' ? 'כלול ענפי בני זוג' : 'Include spouse branches'}</span>
+          </label>
+        </div>
+      )}
+
+      {personList.length > 0 && personList.length < FULL_DATASET_EXPECTED_MIN && (
+        <div
+          className="rounded-lg border border-amber-400 bg-amber-50 p-3 text-xs text-amber-950 shadow-sm"
+          dir={language === 'he' ? 'rtl' : 'ltr'}
+          role="status"
+        >
+          <p className="font-semibold text-amber-900 mb-1">
+            {language === 'he' ? 'נתונים חלקיים בלבד' : 'Partial dataset loaded'}
+          </p>
+          <p className="text-amber-900/90 leading-relaxed">
+            {language === 'he'
+              ? `נטענו רק ${personList.length.toLocaleString()} אנשים מ־family-graph.json. העץ המלא הוא אלפי רשומות. אם את רואה רק משפחה קטנה, כנראה שב־Vercel (או בדיפלוי) חסר הקובץ המלא מתיקיית public/. ודאי commit של public/family-graph.json אחרי npm run build (או prebuild מקומי), merge לענף שמחובר ל־Vercel, ובדקי שהפרויקט הנכון נבנה.`
+              : `Only ${personList.length.toLocaleString()} people were loaded from family-graph.json; the full tree has thousands of records. If you expected the whole family here, the deployed site is probably missing the large file under public/. Commit public/family-graph.json after a local build (with your private CSV), merge the branch Vercel builds, and confirm the correct project is deployed.`}
+          </p>
+          {filters.connectedToYaelOnly && filteredIds.size < personList.length && (
+            <p className="mt-2 text-amber-800/90">
+              {language === 'he'
+                ? 'בינתיים אפשר לבטל את "מחובר ליעל בלבד" בפאנל הסינון כדי להציג את כל מי שבקובץ.'
+                : 'You can also turn off "Connected to Yael only" in the filter panel to show everyone in this file.'}
+            </p>
+          )}
+        </div>
+      )}
+
+      <FilterPanel filters={filters} onChange={setFilters} personList={personList} language={language} />
+      <StatsPanel
+        fullFilePersonCount={personList.length}
+        afterFiltersCount={filteredIds.size}
+        shownInViewCount={displayIds.size}
+        familyCount={families.size}
+        holocaustVictimCount={holocaustVictimCountInScope}
+        filteredHolocaustVictimCount={filteredHolocaustVictimCount}
+        language={language}
+      />
+    </>
+  );
+
+  const peopleCountLabel = (
+    <>
+      {displayIds.size !== filteredIds.size
+        ? `${displayIds.size.toLocaleString()} / ${filteredIds.size.toLocaleString()}`
+        : displayIds.size.toLocaleString()}{' '}
+      {language === 'he' ? 'אנשים' : 'people'}
+    </>
+  );
 
   if (loading) {
     return (
@@ -249,63 +422,42 @@ export default function FamilyExplorer() {
     <div className="h-full flex flex-col bg-gray-50">
       <WelcomeModal language={language} />
       <header className="bg-white border-b border-gray-200 px-4 py-2 z-10 flex-shrink-0">
-        <div className="flex items-center gap-3 flex-wrap">
-          <div
-            className="flex gap-1 bg-gray-100 rounded-lg p-0.5"
-            role="tablist"
-            aria-label={language === 'he' ? 'בחירת תצוגה' : 'View mode'}
-          >
-            {viewTabs.map(tab => (
-              <button
-                key={tab.id}
-                type="button"
-                role="tab"
-                aria-selected={viewMode === tab.id}
-                aria-controls="explorer-main-panel"
-                id={`explorer-tab-${tab.id}`}
-                tabIndex={viewMode === tab.id ? 0 : -1}
-                onClick={() => setViewMode(tab.id)}
-                onKeyDown={e => {
-                  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
-                  e.preventDefault();
-                  const i = viewTabs.findIndex(t => t.id === tab.id);
-                  const delta =
-                    language === 'he'
-                      ? e.key === 'ArrowLeft'
-                        ? 1
-                        : -1
-                      : e.key === 'ArrowRight'
-                        ? 1
-                        : -1;
-                  const next = (i + delta + viewTabs.length) % viewTabs.length;
-                  const nextId = viewTabs[next].id;
-                  setViewMode(nextId);
-                  queueMicrotask(() => {
-                    document.getElementById(`explorer-tab-${nextId}`)?.focus({ preventScroll: true });
-                  });
-                }}
-                className={`px-3 py-1.5 rounded-md text-sm transition-colors whitespace-nowrap ${
-                  viewMode === tab.id
-                    ? 'bg-white shadow-sm font-medium text-gray-800'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                {tab.icon} {tab.label}
-              </button>
-            ))}
+        <div className="flex flex-col gap-2 md:flex-row md:items-center md:flex-wrap md:gap-3">
+          <div className="flex items-stretch gap-2 min-w-0 w-full md:w-auto md:contents">
+            <button
+              type="button"
+              onClick={() => setFilterPanelOpen(true)}
+              className="md:hidden flex-shrink-0 flex items-center justify-center w-11 h-11 rounded-lg border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors"
+              aria-expanded={filterPanelOpen}
+              aria-haspopup="dialog"
+              aria-controls="explorer-filter-drawer"
+              title={language === 'he' ? 'סינון וסטטיסטיקות' : 'Filters and statistics'}
+            >
+              <SlidersHorizontal className="w-5 h-5" aria-hidden />
+              <span className="sr-only">
+                {language === 'he' ? 'פתח סינון וסטטיסטיקות' : 'Open filters and statistics'}
+              </span>
+            </button>
+            {renderViewTabList(
+              'flex gap-1 bg-gray-100 rounded-lg p-0.5 flex-1 min-w-0 overflow-x-auto pb-0.5 md:flex-none md:overflow-visible md:pb-0'
+            )}
           </div>
 
-          <SearchBar
-            searchIndex={searchIndex}
-            onSelect={handleSelectPerson}
-            language={language}
-            allowedPersonIds={filteredIds}
-          />
-          <div className="flex-1" />
+          <div className="w-full min-w-0 md:flex-1 md:min-w-[12rem] md:max-w-xl">
+            <SearchBar
+              searchIndex={searchIndex}
+              onSelect={handleSelectPerson}
+              language={language}
+              allowedPersonIds={filteredIds}
+            />
+          </div>
+
+          <div className="hidden md:flex flex-1 min-w-0" />
+
           <button
             type="button"
             onClick={handleExportVitals}
-            className={`text-xs px-2.5 py-1.5 rounded-md border transition-colors whitespace-nowrap ${
+            className={`hidden md:inline-flex text-xs px-2.5 py-1.5 rounded-md border transition-colors whitespace-nowrap ${
               hasVitalsSnapshot
                 ? 'border-gray-300 text-gray-600 hover:bg-gray-100'
                 : 'border-gray-200 text-gray-400 hover:bg-gray-50'
@@ -314,91 +466,85 @@ export default function FamilyExplorer() {
           >
             {language === 'he' ? 'ייצוא Web Vitals' : 'Export Web Vitals'}
           </button>
-          <div className="text-xs text-gray-400 whitespace-nowrap" title={language === 'he' ? 'בטווח הסינון והתצוגה הנוכחיים' : 'Current filter and view scope'}>
-            {displayIds.size !== filteredIds.size
-              ? `${displayIds.size.toLocaleString()} / ${filteredIds.size.toLocaleString()}`
-              : displayIds.size.toLocaleString()}{' '}
-            {language === 'he' ? 'אנשים' : 'people'}
+          <div
+            className="hidden md:block text-xs text-gray-400 whitespace-nowrap"
+            title={language === 'he' ? 'בטווח הסינון והתצוגה הנוכחיים' : 'Current filter and view scope'}
+          >
+            {peopleCountLabel}
+          </div>
+
+          <div className="flex md:hidden items-center justify-between gap-2 pt-1 border-t border-gray-100">
+            <div
+              className="text-xs text-gray-500 min-w-0 truncate"
+              title={language === 'he' ? 'בטווח הסינון והתצוגה הנוכחיים' : 'Current filter and view scope'}
+            >
+              {peopleCountLabel}
+            </div>
+            <details className="relative shrink-0">
+              <summary className="list-none cursor-pointer text-xs px-2.5 py-1.5 rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50 [&::-webkit-details-marker]:hidden">
+                {language === 'he' ? 'עוד' : 'More'}
+              </summary>
+              <div
+                className="absolute end-0 top-[calc(100%+0.25rem)] z-20 rounded-lg border border-gray-200 bg-white shadow-lg p-2 min-w-[11rem]"
+                dir={language === 'he' ? 'rtl' : 'ltr'}
+              >
+                <button
+                  type="button"
+                  onClick={handleExportVitals}
+                  className={`w-full text-start text-xs px-2 py-2 rounded-md border transition-colors ${
+                    hasVitalsSnapshot
+                      ? 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                      : 'border-gray-100 text-gray-400'
+                  }`}
+                >
+                  {language === 'he' ? 'ייצוא Web Vitals' : 'Export Web Vitals'}
+                </button>
+              </div>
+            </details>
           </div>
         </div>
       </header>
 
-      <div className="flex-1 flex overflow-hidden">
-        <div className="w-64 p-3 space-y-3 overflow-y-auto border-l border-gray-200 bg-gray-50 flex-shrink-0">
-          {subtreeRootId && (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm" dir={language === 'he' ? 'rtl' : 'ltr'}>
-              <div className="flex items-center justify-between mb-1">
-                <span className="font-bold text-amber-700">{language === 'he' ? 'תצוגת עץ משנה' : 'Subtree view'}</span>
+      <div className="flex-1 flex overflow-hidden min-h-0 relative">
+        {filterPanelOpen && (
+          <>
+            <button
+              type="button"
+              className="absolute inset-0 z-30 bg-black/40 md:hidden"
+              aria-label={language === 'he' ? 'סגור פאנל סינון' : 'Close filter panel'}
+              onClick={() => setFilterPanelOpen(false)}
+            />
+            <aside
+              id="explorer-filter-drawer"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="explorer-filter-drawer-title"
+              className="absolute top-0 bottom-0 z-40 flex w-[min(20rem,100%)] max-w-full flex-col border-e border-gray-200 bg-gray-50 shadow-xl md:hidden"
+            >
+              <div
+                className="flex items-center justify-between gap-2 border-b border-gray-200 bg-white px-3 py-2 flex-shrink-0"
+                dir={language === 'he' ? 'rtl' : 'ltr'}
+              >
+                <h2 id="explorer-filter-drawer-title" className="text-sm font-semibold text-gray-800">
+                  {language === 'he' ? 'סינון וסטטיסטיקות' : 'Filters and statistics'}
+                </h2>
                 <button
                   type="button"
-                  className="text-xs text-amber-600 hover:text-amber-800"
-                  onClick={() => setSubtreeRootId(null)}
+                  onClick={() => setFilterPanelOpen(false)}
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                  aria-label={language === 'he' ? 'סגור' : 'Close'}
                 >
-                  {language === 'he' ? '✕ ביטול' : '✕ Clear'}
+                  <X className="h-5 w-5" aria-hidden />
                 </button>
               </div>
-              <div className="text-amber-600 text-xs mb-2">
-                {language === 'he' ? 'מרוכז ב:' : 'Focused on:'} {persons.get(subtreeRootId)?.fullName}
-              </div>
-              <div className="flex items-center gap-2">
-                <label className="text-xs text-amber-600">{language === 'he' ? 'עומק:' : 'Depth:'}</label>
-                <input
-                  type="range"
-                  min={1}
-                  max={10}
-                  value={subtreeDepth}
-                  onChange={e => setSubtreeDepth(parseInt(e.target.value, 10))}
-                  className="flex-1"
-                />
-                <span className="text-xs font-medium text-amber-700 w-4">{subtreeDepth}</span>
-              </div>
-              <label className="mt-2 flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={includeSpouseBranches}
-                  onChange={e => setIncludeSpouseBranches(e.target.checked)}
-                  className="rounded"
-                />
-                <span className="text-xs text-amber-700">{language === 'he' ? 'כלול ענפי בני זוג' : 'Include spouse branches'}</span>
-              </label>
-            </div>
-          )}
+              <div className="flex-1 overflow-y-auto p-3 space-y-3">{filterSidebarContent}</div>
+            </aside>
+          </>
+        )}
 
-          {personList.length > 0 && personList.length < FULL_DATASET_EXPECTED_MIN && (
-            <div
-              className="rounded-lg border border-amber-400 bg-amber-50 p-3 text-xs text-amber-950 shadow-sm"
-              dir={language === 'he' ? 'rtl' : 'ltr'}
-              role="status"
-            >
-              <p className="font-semibold text-amber-900 mb-1">
-                {language === 'he' ? 'נתונים חלקיים בלבד' : 'Partial dataset loaded'}
-              </p>
-              <p className="text-amber-900/90 leading-relaxed">
-                {language === 'he'
-                  ? `נטענו רק ${personList.length.toLocaleString()} אנשים מ־family-graph.json. העץ המלא הוא אלפי רשומות. אם את רואה רק משפחה קטנה, כנראה שב־Vercel (או בדיפלוי) חסר הקובץ המלא מתיקיית public/. ודאי commit של public/family-graph.json אחרי npm run build (או prebuild מקומי), merge לענף שמחובר ל־Vercel, ובדקי שהפרויקט הנכון נבנה.`
-                  : `Only ${personList.length.toLocaleString()} people were loaded from family-graph.json; the full tree has thousands of records. If you expected the whole family here, the deployed site is probably missing the large file under public/. Commit public/family-graph.json after a local build (with your private CSV), merge the branch Vercel builds, and confirm the correct project is deployed.`}
-              </p>
-              {filters.connectedToYaelOnly && filteredIds.size < personList.length && (
-                <p className="mt-2 text-amber-800/90">
-                  {language === 'he'
-                    ? 'בינתיים אפשר לבטל את "מחובר ליעל בלבד" בפאנל הסינון כדי להציג את כל מי שבקובץ.'
-                    : 'You can also turn off "Connected to Yael only" in the filter panel to show everyone in this file.'}
-                </p>
-              )}
-            </div>
-          )}
-
-          <FilterPanel filters={filters} onChange={setFilters} personList={personList} language={language} />
-          <StatsPanel
-            fullFilePersonCount={personList.length}
-            afterFiltersCount={filteredIds.size}
-            shownInViewCount={displayIds.size}
-            familyCount={families.size}
-            holocaustVictimCount={holocaustVictimCountInScope}
-            filteredHolocaustVictimCount={filteredHolocaustVictimCount}
-            language={language}
-          />
-        </div>
+        <aside className="hidden md:flex w-64 flex-shrink-0 flex-col border-e border-gray-200 bg-gray-50">
+          <div className="flex-1 overflow-y-auto p-3 space-y-3">{filterSidebarContent}</div>
+        </aside>
 
         <div
           id="explorer-main-panel"

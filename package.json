@@ -6,6 +6,7 @@
   "scripts": {
     "prebuild": "tsx scripts/prebuild-graph.ts",
     "build-graph": "tsx scripts/build-graph.ts",
+    "validate:canonical": "tsx scripts/validate-canonical-csv.ts",
     "report:unlinked": "tsx scripts/export-unlinked-review.ts",
     "report:pdf-candidates": "python3 scripts/export_pdf_update_candidates.py",
     "report:review-queue": "python3 scripts/build_review_queue.py",

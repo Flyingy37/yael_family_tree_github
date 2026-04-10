@@ -8,6 +8,36 @@
 
 ---
 
+## Canonical CSV — מה `build-graph.ts` מצפה לו
+
+הקובץ **`data/canonical.csv`** הוא קלט חובה לבנייה מקומית. שורה ראשונה: **כותרות עמודות** (שורת CSV אחת). שמות העמודות חייבים להתאים בדיוק (רגיש לרישיות) לרשימה שלהלן — ראו גם `data/sample/canonical.sample.csv`.
+
+| עמודה | הערות קצרות |
+|--------|----------------|
+| `ged_id` | מזהה GEDCOM, למשל `@I1@` |
+| `full_name` | שם מלא (גם למיזוג עם curated לפי שם) |
+| `given_final` | שם פרטי |
+| `surname` | שם משפחה |
+| `surname_final` | שם משפחה נוכחי / אחרון |
+| `sex` | `M` / `F` / אחר → לא ידוע |
+| `birth_date` | פורמט GEDCOM; אפשר `\|` להפרדת לידה/פטירה בתוך אותו שדה לפי לוגיקת `splitPipeField` בסקריפט |
+| `birth_place` | מקום/ים; אפשר `\|` כמו ב־birth_date |
+| `fams` | משפחות כבן/בת זוג, מופרדות ב־`\|` |
+| `famc` | משפחה כילד |
+| `titl` | תואר |
+| `note` | הערה (יכול HTML) |
+| `note_plain` | הערה טקסטואלית — משמש חילוץ שדות מובנים |
+
+**בדיקה מהירה:** `npm run validate:canonical` — בודק שכל העמודות קיימות. אפשר נתיב מותאם: `npx tsx scripts/validate-canonical-csv.ts path/to/file.csv`
+
+**מקור חיצוני** (למשל `canonical_final_clean.csv`): האתר לא קורא את השם הזה. מעתיקים/מייצאים ל־`data/canonical.csv` בפורמט לעיל, מריצים `npm run build-graph` (או `npm run dev`), ואז מתקבל `public/family-graph.json`.
+
+## Curated CSV — פורמט מול `build-graph.ts`
+
+`data/curated.csv` **אופציונלי**. הסקריפט קורא את הקובץ בלי `columns: true`: **שורה 0** נחשבת לכותרת/כותרת מסמך (לא משמשת כעמודות), **שורה 1** היא שורת הכותרות האמיתית, **משורה 2** הנתונים. כותרות בשורה 1 חייבות להיות באנגלית כפי שמופיע ב־`RawCurated` ב־`build-graph.ts` (למשל `Full Name`, `Hops`, `Relationship to Yael`, ...). רשימת העמודות בתיעוד למטה (`## Curated CSV columns`) מתארת משמעות — אם הייצוא שלך בעברית בלבד, ייתכן שתצטרכי מיפוי לכותרות האנגליות לפני הבנייה.
+
+---
+
 מקורות עבודה (מחוץ לריפו ציבורי, לרוב):
 
 - `Family_Tree_Yael_Livnat.csv` - ייצוא קרובים לבדיקה ידנית.
