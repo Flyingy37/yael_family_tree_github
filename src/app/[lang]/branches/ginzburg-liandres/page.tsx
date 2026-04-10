@@ -87,6 +87,18 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
       note: 'הזיהוי נשמר כמשוער עד לאישור נוסף מתוך כתובת מתוארכת, כיתוב בצד האחורי או תיעוד משפחתי עצמאי.',
       source: 'שם קובץ בארכיון המשפחתי והקשר מחקרי ענפי',
     },
+    'ev-image-zinaida-dubershtein-ginzburg-portrait': {
+      title: 'דיוקן המיוחס ל-Dr. Zinaida Zina Dubershtein (Ginzburg)',
+      description: 'דיוקן ארכיוני המקושר בתוויות המשפחתיות ל-Dr. Zinaida Zina Dubershtein (Ginzburg).',
+      note: 'הזיהוי נשאר לפי ייחוס משפחתי עד להתאמה עם כתובת מתוארכת או מקור מקביל.',
+      source: 'ארכיון משפחתי',
+    },
+    'ev-image-zinaida-dubershtein-ginzburg-portrait-alt': {
+      title: 'דיוקן חלופי המיוחס ל-Dr. Zinaida Zina Dubershtein (Ginzburg)',
+      description: 'גרסת דיוקן חלופית המקושרת ל-Dr. Zinaida Zina Dubershtein (Ginzburg).',
+      note: 'יש להתייחס לשתי הגרסאות כאותו נושא רק אם הארכיון המשפחתי מאשר שהן מתייחסות לאותו אדם.',
+      source: 'ארכיון משפחתי',
+    },
     'ev-image-cilia-two-person-portrait': {
       title: 'דיוקן של Tzila Cilia Duberstein Alperovitz עם תינוק',
       description: 'צילום זוגי שבו Cilia מופיעה עם תינוק. הזיהוי של המבוגר חזק; זהות התינוק נשמרת כמשוערת.',
@@ -110,6 +122,12 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
       description: 'תצלום משפחתי עם שורות זיהוי בכתב יד ושמות שנוספו מאוחר יותר לצורך זיהוי עבודה.',
       note: 'זהו צילום מחקרי מסומן. יש להתייחס לזיהויים האישיים כאל תוויות עבודה משפחתיות, אלא אם יאומתו בכיתוב מקורי או במקור מקביל.',
       source: 'תצלום הפניה מסומן מתוך הארכיון המשפחתי',
+    },
+    'ev-image-ginzburg-duberstein-family-group-identified': {
+      title: 'תצלום משפחתי מזוהה של Ginzburg–Duberstein',
+      description: 'תצלום משפחתי עם זיהוי מפורט שסופק על ידי המשפחה לאורך קווי Ginzburg, Duberstein, Meirson ו-Charny.',
+      note: 'הזיהוי סופק על ידי המשפחה. יש להתייחס אליו כזיהוי עבודה משפחתי, אלא אם יאומת בכיתוב מקורי או במקור מקביל.',
+      source: 'ארכיון משפחתי עם זיהוי שסופק על ידי המשפחה',
     },
     'ev-image-ginzburg-family-group-1946-a': {
       title: 'תצלום משפחתי של Ginzburg, בלארוס שלאחר המלחמה',
@@ -152,6 +170,12 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
       description: 'תצלום כיתתי מסומן במשפחה מתקופה שלפני יוני 1941, ומזוהה בארכיון עם הילדה בפינה הימנית התחתונה, עם הצמות.',
       note: 'הזיהוי נשאר משפחתי ומשוער; לפי הערות המשפחה, כ-חצי מחברותיה לכיתה נספו במהלך המלחמה בבלארוס.',
       source: 'הערת ארכיון משפחתי',
+    },
+    'ev-image-tzila-dubershtein-class-photo-pre-1941': {
+      title: 'תצלום כיתתי המקושר ל-Tzila Alperovitz לבית Dubershtein',
+      description: 'תצלום כיתתי מתקופה שלפני המלחמה, שזוהה בהערת המשפחה ככולל את Tzila Alperovitz לבית Dubershtein בפינה הימנית התחתונה, עם צמות.',
+      note: 'הזיהוי נשאר משפחתי ומשוער; לפי הערות המשפחה, כ-חצי מחברותיה לכיתה נספו במהלך המלחמה בבלארוס.',
+      source: 'ארכיון משפחתי עם הערת זיהוי מאוחרת',
     },
     'raw-family-structure': {
       title: 'הפניה מבנית לגרף המשפחה',
