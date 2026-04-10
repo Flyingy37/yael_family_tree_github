@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArchivalCard } from './ArchivalCard';
 import { EvidenceBadge } from './EvidenceBadge';
 import { RelationshipChip } from './RelationshipChip';
-import type { BranchEvidenceItem } from '../branches/ginzburgLiandres';
-import type { ImageEvidenceItem } from '../types/genealogy';
+import type { BranchEvidenceItem, ImageEvidenceItem } from '../types/genealogy';
 
 type Props = {
   item: BranchEvidenceItem;

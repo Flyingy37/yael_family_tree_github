@@ -16,6 +16,47 @@ export type GenealogyClaim = {
   note?: string;
 };
 
+export type EvidenceType =
+  | 'family-photo'
+  | 'portrait'
+  | 'annotated-photo'
+  | 'document-scan'
+  | 'testimony'
+  | 'video-testimony'
+  | 'document'
+  | 'dna-clue'
+  | 'external-tree-reference';
+
+export type EvidenceConfidence = 'direct' | 'partial' | 'contextual';
+
+export const EVIDENCE_TYPE_ORDER: EvidenceType[] = [
+  'family-photo',
+  'portrait',
+  'annotated-photo',
+  'document-scan',
+  'testimony',
+  'video-testimony',
+  'document',
+  'dna-clue',
+  'external-tree-reference',
+];
+
+export interface BranchEvidenceBase {
+  id: string;
+  type: EvidenceType;
+  title: string;
+  description: string;
+  source: string;
+  confidence: EvidenceConfidence;
+  note?: string;
+  personIds?: string[];
+}
+
+export interface BranchTextEvidence extends BranchEvidenceBase {
+  id: string;
+  type: 'testimony' | 'document' | 'dna-clue' | 'external-tree-reference';
+}
+
 export type ImageEvidenceItem = {
   id: string;
   type: 'family-photo' | 'portrait' | 'annotated-photo' | 'document-scan';
@@ -28,9 +69,26 @@ export type ImageEvidenceItem = {
   year?: number;
   yearApprox?: string;
   source: string;
-  confidence: 'direct' | 'partial' | 'contextual';
+  confidence: EvidenceConfidence;
   note?: string;
 };
+
+export interface VideoTestimonyEvidence extends BranchEvidenceBase {
+  type: 'video-testimony';
+  shortTitleHe?: string;
+  descriptionHe?: string;
+  speakerPersonId: string;
+  relatedPersonIds?: string[];
+  relatedPlaceIds?: string[];
+  topics?: string[];
+  url?: string;
+  embedUrl?: string;
+  transcript?: string;
+  language: 'he' | 'en' | 'mixed';
+  confidence: EvidenceConfidence;
+}
+
+export type BranchEvidenceItem = BranchTextEvidence | ImageEvidenceItem | VideoTestimonyEvidence;
 
 /** Relationship category labels used in curated CSV */
 export type RelationshipCategory =

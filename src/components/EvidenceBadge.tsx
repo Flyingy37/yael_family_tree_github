@@ -1,4 +1,4 @@
-import type { EvidenceType } from '../branches/ginzburgLiandres';
+import type { EvidenceType } from '../types/genealogy';
 
 const EVIDENCE_STYLES: Record<EvidenceType, string> = {
   'family-photo': 'bg-sky-50 text-sky-700 border-sky-200',

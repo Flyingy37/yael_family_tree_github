@@ -2,17 +2,15 @@ import { Link } from 'react-router-dom';
 import { useFamilyData } from '../../../../hooks/useFamilyData';
 import { useLang } from '../../layout';
 import {
-  EVIDENCE_TYPE_ORDER,
-  type BranchEvidenceItem,
   getCanonicalGinzburgLiandresDisplayName,
   getGinzburgLiandresBranchEvidence,
   getGinzburgLiandresBranchSummary,
   getGinzburgLiandresRelationshipOverlay,
-  type EvidenceType,
 } from '../../../../branches/ginzburgLiandres';
 import { ArchivalCard } from '../../../../components/ArchivalCard';
 import { BranchEvidenceCard } from '../../../../components/BranchEvidenceCard';
 import { RelationshipChip } from '../../../../components/RelationshipChip';
+import { EVIDENCE_TYPE_ORDER, type BranchEvidenceItem, type EvidenceType } from '../../../../types/genealogy';
 
 function PersonName({
   personId,
