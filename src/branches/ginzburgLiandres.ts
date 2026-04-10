@@ -532,8 +532,10 @@ export const tzilaImageEvidence: ImageEvidenceItem[] = [
     id: 'ev-document-yankel-berl-ginzburg-memoir-yiddish',
     type: 'document-scan',
     title: 'Short memoir of Yankel-Berl Ginzburg (Yiddish manuscript)',
+    titleHe: 'זיכרונות Yankel-Berl Ginzburg ביידיש',
     description:
       'Yiddish memoir text attributed to Yankel-Berl Ginzburg, describing his birth in 1894 in Pleshchenitsy and naming his parents as Arie-Leib Ginzburg and Basia-Bashata née Landres.',
+    descriptionHe: 'כתב זיכרונות משפחתי ביידיש, עם פרטים על הלידה ב־Pleshchenitsy ועל הוריו של Yankel-Berl Ginzburg.',
     assetPath: '/images/ginzburg/yankel-berl_ginzburg_autobiography_original(2).jpg',
     relatedPersonIds: ['@I133@', '@I86@'],
     relatedPersonDisplayNames: ['Yankel Berl Ginzburg', 'Arie-Leib Ginzburg', 'Basia-Bashata née Landres'],
@@ -542,18 +544,22 @@ export const tzilaImageEvidence: ImageEvidenceItem[] = [
     confidence: 'direct',
     note:
       'Primary family-source autobiographical text. The memoir states that Yankel-Berl Ginzburg was born in 1894 in Pleshchenitsy, Borisov district, Minsk province; that his father Arie-Leib Ginzburg was a melamed for young children; and that his mother was Basia-Bashata née Landres.',
+    noteHe: 'לפי הטקסט, אביו הוא Arie-Leib Ginzburg ואמו היא Basia-Bashata née Landres.',
   },
   {
     id: 'ev-document-haifa-voters-list-1930',
     type: 'document-scan',
     title: 'Haifa voters list entry, 1930',
+    titleHe: 'עמוד מרשימת הבוחרים של חיפה, 1930',
     description: 'Scanned page from a 1930 Haifa voters list, preserved as a supporting migration-era document.',
+    descriptionHe: 'סריקה של עמוד מתוך רשימת הבוחרים של חיפה משנת 1930, כפריט תיעוד בהקשר נוכחות המשפחה בארץ בתקופת המנדט.',
     assetPath: '/images/ginzburg/1930_Voters_List_Haifa_040(1).jpg',
     source: 'Archival voters list page, Haifa, 1930',
     year: 1930,
     confidence: 'partial',
     note:
       'Useful as a Palestine Mandate-era civic record. This item should remain linked to the migration research layer until the exact family entries on the page are fully extracted and verified.',
+    noteHe: 'הפריט נשמר כתיעוד מסייע למחקר, עד לחילוץ מלא של הרשומות המשפחתיות הרלוונטיות ולאימותן.',
   },
   {
     id: 'ev-image-tzila-family-testimony-scan',

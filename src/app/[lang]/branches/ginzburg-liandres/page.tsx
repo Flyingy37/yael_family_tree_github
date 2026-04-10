@@ -235,6 +235,9 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
     ...item,
     ...(copy[item.id] || {}),
   } as BranchEvidenceItem;
+  if (translated.titleHe) translated.title = translated.titleHe;
+  if (translated.descriptionHe) translated.description = translated.descriptionHe;
+  if (translated.noteHe) translated.note = translated.noteHe;
   if (translated.type === 'video-testimony') {
     return {
       ...translated,
