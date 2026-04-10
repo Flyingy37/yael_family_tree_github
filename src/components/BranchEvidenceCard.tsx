@@ -4,11 +4,7 @@ import { ArchivalCard } from './ArchivalCard';
 import { EvidenceBadge } from './EvidenceBadge';
 import { RelationshipChip } from './RelationshipChip';
 import type { BranchEvidenceItem } from '../branches/ginzburgLiandres';
-
-type ImageEvidenceItem = Extract<
-  BranchEvidenceItem,
-  { type: 'family-photo' | 'portrait' | 'annotated-photo' | 'document-scan' }
->;
+import type { ImageEvidenceItem } from '../types/genealogy';
 
 type Props = {
   item: BranchEvidenceItem;

@@ -1,5 +1,5 @@
 import type { Person } from '../types';
-import type { GenealogyClaim } from '../types/genealogy';
+import type { GenealogyClaim, ImageEvidenceItem } from '../types/genealogy';
 import { formatDateConcise, formatLifespan } from '../utils/formatters';
 
 export type EvidenceType =
@@ -41,16 +41,6 @@ interface BranchEvidenceBase {
 export interface BranchTextEvidence extends BranchEvidenceBase {
   id: string;
   type: 'testimony' | 'document' | 'dna-clue' | 'external-tree-reference';
-}
-
-export interface ImageEvidenceItem extends BranchEvidenceBase {
-  type: 'family-photo' | 'portrait' | 'annotated-photo' | 'document-scan';
-  assetPath: string;
-  relatedPersonIds?: string[];
-  relatedPersonDisplayNames?: string[];
-  relatedPlaceIds?: string[];
-  year?: number;
-  yearApprox?: string;
 }
 
 export interface VideoTestimonyEvidence extends BranchEvidenceBase {

@@ -16,6 +16,22 @@ export type GenealogyClaim = {
   note?: string;
 };
 
+export type ImageEvidenceItem = {
+  id: string;
+  type: 'family-photo' | 'portrait' | 'annotated-photo' | 'document-scan';
+  title: string;
+  description: string;
+  assetPath: string;
+  relatedPersonIds?: string[];
+  relatedPersonDisplayNames?: string[];
+  relatedPlaceIds?: string[];
+  year?: number;
+  yearApprox?: string;
+  source: string;
+  confidence: 'direct' | 'partial' | 'contextual';
+  note?: string;
+};
+
 /** Relationship category labels used in curated CSV */
 export type RelationshipCategory =
   | 'direct'
