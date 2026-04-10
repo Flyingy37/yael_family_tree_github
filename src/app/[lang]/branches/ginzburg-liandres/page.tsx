@@ -153,6 +153,13 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
         'זהו טקסט אוטוביוגרפי ראשוני מתוך המשפחה. לפי הזיכרון, Yankel-Berl Ginzburg נולד ב־1894 ב־Pleshchenitsy, מחוז Borisov, מחוז Minsk; אביו Arie-Leib Ginzburg שימש melamed לילדים קטנים; ואמו הייתה Basia-Bashata née Landres.',
       source: 'ארכיון משפחתי, טקסט זיכרון ביידיש ותרגום משפחתי',
     },
+    'ev-document-haifa-voters-list-1930': {
+      title: 'רישום ברשימת הבוחרים של Haifa, 1930',
+      description: 'עמוד סרוק מרשימת הבוחרים של Haifa משנת 1930, הנשמר כמסמך תומך מתקופת ההגירה.',
+      note:
+        'זהו פריט תיעודי שימושי כרשומה אזרחית מתקופת המנדט הבריטי. יש להשאירו משויך לשכבת המחקר על ההגירה עד לחילוץ מלא של הערכים המשפחתיים המדויקים ואימותם.',
+      source: 'עמוד רשימת בוחרים ארכיוני, Haifa, 1930',
+    },
     'ev-image-tzila-family-testimony-scan': {
       title: 'עמוד סרוק מעדות משפחת Tzila',
       description: 'עמוד עדות סרוק בעברית, המשמר את הסיפור המשפחתי כצילום מסמך.',

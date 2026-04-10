@@ -600,6 +600,13 @@ export function PersonDetailPanel({
             'זהו טקסט אוטוביוגרפי ראשוני מתוך המשפחה. לפי הזיכרון, Yankel-Berl Ginzburg נולד ב־1894 ב־Pleshchenitsy, מחוז Borisov, מחוז Minsk; אביו Arie-Leib Ginzburg שימש melamed לילדים קטנים; ואמו הייתה Basia-Bashata née Landres.',
           source: 'ארכיון משפחתי, טקסט זיכרון ביידיש ותרגום משפחתי',
         },
+        'ev-document-haifa-voters-list-1930': {
+          title: 'רישום ברשימת הבוחרים של Haifa, 1930',
+          description: 'עמוד סרוק מרשימת הבוחרים של Haifa משנת 1930, הנשמר כמסמך תומך מתקופת ההגירה.',
+          note:
+            'זהו פריט תיעודי שימושי כרשומה אזרחית מתקופת המנדט הבריטי. יש להשאירו משויך לשכבת המחקר על ההגירה עד לחילוץ מלא של הערכים המשפחתיים המדויקים ואימותם.',
+          source: 'עמוד רשימת בוחרים ארכיוני, Haifa, 1930',
+        },
         'ev-image-tzila-family-testimony-scan': {
           title: 'עמוד סרוק מעדות משפחת Tzila',
           description: 'עמוד עדות סרוק בעברית, המשמר את הסיפור המשפחתי כצילום מסמך.',
@@ -734,6 +741,14 @@ export function PersonDetailPanel({
           'עוגן קו אימהי בשרשרת הענף המנורמלת. יש לשמר את העמימות אם הגרף הגולמי עדיין אינו מכיל רשומת אדם קנונית ומקושרת עבור Druzia Lyandres.',
         'Canonical normalized English display name for branch presentation.':
           'שם תצוגה אנגלי קנוני ומנורמל להצגת הענף.',
+        'Stated in first-person memoir text.':
+          'מצוין בטקסט זיכרון בגוף ראשון.',
+        'Memoir explicitly names Arie-Leib Ginzburg as father.':
+          'הזיכרון מציין במפורש את Arie-Leib Ginzburg כאב.',
+        'Memoir explicitly names Basia-Bashata née Landres as mother.':
+          'הזיכרון מציין במפורש את Basia-Bashata née Landres כאם.',
+        'From the first-person memoir text.':
+          'מתוך טקסט הזיכרון בגוף ראשון.',
       'Presentation-layer correction only. Current raw graph may not yet contain a canonical linked person record for Esther Lipschitz.':
           'תיקון שכבת תצוגה בלבד. הגרף הגולמי הנוכחי עדיין אינו מכיל רשומת אדם קנונית ומקושרת עבור Esther Lipschitz.',
       'Known child from this marriage: Eti Ginzburg Charny.':
