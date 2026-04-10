@@ -524,25 +524,25 @@ export function PersonDetailPanel({
         'ev-image-aharon-military-portrait': {
           title: 'דיוקן משויך ל־Aharon Ginzburg',
           description: 'דיוקן ארכיוני המשויך לפי הזיהוי המשפחתי ל־Aharon Ginzburg.',
-          note: 'יש לשמור כצילום פורטרט של Aharon Ginzburg.',
+          note: 'השנה והזיהוי נשענים על הייחוס המשפחתי הנוכחי.',
           source: 'חומרי Ginzburg שהועלו',
         },
         'ev-image-berl-yakov-ginzburg-1944': {
           title: 'דיוקן משויך ל־Yankel Berl Ginzburg',
           description: 'דיוקן ארכיוני משופר המשויך לפי הזיהוי המשפחתי ל־Yankel Berl Ginzburg.',
-          note: 'הזיהוי נשמר כמשוער עד לאישור נוסף מתוך כתובת מתוארכת, כיתוב בצד האחורי או תיעוד משפחתי עצמאי.',
+          note: 'הייחוס המשפחתי המוצג הוא ל־Yankel Berl Ginzburg, ויש לשמר אותו כתיוג ארכיוני שניתן לבחינה מחודשת.',
           source: 'שם קובץ בארכיון המשפחתי והקשר מחקרי ענפי',
         },
         'ev-image-zinaida-dubershtein-ginzburg-portrait': {
           title: 'דיוקן משויך ל־Dr. Zinaida Zina Dubershtein (Ginzburg)',
           description: 'דיוקן ארכיוני המשויך לפי הזיהוי המשפחתי ל־Dr. Zinaida Zina Dubershtein (Ginzburg).',
-          note: 'הזיהוי נשאר לפי ייחוס משפחתי עד להתאמה עם כתובת מתוארכת או מקור מקביל.',
+          note: 'הזיהוי נשען על הייחוס המשפחתי הנוכחי, ויש להשאירו פתוח לבדיקה עד לאישור נוסף ממקור מתוארך או ממקור מקביל.',
           source: 'ארכיון משפחתי',
         },
         'ev-image-zinaida-dubershtein-ginzburg-portrait-alt': {
           title: 'דיוקן חלופי משויך ל־Dr. Zinaida Zina Dubershtein (Ginzburg)',
           description: 'גרסה חלופית של דיוקן ארכיוני המשויך לפי הזיהוי המשפחתי ל־Dr. Zinaida Zina Dubershtein (Ginzburg).',
-          note: 'יש להתייחס לשתי הגרסאות כאותו נושא רק אם הארכיון המשפחתי מאשר שהן מתייחסות לאותו אדם.',
+          note: 'יש להתייחס לגרסה זו כזהה לדיוקן הראשון רק אם הארכיון המשפחתי מאשר ששני הסרוקים אכן שייכים לאותה דמות.',
           source: 'ארכיון משפחתי',
         },
         'ev-image-cilia-two-person-portrait': {
@@ -572,19 +572,19 @@ export function PersonDetailPanel({
         'ev-image-ginzburg-duberstein-family-group-identified': {
           title: 'צילום משפחתי קבוצתי מזוהה של משפחת Ginzburg–Duberstein',
           description: 'צילום משפחתי קבוצתי עם זיהוי משפחתי מפורט של בני ובנות משפחות Ginzburg, Duberstein, Meirson ו־Charny.',
-          note: 'הזיהוי סופק על ידי המשפחה. יש להתייחס אליו כזיהוי עבודה משפחתי, אלא אם יאומת בכיתוב מקורי או במקור מקביל.',
+          note: 'הזיהוי מבוסס על מיפוי משפחתי. התמונה מחברת בין קווי Ginzburg, Duberstein, Meirson, Charny, Hudenko ו־Sokolov. הילד היושב מתחת ל־Roman Ginzburg מזוהה לפי ההערה המשפחתית כ־Yehuda(Yuri) Ginzburg (1933–1960).',
           source: 'ארכיון משפחתי עם זיהוי שסופק על ידי המשפחה',
         },
         'ev-image-ginzburg-family-group-1946-a': {
           title: 'צילום משפחתי של משפחת Ginzburg, בלארוס שלאחר המלחמה (גרסה א)',
           description: 'צילום משפחתי נקי מהתקופה שלאחר המלחמה, שנשמר ללא שכבת הכיתוב בכתב יד.',
-          note: 'יש להשתמש בתמונה יחד עם הגרסה המסומנת לצורך תמיכה בזיהוי; אין להפוך הנחות על מיקום בתמונה לעובדות גנאלוגיות חד-משמעיות ללא אימות נפרד.',
+          note: 'מומלץ להשתמש בגרסה זו יחד עם התמונה המזוהה ועם ההערות המשפחתיות לצורך זיהוי עבודה.',
           source: 'ארכיון משפחתי',
         },
         'ev-image-ginzburg-family-group-1946-b': {
           title: 'צילום משפחתי של משפחת Ginzburg, בלארוס שלאחר המלחמה (גרסה ב)',
           description: 'גרסה נוספת של צילום משפחתי קבוצתי מאותו הקשר משפחתי רחב שלאחר המלחמה.',
-          note: 'יש לשמור את הזיהוי ברמת אדם כמשוער אלא אם הוא מעוגן בגרסה המסומנת או במקור נוסף.',
+          note: 'יש להשאיר זיהויים אישיים ברמת ודאות חלקית, אלא אם ניתן לקשור אותם לתמונה המזוהה או למקור נוסף.',
           source: 'ארכיון משפחתי',
         },
         'ev-document-yankel-berl-ginzburg-autobiography': {
@@ -602,25 +602,25 @@ export function PersonDetailPanel({
         'ev-image-cilia-alperovitz-liri-livnat-tal': {
           title: 'Tzila Cilia Alperovitz née Dubershtein עם Liri Livnat-Tal',
           description: 'צילום משפחתי מאוחר שבו נראית Tzila Cilia Alperovitz née Dubershtein מחזיקה את Liri Livnat-Tal.',
-          note: 'צילום משפחתי מודרני מארכיון הקו האימהי.',
+          note: 'צילום משפחתי מאוחר מתוך ארכיון הקו האימהי.',
           source: 'ארכיון משפחתי',
         },
         'ev-image-isaak-ginzburg-1936': {
           title: 'דיוקן משויך ל־Iche Isaak Ginzburg',
           description: 'דיוקן ארכיוני המשויך לפי הזיהוי המשפחתי ל־Iche Isaak Ginzburg.',
-          note: 'השנה משקפת את הזיהוי המשפחתי הקיים.',
+          note: 'השנה נשענת על הזיהוי המשפחתי הנוכחי.',
           source: 'ארכיון משפחתי',
         },
         'ev-image-tzila-prewar-class-photo-1941': {
           title: 'צילום כיתה לפני הפלישה הנאצית, משויך ל־Tzila Alperovitz née Dubershtein',
           description: 'צילום כיתה מסיום כיתה ח׳, מהתקופה שלפני הפלישה הנאצית, עם זיהוי משפחתי של Tzila Alperovitz née Dubershtein בפינה הימנית התחתונה, עם צמות.',
-          note: 'הזיהוי נשאר משפחתי ומשוער; לפי הערות המשפחה, כ-חצי מחברותיה לכיתה נספו במהלך המלחמה בבלארוס.',
+          note: 'לפי ההערה המשפחתית, Tzila Alperovitz née Dubershtein מופיעה בפינה הימנית התחתונה. התמונה מתוארת כצילום כיתה מסיום כיתה ח׳ מלפני הפלישה הנאצית. לפי הזיכרון המשפחתי, כמחצית מבני ובנות הכיתה נספו במהלך המלחמה בבלארוס.',
           source: 'הערת ארכיון משפחתי',
         },
         'ev-image-tzila-dubershtein-class-photo-pre-1941': {
           title: 'צילום כיתה לפני הפלישה הנאצית, משויך ל־Tzila Alperovitz née Dubershtein',
           description: 'צילום כיתה מסיום כיתה ח׳, מהתקופה שלפני הפלישה הנאצית, עם זיהוי משפחתי של Tzila Alperovitz née Dubershtein בפינה הימנית התחתונה, עם צמות.',
-          note: 'הזיהוי נשאר משפחתי ומשוער; לפי הערות המשפחה, כ-חצי מחברותיה לכיתה נספו במהלך המלחמה בבלארוס.',
+          note: 'לפי ההערה המשפחתית, Tzila Alperovitz née Dubershtein מופיעה בפינה הימנית התחתונה. התמונה מתוארת כצילום כיתה מסיום כיתה ח׳ מלפני הפלישה הנאצית. לפי הזיכרון המשפחתי, כמחצית מבני ובנות הכיתה נספו במהלך המלחמה בבלארוס.',
           source: 'ארכיון משפחתי עם הערת זיהוי מאוחרת',
         },
         'raw-family-structure': {
