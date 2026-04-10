@@ -64,7 +64,9 @@ export type ImageEvidenceItem = {
   id: string;
   type: 'family-photo' | 'portrait' | 'annotated-photo' | 'document-scan';
   title: string;
+  titleHe?: string;
   description: string;
+  descriptionHe?: string;
   assetPath: string;
   relatedPersonIds?: string[];
   relatedPersonDisplayNames?: string[];
@@ -74,6 +76,7 @@ export type ImageEvidenceItem = {
   source: string;
   confidence: EvidenceConfidence;
   note?: string;
+  noteHe?: string;
 };
 
 export interface VideoTestimonyEvidence extends BranchEvidenceBase {
