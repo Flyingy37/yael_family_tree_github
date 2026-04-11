@@ -647,6 +647,11 @@ export function PersonDetailPanel({
           detail:
             'שכבת התצוגה מתייחסת ל-Arie-Leib כמי שנשא תחילה אישה לא ידועה (השם הפרטי ושם הנעורים אינם ידועים) עם ילדה ידועה אחת, Eti Ginzburg Charny, אחר כך את Basia Liandres, ולבסוף את Esther Lipschitz. זהו תיקון הצגה המונח על הגרף הגולמי הקיים.',
         },
+        'shared-rabbinic-root-note': {
+          title: 'שורשים רבניים משותפים',
+          detail:
+            'מקורות מוצלבים מציבים את Heilprin / Halperin, Spira / Shapiro / Shapira, ו־Hillman / Helman כרקע אבותי קדום של הענף. יש לשמור אותם נפרדים מעץ הדם הראשי ולטפל בהם כרקע מחקרי.',
+        },
         'esther-stepchildren': {
           title: 'שמות הילדים המשויכים לבית Esther Lipschitz',
           detail:

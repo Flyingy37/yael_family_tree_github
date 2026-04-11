@@ -176,7 +176,7 @@ export const GINZBURG_LIANDRES_BRANCH_SUMMARY = {
   title: 'Ginzburg-Liandres',
   showOnlyBloodline: true,
   intro:
-    'Branch package focused on the Ginzburg-Liandres maternal line, emphasizing canonical English display names, alias control, and evidence-first relationship notes.',
+    'Branch package focused on the Ginzburg-Liandres maternal line, emphasizing canonical English display names, alias control, evidence-first relationship notes, and separately displayed older shared rabbinic roots.',
   rootCouple: {
     husbandId: '@I86@',
     wifeId: '@I87@',
@@ -252,6 +252,14 @@ const BRANCH_RELATIONSHIP_NOTES: BranchRelationshipNote[] = [
       'Display logic treats Arie-Leib as having an unknown first wife (given name and maiden name unknown) with known child Eti Ginzburg Charny, Basia Liandres as second wife, and Esther Lipschitz as third wife. This is a presentation correction layered over the current raw graph.',
     personIds: ['@I86@', '@I87@'],
     relationType: 'marriage',
+  },
+  {
+    id: 'shared-rabbinic-root-note',
+    title: 'Shared rabbinic roots',
+    detail:
+      'Cross-referenced sources place Heilprin / Halperin, Spira / Shapiro / Shapira, and Hillman / Helman as older shared ancestry for this branch. Keep them separate from the main bloodline tree and treat them as research-context roots.',
+    personIds: ['@I86@'],
+    relationType: 'unknown',
   },
   {
     id: 'esther-stepchildren',
@@ -659,6 +667,23 @@ const BRANCH_EVIDENCE: BranchEvidenceItem[] = [
     personIds: ['@I12@'],
     speakerPersonId: '@I12@',
     language: 'en',
+  },
+  {
+    id: 'shared-rabbinic-root-context',
+    type: 'external-tree-reference',
+    title: 'Shared rabbinic roots context',
+    titleHe: 'רקע שורשים רבניים משותפים',
+    description:
+      'Cross-referenced source notes place Heilprin / Halperin, Spira / Shapiro / Shapira, and Hillman / Helman as older ancestral background around this branch rather than as a merged modern branch.',
+    descriptionHe:
+      'הצלבת המקורות מציבה את Heilprin / Halperin, Spira / Shapiro / Shapira, ו־Hillman / Helman כרקע אבותי משותף סביב הענף, ולא כעץ מודרני מאוחד.',
+    source: 'Paternal DNA analysis workbook; Spira generations notes; Hillman tree notes',
+    sourceHe: 'סיכום ה-DNA בצד האב; מסמכי Spira; עץ Hillman',
+    confidence: 'contextual',
+    note:
+      'Context only. Use this to frame older ancestry and alias normalization, not as a closed bloodline claim.',
+    noteHe: 'תיעוד הקשרי בלבד. יש להשתמש בו כדי למסגר שורשים קדומים ונורמליזציית כינויים, לא כקשר דם סגור.',
+    personIds: ['@I86@'],
   },
   {
     id: 'cilia-myheritage-summary',

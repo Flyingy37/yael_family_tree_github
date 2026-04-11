@@ -263,7 +263,7 @@ export default function GinzburgLiandresBranchPage() {
         firstMarriageSentence: 'נישואין ראשונים: אישה לא ידועה (השם הפרטי ושם הנעורים אינם ידועים).',
         firstMarriageChild: 'הילדה הידועה מנישואין אלה: Eti Ginzburg Charny.',
         intro:
-          'תצוגת ענף תמציתית למשפחת Ginzburg-Liandres, עם שמות אנגליים מנורמלים, כללי הצגה מתועדים, ומבנה ארכיוני נקי.',
+          'תצוגת ענף תמציתית למשפחת Ginzburg-Liandres, עם שמות אנגליים מנורמלים, כללי הצגה מתועדים, שורשים רבניים משותפים המוצגים בנפרד, ומבנה ארכיוני נקי.',
         rootCouple: 'הזוג המרכזי',
         firstMarriage: 'נישואין ראשונים',
         secondMarriage: 'נישואין שניים',
@@ -301,7 +301,7 @@ export default function GinzburgLiandresBranchPage() {
         firstMarriageSentence: 'First marriage: unknown wife (given name and maiden name unknown).',
         firstMarriageChild: 'Known child from this marriage: Eti Ginzburg Charny.',
         intro:
-          'A concise branch view for the Ginzburg-Liandres family, using normalized English names and documented presentation rules.',
+          'A concise branch view for the Ginzburg-Liandres family, using normalized English names, documented presentation rules, and separately displayed shared rabbinic roots.',
         rootCouple: 'Root couple',
         firstMarriage: 'First marriage',
         secondMarriage: 'Second marriage',

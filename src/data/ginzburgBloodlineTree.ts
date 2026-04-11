@@ -95,5 +95,13 @@ export const ginzburgBloodlineTree: BloodlineTreeData = {
       relationType: 'possible_blood',
       note: 'Possible research connection; not yet linked directly to the main bloodline.',
     },
+    {
+      id: 'heilprin-spira-hillman-roots',
+      name: 'Heilprin / Spira / Hillman roots',
+      branch: 'research',
+      relationType: 'possible_blood',
+      note:
+        'Older rabbinic shared context drawn from the paternal DNA summary and the separate Spira / Hillman source trees; keep it separate from the main bloodline tree.',
+    },
   ],
 };

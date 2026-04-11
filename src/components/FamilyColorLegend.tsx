@@ -166,6 +166,7 @@ export function getEvidenceFamilyBranchKeys(evidenceId: string): FamilyBranchKey
     'ev-document-yankel-berl-ginzburg-autobiography': ['ginzburg', 'research_context'],
     'ev-document-yankel-berl-ginzburg-memoir-yiddish': ['ginzburg', 'research_context'],
     'ev-document-haifa-voters-list-1930': ['liandres', 'research_context'],
+    'shared-rabbinic-root-context': ['research_context'],
   };
 
   return map[evidenceId] || ['research_context'];
