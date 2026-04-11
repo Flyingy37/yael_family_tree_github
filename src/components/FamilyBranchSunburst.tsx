@@ -155,23 +155,7 @@ export function FamilyBranchSunburst({ personList, filteredIds, language = 'he',
           if (!s) return null;
           return (
             <>
-              <text x={cx} y={cy - 8} textAnchor="middle" fontSize={size * 0.034} fontWeight="700" fill="#1c1917">
-                {s.count.toLocaleString()}
-              </text>
-              <text x={cx} y={cy + 10} textAnchor="middle" fontSize={size * 0.026} fill="#57534e">
-                {s.name}
-              </text>
-            </>
-          );
-        })()}
-        {hovered && (
-          <circle cx={cx} cy={cy} r={rootR} fill="#f7f8fa" stroke="#c7d0d9" strokeWidth={1.5} style={{ pointerEvents: 'none' }} />
-        )}
-        {hovered && (() => {
-          const s = slices.find(sl => sl.name === hovered);
-          if (!s) return null;
-          return (
-            <>
+              <circle cx={cx} cy={cy} r={rootR} fill="#f7f8fa" stroke="#c7d0d9" strokeWidth={1.5} style={{ pointerEvents: 'none' }} />
               <text x={cx} y={cy - 8} textAnchor="middle" fontSize={size * 0.034} fontWeight="700" fill="#4b5563" style={{ pointerEvents: 'none' }}>
                 {s.count.toLocaleString()}
               </text>
