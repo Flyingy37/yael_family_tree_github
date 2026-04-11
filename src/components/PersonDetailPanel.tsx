@@ -549,9 +549,9 @@ export function PersonDetailPanel({
           source: 'ארכיון משפחתי',
         },
         'ev-image-cilia-two-person-portrait': {
-          title: 'דיוקן של Tzila Cilia Duberstein Alperovitz עם תינוק',
-          description: 'צילום זוגי שבו Cilia מופיעה עם תינוק. הזיהוי של המבוגר חזק; זהות התינוק נשמרת כמשוערת.',
-          note: 'יש לשמור את זהות התינוק כמשוערת עד להתאמה חזקה יותר של הצילום.',
+          title: 'דיוקן של Tzila Cilia Duberstein Alperovitz עם Liri Livnat-Tal',
+          description: 'צילום זוגי שבו Cilia מופיעה עם Liri Livnat-Tal.',
+          note: 'יש להתייחס לזיהוי הזה בזהירות משפחתית עד לאישור נוסף ממקור מתועד.',
           source: 'חומרי Ginzburg שהועלו',
         },
         'ev-image-ginzburg-family-1946-annotated': {
@@ -565,12 +565,6 @@ export function PersonDetailPanel({
           description: 'גרסה נקייה של הצילום המשפחתי מתוך אותו סט חומרי Ginzburg לשנת 1946.',
           note: 'השתמשו בגרסה זו כנקודת ייחוס לא מסומנת של אותו מבנה משפחתי.',
           source: 'חומרי Ginzburg שהועלו',
-        },
-        'ev-image-ginzburg-family-annotated-group': {
-          title: 'צילום משפחתי עם זיהוי משפחתי של Ginzburg',
-          description: 'צילום משפחתי עם שורות זיהוי בכתב יד ושמות שנוספו מאוחר יותר לצורך זיהוי עבודה.',
-          note: 'זהו צילום מחקרי עם זיהוי משפחתי. יש להתייחס לזיהויים האישיים כאל תוויות עבודה משפחתיות, אלא אם יאומתו בכיתוב מקורי או במקור מקביל.',
-          source: 'צילום עם זיהוי משפחתי מתוך הארכיון המשפחתי',
         },
         'ev-image-ginzburg-duberstein-family-group-identified': {
           title: 'צילום משפחתי קבוצתי מזוהה של משפחת Ginzburg–Duberstein',

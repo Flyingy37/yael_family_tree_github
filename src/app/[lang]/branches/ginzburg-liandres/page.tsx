@@ -116,12 +116,6 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
       note: 'השתמשו בגרסה זו כנקודת ייחוס לא מסומנת של אותו מבנה משפחתי.',
       source: 'חומרי Ginzburg שהועלו',
     },
-    'ev-image-ginzburg-family-annotated-group': {
-      title: 'צילום משפחתי עם זיהוי משפחתי של Ginzburg',
-      description: 'צילום משפחתי עם שורות זיהוי בכתב יד ושמות שנוספו מאוחר יותר לצורך זיהוי עבודה.',
-      note: 'זהו צילום מחקרי עם זיהוי משפחתי. יש להתייחס לזיהויים האישיים כאל תוויות עבודה משפחתיות, אלא אם יאומתו בכיתוב מקורי או במקור מקביל.',
-      source: 'צילום עם זיהוי משפחתי מתוך הארכיון המשפחתי',
-    },
     'ev-image-ginzburg-duberstein-family-group-identified': {
       title: 'צילום משפחתי קבוצתי מזוהה של משפחת Ginzburg–Duberstein',
       description: 'צילום משפחתי קבוצתי עם זיהוי משפחתי מפורט של בני ובנות משפחות Ginzburg, Duberstein, Meirson ו־Charny.',
