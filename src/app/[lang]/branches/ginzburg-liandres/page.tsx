@@ -9,9 +9,11 @@ import {
 } from '../../../../branches/ginzburgLiandres';
 import { ArchivalCard } from '../../../../components/ArchivalCard';
 import { BranchEvidenceCard } from '../../../../components/BranchEvidenceCard';
+import { BloodlineTree } from '../../../../components/BloodlineTree';
 import { FamilyColorLegend, FamilyColorLegendProvider } from '../../../../components/FamilyColorLegend';
 import { RelationshipChip } from '../../../../components/RelationshipChip';
 import { EVIDENCE_TYPE_ORDER, type BranchEvidenceItem, type EvidenceType } from '../../../../types/genealogy';
+import { ginzburgBloodlineTree } from '../../../../data/ginzburgBloodlineTree';
 
 function PersonName({
   personId,
@@ -366,6 +368,10 @@ export default function GinzburgLiandresBranchPage() {
             <p className="mt-3 max-w-2xl text-sm leading-7 text-stone-600">
               {ui.intro}
             </p>
+          </div>
+
+          <div className="mb-8">
+            <BloodlineTree data={ginzburgBloodlineTree} lang={lang === 'he' ? 'he' : 'en'} />
           </div>
 
           <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
