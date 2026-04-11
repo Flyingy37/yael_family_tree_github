@@ -53,7 +53,7 @@ export function DnaEvidenceSummaries({ language = 'he' }: Props) {
     return (
       <div className="flex items-center justify-center py-6 text-slate-400 text-sm gap-2">
         <Dna size={16} className="animate-pulse" />
-        {isHe ? 'טוען סיכומי ראיות...' : 'Loading evidence summaries...'}
+        {isHe ? 'טוען סיכומי תיעוד...' : 'Loading evidence summaries...'}
       </div>
     );
   }

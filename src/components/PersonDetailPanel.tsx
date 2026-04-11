@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import type { Person, Family } from '../types';
 import { DEFAULT_FILTERS, isUnknownPlaceholderPerson, type Filters } from './FilterPanel';
 import { getCanonicalSurnameLabel } from '../utils/surname';
-import { formatDateConcise } from '../utils/formatters';
+import { formatDateConcise, formatHistoricalPlace } from '../utils/formatters';
 import { StoryModal } from './StoryModal';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { X } from 'lucide-react';
@@ -453,11 +453,13 @@ export function PersonDetailPanel({
   const isMobile = useIsMobile();
   const displayBirthDate = branchProfile?.conciseBirthDate || formatDateConcise(person.birthDate);
   const displayDeathDate = branchProfile?.conciseDeathDate || formatDateConcise(person.deathDate);
+  const displayBirthPlace = formatHistoricalPlace(person.birthPlace);
+  const displayMigrationInfo = formatHistoricalPlace(person.migrationInfo);
   const timelineItems = [
     displayBirthDate
       ? {
           label: t ? 'לידה' : 'Birth',
-          value: [displayBirthDate, person.birthPlace].filter(Boolean).join(' - '),
+          value: [displayBirthDate, displayBirthPlace].filter(Boolean).join(' - '),
         }
       : null,
     displayDeathDate
@@ -469,7 +471,7 @@ export function PersonDetailPanel({
     person.migrationInfo
       ? {
           label: t ? 'הגירה' : 'Migration',
-          value: person.migrationInfo,
+          value: displayMigrationInfo,
         }
       : null,
   ].filter(Boolean) as Array<{ label: string; value: string }>;
@@ -500,7 +502,7 @@ export function PersonDetailPanel({
           title: 'עוגן mtDNA לקו האימהי',
           description:
             'Sofia נחשבת כאן לנקודת העיגון האימהית המוקדמת ביותר בסיכום הנוכחי, ושכבת התצוגה משמרת את השרשרת Basia -> Sofia -> Tzila Cilia -> Pola -> Yael.',
-          note: 'ראיה חלקית בלבד. רמז ה-mtDNA תומך במסגרת הקו האימהי אך אינו פותר לבדו כל קשר היסטורי ביניים.',
+          note: 'תיעוד חלקי בלבד. רמז ה-mtDNA תומך במסגרת הקו האימהי אך אינו פותר לבדו כל קשר היסטורי ביניים.',
         },
         'daniel-ginzburg-dna': {
           title: 'רמז DNA לאשכול שם המשפחה Ginzburg-Liandres',
@@ -511,7 +513,7 @@ export function PersonDetailPanel({
         'cilia-migration-note': {
           title: 'הערת הגירה ל-Cilia / Tzila',
           description:
-            'המידע הקיים מציין לידה בחיפה בתקופת המנדט הבריטי, מוצא משפחתי מאזור Pleshchenitsy, וחזרה לבלרוס סביב 1930.',
+            'המידע הקיים מציין לידה בחיפה, Mandatory Palestine, מוצא משפחתי מ־Pleshchenitsy, Borisov District, Minsk Governorate, Russian Empire, וחזרה ל־Byelorussian SSR, Soviet Union, סביב 1930.',
           note: 'נשמר כטיפוס הערת מחקר מן שכבת הנתונים הקיימת. יש לקרוא אותו כהקשר ארכיוני, לא כהוכחה עצמאית.',
         },
         'cilia-myheritage-summary': {
@@ -565,8 +567,8 @@ export function PersonDetailPanel({
         'ev-image-ginzburg-family-annotated-group': {
           title: 'צילום משפחתי עם זיהוי משפחתי של Ginzburg',
           description: 'צילום משפחתי עם שורות זיהוי בכתב יד ושמות שנוספו מאוחר יותר לצורך זיהוי עבודה.',
-          note: 'זהו צילום מחקרי מסומן. יש להתייחס לזיהויים האישיים כאל תוויות עבודה משפחתיות, אלא אם יאומתו בכיתוב מקורי או במקור מקביל.',
-          source: 'תצלום הפניה מסומן מתוך הארכיון המשפחתי',
+          note: 'זהו צילום מחקרי עם זיהוי משפחתי. יש להתייחס לזיהויים האישיים כאל תוויות עבודה משפחתיות, אלא אם יאומתו בכיתוב מקורי או במקור מקביל.',
+          source: 'צילום עם זיהוי משפחתי מתוך הארכיון המשפחתי',
         },
         'ev-image-ginzburg-duberstein-family-group-identified': {
           title: 'צילום משפחתי קבוצתי מזוהה של משפחת Ginzburg–Duberstein',
@@ -575,26 +577,26 @@ export function PersonDetailPanel({
           source: 'ארכיון משפחתי עם זיהוי שסופק על ידי המשפחה',
         },
         'ev-image-ginzburg-family-group-1946-a': {
-          title: 'צילום משפחתי של משפחת Ginzburg, בלארוס שלאחר המלחמה (גרסה א)',
-          description: 'צילום משפחתי נקי מהתקופה שלאחר המלחמה, שנשמר ללא שכבת הכיתוב בכתב יד.',
+          title: 'צילום משפחתי של משפחת Ginzburg, Byelorussian SSR, Soviet Union, שלאחר המלחמה (גרסה א)',
+          description: 'צילום משפחתי נקי מהתקופה שלאחר המלחמה, שנשמר ללא שכבת הכיתוב בכתב יד ב־Byelorussian SSR, Soviet Union.',
           note: 'מומלץ להשתמש בגרסה זו יחד עם התמונה המזוהה ועם ההערות המשפחתיות לצורך זיהוי עבודה.',
           source: 'ארכיון משפחתי',
         },
         'ev-image-ginzburg-family-group-1946-b': {
-          title: 'צילום משפחתי של משפחת Ginzburg, בלארוס שלאחר המלחמה (גרסה ב)',
-          description: 'גרסה נוספת של צילום משפחתי קבוצתי מאותו הקשר משפחתי רחב שלאחר המלחמה.',
+          title: 'צילום משפחתי של משפחת Ginzburg, Byelorussian SSR, Soviet Union, שלאחר המלחמה (גרסה ב)',
+          description: 'גרסה נוספת של צילום משפחתי קבוצתי מאותו הקשר משפחתי רחב שלאחר המלחמה ב־Byelorussian SSR, Soviet Union.',
           note: 'יש להשאיר זיהויים אישיים ברמת ודאות חלקית, אלא אם ניתן לקשור אותם לתמונה המזוהה או למקור נוסף.',
           source: 'ארכיון משפחתי',
         },
         'ev-document-yankel-berl-ginzburg-autobiography': {
           title: 'מסמך אוטוביוגרפי סרוק המקושר ל-Yankel Berl Ginzburg',
           description: 'סריקה ארכיונית של טופס ביוגרפי או אוטוביוגרפי ברוסית הכולל מידע משפחתי ופרטי הורים.',
-          note: 'המסמך הוא ראיה ראשונית כפריט ארכיוני, אך כל תמלול או פרשנות ממנו צריכים להישאר ניתנים לבדיקה נפרדת.',
+          note: 'המסמך הוא תיעוד ראשוני כפריט ארכיוני, אך כל תמלול או פרשנות ממנו צריכים להישאר ניתנים לבדיקה נפרדת.',
           source: 'סריקת מסמך מארכיון משפחתי',
         },
         'ev-document-yankel-berl-ginzburg-memoir-yiddish': {
           title: 'זיכרונות Yankel-Berl Ginzburg ביידיש',
-          description: 'כתב זיכרונות משפחתי ביידיש, עם פרטים על הלידה ב־Pleshchenitsy ועל הוריו של Yankel-Berl Ginzburg.',
+          description: 'כתב זיכרונות משפחתי ביידיש, עם פרטים על הלידה ב־Pleshchenitsy, Borisov District, Minsk Governorate, Russian Empire, ועל הוריו של Yankel-Berl Ginzburg.',
           note: 'לפי הטקסט, אביו הוא Arie-Leib Ginzburg ואמו היא Basia-Bashata née Landres.',
           source: 'ארכיון משפחתי, טקסט זיכרון ביידיש ותרגום משפחתי',
         },
@@ -608,7 +610,7 @@ export function PersonDetailPanel({
         'ev-image-tzila-family-testimony-scan': {
           title: 'עמוד סרוק מעדות משפחת Tzila',
           description: 'עמוד עדות סרוק בעברית, המשמר את הסיפור המשפחתי כצילום מסמך.',
-          note: 'יש להתייחס אליו כצילום של ראיה תיעודית, לא כתמלול.',
+          note: 'יש להתייחס אליו כצילום של תיעוד, לא כתמלול.',
           source: 'חומרי Ginzburg שהועלו',
         },
         'ev-image-cilia-alperovitz-liri-livnat-tal': {
@@ -626,14 +628,8 @@ export function PersonDetailPanel({
         'ev-image-tzila-prewar-class-photo-1941': {
           title: 'צילום כיתה לפני הפלישה הנאצית, משויך ל־Tzila Alperovitz née Dubershtein',
           description: 'צילום כיתה מסיום כיתה ח׳, מהתקופה שלפני הפלישה הנאצית, עם זיהוי משפחתי של Tzila Alperovitz née Dubershtein בפינה הימנית התחתונה, עם צמות.',
-          note: 'לפי ההערה המשפחתית, Tzila Alperovitz née Dubershtein מופיעה בפינה הימנית התחתונה. התמונה מתוארת כצילום כיתה מסיום כיתה ח׳ מלפני הפלישה הנאצית. לפי הזיכרון המשפחתי, כמחצית מבני ובנות הכיתה נספו במהלך המלחמה בבלארוס.',
+          note: 'לפי ההערה המשפחתית, Tzila Alperovitz née Dubershtein מופיעה בפינה הימנית התחתונה. התמונה מתוארת כצילום כיתה מסיום כיתה ח׳ מלפני הפלישה הנאצית. לפי הזיכרון המשפחתי, כמחצית מבני ובנות הכיתה נספו במהלך המלחמה ב־Byelorussian SSR, Soviet Union.',
           source: 'הערת ארכיון משפחתי',
-        },
-        'ev-image-tzila-dubershtein-class-photo-pre-1941': {
-          title: 'צילום כיתה לפני הפלישה הנאצית, משויך ל־Tzila Alperovitz née Dubershtein',
-          description: 'צילום כיתה מסיום כיתה ח׳, מהתקופה שלפני הפלישה הנאצית, עם זיהוי משפחתי של Tzila Alperovitz née Dubershtein בפינה הימנית התחתונה, עם צמות.',
-          note: 'לפי ההערה המשפחתית, Tzila Alperovitz née Dubershtein מופיעה בפינה הימנית התחתונה. התמונה מתוארת כצילום כיתה מסיום כיתה ח׳ מלפני הפלישה הנאצית. לפי הזיכרון המשפחתי, כמחצית מבני ובנות הכיתה נספו במהלך המלחמה בבלארוס.',
-          source: 'ארכיון משפחתי עם הערת זיהוי מאוחרת',
         },
         'raw-family-structure': {
           title: 'הפניה מבנית לגרף המשפחה',
@@ -835,6 +831,7 @@ export function PersonDetailPanel({
     } as BranchEvidenceItem;
     if (translated.titleHe) translated.title = translated.titleHe;
     if (translated.descriptionHe) translated.description = translated.descriptionHe;
+    if (t && translated.sourceHe) translated.source = translated.sourceHe;
     if (translated.noteHe) translated.note = translated.noteHe;
     if (translated.type === 'video-testimony') {
       return {
@@ -958,7 +955,7 @@ export function PersonDetailPanel({
           <InfoRow label={t ? 'קפיצות' : 'Hops'} value={person.hops?.toString()} />
           <InfoRow label={t ? 'מין' : 'Sex'} value={person.sex === 'M' ? (t ? 'זכר' : 'Male') : person.sex === 'F' ? (t ? 'נקבה' : 'Female') : (t ? 'לא ידוע' : 'Unknown')} />
           <InfoRow label={t ? 'תאריך לידה' : 'Birth date'} value={displayBirthDate} />
-          <InfoRow label={t ? 'מקום לידה' : 'Birth place'} value={person.birthPlace} />
+          <InfoRow label={t ? 'מקום לידה' : 'Birth place'} value={displayBirthPlace} />
           <InfoRow label={t ? 'תאריך פטירה' : 'Death date'} value={displayDeathDate} />
           <InfoRow label={t ? 'שם בלידה' : 'Birth name'} value={person.birthName || branchProfile?.birthSurname} />
           <InfoRow label={t ? 'שם משפחה' : 'Surname'} value={branchProfile?.primarySurname || person.surnameFinal} />
@@ -969,7 +966,7 @@ export function PersonDetailPanel({
           />
           <InfoRow label={t ? 'מוצא משפחתי היסטורי' : 'Family heritage origin'} value={person.surnameOrigin} />
           <InfoRow label={t ? 'ייחוס יהודי' : 'Jewish lineage'} value={person.jewishLineage} />
-          <InfoRow label={t ? 'הגירה' : 'Migration'} value={person.migrationInfo} />
+          <InfoRow label={t ? 'הגירה' : 'Migration'} value={displayMigrationInfo} />
           <InfoRow label={t ? 'מסלולי קרבה ליעל' : 'Connection paths to Yael'} value={person.connectionPathCount?.toString()} />
           {person.title && <InfoRow label={t ? 'תיאור' : 'Title'} value={person.title} />}
         </div>
@@ -1285,12 +1282,12 @@ export function PersonDetailPanel({
             ) : null}
             {branchProfile && branchEvidence.length === 0 && !person.tags.includes('DNA') && !person.story ? (
               <ArchivalCard
-                title={t ? 'אין כרגע פריט ראיה מצורף' : 'No branch evidence attached yet'}
+                title={t ? 'אין כרגע פריט תיעוד מצורף' : 'No branch evidence attached yet'}
                 variant="atlas"
               >
                 <p>
                   {t
-                    ? 'נכון לעכשיו אין לפרופיל זה פריט ראיה ייעודי בחבילת הענף. מידע גולמי והערות מחקר עשויים עדיין להופיע בסעיפים אחרים.'
+                    ? 'נכון לעכשיו אין לפרופיל זה פריט תיעוד ייעודי בחבילת הענף. מידע גולמי והערות מחקר עשויים עדיין להופיע בסעיפים אחרים.'
                     : 'No dedicated evidence item is currently attached to this profile in the branch package. Raw profile data and research notes may still appear elsewhere.'}
                 </p>
               </ArchivalCard>

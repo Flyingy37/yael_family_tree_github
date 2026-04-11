@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Search } from 'lucide-react';
 import type { ArchiveTreeNode } from './archiveTreeNode';
 import { familyData } from './familyArchiveData';
+import { formatHistoricalPlace } from './utils/formatters';
 
 /** Primary genealogy narrative: Joshua Kastroll (signed at times Joshua Kastrel in letters). */
 export const STORY_SOURCE_FOOTER =
@@ -320,7 +321,7 @@ function TreeNode({ node, lang = 'he' }: { node: ArchiveTreeNode; lang?: Archive
   const metaBlock = (
     <>
       {node.birth ? <div className="mt-1 text-sm text-archive-accent">{node.birth}</div> : null}
-      {node.birthPlace ? <div className="text-sm text-archive-accent">{node.birthPlace}</div> : null}
+      {node.birthPlace ? <div className="text-sm text-archive-accent">{formatHistoricalPlace(node.birthPlace)}</div> : null}
       {node.note ? <div className="mt-2 text-sm text-archive-accent whitespace-pre-wrap">{node.note}</div> : null}
     </>
   );

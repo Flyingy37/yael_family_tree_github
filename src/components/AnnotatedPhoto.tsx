@@ -93,9 +93,19 @@ export function AnnotatedPhoto({
 
   const renderPills = (personIds: string[], displayOnlyNames: string[]) => {
     if (personIds.length === 0 && displayOnlyNames.length === 0) return null;
+    const displayNamesAreTentative = item.confidence !== 'direct';
+    const resolvedLabels = new Set(
+      personIds
+        .map((personId) => (resolvePersonLabel?.(personId) || personId).trim().toLowerCase())
+        .filter(Boolean)
+    );
+    const visibleDisplayNames = displayOnlyNames.filter((label) => !resolvedLabels.has(label.trim().toLowerCase()));
+    const hasLinkedPeople = personIds.length > 0;
+    const showRelatedPeopleSection =
+      hasLinkedPeople || (visibleDisplayNames.length > 0 && !displayNamesAreTentative);
     return (
       <div className={compact ? 'space-y-1' : 'space-y-1.5'}>
-        {personIds.length > 0 ? (
+        {showRelatedPeopleSection ? (
           <>
             <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--atlas-text-muted)]">
               {labels.relatedPeople}
@@ -109,16 +119,26 @@ export function AnnotatedPhoto({
                   {personLink(personId)}
                 </span>
               ))}
+              {(hasLinkedPeople || !displayNamesAreTentative) && visibleDisplayNames.length > 0
+                ? visibleDisplayNames.map((label, index) => (
+                    <span
+                      key={`${label}-${index}`}
+                      className="atlas-pill rounded-full px-2 py-0.5 text-[10px] text-[var(--atlas-text)]"
+                    >
+                      {label}
+                    </span>
+                  ))
+                : null}
             </div>
           </>
         ) : null}
-        {displayOnlyNames.length > 0 ? (
+        {!hasLinkedPeople && visibleDisplayNames.length > 0 && displayNamesAreTentative ? (
           <>
             <div className="text-[11px] uppercase tracking-[0.16em] text-[var(--atlas-text-muted)]">
               {labels.tentativeIdentifications}
             </div>
             <div className={`flex flex-wrap ${compact ? 'gap-1' : 'gap-1.5'}`}>
-              {displayOnlyNames.map((label, index) => (
+              {visibleDisplayNames.map((label, index) => (
                 <span
                   key={`${label}-${index}`}
                   className="atlas-pill rounded-full border-dashed px-2 py-0.5 text-[10px] italic text-stone-500"

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import Fuse from 'fuse.js';
 import type { Person, Family, FamilyGraph } from '../types';
 import { supabase } from '../lib/supabase';
+import { formatHistoricalPlace } from '../utils/formatters';
 
 export interface FamilyData {
   persons: Map<string, Person>;
@@ -67,14 +68,22 @@ export function useFamilyData(): FamilyData {
     return () => controller.abort();
   }, [reloadToken]);
 
-  const persons = useMemo(() => {
+  const normalizedPersons = useMemo(() => {
     if (!graph) return new Map<string, Person>();
+    return graph.persons.map((person) => ({
+      ...person,
+      birthPlace: formatHistoricalPlace(person.birthPlace),
+      migrationInfo: formatHistoricalPlace(person.migrationInfo),
+    }));
+  }, [graph]);
+
+  const persons = useMemo(() => {
     const map = new Map<string, Person>();
-    for (const p of graph.persons) {
-      map.set(p.id, p);
+    for (const person of normalizedPersons) {
+      map.set(person.id, person);
     }
     return map;
-  }, [graph]);
+  }, [normalizedPersons]);
 
   const families = useMemo(() => {
     if (!graph) return new Map<string, Family>();
@@ -85,7 +94,7 @@ export function useFamilyData(): FamilyData {
     return map;
   }, [graph]);
 
-  const personList = useMemo(() => graph?.persons || [], [graph]);
+  const personList = useMemo(() => normalizedPersons, [normalizedPersons]);
 
   const searchablePeople = useMemo(() => {
     const normalize = (value: string): string => {

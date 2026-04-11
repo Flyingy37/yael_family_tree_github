@@ -136,3 +136,39 @@ export function extractCountry(place: string | null | undefined): string | null 
   const parts = place.split(',');
   return parts[parts.length - 1].trim() || null;
 }
+
+const HISTORICAL_PLACE_REPLACEMENTS: Array<[RegExp, string]> = [
+  [
+    /\bPleshchenitsy\b(?:,\s*Borisov District,\s*Minsk Governorate,\s*Russian Empire)?/gi,
+    'Pleshchenitsy, Borisov District, Minsk Governorate, Russian Empire',
+  ],
+  [
+    /\bZembin\b(?:,\s*Borisov District,\s*Minsk Governorate,\s*Russian Empire)?/gi,
+    'Zembin, Borisov District, Minsk Governorate, Russian Empire',
+  ],
+  [/\bBorisov district\b/gi, 'Borisov District'],
+  [/\bMinsk province\b/gi, 'Minsk Governorate'],
+  [/\bpostwar Belarus\b/gi, 'postwar Byelorussian SSR, Soviet Union'],
+  [/\bBelarus\b/gi, 'Byelorussian SSR, Soviet Union'],
+  [/\bHaifa\b(?!,\s*Mandatory Palestine)/gi, 'Haifa, Mandatory Palestine'],
+  [/\bHolon\b(?!,\s*Israel)/gi, 'Holon, Israel'],
+];
+
+/**
+ * Normalize a historical place name or place-bearing sentence to the branch's
+ * archival display style.
+ */
+export function formatHistoricalPlace(text: string | null | undefined): string {
+  if (!text) return '';
+  let normalized = text.trim();
+  if (!normalized) return '';
+  for (const [pattern, replacement] of HISTORICAL_PLACE_REPLACEMENTS) {
+    normalized = normalized.replace(pattern, replacement);
+  }
+  return normalized;
+}
+
+/**
+ * Backwards-compatible alias for historical-place formatting.
+ */
+export const formatHistoricalPlaceText = formatHistoricalPlace;

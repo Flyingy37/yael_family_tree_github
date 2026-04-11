@@ -63,8 +63,8 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
     'cilia-migration-note': {
       title: 'הערת הגירה ל-Cilia / Tzila',
       description:
-        'המידע הקיים מציין לידה בחיפה בתקופת המנדט הבריטי, מוצא משפחתי מאזור Pleshchenitsy וחזרה לבלרוס סביב 1930.',
-      note: 'נשמר כהערת מחקר. יש לקרוא אותו כהקשר ארכיוני, לא כהוכחה עצמאית.',
+        'המידע הקיים מציין לידה בחיפה, Mandatory Palestine, מוצא משפחתי מ־Pleshchenitsy, Borisov District, Minsk Governorate, Russian Empire, וחזרה ל־Byelorussian SSR, Soviet Union, סביב 1930.',
+      note: 'נשמר כתיעוד מחקרי. יש לקרוא אותו כהקשר ארכיוני, לא כהוכחה עצמאית.',
       source: 'הערת הגירה',
     },
     'cilia-myheritage-summary': {
@@ -119,8 +119,8 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
     'ev-image-ginzburg-family-annotated-group': {
       title: 'צילום משפחתי עם זיהוי משפחתי של Ginzburg',
       description: 'צילום משפחתי עם שורות זיהוי בכתב יד ושמות שנוספו מאוחר יותר לצורך זיהוי עבודה.',
-      note: 'זהו צילום מחקרי מסומן. יש להתייחס לזיהויים האישיים כאל תוויות עבודה משפחתיות, אלא אם יאומתו בכיתוב מקורי או במקור מקביל.',
-      source: 'תצלום הפניה מסומן מתוך הארכיון המשפחתי',
+      note: 'זהו צילום מחקרי עם זיהוי משפחתי. יש להתייחס לזיהויים האישיים כאל תוויות עבודה משפחתיות, אלא אם יאומתו בכיתוב מקורי או במקור מקביל.',
+      source: 'צילום עם זיהוי משפחתי מתוך הארכיון המשפחתי',
     },
     'ev-image-ginzburg-duberstein-family-group-identified': {
       title: 'צילום משפחתי קבוצתי מזוהה של משפחת Ginzburg–Duberstein',
@@ -129,32 +129,32 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
       source: 'ארכיון משפחתי עם זיהוי שסופק על ידי המשפחה',
     },
     'ev-image-ginzburg-family-group-1946-a': {
-      title: 'צילום משפחתי של משפחת Ginzburg, בלארוס שלאחר המלחמה (גרסה א)',
-      description: 'צילום משפחתי נקי מהתקופה שלאחר המלחמה, שנשמר ללא שכבת הכיתוב בכתב יד.',
+      title: 'צילום משפחתי של משפחת Ginzburg, Byelorussian SSR, Soviet Union, שלאחר המלחמה (גרסה א)',
+      description: 'צילום משפחתי נקי מהתקופה שלאחר המלחמה, שנשמר ללא שכבת הכיתוב בכתב יד ב־Byelorussian SSR, Soviet Union.',
       note: 'מומלץ להשתמש בגרסה זו יחד עם התמונה המזוהה ועם ההערות המשפחתיות לצורך זיהוי עבודה.',
       source: 'ארכיון משפחתי',
     },
     'ev-image-ginzburg-family-group-1946-b': {
-      title: 'צילום משפחתי של משפחת Ginzburg, בלארוס שלאחר המלחמה (גרסה ב)',
-      description: 'גרסה נוספת של צילום משפחתי קבוצתי מאותו הקשר משפחתי רחב שלאחר המלחמה.',
+      title: 'צילום משפחתי של משפחת Ginzburg, Byelorussian SSR, Soviet Union, שלאחר המלחמה (גרסה ב)',
+      description: 'גרסה נוספת של צילום משפחתי קבוצתי מאותו הקשר משפחתי רחב שלאחר המלחמה ב־Byelorussian SSR, Soviet Union.',
       note: 'יש להשאיר זיהויים אישיים ברמת ודאות חלקית, אלא אם ניתן לקשור אותם לתמונה המזוהה או למקור נוסף.',
       source: 'ארכיון משפחתי',
     },
     'ev-document-yankel-berl-ginzburg-autobiography': {
       title: 'מסמך אוטוביוגרפי סרוק המקושר ל-Yankel Berl Ginzburg',
       description: 'סריקה ארכיונית של טופס ביוגרפי או אוטוביוגרפי ברוסית הכולל מידע משפחתי ופרטי הורים.',
-      note: 'המסמך הוא ראיה ראשונית כפריט ארכיוני, אך כל תמלול או פרשנות ממנו צריכים להישאר ניתנים לבדיקה נפרדת.',
+      note: 'המסמך הוא תיעוד ראשוני כפריט ארכיוני, אך כל תמלול או פרשנות ממנו צריכים להישאר ניתנים לבדיקה נפרדת.',
       source: 'סריקת מסמך מארכיון משפחתי',
     },
     'ev-document-yankel-berl-ginzburg-memoir-yiddish': {
       title: 'זיכרונות Yankel-Berl Ginzburg ביידיש',
-      description: 'כתב זיכרונות משפחתי ביידיש, עם פרטים על הלידה ב־Pleshchenitsy ועל הוריו של Yankel-Berl Ginzburg.',
+      description: 'כתב זיכרונות משפחתי ביידיש, עם פרטים על הלידה ב־Pleshchenitsy, Borisov District, Minsk Governorate, Russian Empire, ועל הוריו של Yankel-Berl Ginzburg.',
       note: 'לפי הטקסט, אביו הוא Arie-Leib Ginzburg ואמו היא Basia-Bashata née Landres.',
       source: 'ארכיון משפחתי, טקסט זיכרון ביידיש ותרגום משפחתי',
     },
     'ev-document-haifa-voters-list-1930': {
       title: 'פנקס הבוחרים של חיפה, 1928',
-      description: 'סריקה של עמוד מתוך פנקס הבוחרים של חיפה, 1928, כפריט תיעוד מסייע.',
+      description: 'סריקה של עמוד מתוך פנקס הבוחרים של חיפה, 1928, כפריט תיעוד מסייע מחיפה, Mandatory Palestine.',
       note:
         'המטא־דאטה של הרשומה מציין: מסמך 109, רשימה 5, דף 25, מספר IGRA 7867. עם זאת, הסריקה המוצגת כאן נושאת בראש העמוד את הסימון “קף 40”. לכן יש להבחין בין פרטי הקטלוג של הרשומה לבין מספר העמוד המופיע בסריקה שהועלתה בפועל.',
       source: 'פנקס הבוחרים של חיפה, 1928, מתוך מאגר “בוחרי כנסת ישראל 1928”, מסמך 109, רשימה 5, דף 25, מספר IGRA 7867. מקור הרשומות: ארכיון העיר חיפה. הרשומה נוספה למנוע החיפוש ב־13 October 2012.',
@@ -162,7 +162,7 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
     'ev-image-tzila-family-testimony-scan': {
       title: 'עמוד סרוק מעדות משפחת Tzila',
       description: 'עמוד עדות סרוק בעברית, המשמר את הסיפור המשפחתי כצילום מסמך.',
-      note: 'יש להתייחס אליו כצילום של ראיה תיעודית, לא כתמלול.',
+      note: 'יש להתייחס אליו כצילום של תיעוד, לא כתמלול.',
       source: 'חומרי Ginzburg שהועלו',
     },
     'ev-image-cilia-alperovitz-liri-livnat-tal': {
@@ -180,7 +180,7 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
     'ev-image-tzila-prewar-class-photo-1941': {
       title: 'צילום כיתה לפני הפלישה הנאצית, משויך ל־Tzila Alperovitz née Dubershtein',
       description: 'צילום כיתה מסיום כיתה ח׳, מהתקופה שלפני הפלישה הנאצית, עם זיהוי משפחתי של Tzila Alperovitz née Dubershtein בפינה הימנית התחתונה, עם צמות.',
-      note: 'לפי ההערה המשפחתית, Tzila Alperovitz née Dubershtein מופיעה בפינה הימנית התחתונה. זהו תיעוד מחקרי ולא הוכחה סגורה; לפי הזיכרון המשפחתי, כמחצית מבני ובנות הכיתה נספו במהלך המלחמה בבלארוס.',
+      note: 'לפי ההערה המשפחתית, Tzila Alperovitz née Dubershtein מופיעה בפינה הימנית התחתונה. זהו תיעוד מחקרי ולא הוכחה סגורה; לפי הזיכרון המשפחתי, כמחצית מבני ובנות הכיתה נספו במהלך המלחמה ב־Byelorussian SSR, Soviet Union.',
       source: 'הערת ארכיון משפחתי',
     },
     'raw-family-structure': {
@@ -206,7 +206,7 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
     'ev-video-tzila-duberstein-02': {
       title: 'עדות מצולמת: מלחמה, בריחה וסיפור הבנק',
       description:
-        'עדות מצולמת על תפקידו של Vladimir בבנק, ניסיונות הבריחה, ההפצצות, בריחת המשפחה והקשר לגטו Pleshchenitsy.',
+        'עדות מצולמת על תפקידו של Vladimir בבנק, ניסיונות הבריחה, ההפצצות, בריחת המשפחה והקשר ל־Pleshchenitsy, Borisov District, Minsk Governorate, Russian Empire, בהקשר ההיסטורי של Byelorussian SSR, Soviet Union.',
       note: 'יש לשמור את רצף האירועים כעדות עד לאימות נוסף.',
       source: 'תמלול עדות משפחת Tzila',
     },
@@ -232,6 +232,7 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
   } as BranchEvidenceItem;
   if (translated.titleHe) translated.title = translated.titleHe;
   if (translated.descriptionHe) translated.description = translated.descriptionHe;
+  if (isHebrew && translated.sourceHe) translated.source = translated.sourceHe;
   if (translated.noteHe) translated.note = translated.noteHe;
   if (translated.type === 'video-testimony') {
     return {

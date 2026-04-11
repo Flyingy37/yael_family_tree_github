@@ -247,7 +247,7 @@ export default function InsightsPage() {
         {/* DNA Evidence Summaries */}
         <InsightSection
           icon="🔬"
-          title={t('סיכומי ראיות DNA', 'DNA Evidence Summaries')}
+          title={t('סיכומי תיעוד DNA', 'DNA Evidence Summaries')}
           subtitle={t(
             'סיכומים בטוחים לפרסום — ללא מזהי ערכה, ללא טבלאות סגמנטים גולמיות',
             'Public-safe summaries — no kit IDs, no raw segment tables'

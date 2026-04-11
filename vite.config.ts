@@ -8,6 +8,7 @@ const base = process.env.VERCEL ? '/' : (process.env.VITE_BASE_PATH ?? '/yael_fa
 
 export default defineConfig({
   base,
+  envPrefix: ['VITE_', 'NEXT_PUBLIC_'],
   plugins: [react()],
   resolve: {
     dedupe: ['react', 'react-dom'],

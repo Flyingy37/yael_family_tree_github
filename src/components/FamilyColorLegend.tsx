@@ -162,7 +162,6 @@ export function getEvidenceFamilyBranchKeys(evidenceId: string): FamilyBranchKey
     'ev-image-ginzburg-family-group-1946-b': ['ginzburg', 'duberstein'],
     'ev-image-cilia-alperovitz-liri-livnat-tal': ['duberstein'],
     'ev-image-tzila-prewar-class-photo-1941': ['duberstein', 'research_context'],
-    'ev-image-tzila-dubershtein-class-photo-pre-1941': ['duberstein', 'research_context'],
     'ev-image-tzila-family-testimony-scan': ['duberstein', 'research_context'],
     'ev-document-yankel-berl-ginzburg-autobiography': ['ginzburg', 'research_context'],
     'ev-document-yankel-berl-ginzburg-memoir-yiddish': ['ginzburg', 'research_context'],

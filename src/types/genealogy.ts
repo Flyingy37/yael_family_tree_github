@@ -49,6 +49,7 @@ export interface BranchEvidenceBase {
   description: string;
   descriptionHe?: string;
   source: string;
+  sourceHe?: string;
   confidence: EvidenceConfidence;
   note?: string;
   noteHe?: string;
@@ -74,6 +75,7 @@ export type ImageEvidenceItem = {
   year?: number;
   yearApprox?: string;
   source: string;
+  sourceHe?: string;
   confidence: EvidenceConfidence;
   note?: string;
   noteHe?: string;

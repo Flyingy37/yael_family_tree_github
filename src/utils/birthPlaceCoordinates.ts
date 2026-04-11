@@ -3,15 +3,15 @@
  * Longer / more specific patterns are checked first (substring match, case-insensitive).
  */
 const PLACE_PATTERNS: Array<{ re: RegExp; lat: number; lng: number; label: string }> = [
-  { re: /kurenets|kuraniec|kureniets|קורנץ|קורניץ/i, lat: 54.55, lng: 26.92, label: 'Kurenets, Belarus' },
-  { re: /radoshkovichi|רדושקוביץ/i, lat: 54.22, lng: 27.24, label: 'Radoshkovichi, Belarus' },
-  { re: /dolginovo|dolhinov|דולהינוב/i, lat: 54.64, lng: 27.48, label: 'Dolhinov, Belarus' },
-  { re: /danilovichi|דנילוביץ/i, lat: 54.29, lng: 28.09, label: 'Danilovichi, Belarus' },
-  { re: /sosenka|סוסנקה/i, lat: 52.0, lng: 23.6, label: 'Sosenka, Belarus' },
-  { re: /pleshch|פלשניץ/i, lat: 54.42, lng: 27.7, label: 'Pleshchanitsy, Belarus' },
-  { re: /mikashevichy/i, lat: 52.23, lng: 27.47, label: 'Mikashevichy, Belarus' },
-  { re: /pinsk/i, lat: 52.11, lng: 26.1, label: 'Pinsk, Belarus' },
-  { re: /minsk|מינסק/i, lat: 53.9, lng: 27.57, label: 'Minsk, Belarus' },
+  { re: /kurenets|kuraniec|kureniets|קורנץ|קורניץ/i, lat: 54.55, lng: 26.92, label: 'Kurenets, Minsk Governorate, Russian Empire' },
+  { re: /radoshkovichi|רדושקוביץ/i, lat: 54.22, lng: 27.24, label: 'Radoshkovichi, Minsk Governorate, Russian Empire' },
+  { re: /dolginovo|dolhinov|דולהינוב/i, lat: 54.64, lng: 27.48, label: 'Dolhinov, Minsk Governorate, Russian Empire' },
+  { re: /danilovichi|דנילוביץ/i, lat: 54.29, lng: 28.09, label: 'Danilovichi, Minsk Governorate, Russian Empire' },
+  { re: /sosenka|סוסנקה/i, lat: 52.0, lng: 23.6, label: 'Sosenka, Minsk Governorate, Russian Empire' },
+  { re: /pleshch|פלשניץ/i, lat: 54.42, lng: 27.7, label: 'Pleshchenitsy, Borisov District, Minsk Governorate, Russian Empire' },
+  { re: /mikashevichy/i, lat: 52.23, lng: 27.47, label: 'Mikashevichy, Minsk Governorate, Russian Empire' },
+  { re: /pinsk/i, lat: 52.11, lng: 26.1, label: 'Pinsk, Minsk Governorate, Russian Empire' },
+  { re: /minsk|מינסק/i, lat: 53.9, lng: 27.57, label: 'Minsk, Minsk Governorate, Russian Empire' },
   { re: /vilnius|vilna|wilno|ווילנ(?:ה|א)|וילנ(?:ה|א)/i, lat: 54.69, lng: 25.28, label: 'Vilnius, Lithuania' },
   { re: /kaunas|קובנ(?:ה|א)/i, lat: 54.9, lng: 23.9, label: 'Kaunas, Lithuania' },
   { re: /birž|birzai|birze/i, lat: 56.2, lng: 24.75, label: 'Biržai, Lithuania' },
@@ -33,7 +33,7 @@ const PLACE_PATTERNS: Array<{ re: RegExp; lat: number; lng: number; label: strin
   { re: /troyes|טרואה/i, lat: 48.3, lng: 4.08, label: 'Troyes, France' },
   { re: /tel aviv|תל אביב/i, lat: 32.09, lng: 34.78, label: 'Tel Aviv, Israel' },
   { re: /jerusalem|ירושלים/i, lat: 31.77, lng: 35.23, label: 'Jerusalem, Israel' },
-  { re: /haifa|חיפה/i, lat: 32.82, lng: 34.99, label: 'Haifa, Israel' },
+  { re: /haifa|חיפה/i, lat: 32.82, lng: 34.99, label: 'Haifa, Mandatory Palestine' },
   { re: /petah tikva|פתח תקווה/i, lat: 32.09, lng: 34.89, label: 'Petah Tikva, Israel' },
   { re: /kfar saba|כפר סבא|kefar sav/i, lat: 32.18, lng: 34.91, label: 'Kfar Saba, Israel' },
   { re: /netanya|נתניה/i, lat: 32.33, lng: 34.86, label: 'Netanya, Israel' },
@@ -55,7 +55,7 @@ const PLACE_PATTERNS: Array<{ re: RegExp; lat: number; lng: number; label: strin
   { re: /kosice|קושיצה|kassa/i, lat: 48.72, lng: 21.26, label: 'Košice, Slovakia' },
   { re: /krakes|קראקס/i, lat: 55.07, lng: 23.78, label: 'Krakės, Lithuania' },
   { re: /boguslav|בוגוסלב/i, lat: 49.54, lng: 30.87, label: 'Boguslav area, Ukraine' },
-  { re: /borisov|barysaw|בוריסוב/i, lat: 54.23, lng: 28.5, label: 'Borisov, Belarus' },
+  { re: /borisov|barysaw|בוריסוב/i, lat: 54.23, lng: 28.5, label: 'Borisov, Minsk Governorate, Russian Empire' },
 ];
 
 export function approximateCoordinatesForBirthPlace(

@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+import AssistLoopWidget from './components/AssistLoopWidget';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/he/tree" replace />} />
         </Routes>
       </Suspense>
+      <AssistLoopWidget />
       <SpeedInsights />
     </>
   );

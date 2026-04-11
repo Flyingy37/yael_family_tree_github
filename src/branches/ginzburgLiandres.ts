@@ -233,9 +233,9 @@ const BRANCH_RELATIONSHIP_NOTES: BranchRelationshipNote[] = [
   },
   {
     id: 'esther-stepchildren',
-    title: 'Stepchildren are not biological children',
+    title: 'Household children associated with Esther Lipschitz',
     detail:
-      'Esther Lipschitz is not presented as the biological mother of the three children who came with her from a previous family. They remain stepchildren in branch-level interpretation.',
+      'The children associated with Esther Lipschitz’s household in display are Dobe, Dora, and Haim. The display keeps them distinct from biological children.',
     personIds: ['@I203@'],
   },
   {
@@ -268,9 +268,9 @@ const BRANCH_RELATIONSHIP_NOTES: BranchRelationshipNote[] = [
   },
   {
     id: 'dobe-dora-haim-stepchildren',
-    title: 'Later household stepchildren',
+    title: 'Household children associated with Esther Lipschitz',
     detail:
-      'Dobe, Dora, and Haim remain stepchildren in the later household, not biological children.',
+      'The children associated with Esther Lipschitz’s household in display are Dobe, Dora, and Haim. The display keeps them distinct from biological children.',
     personIds: ['@I86@'],
   },
 ];
@@ -302,9 +302,9 @@ export const tzilaVideoEvidence: VideoTestimonyEvidence[] = [
     shortTitleHe: 'חלק ב: מלחמה, בריחה וסיפור הבנק',
     speakerPersonId: '@I12@',
     relatedPersonIds: ['@I12@', '@I36@', '@I37@'],
-    topics: ['war', 'flight', 'bank', 'bombing', 'pogrom', 'Pleshchenitsy ghetto'],
+    topics: ['war', 'flight', 'bank', 'bombing', 'pogrom', 'Pleshchenitsy'],
     description:
-      'Video testimony recounting Vladimir’s bank role, attempted escape with bank funds, military interception, bombing, family flight, and the Pleshchenitsy ghetto context.',
+      'Video testimony recounting Vladimir’s bank role, attempted escape with bank funds, military interception, bombing, family flight, and the Pleshchenitsy context in the Byelorussian SSR, Soviet Union.',
     descriptionHe: 'עדות מצולמת על תפקידו של ולדימיר בבנק, הבריחה, ההפצצות וההקשר של גטו פלשניץ.',
     source: 'Tzila family testimony transcript',
     url: 'https://www.youtube.com/watch?v=u5Ut8_JtsDE&t=996s',
@@ -450,6 +450,7 @@ export const tzilaImageEvidence: ImageEvidenceItem[] = [
       'Sofia Ginzburg Duberstein',
     ],
     source: 'Family archive annotated reference image',
+    sourceHe: 'צילום עם זיהוי משפחתי מתוך הארכיון המשפחתי',
     confidence: 'partial',
     note: 'This is a research-use annotated image. Individual identifications should be treated as family working labels unless corroborated by an original caption or parallel source.',
   },
@@ -490,8 +491,8 @@ export const tzilaImageEvidence: ImageEvidenceItem[] = [
   {
     id: 'ev-image-ginzburg-family-group-1946-a',
     type: 'family-photo',
-    title: 'Ginzburg family group photograph, postwar Belarus',
-    description: 'Clean family group photograph from the postwar period, preserved without the later handwritten overlay.',
+    title: 'Ginzburg family group photograph, postwar Byelorussian SSR, Soviet Union',
+    description: 'Clean family group photograph from the postwar period in Byelorussian SSR, Soviet Union, preserved without the later handwritten overlay.',
     assetPath: '/images/ginzburg/ginzburg_family_1946_-_1_original.jpg',
     relatedPersonIds: ['@I261@', '@I61@', '@I12@', '@I36@', '@I37@'],
     relatedPersonDisplayNames: ['Yudik Ginzburg'],
@@ -503,9 +504,9 @@ export const tzilaImageEvidence: ImageEvidenceItem[] = [
   {
     id: 'ev-image-ginzburg-family-group-1946-b',
     type: 'family-photo',
-    title: 'Alternate Ginzburg family group photograph, postwar Belarus',
+    title: 'Alternate Ginzburg family group photograph, postwar Byelorussian SSR, Soviet Union',
     description:
-      'Second family group photograph from the same broader postwar family context, likely related to the annotated identification set.',
+      'Second family group photograph from the same broader postwar family context in Byelorussian SSR, Soviet Union, likely related to the annotated identification set.',
     assetPath: '/images/ginzburg/ginzburg_family_1946_-_2_original.jpg',
     relatedPersonIds: ['@I261@', '@I61@', '@I12@', '@I36@', '@I37@'],
     relatedPersonDisplayNames: ['Yudik Ginzburg'],
@@ -525,7 +526,7 @@ export const tzilaImageEvidence: ImageEvidenceItem[] = [
     relatedPersonDisplayNames: ['Yankel Berl Ginzburg'],
     source: 'Family archive document scan',
     confidence: 'direct',
-    note: 'The document is primary evidence as an archival record, but any extracted transcription or interpretation should remain separately reviewable.',
+    note: 'The document is primary documentary evidence as an archival record, but any extracted transcription or interpretation should remain separately reviewable.',
   },
   {
     id: 'ev-document-yankel-berl-ginzburg-memoir-yiddish',
@@ -533,8 +534,8 @@ export const tzilaImageEvidence: ImageEvidenceItem[] = [
     title: 'Short memoir of Yankel-Berl Ginzburg (Yiddish manuscript)',
     titleHe: 'זיכרונות Yankel-Berl Ginzburg ביידיש',
     description:
-      'Yiddish memoir text attributed to Yankel-Berl Ginzburg, describing his birth in 1894 in Pleshchenitsy and naming his parents as Arie-Leib Ginzburg and Basia-Bashata née Landres.',
-    descriptionHe: 'כתב זיכרונות משפחתי ביידיש, עם פרטים על הלידה ב־Pleshchenitsy ועל הוריו של Yankel-Berl Ginzburg.',
+      'Yiddish memoir text attributed to Yankel-Berl Ginzburg, describing his birth in 1894 in Pleshchenitsy, Borisov District, Minsk Governorate, Russian Empire, and naming his parents as Arie-Leib Ginzburg and Basia-Bashata née Landres.',
+    descriptionHe: 'כתב זיכרונות משפחתי ביידיש, עם פרטים על הלידה ב־Pleshchenitsy, Borisov District, Minsk Governorate, Russian Empire, ועל הוריו של Yankel-Berl Ginzburg.',
     assetPath: '/images/ginzburg/yankel-berl_ginzburg_autobiography_original(2).jpg',
     relatedPersonIds: ['@I133@', '@I86@'],
     relatedPersonDisplayNames: ['Yankel Berl Ginzburg', 'Arie-Leib Ginzburg', 'Basia-Bashata née Landres'],
@@ -542,18 +543,19 @@ export const tzilaImageEvidence: ImageEvidenceItem[] = [
     source: 'Family archive, Yiddish memoir text and family translation',
     confidence: 'direct',
     note:
-      'Primary family-source autobiographical text. The memoir states that Yankel-Berl Ginzburg was born in 1894 in Pleshchenitsy, Borisov district, Minsk province; that his father Arie-Leib Ginzburg was a melamed for young children; and that his mother was Basia-Bashata née Landres.',
-    noteHe: 'לפי הטקסט, אביו הוא Arie-Leib Ginzburg ואמו היא Basia-Bashata née Landres.',
+      'Primary family-source autobiographical text. The memoir states that Yankel-Berl Ginzburg was born in 1894 in Pleshchenitsy, Borisov District, Minsk Governorate, Russian Empire; that his father Arie-Leib Ginzburg was a melamed for young children; and that his mother was Basia-Bashata née Landres.',
+    noteHe: 'לפי הטקסט, אביו הוא Arie-Leib Ginzburg ואמו היא Basia-Bashata née Landres; מקום הלידה הוא Pleshchenitsy, Borisov District, Minsk Governorate, Russian Empire.',
   },
   {
     id: 'ev-document-haifa-voters-list-1930',
     type: 'document-scan',
     title: 'Voter List for Haifa, 1928',
     titleHe: 'פנקס הבוחרים של חיפה, 1928',
-    description: 'Scanned page from the Voter List for Haifa, 1928, preserved as a supporting civic document.',
-    descriptionHe: 'סריקה של עמוד מתוך פנקס הבוחרים של חיפה, 1928, כפריט תיעוד מסייע.',
+    description: 'Scanned page from the Voter List for Haifa, 1928, preserved as a supporting civic document from Haifa, Mandatory Palestine.',
+    descriptionHe: 'סריקה של עמוד מתוך פנקס הבוחרים של חיפה, 1928, כפריט תיעוד מסייע מחיפה, Mandatory Palestine.',
     assetPath: '/images/ginzburg/1930_Voters_List_Haifa_040(1).jpg',
     source: 'Voter List for Haifa, 1928, from the “Voters Knesset Israel 1928” database, document 109, list 5, page 25, IGRA no. 7867. Original records: City Archives - Haifa. Record added to the search engine on 13 October 2012.',
+    sourceHe: 'פנקס הבוחרים של חיפה, 1928, מתוך מאגר “בוחרי כנסת ישראל 1928”, מסמך 109, רשימה 5, דף 25, מספר IGRA 7867. מקור הרשומות: ארכיון העיר חיפה. הרשומה נוספה למנוע החיפוש ב־13 October 2012.',
     year: 1928,
     confidence: 'partial',
     note:
@@ -607,7 +609,7 @@ export const tzilaImageEvidence: ImageEvidenceItem[] = [
     yearApprox: 'before June 1941',
     source: 'Family archive annotation',
     confidence: 'partial',
-    note: 'The identification remains family-supplied research context; family notes also state that about half of her classmates perished during the war in Belarus.',
+    note: 'The identification remains family-supplied research context; family notes also state that about half of her classmates perished during the war in the Byelorussian SSR, Soviet Union.',
   },
 ];
 
@@ -641,9 +643,9 @@ const BRANCH_EVIDENCE: BranchEvidenceItem[] = [
     type: 'video-testimony',
     title: 'Cilia/Tzila migration context note',
     description:
-      'Documented research context places her in Haifa during the British Mandate, traces family origin to the Pleshchenitsy area, and notes a return to Belarus around 1930.',
+      'Documented research context places her in Haifa, Mandatory Palestine, traces family origin to Pleshchenitsy, Borisov District, Minsk Governorate, Russian Empire, and notes a return to the Byelorussian SSR, Soviet Union, around 1930.',
     source: 'Existing migrationInfo on @I12@',
-    confidence: 'direct',
+    confidence: 'partial',
     note: 'Research context entry. No video URL or transcript is currently attached in the branch package.',
     personIds: ['@I12@'],
     speakerPersonId: '@I12@',
@@ -848,7 +850,7 @@ const BRANCH_GENEALOGY_CLAIMS: GenealogyClaim[] = [
     id: 'claim-yankel-berl-birth-1894-pleshchenitsy',
     type: 'identity',
     subjectId: '@I133@',
-    value: 'Born in 1894 in Pleshchenitsy, Borisov district, Minsk province',
+    value: 'Born in 1894 in Pleshchenitsy, Borisov District, Minsk Governorate, Russian Empire',
     evidenceIds: ['ev-document-yankel-berl-ginzburg-memoir-yiddish'],
     confidence: 'direct',
     note: 'Stated in first-person memoir text.',
