@@ -13,6 +13,12 @@ export const branchTheme: Record<BranchKey, { bg: string; border: string; text: 
     text: '#7a5850',
     dot: '#c9988e',
   },
+  charny_meirson: {
+    bg: '#f1dfdb',
+    border: '#d8b8af',
+    text: '#7a5850',
+    dot: '#c9988e',
+  },
   sokolov: {
     bg: '#eee4c8',
     border: '#d8c794',

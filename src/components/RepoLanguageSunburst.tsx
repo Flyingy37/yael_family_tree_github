@@ -13,13 +13,13 @@ const REPO_LANGUAGES: LanguageEntry[] = [
 ];
 
 const COLORS: Record<string, string> = {
-  TypeScript: '#3178c6',
-  Python:     '#3572A5',
-  JavaScript: '#f1e05a',
-  Other:      '#aaaaaa',
+  TypeScript: '#b7c7d4',
+  Python:     '#b7cbb2',
+  JavaScript: '#dfb1ad',
+  Other:      '#d6d8dd',
 };
 
-const ROOT_COLOR = '#e2e8f0';
+const ROOT_COLOR = '#eceff3';
 
 interface Arc {
   name: string;
@@ -119,7 +119,7 @@ export function RepoLanguageSunburst({ language = 'en', size = 340 }: Props) {
           textAnchor="middle"
           fontSize={size * 0.033}
           fontWeight="600"
-          fill="#374151"
+          fill="#4b5563"
         >
           {rootLabel}
         </text>

@@ -16,15 +16,12 @@ interface Props {
 // Top-N surnames get individual slices; the rest are grouped as "Other"
 const MAX_SLICES = 100;
 
-// Warm palette for family branches
+// Soft atlas palette aligned with the family branch colors
 const PALETTE = [
-  '#b45309', '#0369a1', '#15803d', '#7c3aed', '#b91c1c',
-  '#0e7490', '#a16207', '#be185d', '#4338ca', '#047857',
-  '#9a3412', '#1e40af', '#166534', '#6d28d9', '#9f1239',
-  '#155e75', '#92400e', '#831843', '#3730a3', '#065f46',
-  '#78350f', '#1d4ed8', '#14532d', '#5b21b6', '#881337',
-  '#164e63', '#854d0e', '#9d174d', '#312e81', '#064e3b',
-  '#7c2d12', '#1e3a8a', '#052e16', '#4c1d95', '#4d7c0f',
+  '#b7c7d4', '#dfb1ad', '#d9c58d', '#c6bfd8', '#b7cbb2',
+  '#d7d9de', '#cab7d6', '#c6ded9', '#d9c9a0', '#d6b8c7',
+  '#aebfd0', '#e0bfab', '#d4cb96', '#c8c0dd', '#bfd1bc',
+  '#d6d8dd', '#cfbdd7', '#c4e0dc', '#dbd0a8', '#d8c0cd',
 ];
 
 function polarToCartesian(cx: number, cy: number, r: number, angle: number) {
@@ -99,11 +96,11 @@ export function FamilyBranchSunburst({ personList, filteredIds, language = 'he',
         role="img"
       >
         {/* Root circle */}
-        <circle cx={cx} cy={cy} r={rootR} fill="#fef3c7" stroke="#fbbf24" strokeWidth={1.5} />
-        <text x={cx} y={cy - 8} textAnchor="middle" fontSize={size * 0.052} fontWeight="700" fill="#92400e">
+        <circle cx={cx} cy={cy} r={rootR} fill="#eceff3" stroke="#c7d0d9" strokeWidth={1.5} />
+        <text x={cx} y={cy - 8} textAnchor="middle" fontSize={size * 0.052} fontWeight="700" fill="#4b5563">
           {totalShown.toLocaleString()}
         </text>
-        <text x={cx} y={cy + 9} textAnchor="middle" fontSize={size * 0.028} fill="#a16207">
+        <text x={cx} y={cy + 9} textAnchor="middle" fontSize={size * 0.028} fill="#6b7280">
           {t ? 'אנשים' : 'people'}
         </text>
 
@@ -168,17 +165,17 @@ export function FamilyBranchSunburst({ personList, filteredIds, language = 'he',
           );
         })()}
         {hovered && (
-          <circle cx={cx} cy={cy} r={rootR} fill="#fff9f0" stroke="#fbbf24" strokeWidth={1.5} style={{ pointerEvents: 'none' }} />
+          <circle cx={cx} cy={cy} r={rootR} fill="#f7f8fa" stroke="#c7d0d9" strokeWidth={1.5} style={{ pointerEvents: 'none' }} />
         )}
         {hovered && (() => {
           const s = slices.find(sl => sl.name === hovered);
           if (!s) return null;
           return (
             <>
-              <text x={cx} y={cy - 8} textAnchor="middle" fontSize={size * 0.034} fontWeight="700" fill="#92400e" style={{ pointerEvents: 'none' }}>
+              <text x={cx} y={cy - 8} textAnchor="middle" fontSize={size * 0.034} fontWeight="700" fill="#4b5563" style={{ pointerEvents: 'none' }}>
                 {s.count.toLocaleString()}
               </text>
-              <text x={cx} y={cy + 10} textAnchor="middle" fontSize={size * 0.026} fill="#a16207" style={{ pointerEvents: 'none' }}>
+              <text x={cx} y={cy + 10} textAnchor="middle" fontSize={size * 0.026} fill="#6b7280" style={{ pointerEvents: 'none' }}>
                 {s.name}
               </text>
             </>

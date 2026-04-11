@@ -49,16 +49,16 @@ type ChartType = 'fan' | 'sunburst';
 
 const MAX_GENERATIONS = 7;
 
-// ── Branch colour palette — 8 vivid hues repeated for 16 slots ────────────────
+// ── Soft atlas palette — repeated for descendant fan slots ───────────────────
 const BRANCH_PALETTE = [
-  '#e53e3e', // red
-  '#dd6b20', // orange
-  '#d69e2e', // yellow-gold
-  '#38a169', // green
-  '#319795', // teal
-  '#3182ce', // blue
-  '#805ad5', // purple
-  '#d53f8c', // pink
+  '#b7c7d4', // blue-grey
+  '#dfb1ad', // peach-rose
+  '#d9c58d', // sand-gold
+  '#c6bfd8', // lavender-grey
+  '#b7cbb2', // sage
+  '#d6d8dd', // neutral grey
+  '#cab7d6', // soft violet
+  '#c4ded8', // muted teal
 ];
 
 /** Return the gen-1 branch index (0-7 for 8 branches, mirrors left/right) */
