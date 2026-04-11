@@ -13,8 +13,9 @@ interface Props {
   size?: number;
 }
 
-// Top-N surnames get individual slices; the rest are grouped as "Other"
-const MAX_SLICES = 100;
+// Keep the chart legible by showing only the most common surnames individually.
+// The remainder are grouped into a single "Other" slice.
+const MAX_VISIBLE_SLICES = 14;
 
 // Soft atlas palette aligned with the family branch colors
 const PALETTE = [
@@ -68,14 +69,17 @@ export function FamilyBranchSunburst({ personList, filteredIds, language = 'he',
       counts.set(label, (counts.get(label) ?? 0) + 1);
     }
 
-    // Sort descending, take top MAX_SLICES (no "Other" bucket)
+    // Sort descending, take only the top few surnames individually.
     const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);
-    const top = sorted.slice(0, MAX_SLICES);
-
-    const total = top.reduce((s, [, n]) => s + n, 0);
+    const visible = sorted.slice(0, MAX_VISIBLE_SLICES);
+    const otherCount = sorted.slice(MAX_VISIBLE_SLICES).reduce((s, [, n]) => s + n, 0);
+    const total = sorted.reduce((s, [, n]) => s + n, 0);
+    const chartSlices: Array<[string, number]> = otherCount > 0
+      ? [...visible, [t ? 'אחרים' : 'Other', otherCount]]
+      : visible;
     let cursor = -Math.PI / 2;
 
-    return top.map(([name, count], i) => {
+    return chartSlices.map(([name, count], i) => {
       const sweep = (count / total) * 2 * Math.PI;
       const midAngle = cursor + sweep / 2;
       const slice = { name, count, total, percent: count / total, startAngle: cursor, endAngle: cursor + sweep, midAngle, color: PALETTE[i % PALETTE.length] };
@@ -111,7 +115,7 @@ export function FamilyBranchSunburst({ personList, filteredIds, language = 'he',
           const lx = cx + labelR * Math.cos(slice.midAngle);
           const ly = cy + labelR * Math.sin(slice.midAngle);
           const sliceSweep = slice.endAngle - slice.startAngle;
-          const showLabel = sliceSweep > 0.22; // only label if arc is wide enough
+          const showLabel = sliceSweep > 0.28; // only label if arc is wide enough
 
           return (
             <g
@@ -139,7 +143,11 @@ export function FamilyBranchSunburst({ personList, filteredIds, language = 'he',
                   fill="white"
                   style={{ pointerEvents: 'none', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}
                 >
-                  {slice.percent >= 0.07 ? slice.name : `${Math.round(slice.percent * 100)}%`}
+                  {slice.name === (t ? 'אחרים' : 'Other')
+                    ? slice.name
+                    : slice.percent >= 0.08
+                      ? slice.name
+                      : `${Math.round(slice.percent * 100)}%`}
                 </text>
               )}
             </g>
@@ -168,7 +176,7 @@ export function FamilyBranchSunburst({ personList, filteredIds, language = 'he',
       </svg>
 
       {/* Legend */}
-      <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 text-xs max-w-xs">
+      <div className="flex max-h-40 max-w-sm flex-wrap justify-center gap-x-4 gap-y-1.5 overflow-y-auto text-xs">
         {slices.map(slice => (
           <div
             key={slice.name}
