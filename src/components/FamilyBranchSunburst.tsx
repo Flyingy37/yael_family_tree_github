@@ -114,6 +114,7 @@ export function FamilyBranchSunburst({ personList, filteredIds, language = 'he',
   const useBars = slices.length > 12;
   const maxBarCount = Math.max(1, ...slices.map((slice) => slice.count));
   const activeSlice = locked ?? hovered;
+  const hideArcLabels = size < 320 || slices.length > 8;
 
   const renderRootSummary = () => (
     <div className="mb-4 flex items-center gap-3 rounded-2xl border border-[rgba(160,147,125,0.16)] bg-[linear-gradient(180deg,rgba(255,255,255,0.72),rgba(250,247,242,0.95))] px-4 py-3">
@@ -213,7 +214,7 @@ export function FamilyBranchSunburst({ personList, filteredIds, language = 'he',
           const ly = cy + labelR * Math.sin(slice.midAngle);
           const sliceSweep = slice.endAngle - slice.startAngle;
           const arcLength = Math.max(0, labelR * sliceSweep);
-          const showLabel = sliceSweep > 0.22;
+          const showLabel = !hideArcLabels && sliceSweep > 0.22;
           const label =
             slice.name === (t ? 'אחרים' : 'Other')
               ? slice.name
@@ -310,9 +311,10 @@ export function FamilyBranchSunburst({ personList, filteredIds, language = 'he',
       {/* Legend */}
       <div className="flex max-h-40 max-w-sm flex-wrap justify-center gap-x-4 gap-y-1.5 overflow-y-auto text-xs">
         {slices.map((slice) => (
-          <div
+          <button
             key={slice.name}
             className="flex items-center gap-1.5 cursor-pointer"
+            type="button"
             onMouseEnter={() => setHovered(slice.name)}
             onMouseLeave={() => setHovered(null)}
             onClick={() => setLocked((current) => (current === slice.name ? null : slice.name))}
@@ -325,7 +327,7 @@ export function FamilyBranchSunburst({ personList, filteredIds, language = 'he',
               {slice.name}
             </span>
             <span className="text-stone-400">{slice.count}</span>
-          </div>
+          </button>
         ))}
       </div>
     </div>
