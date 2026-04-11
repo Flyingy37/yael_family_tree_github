@@ -49,7 +49,7 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
     'maternal-line-mtdna': {
       title: 'עוגן mtDNA לקו האימהי',
       description:
-        'Sofia היא נקודת העיגון האימהית המוקדמת בסיכום הנוכחי, ושכבת התצוגה משמרת את השרשרת Basia -> Sofia -> Tzila Cilia -> Pola -> Yael.',
+        'Sofia היא נקודת העיגון האימהית המוקדמת בסיכום הנוכחי, ושכבת התצוגה משמרת את השרשרת Basia -> Sofia -> Tzila Cilia Sara -> Pola -> Yael.',
       note: 'תיעוד חלקי. רמז ה-mtDNA תומך בקו האימהי אך אינו פותר לבדו את כל החיבורים ההיסטוריים.',
       source: 'עוגן mtDNA לקו האימהי',
     },
@@ -99,7 +99,7 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
       source: 'ארכיון משפחתי',
     },
     'ev-image-cilia-two-person-portrait': {
-      title: 'דיוקן של Tzila Cilia Duberstein Alperovitz עם Liri Livnat-Tal',
+      title: 'דיוקן של Tzila Cilia Sara Duberstein Alperovitz עם Liri Livnat-Tal',
       description: 'צילום זוגי שבו Cilia מופיעה עם Liri Livnat-Tal.',
       note: 'יש לשמור את הייחוס המשפחתי פתוח לבדיקה עד להתאמה נוספת של הצילום.',
       source: 'חומרי Ginzburg שהועלו',
@@ -160,8 +160,8 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
       source: 'חומרי Ginzburg שהועלו',
     },
     'ev-image-cilia-alperovitz-liri-livnat-tal': {
-      title: 'Tzila Cilia Alperovitz née Dubershtein עם Liri Livnat-Tal',
-      description: 'צילום משפחתי מאוחר שבו נראית Tzila Cilia Alperovitz née Dubershtein מחזיקה את Liri Livnat-Tal.',
+      title: 'Tzila Cilia Sara Alperovitz née Dubershtein with Liri Livnat-Tal',
+      description: 'צילום משפחתי מאוחר שבו נראית Tzila Cilia Sara Alperovitz née Dubershtein מחזיקה את Liri Livnat-Tal.',
       note: 'צילום משפחתי מאוחר מתוך ארכיון הקו האימהי.',
       source: 'ארכיון משפחתי',
     },
