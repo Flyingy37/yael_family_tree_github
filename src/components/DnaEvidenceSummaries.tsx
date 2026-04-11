@@ -27,9 +27,9 @@ const SCOPE_LABELS: Record<string, { he: string; en: string }> = {
 };
 
 const STRENGTH_STYLES: Record<string, { badge: string; label: { he: string; en: string } }> = {
-  high:   { badge: 'bg-emerald-100 text-emerald-800 border border-emerald-300', label: { he: 'חזק', en: 'Strong' } },
-  medium: { badge: 'bg-amber-100 text-amber-800 border border-amber-300',       label: { he: 'בינוני', en: 'Medium' } },
-  low:    { badge: 'bg-slate-100 text-slate-600 border border-slate-300',        label: { he: 'ראשוני', en: 'Low' } },
+  high:   { badge: 'bg-[linear-gradient(180deg,rgba(237,242,233,0.96),rgba(229,236,225,0.88))] text-[rgb(91,112,89)] border border-[rgba(135,156,132,0.16)]', label: { he: 'חזק', en: 'Strong' } },
+  medium: { badge: 'bg-[linear-gradient(180deg,rgba(244,238,228,0.94),rgba(236,229,216,0.86))] text-[rgb(133,109,72)] border border-[rgba(179,154,114,0.18)]', label: { he: 'בינוני', en: 'Medium' } },
+  low:    { badge: 'bg-[linear-gradient(180deg,rgba(248,245,240,0.96),rgba(240,235,228,0.88))] text-[rgb(95,91,83)] border border-[rgba(156,147,134,0.16)]', label: { he: 'ראשוני', en: 'Low' } },
 };
 
 interface Props {
@@ -69,15 +69,15 @@ export function DnaEvidenceSummaries({ language = 'he' }: Props) {
         return (
           <div
             key={idx}
-            className="rounded-xl border border-violet-200 bg-white shadow-sm overflow-hidden"
+            className="rounded-xl border border-[rgba(160,147,125,0.16)] bg-[linear-gradient(180deg,rgba(255,255,255,0.68),rgba(250,247,242,0.9))] shadow-sm overflow-hidden"
           >
             {/* Top accent bar */}
-            <div className="h-1 bg-violet-300" />
+            <div className="h-1 bg-[linear-gradient(90deg,rgba(179,154,114,0.36),rgba(181,138,132,0.24),rgba(121,150,158,0.22))]" />
 
             <div className="p-4 space-y-2">
               {/* Title row */}
               <div className="flex items-start gap-2 flex-wrap">
-                <FlaskConical size={15} className="text-violet-500 shrink-0 mt-0.5" strokeWidth={1.8} />
+                <FlaskConical size={15} className="text-[rgb(116,108,96)] shrink-0 mt-0.5" strokeWidth={1.8} />
                 <span className="font-semibold text-sm text-slate-800 leading-snug flex-1">
                   {summary.title}
                 </span>
@@ -92,7 +92,7 @@ export function DnaEvidenceSummaries({ language = 'he' }: Props) {
                   {summary.related_names.map(name => (
                     <span
                       key={name}
-                      className="inline-block text-[10px] bg-violet-50 text-violet-700 border border-violet-200 rounded-full px-2 py-0.5 font-medium"
+                      className="inline-block text-[10px] bg-[linear-gradient(180deg,rgba(248,245,240,0.96),rgba(240,235,228,0.88))] text-[rgb(95,91,83)] border border-[rgba(156,147,134,0.16)] rounded-full px-2 py-0.5 font-medium"
                     >
                       {name}
                     </span>

@@ -30,23 +30,23 @@ interface DnaMatchesData {
 }
 
 const BRANCH_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  Alperovich:         { bg: '#fef9c3', text: '#854d0e', border: '#fde047' },
-  Kostrell:           { bg: '#dbeafe', text: '#1e40af', border: '#93c5fd' },
-  Ginzburg:           { bg: '#d1fae5', text: '#065f46', border: '#6ee7b7' },
-  'Alperovich-Herbert': { bg: '#ede9fe', text: '#5b21b6', border: '#c4b5fd' },
-  'Alperovich-Dubrow':  { bg: '#ede9fe', text: '#5b21b6', border: '#c4b5fd' },
-  Dascalu:            { bg: '#fee2e2', text: '#991b1b', border: '#fca5a5' },
-  'Kastrel?':         { bg: '#dbeafe', text: '#1e40af', border: '#93c5fd' },
-  'Dascalu?':         { bg: '#fee2e2', text: '#991b1b', border: '#fca5a5' },
-  Unknown:            { bg: '#f1f5f9', text: '#475569', border: '#cbd5e1' },
+  Alperovich: { bg: '#efe5cf', text: '#6f5d43', border: '#d6c4a0' },
+  Kostrell: { bg: '#dde7ef', text: '#546978', border: '#bac9d4' },
+  Ginzburg: { bg: '#dce8f1', text: '#4a6777', border: '#b7cad7' },
+  'Alperovich-Herbert': { bg: '#ece4f2', text: '#6b5c7c', border: '#cdbed8' },
+  'Alperovich-Dubrow': { bg: '#ece4f2', text: '#6b5c7c', border: '#cdbed8' },
+  Dascalu: { bg: '#f0e1df', text: '#7c5c59', border: '#d7b7b2' },
+  'Kastrel?': { bg: '#dde7ef', text: '#546978', border: '#bac9d4' },
+  'Dascalu?': { bg: '#f0e1df', text: '#7c5c59', border: '#d7b7b2' },
+  Unknown: { bg: '#f1f0ec', text: '#6c655c', border: '#d4ccc0' },
 };
 
 function cmToColor(cm: number): string {
-  if (cm >= 1700) return 'bg-amber-500';
-  if (cm >= 850)  return 'bg-amber-400';
-  if (cm >= 200)  return 'bg-sky-400';
-  if (cm >= 90)   return 'bg-emerald-400';
-  return 'bg-slate-300';
+  if (cm >= 1700) return '#baa28a';
+  if (cm >= 850)  return '#c8b59d';
+  if (cm >= 200)  return '#b4c7d1';
+  if (cm >= 90)   return '#b7c7af';
+  return '#d0c7bc';
 }
 
 function cmLabel(cm: number, isHe: boolean): string {
@@ -95,15 +95,15 @@ export function DnaMatchesView({ language = 'he', onNavigateToPerson }: Props) {
   return (
     <div dir={isHe ? 'rtl' : 'ltr'} className="space-y-4">
       {/* Header card */}
-      <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+      <div className="rounded-xl border border-[rgba(160,147,125,0.18)] bg-[linear-gradient(180deg,rgba(246,243,236,0.94),rgba(239,233,224,0.88))] p-4">
         <div className="flex items-start gap-3">
-          <Dna size={20} className="text-emerald-600 shrink-0 mt-0.5" strokeWidth={1.8} />
+          <Dna size={20} className="text-[rgb(116,108,96)] shrink-0 mt-0.5" strokeWidth={1.8} />
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-emerald-800">
+            <p className="text-sm font-semibold text-[rgb(94,87,78)]">
               {data.meta.tester} · {data.meta.kit}
             </p>
-            <p className="text-xs text-emerald-600 mt-0.5">{data.meta.platform}</p>
-            <div className="mt-2 flex flex-wrap gap-3 text-xs text-emerald-700">
+            <p className="text-xs text-[rgb(126,117,104)] mt-0.5">{data.meta.platform}</p>
+            <div className="mt-2 flex flex-wrap gap-3 text-xs text-[rgb(116,108,96)]">
               <span>
                 <strong>{data.meta.totalMatches.toLocaleString()}</strong>{' '}
                 {isHe ? 'התאמות סה"כ' : 'total matches'}
@@ -121,15 +121,15 @@ export function DnaMatchesView({ language = 'he', onNavigateToPerson }: Props) {
       {/* cM scale legend */}
       <div className="flex flex-wrap gap-2 text-[11px]">
         {[
-          { cm: 1700, label: isHe ? '≥1,700 דוד ישיר' : '≥1,700 Uncle/Aunt', cls: 'bg-amber-500 text-white' },
-          { cm: 200,  label: isHe ? '200-850 בן דוד שני' : '200–850 2nd Cousin', cls: 'bg-sky-400 text-white' },
-          { cm: 90,   label: isHe ? '90-200 בן דוד שלישי' : '90–200 3rd Cousin', cls: 'bg-emerald-400 text-white' },
+          { cm: 1700, label: isHe ? '≥1,700 דוד ישיר' : '≥1,700 Uncle/Aunt', style: { backgroundColor: '#baa28a', color: '#fff' } },
+          { cm: 200,  label: isHe ? '200-850 בן דוד שני' : '200–850 2nd Cousin', style: { backgroundColor: '#b4c7d1', color: '#fff' } },
+          { cm: 90,   label: isHe ? '90-200 בן דוד שלישי' : '90–200 3rd Cousin', style: { backgroundColor: '#b7c7af', color: '#fff' } },
         ].map(item => (
-          <span key={item.cm} className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-medium ${item.cls}`}>
+          <span key={item.cm} className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-medium" style={item.style}>
             {item.label}
           </span>
         ))}
-        <span className="text-slate-400 text-[11px] self-center">{isHe ? '· Y-DNA = של המתאים, לא של יעל' : '· Y-DNA = match\'s haplogroup, not Yael\'s'}</span>
+        <span className="text-[rgb(126,117,104)] text-[11px] self-center">{isHe ? '· Y-DNA = של המתאים, לא של יעל' : '· Y-DNA = match\'s haplogroup, not Yael\'s'}</span>
       </div>
 
       {/* Branch filter */}
@@ -172,7 +172,7 @@ export function DnaMatchesView({ language = 'he', onNavigateToPerson }: Props) {
                 className="w-full text-start p-3"
                 onClick={() => setExpanded(isOpen ? null : match.name)}
               >
-                <div className="flex items-start justify-between gap-2">
+              <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-semibold text-sm text-slate-800 truncate">{match.name}</span>
@@ -185,7 +185,7 @@ export function DnaMatchesView({ language = 'he', onNavigateToPerson }: Props) {
                         </span>
                       )}
                       {match.treePersonId && (
-                        <span className="text-[9px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full border border-emerald-200 font-semibold">
+                        <span className="text-[9px] bg-[linear-gradient(180deg,rgba(237,242,233,0.96),rgba(229,236,225,0.88))] text-[rgb(91,112,89)] px-1.5 py-0.5 rounded-full border border-[rgba(135,156,132,0.16)] font-semibold">
                           🌳 {isHe ? 'בעץ' : 'In tree'}
                         </span>
                       )}
@@ -195,7 +195,7 @@ export function DnaMatchesView({ language = 'he', onNavigateToPerson }: Props) {
 
                   <div className="shrink-0 text-right flex items-center gap-2">
                     <div>
-                      <div className={`text-base font-bold tabular-nums ${match.sharedCm >= 1700 ? 'text-amber-600' : match.sharedCm >= 200 ? 'text-sky-700' : 'text-emerald-700'}`}>
+                      <div className={`text-base font-bold tabular-nums ${match.sharedCm >= 1700 ? 'text-[rgb(122,104,78)]' : match.sharedCm >= 200 ? 'text-[rgb(90,118,133)]' : 'text-[rgb(91,112,89)]'}`}>
                         {match.sharedCm.toFixed(0)} <span className="text-[10px] font-normal text-slate-400">cM</span>
                       </div>
                       <div className="text-[10px] text-slate-400">{cmLabel(match.sharedCm, isHe)}</div>
@@ -217,9 +217,9 @@ export function DnaMatchesView({ language = 'he', onNavigateToPerson }: Props) {
                 <div className="border-t px-3 pb-3 pt-2 space-y-1.5 text-xs" style={{ borderColor: colors.border }}>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-slate-600">
                     <div><span className="text-slate-400">Longest Block:</span> <strong>{match.longestBlock} cM</strong></div>
-                    {match.xMatch && <div><span className="text-slate-400">X-Match:</span> <strong className="text-violet-700">{match.xMatch}</strong></div>}
-                    {match.yDna && <div><span className="text-slate-400">Y-DNA:</span> <strong className="text-blue-700">{match.yDna}</strong></div>}
-                    {match.mtDna && <div><span className="text-slate-400">mtDNA:</span> <strong className="text-rose-700">{match.mtDna}</strong></div>}
+                    {match.xMatch && <div><span className="text-slate-400">X-Match:</span> <strong className="text-[rgb(100,87,128)]">{match.xMatch}</strong></div>}
+                    {match.yDna && <div><span className="text-slate-400">Y-DNA:</span> <strong className="text-[rgb(90,118,133)]">{match.yDna}</strong></div>}
+                    {match.mtDna && <div><span className="text-slate-400">mtDNA:</span> <strong className="text-[rgb(145,95,90)]">{match.mtDna}</strong></div>}
                   </div>
                   {match.surnames && (
                     <div className="text-slate-500">
@@ -236,7 +236,7 @@ export function DnaMatchesView({ language = 'he', onNavigateToPerson }: Props) {
                     <button
                       type="button"
                       onClick={() => onNavigateToPerson(match.treePersonId!)}
-                      className="inline-flex items-center gap-1 text-emerald-700 underline hover:no-underline text-[11px] mt-1"
+                      className="inline-flex items-center gap-1 text-[rgb(91,112,89)] underline hover:no-underline text-[11px] mt-1"
                     >
                       <ExternalLink size={10} />
                       {isHe ? 'פתח בעץ' : 'Open in tree'}
