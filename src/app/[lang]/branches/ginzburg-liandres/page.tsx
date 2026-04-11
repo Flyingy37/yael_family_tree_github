@@ -352,6 +352,7 @@ export default function GinzburgLiandresBranchPage() {
   const visibleRelationshipSummary = summary.showOnlyBloodline
     ? relationshipSummary.filter((line) => !/marriage|stepchildren|stepfamily/i.test(line))
     : relationshipSummary;
+  const showOnlyBloodline = summary.showOnlyBloodline === true;
   const localizedStepchildren = isHebrew
     ? 'שמות הילדים המשויכים לבית Esther Lipschitz בתצוגה: Dobe, Dora, and Haim. התצוגה שומרת על הבחנה בינם לבין ילדים ביולוגיים.'
     : null;

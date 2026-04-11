@@ -68,9 +68,9 @@ export function useFamilyData(): FamilyData {
     return () => controller.abort();
   }, [reloadToken]);
 
-  const normalizedPersons = useMemo(() => {
-    if (!graph) return new Map<string, Person>();
-    return graph.persons.map((person) => ({
+  const normalizedPersons = useMemo<Person[]>(() => {
+    if (!graph) return [];
+    return graph.persons.map((person): Person => ({
       ...person,
       birthPlace: formatHistoricalPlace(person.birthPlace),
       migrationInfo: formatHistoricalPlace(person.migrationInfo),
@@ -104,7 +104,7 @@ export function useFamilyData(): FamilyData {
         .toLowerCase();
     };
 
-    return personList.map(person => {
+    return personList.map((person: Person) => {
       const text = [
         person.fullName,
         person.givenName,

@@ -9,7 +9,7 @@ export type BloodlineLegendItem = {
   labelEn: string;
   descriptionHe: string;
   descriptionEn: string;
-  linkedPeople?: Array<{ label: string; personId?: string }>;
+  linkedPeople?: Array<{ label: string; personId?: string | null }>;
 };
 
 export const BLOODLINE_LEGEND_ITEMS: BloodlineLegendItem[] = [

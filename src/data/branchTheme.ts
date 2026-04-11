@@ -7,6 +7,12 @@ export const branchTheme: Record<BranchKey, { bg: string; border: string; text: 
     text: '#445d6c',
     dot: '#7fa6be',
   },
+  duberstein: {
+    bg: '#e6e0f1',
+    border: '#c4b7dd',
+    text: '#5f5678',
+    dot: '#a996cd',
+  },
   charny: {
     bg: '#f1dfdb',
     border: '#d8b8af',
