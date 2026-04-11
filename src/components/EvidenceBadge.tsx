@@ -47,9 +47,9 @@ export function EvidenceBadge({
   };
 
   const atlasLabelsHe: Record<EvidenceType, string> = {
-    'family-photo': 'תצלום משפחתי',
+    'family-photo': 'צילום משפחתי',
     portrait: 'דיוקן',
-    'annotated-photo': 'תצלום מסומן',
+    'annotated-photo': 'צילום עם זיהוי משפחתי',
     'document-scan': 'מסמך סרוק',
     testimony: 'עדות / סיפור',
     'video-testimony': 'עדות וידאו',

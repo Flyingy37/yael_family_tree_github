@@ -9,6 +9,7 @@ import {
 } from '../../../../branches/ginzburgLiandres';
 import { ArchivalCard } from '../../../../components/ArchivalCard';
 import { BranchEvidenceCard } from '../../../../components/BranchEvidenceCard';
+import { FamilyColorLegend, FamilyColorLegendProvider } from '../../../../components/FamilyColorLegend';
 import { RelationshipChip } from '../../../../components/RelationshipChip';
 import { EVIDENCE_TYPE_ORDER, type BranchEvidenceItem, type EvidenceType } from '../../../../types/genealogy';
 
@@ -104,20 +105,20 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
       source: 'חומרי Ginzburg שהועלו',
     },
     'ev-image-ginzburg-family-1946-annotated': {
-      title: 'תצלום משפחתי מסומן של Ginzburg',
-      description: 'תצלום משפחתי מסומן מתוך סט חומרי Ginzburg לשנת 1946.',
+      title: 'צילום משפחתי עם זיהוי משפחתי של Ginzburg',
+      description: 'צילום משפחתי עם זיהוי משפחתי מתוך סט חומרי Ginzburg לשנת 1946.',
       note: 'סימוני ההערה הם חלק מהתמונה המקורית; חלק מהזיהויים נותרים פרשניים.',
       source: 'חומרי Ginzburg שהועלו',
     },
     'ev-image-ginzburg-family-1946-clean': {
-      title: 'תצלום משפחתי נקי של Ginzburg',
-      description: 'גרסה נקייה של התצלום המשפחתי מתוך אותו סט חומרי Ginzburg לשנת 1946.',
+      title: 'צילום משפחתי נקי של Ginzburg',
+      description: 'גרסה נקייה של הצילום המשפחתי מתוך אותו סט חומרי Ginzburg לשנת 1946.',
       note: 'השתמשו בגרסה זו כנקודת ייחוס לא מסומנת של אותו מבנה משפחתי.',
       source: 'חומרי Ginzburg שהועלו',
     },
     'ev-image-ginzburg-family-annotated-group': {
-      title: 'תצלום משפחתי מסומן של Ginzburg',
-      description: 'תצלום משפחתי עם שורות זיהוי בכתב יד ושמות שנוספו מאוחר יותר לצורך זיהוי עבודה.',
+      title: 'צילום משפחתי עם זיהוי משפחתי של Ginzburg',
+      description: 'צילום משפחתי עם שורות זיהוי בכתב יד ושמות שנוספו מאוחר יותר לצורך זיהוי עבודה.',
       note: 'זהו צילום מחקרי מסומן. יש להתייחס לזיהויים האישיים כאל תוויות עבודה משפחתיות, אלא אם יאומתו בכיתוב מקורי או במקור מקביל.',
       source: 'תצלום הפניה מסומן מתוך הארכיון המשפחתי',
     },
@@ -292,9 +293,9 @@ export default function GinzburgLiandresBranchPage() {
         relationshipSummary: 'סיכום יחסים',
         presentationRules: 'כללי הצגה',
         typeEmptyLabels: {
-        'family-photo': 'אין תצלום משפחתי נוסף בחבילת הענף.',
+        'family-photo': 'אין צילום משפחתי נוסף בחבילת הענף.',
         portrait: 'אין דיוקן נוסף ברמת הענף בשלב זה.',
-        'annotated-photo': 'אין תצלום מסומן נוסף ברמת הענף בשלב זה.',
+        'annotated-photo': 'אין צילום עם זיהוי משפחתי נוסף ברמת הענף בשלב זה.',
         'document-scan': 'אין מסמך סרוק נוסף ברמת הענף בשלב זה.',
         testimony: 'אין עדות נוספת ברמת הענף בשלב זה.',
         'video-testimony': 'אין עדות וידאו נוספת ברמת הענף בשלב זה.',
@@ -360,208 +361,216 @@ export default function GinzburgLiandresBranchPage() {
 
   return (
     <div className="atlas-page h-full overflow-auto" dir={isHebrew ? 'rtl' : 'ltr'}>
-      <div className="max-w-6xl mx-auto px-4 py-8 md:py-10">
-        <div className="mb-8">
-          <Link to={`/${lang}/tree`} className="atlas-link text-sm">
-            {ui.treeLink}
-          </Link>
-          <h1 className="mt-3 text-4xl text-stone-800 font-display-en">{ui.title}</h1>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-stone-600">
-            {ui.intro}
-          </p>
-        </div>
-
-        <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-          <div className="atlas-panel rounded-[1.75rem] p-6">
-            <div className="atlas-kicker mb-4">{ui.rootCouple}</div>
-            <div className="flex flex-col items-center text-center">
-              <div className="atlas-pill rounded-full px-5 py-2 text-sm text-[var(--atlas-text)]">
-                <PersonName
-                  personId={rootHusband?.id || null}
-                  fallback={renderPersonLabel(rootHusband?.id || null, 'Arie-Leib Ginzburg')}
-                  href={rootHusband ? `/${lang}/person/${encodeURIComponent(rootHusband.id)}` : undefined}
-                />
-              </div>
-              <div className="archival-connector-v h-8 my-2" />
-              <div className="atlas-node-dot" />
-              <div className="archival-connector-v h-8 my-2" />
-              <div className="atlas-pill rounded-full px-5 py-2 text-sm text-[rgb(128,95,76)]">
-                <PersonName
-                  personId={rootWife?.id || null}
-                  fallback={renderPersonLabel(rootWife?.id || null, 'Basia Liandres')}
-                  href={rootWife ? `/${lang}/person/${encodeURIComponent(rootWife.id)}` : undefined}
-                />
-              </div>
-            </div>
-
-            <div className="atlas-divider my-8" />
-
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
-              {summary.familyStructure.map((family) => (
-                <ArchivalCard
-                  key={family.label}
-                  title={
-                    family.label === 'First marriage'
-                      ? ui.firstMarriage
-                      : family.label === 'Second marriage'
-                        ? ui.secondMarriage
-                        : ui.thirdMarriage
-                  }
-                  variant="atlas"
-                  eyebrow={
-                    <RelationshipChip
-                      label={
-                        isHebrew
-                          ? family.label === 'First marriage'
-                            ? ui.firstMarriageTag
-                            : family.label === 'Second marriage'
-                              ? ui.secondMarriageTag
-                              : ui.thirdMarriageTag
-                          : formatRelationshipLabel(family.relationshipType)
-                      }
-                      variant="atlas"
-                      tone={family.label === 'Second marriage' ? 'rose' : family.label === 'Third marriage' ? 'violet' : 'stone'}
-                    />
-                  }
-                >
-                  {family.label === 'First marriage' ? (
-                    <div className="space-y-1.5">
-                      <p className="text-sm leading-6 text-[var(--atlas-text)]">{ui.firstMarriageSentence}</p>
-                      <p className="text-xs text-stone-500">{ui.firstMarriageChild}</p>
-                    </div>
-                  ) : (
-                    <>
-                      <p>{family.spouseLabel}</p>
-                      {'note' in family && family.note ? (
-                        <p className="mt-2 text-xs text-stone-500">
-                          {isHebrew && family.label === 'Third marriage'
-                            ? ui.thirdMarriageNote
-                            : family.note}
-                        </p>
-                      ) : null}
-                    </>
-                  )}
-                  {'children' in family && family.children ? (
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {family.children.map((id) => {
-                        return (
-                          <Link
-                            key={id}
-                            to={`/${lang}/person/${encodeURIComponent(id)}`}
-                            className="atlas-pill rounded-full px-2.5 py-1 text-xs text-[var(--atlas-text)]"
-                          >
-                            {renderPersonLabel(id, id)}
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  ) : null}
-                  {'stepchildren' in family && family.stepchildren ? (
-                    <div className="mt-3 space-y-1">
-                      {family.stepchildren.map((line) => (
-                        <p key={line} className="text-xs text-stone-500">{localizedStepchildren || line}</p>
-                      ))}
-                    </div>
-                  ) : null}
-                </ArchivalCard>
-              ))}
-            </div>
+      <FamilyColorLegendProvider>
+        <div className="max-w-6xl mx-auto px-4 py-8 md:py-10">
+          <div className="mb-8">
+            <Link to={`/${lang}/tree`} className="atlas-link text-sm">
+              {ui.treeLink}
+            </Link>
+            <h1 className="mt-3 text-4xl text-stone-800 font-display-en">{ui.title}</h1>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-stone-600">
+              {ui.intro}
+            </p>
           </div>
 
-          <div className="space-y-6">
-            <ArchivalCard title={ui.maternalLine} variant="atlas" eyebrow={<RelationshipChip label={ui.maternalChain} tone="violet" variant="atlas" />}>
-              <div className="space-y-2">
-                {summary.maternalLine.map((item, index) => (
-                  <div key={`${item.label}-${index}`} className="flex items-center gap-3">
-                    <div className="atlas-node-dot flex-shrink-0" />
-                    <div className="flex-1">
-                      <PersonName
-                        personId={item.personId}
-                        fallback={renderPersonLabel(item.personId, item.label)}
-                        href={item.personId ? `/${lang}/person/${encodeURIComponent(item.personId)}` : undefined}
+          <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+            <div className="atlas-panel rounded-[1.75rem] p-6">
+              <div className="atlas-kicker mb-4">{ui.rootCouple}</div>
+              <div className="flex flex-col items-center text-center">
+                <div className="atlas-pill rounded-full px-5 py-2 text-sm text-[var(--atlas-text)]">
+                  <PersonName
+                    personId={rootHusband?.id || null}
+                    fallback={renderPersonLabel(rootHusband?.id || null, 'Arie-Leib Ginzburg')}
+                    href={rootHusband ? `/${lang}/person/${encodeURIComponent(rootHusband.id)}` : undefined}
+                  />
+                </div>
+                <div className="archival-connector-v h-8 my-2" />
+                <div className="atlas-node-dot" />
+                <div className="archival-connector-v h-8 my-2" />
+                <div className="atlas-pill rounded-full px-5 py-2 text-sm text-[rgb(128,95,76)]">
+                  <PersonName
+                    personId={rootWife?.id || null}
+                    fallback={renderPersonLabel(rootWife?.id || null, 'Basia Liandres')}
+                    href={rootWife ? `/${lang}/person/${encodeURIComponent(rootWife.id)}` : undefined}
+                  />
+                </div>
+              </div>
+              <div className="atlas-divider my-8" />
+
+              <div className="mt-8 grid gap-4 md:grid-cols-3">
+                {summary.familyStructure.map((family) => (
+                  <ArchivalCard
+                    key={family.label}
+                    title={
+                      family.label === 'First marriage'
+                        ? ui.firstMarriage
+                        : family.label === 'Second marriage'
+                          ? ui.secondMarriage
+                          : ui.thirdMarriage
+                    }
+                    variant="atlas"
+                    eyebrow={
+                      <RelationshipChip
+                        label={
+                          isHebrew
+                            ? family.label === 'First marriage'
+                              ? ui.firstMarriageTag
+                              : family.label === 'Second marriage'
+                                ? ui.secondMarriageTag
+                                : ui.thirdMarriageTag
+                            : formatRelationshipLabel(family.relationshipType)
+                        }
+                        variant="atlas"
+                        tone={family.label === 'Second marriage' ? 'rose' : family.label === 'Third marriage' ? 'violet' : 'stone'}
                       />
+                    }
+                  >
+                    {family.label === 'First marriage' ? (
+                      <div className="space-y-1.5">
+                        <p className="text-sm leading-6 text-[var(--atlas-text)]">{ui.firstMarriageSentence}</p>
+                        <p className="text-xs text-stone-500">{ui.firstMarriageChild}</p>
+                      </div>
+                    ) : (
+                      <>
+                        <p>{family.spouseLabel}</p>
+                        {'note' in family && family.note ? (
+                          <p className="mt-2 text-xs text-stone-500">
+                            {isHebrew && family.label === 'Third marriage'
+                              ? ui.thirdMarriageNote
+                              : family.note}
+                          </p>
+                        ) : null}
+                      </>
+                    )}
+                    {'children' in family && family.children ? (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {family.children.map((id) => {
+                          return (
+                            <Link
+                              key={id}
+                              to={`/${lang}/person/${encodeURIComponent(id)}`}
+                              className="atlas-pill rounded-full px-2.5 py-1 text-xs text-[var(--atlas-text)]"
+                            >
+                              {renderPersonLabel(id, id)}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    ) : null}
+                    {'stepchildren' in family && family.stepchildren ? (
+                      <div className="mt-3 space-y-1">
+                        {family.stepchildren.map((line) => (
+                          <p key={line} className="text-xs text-stone-500">{localizedStepchildren || line}</p>
+                        ))}
+                      </div>
+                    ) : null}
+                  </ArchivalCard>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <ArchivalCard title={ui.maternalLine} variant="atlas" eyebrow={<RelationshipChip label={ui.maternalChain} tone="violet" variant="atlas" />}>
+                <div className="space-y-2">
+                  {summary.maternalLine.map((item, index) => (
+                    <div key={`${item.label}-${index}`} className="flex items-center gap-3">
+                      <div className="atlas-node-dot flex-shrink-0" />
+                      <div className="flex-1">
+                        <PersonName
+                          personId={item.personId}
+                          fallback={renderPersonLabel(item.personId, item.label)}
+                          href={item.personId ? `/${lang}/person/${encodeURIComponent(item.personId)}` : undefined}
+                        />
+                      </div>
                     </div>
+                  ))}
+                </div>
+              </ArchivalCard>
+
+              <ArchivalCard title={ui.borisovBranch} variant="atlas" eyebrow={<RelationshipChip label={ui.gershonLine} tone="lime" variant="atlas" />}>
+                <p className="text-sm leading-6 text-stone-600">
+                  {ui.borisovSummary}
+                </p>
+                <div className="mt-4 space-y-3">
+                  {gershon ? (
+                    <div className="atlas-card-subtle rounded-2xl px-4 py-3">
+                      <Link to={`/${lang}/person/${encodeURIComponent(gershon.id)}`} className="atlas-link text-sm font-medium">
+                        {getCanonicalGinzburgLiandresDisplayName(gershon)}
+                      </Link>
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {(getGinzburgLiandresRelationshipOverlay(gershon.id)?.relationshipChips || ['Borisov cluster']).map((chip) => (
+                          <RelationshipChip key={chip} label={chip} tone="lime" variant="atlas" />
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+                  <div className="flex flex-wrap gap-2">
+                    {summary.borisovBranchIds
+                      .filter((id) => id !== '@I132@')
+                      .map((id) => (
+                        <Link
+                          key={id}
+                          to={`/${lang}/person/${encodeURIComponent(id)}`}
+                          className="atlas-pill rounded-full px-2.5 py-1 text-xs text-[var(--atlas-text)]"
+                        >
+                          {renderPersonLabel(id, id)}
+                        </Link>
+                      ))}
+                  </div>
+                </div>
+              </ArchivalCard>
+
+              <FamilyColorLegend
+                className="rounded-[1.75rem]"
+                language={lang}
+                resolvePersonLabel={(personId) => renderPersonLabel(personId, personId)}
+                resolvePersonHref={(personId) => `/${lang}/person/${encodeURIComponent(personId)}`}
+              />
+            </div>
+          </section>
+
+          <section className="mt-8 grid gap-6 lg:grid-cols-[1fr_1fr]">
+            <ArchivalCard title={ui.evidence} variant="atlas" eyebrow={<RelationshipChip label={ui.evidenceFirst} tone="rose" variant="atlas" />}>
+              <div className="space-y-3">
+                {evidenceByType.map(({ type, items }) => (
+                  <div key={type} className="atlas-card-subtle rounded-2xl px-3 py-2">
+                    {items.length > 0 ? (
+                      <div className="mt-1.5 space-y-2">
+                        {items.map((item) => {
+                          const displayItem = translateEvidenceItem(item, isHebrew, `/${lang}/branches/ginzburg-liandres`);
+                          return (
+                            <BranchEvidenceCard
+                              key={item.id}
+                              item={displayItem}
+                              language={lang}
+                              variant="atlas"
+                              compact
+                              resolvePersonLabel={(personId) => renderPersonLabel(personId, personId)}
+                              resolvePersonHref={(personId) => `/${lang}/person/${encodeURIComponent(personId)}`}
+                            />
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="mt-3 text-sm leading-6 text-stone-500">{ui.typeEmptyLabels[type]}</p>
+                    )}
                   </div>
                 ))}
               </div>
             </ArchivalCard>
 
-            <ArchivalCard title={ui.borisovBranch} variant="atlas" eyebrow={<RelationshipChip label={ui.gershonLine} tone="lime" variant="atlas" />}>
-              <p className="text-sm leading-6 text-stone-600">
-                {ui.borisovSummary}
-              </p>
-              <div className="mt-4 space-y-3">
-                {gershon ? (
-                  <div className="atlas-card-subtle rounded-2xl px-4 py-3">
-                    <Link to={`/${lang}/person/${encodeURIComponent(gershon.id)}`} className="atlas-link text-sm font-medium">
-                      {getCanonicalGinzburgLiandresDisplayName(gershon)}
-                    </Link>
-                    <div className="mt-2 flex flex-wrap gap-1.5">
-                      {(getGinzburgLiandresRelationshipOverlay(gershon.id)?.relationshipChips || ['Borisov cluster']).map((chip) => (
-                        <RelationshipChip key={chip} label={chip} tone="lime" variant="atlas" />
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
-                <div className="flex flex-wrap gap-2">
-                  {summary.borisovBranchIds
-                    .filter((id) => id !== '@I132@')
-                    .map((id) => (
-                      <Link
-                        key={id}
-                        to={`/${lang}/person/${encodeURIComponent(id)}`}
-                        className="atlas-pill rounded-full px-2.5 py-1 text-xs text-[var(--atlas-text)]"
-                      >
-                        {renderPersonLabel(id, id)}
-                      </Link>
-                    ))}
-                </div>
-              </div>
+            <ArchivalCard title={ui.relationshipSummary} variant="atlas" eyebrow={<RelationshipChip label={ui.presentationRules} tone="violet" variant="atlas" />}>
+              <ul className="space-y-2">
+                {relationshipSummary.map((line) => (
+                  <li key={line} className="text-sm leading-6 text-stone-600">
+                    {line}
+                  </li>
+                ))}
+              </ul>
             </ArchivalCard>
-          </div>
-        </section>
-
-        <section className="mt-8 grid gap-6 lg:grid-cols-[1fr_1fr]">
-          <ArchivalCard title={ui.evidence} variant="atlas" eyebrow={<RelationshipChip label={ui.evidenceFirst} tone="rose" variant="atlas" />}>
-            <div className="space-y-3">
-              {evidenceByType.map(({ type, items }) => (
-                <div key={type} className="atlas-card-subtle rounded-2xl px-3 py-2">
-                  {items.length > 0 ? (
-                    <div className="mt-1.5 space-y-2">
-                      {items.map((item) => {
-                        const displayItem = translateEvidenceItem(item, isHebrew, `/${lang}/branches/ginzburg-liandres`);
-                        return (
-                          <BranchEvidenceCard
-                            key={item.id}
-                            item={displayItem}
-                            language={lang}
-                            variant="atlas"
-                            compact
-                            resolvePersonLabel={(personId) => renderPersonLabel(personId, personId)}
-                            resolvePersonHref={(personId) => `/${lang}/person/${encodeURIComponent(personId)}`}
-                          />
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <p className="mt-3 text-sm leading-6 text-stone-500">{ui.typeEmptyLabels[type]}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </ArchivalCard>
-
-          <ArchivalCard title={ui.relationshipSummary} variant="atlas" eyebrow={<RelationshipChip label={ui.presentationRules} tone="violet" variant="atlas" />}>
-            <ul className="space-y-2">
-              {relationshipSummary.map((line) => (
-                <li key={line} className="text-sm leading-6 text-stone-600">
-                  {line}
-                </li>
-              ))}
-            </ul>
-          </ArchivalCard>
-        </section>
-      </div>
+          </section>
+        </div>
+      </FamilyColorLegendProvider>
     </div>
   );
 }
