@@ -50,7 +50,7 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
       title: 'עוגן mtDNA לקו האימהי',
       description:
         'Sofia היא נקודת העיגון האימהית המוקדמת בסיכום הנוכחי, ושכבת התצוגה משמרת את השרשרת Basia -> Sofia -> Tzila Cilia -> Pola -> Yael.',
-      note: 'ראיה חלקית. רמז ה-mtDNA תומך בקו האימהי אך אינו פותר לבדו את כל החיבורים ההיסטוריים.',
+      note: 'תיעוד חלקי. רמז ה-mtDNA תומך בקו האימהי אך אינו פותר לבדו את כל החיבורים ההיסטוריים.',
       source: 'עוגן mtDNA לקו האימהי',
     },
     'daniel-ginzburg-dna': {
@@ -77,7 +77,7 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
     'ev-image-aharon-military-portrait': {
       title: 'דיוקן משויך ל־Aharon Ginzburg',
       description: 'דיוקן ארכיוני המשויך לפי הזיהוי המשפחתי ל־Aharon Ginzburg.',
-      note: 'השנה והזיהוי נשענים על הייחוס המשפחתי הנוכחי.',
+      note: 'הייחוס המשפחתי נשאר פתוח לבדיקה עד לאישור נוסף ממקור מתוארך או ממקור מקביל.',
       source: 'חומרי Ginzburg שהועלו',
     },
     'ev-image-berl-yakov-ginzburg-1944': {
@@ -99,9 +99,9 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
       source: 'ארכיון משפחתי',
     },
     'ev-image-cilia-two-person-portrait': {
-      title: 'דיוקן של Tzila Cilia Duberstein Alperovitz עם תינוק',
-      description: 'צילום זוגי שבו Cilia מופיעה עם תינוק. הזיהוי של המבוגר חזק; זהות התינוק נשמרת כמשוערת.',
-      note: 'יש לשמור את זהות התינוק כמשוערת עד להתאמה חזקה יותר של הצילום.',
+      title: 'דיוקן של Tzila Cilia Duberstein Alperovitz עם Liri Livnat-Tal',
+      description: 'צילום זוגי שבו Cilia מופיעה עם Liri Livnat-Tal.',
+      note: 'יש לשמור את הייחוס המשפחתי פתוח לבדיקה עד להתאמה נוספת של הצילום.',
       source: 'חומרי Ginzburg שהועלו',
     },
     'ev-image-ginzburg-family-1946-annotated': {
@@ -153,11 +153,11 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
       source: 'ארכיון משפחתי, טקסט זיכרון ביידיש ותרגום משפחתי',
     },
     'ev-document-haifa-voters-list-1930': {
-      title: 'פנקס בוחרים חיפה, 1928',
-      description: 'פנקס בוחרים חיפה 1928, מתוך מאגר “בוחרים של כנסת ישראל 1928”, מסמך 109, רשימה 5, דף 25, מספר IGRA 7867. מקור הרשומות: ארכיון העיר חיפה.',
+      title: 'פנקס הבוחרים של חיפה, 1928',
+      description: 'סריקה של עמוד מתוך פנקס הבוחרים של חיפה, 1928, כפריט תיעוד מסייע.',
       note:
-        'רשומה זו נשמרת כפריט תיעוד אזרחי מתקופת המנדט. היא נוספה למאגר החיפוש ב־13 October 2012. יש לחלץ בנפרד את הרשומות המשפחתיות הרלוונטיות ולאמת אותן לפני קישור ישיר לגרף המשפחה.',
-      source: 'פנקס בוחרים חיפה 1928, מתוך מאגר “בוחרים של כנסת ישראל 1928”, מסמך 109, רשימה 5, דף 25, מספר IGRA 7867. מקור הרשומות: ארכיון העיר חיפה.',
+        'המטא־דאטה של הרשומה מציין: מסמך 109, רשימה 5, דף 25, מספר IGRA 7867. עם זאת, הסריקה המוצגת כאן נושאת בראש העמוד את הסימון “קף 40”. לכן יש להבחין בין פרטי הקטלוג של הרשומה לבין מספר העמוד המופיע בסריקה שהועלתה בפועל.',
+      source: 'פנקס הבוחרים של חיפה, 1928, מתוך מאגר “בוחרי כנסת ישראל 1928”, מסמך 109, רשימה 5, דף 25, מספר IGRA 7867. מקור הרשומות: ארכיון העיר חיפה. הרשומה נוספה למנוע החיפוש ב־13 October 2012.',
     },
     'ev-image-tzila-family-testimony-scan': {
       title: 'עמוד סרוק מעדות משפחת Tzila',
@@ -180,14 +180,8 @@ function translateEvidenceItem(item: BranchEvidenceItem, isHebrew: boolean, bran
     'ev-image-tzila-prewar-class-photo-1941': {
       title: 'צילום כיתה לפני הפלישה הנאצית, משויך ל־Tzila Alperovitz née Dubershtein',
       description: 'צילום כיתה מסיום כיתה ח׳, מהתקופה שלפני הפלישה הנאצית, עם זיהוי משפחתי של Tzila Alperovitz née Dubershtein בפינה הימנית התחתונה, עם צמות.',
-      note: 'לפי ההערה המשפחתית, Tzila Alperovitz née Dubershtein מופיעה בפינה הימנית התחתונה. התמונה מתוארת כצילום כיתה מסיום כיתה ח׳ מלפני הפלישה הנאצית. לפי הזיכרון המשפחתי, כמחצית מבני ובנות הכיתה נספו במהלך המלחמה בבלארוס.',
+      note: 'לפי ההערה המשפחתית, Tzila Alperovitz née Dubershtein מופיעה בפינה הימנית התחתונה. זהו תיעוד מחקרי ולא הוכחה סגורה; לפי הזיכרון המשפחתי, כמחצית מבני ובנות הכיתה נספו במהלך המלחמה בבלארוס.',
       source: 'הערת ארכיון משפחתי',
-    },
-    'ev-image-tzila-dubershtein-class-photo-pre-1941': {
-      title: 'צילום כיתה לפני הפלישה הנאצית, משויך ל־Tzila Alperovitz née Dubershtein',
-      description: 'צילום כיתה מסיום כיתה ח׳, מהתקופה שלפני הפלישה הנאצית, עם זיהוי משפחתי של Tzila Alperovitz née Dubershtein בפינה הימנית התחתונה, עם צמות.',
-      note: 'לפי ההערה המשפחתית, Tzila Alperovitz née Dubershtein מופיעה בפינה הימנית התחתונה. התמונה מתוארת כצילום כיתה מסיום כיתה ח׳ מלפני הפלישה הנאצית. לפי הזיכרון המשפחתי, כמחצית מבני ובנות הכיתה נספו במהלך המלחמה בבלארוס.',
-      source: 'ארכיון משפחתי עם הערת זיהוי מאוחרת',
     },
     'raw-family-structure': {
       title: 'הפניה מבנית לגרף המשפחה',
