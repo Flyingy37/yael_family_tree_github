@@ -18,6 +18,7 @@ import { EvidenceBadge } from './EvidenceBadge';
 import { RelationshipChip } from './RelationshipChip';
 import {
   type BranchRelationshipNote,
+  getGinzburgLiandresBranchSummary,
   getCanonicalGinzburgLiandresDisplayName,
   getGinzburgLiandresAliases,
   getGinzburgLiandresDisplayProfile,
@@ -451,6 +452,7 @@ export function PersonDetailPanel({
   }, [activeFilters, person, isConnectedToYael, t]);
 
   const isMobile = useIsMobile();
+  const showOnlyBloodline = getGinzburgLiandresBranchSummary().showOnlyBloodline === true;
   const displayBirthDate = branchProfile?.conciseBirthDate || formatDateConcise(person.birthDate);
   const displayDeathDate = branchProfile?.conciseDeathDate || formatDateConcise(person.deathDate);
   const displayBirthPlace = formatHistoricalPlace(person.birthPlace);
@@ -846,6 +848,10 @@ export function PersonDetailPanel({
     ...note,
     ...(branchResearchNoteCopy[note.id] || {}),
   });
+  const visibleBranchChips =
+    branchOverlay?.relationshipChips?.length && showOnlyBloodline
+      ? branchOverlay.relationshipChips.filter((chip) => !/marriage cluster/i.test(chip))
+      : branchOverlay?.relationshipChips || [];
 
   return (
     <div 
@@ -892,9 +898,9 @@ export function PersonDetailPanel({
         <div className="atlas-card-subtle mb-4 rounded-2xl p-3">
           <div className="atlas-kicker mb-2">{branchUi.packageLabel}</div>
           <div className="text-sm text-[var(--atlas-text)]">{branchUi.branchName}</div>
-          {branchOverlay?.relationshipChips?.length ? (
+          {visibleBranchChips.length ? (
             <div className="mb-2 flex flex-wrap gap-1.5">
-              {branchOverlay.relationshipChips.map((chip) => (
+              {visibleBranchChips.map((chip) => (
                 <RelationshipChip key={chip} label={translateBranchChip(chip)} tone="violet" variant="atlas" />
               ))}
             </div>

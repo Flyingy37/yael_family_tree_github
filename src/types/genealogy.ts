@@ -16,6 +16,8 @@ export type GenealogyClaim = {
   note?: string;
 };
 
+export type RelationType = 'blood' | 'marriage' | 'unknown';
+
 export type EvidenceType =
   | 'family-photo'
   | 'portrait'

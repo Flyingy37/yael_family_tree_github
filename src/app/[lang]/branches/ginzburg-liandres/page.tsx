@@ -350,6 +350,12 @@ export default function GinzburgLiandresBranchPage() {
         'Druzia Lyandres נשמרת בחבילת הענף כאמו של Basia לצורך רצף הקו האימהי, אף שהגרף הגולמי עדיין אינו מכיל רשומת אדם קנונית ומקושרת עבורה.',
       ]
     : summary.relationshipSummary;
+  const visibleFamilyStructure = summary.showOnlyBloodline
+    ? summary.familyStructure.filter((family) => family.relationType !== 'marriage')
+    : summary.familyStructure;
+  const visibleRelationshipSummary = summary.showOnlyBloodline
+    ? relationshipSummary.filter((line) => !/marriage|stepchildren|stepfamily/i.test(line))
+    : relationshipSummary;
   const localizedStepchildren = isHebrew
     ? 'שמות הילדים המשויכים לבית Esther Lipschitz בתצוגה: Dobe, Dora, and Haim. התצוגה שומרת על הבחנה בינם לבין ילדים ביולוגיים.'
     : null;
@@ -393,7 +399,7 @@ export default function GinzburgLiandresBranchPage() {
               <div className="atlas-divider my-8" />
 
               <div className="mt-8 grid gap-4 md:grid-cols-3">
-                {summary.familyStructure.map((family) => (
+                {visibleFamilyStructure.map((family) => (
                   <ArchivalCard
                     key={family.label}
                     title={
@@ -493,7 +499,13 @@ export default function GinzburgLiandresBranchPage() {
                         {getCanonicalGinzburgLiandresDisplayName(gershon)}
                       </Link>
                       <div className="mt-2 flex flex-wrap gap-1.5">
-                        {(getGinzburgLiandresRelationshipOverlay(gershon.id)?.relationshipChips || ['Borisov cluster']).map((chip) => (
+                        {(
+                          showOnlyBloodline
+                            ? (getGinzburgLiandresRelationshipOverlay(gershon.id)?.relationshipChips || ['Borisov cluster']).filter(
+                                (chip) => !/marriage cluster/i.test(chip)
+                              )
+                            : (getGinzburgLiandresRelationshipOverlay(gershon.id)?.relationshipChips || ['Borisov cluster'])
+                        ).map((chip) => (
                           <RelationshipChip key={chip} label={chip} tone="lime" variant="atlas" />
                         ))}
                       </div>
@@ -556,7 +568,7 @@ export default function GinzburgLiandresBranchPage() {
 
             <ArchivalCard title={ui.relationshipSummary} variant="atlas" eyebrow={<RelationshipChip label={ui.presentationRules} tone="violet" variant="atlas" />}>
               <ul className="space-y-2">
-                {relationshipSummary.map((line) => (
+                {visibleRelationshipSummary.map((line) => (
                   <li key={line} className="text-sm leading-6 text-stone-600">
                     {line}
                   </li>

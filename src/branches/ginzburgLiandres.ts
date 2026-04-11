@@ -3,6 +3,7 @@ import type {
   BranchEvidenceItem,
   GenealogyClaim,
   ImageEvidenceItem,
+  RelationType,
   VideoTestimonyEvidence,
 } from '../types/genealogy';
 import { formatDateConcise, formatLifespan } from '../utils/formatters';
@@ -12,6 +13,7 @@ export interface BranchRelationshipNote {
   title: string;
   detail: string;
   personIds: string[];
+  relationType?: RelationType;
 }
 
 export interface BranchPersonDisplayProfile {
@@ -157,6 +159,7 @@ const BRANCH_ALIAS_RULES = [
 export const GINZBURG_LIANDRES_BRANCH_SUMMARY = {
   id: 'ginzburg-liandres',
   title: 'Ginzburg-Liandres',
+  showOnlyBloodline: true,
   intro:
     'Branch package focused on the Ginzburg-Liandres maternal line, emphasizing canonical English display names, alias control, and evidence-first relationship notes.',
   rootCouple: {
@@ -172,6 +175,7 @@ export const GINZBURG_LIANDRES_BRANCH_SUMMARY = {
       children: ['@I203@'],
       note: 'Known child from this marriage: Eti Ginzburg Charny.',
       relationshipType: 'unknown-first-wife',
+      relationType: 'blood',
     },
     {
       label: 'Second marriage',
@@ -179,6 +183,7 @@ export const GINZBURG_LIANDRES_BRANCH_SUMMARY = {
       spousePersonId: '@I87@',
       children: ['@I37@', '@I131@', '@I132@', '@I133@', '@I134@'],
       relationshipType: 'biological-children',
+      relationType: 'blood',
     },
   {
     label: 'Third marriage',
@@ -187,6 +192,7 @@ export const GINZBURG_LIANDRES_BRANCH_SUMMARY = {
     note:
       'Research correction layer only: branch presentation records Esther Lipschitz as a third-wife identity, but the current raw graph does not yet contain a canonical linked person record for her.',
     relationshipType: 'half-sibling-and-stepfamily',
+    relationType: 'marriage',
     stepchildren: [
       'The children associated with Esther Lipschitz’s household in display: Dobe, Dora, and Haim. The display keeps them distinct from biological children.',
     ],
@@ -230,6 +236,7 @@ const BRANCH_RELATIONSHIP_NOTES: BranchRelationshipNote[] = [
     detail:
       'Display logic treats Arie-Leib as having an unknown first wife (given name and maiden name unknown) with known child Eti Ginzburg Charny, Basia Liandres as second wife, and Esther Lipschitz as third wife. This is a presentation correction layered over the current raw graph.',
     personIds: ['@I86@', '@I87@'],
+    relationType: 'marriage',
   },
   {
     id: 'esther-stepchildren',
@@ -237,6 +244,7 @@ const BRANCH_RELATIONSHIP_NOTES: BranchRelationshipNote[] = [
     detail:
       'The children associated with Esther Lipschitz’s household in display are Dobe, Dora, and Haim. The display keeps them distinct from biological children.',
     personIds: ['@I203@'],
+    relationType: 'marriage',
   },
   {
     id: 'eti-half-sister',
@@ -244,6 +252,7 @@ const BRANCH_RELATIONSHIP_NOTES: BranchRelationshipNote[] = [
     detail:
       'Eti Ginzburg Charny is displayed as a half-sister of Sofia, Gershon, Aharon, Yankel Berl, and Isaak rather than a full sibling.',
     personIds: ['@I203@', '@I37@', '@I131@', '@I132@', '@I133@', '@I134@'],
+    relationType: 'blood',
   },
   {
     id: 'ela-iche-ambiguity',
@@ -251,6 +260,7 @@ const BRANCH_RELATIONSHIP_NOTES: BranchRelationshipNote[] = [
     detail:
       'Ela / Iche may refer to one person or two people in the Duberstein generation; keep this ambiguous in the presentation layer.',
     personIds: ['@I36@'],
+    relationType: 'unknown',
   },
   {
     id: 'iche-first-wife-household',
@@ -258,6 +268,7 @@ const BRANCH_RELATIONSHIP_NOTES: BranchRelationshipNote[] = [
     detail:
       'Iche is kept as a low-confidence household placement under Leiba’s first-wife household.',
     personIds: ['@I86@'],
+    relationType: 'marriage',
   },
   {
     id: 'asna-lifshitz-sister',
@@ -265,6 +276,7 @@ const BRANCH_RELATIONSHIP_NOTES: BranchRelationshipNote[] = [
     detail:
       'Asna Lifshitz may be Esther’s sister; preserve this as uncertain.',
     personIds: ['@I86@'],
+    relationType: 'unknown',
   },
   {
     id: 'dobe-dora-haim-stepchildren',
@@ -272,6 +284,7 @@ const BRANCH_RELATIONSHIP_NOTES: BranchRelationshipNote[] = [
     detail:
       'The children associated with Esther Lipschitz’s household in display are Dobe, Dora, and Haim. The display keeps them distinct from biological children.',
     personIds: ['@I86@'],
+    relationType: 'marriage',
   },
 ];
 
