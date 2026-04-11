@@ -111,7 +111,8 @@ export function FamilyBranchSunburst({ personList, filteredIds, language = 'he',
   }, [personList, filteredIds, t]);
 
   const totalShown = filteredIds.size;
-  const useBars = slices.length > 12;
+  // Switch to a bar view sooner once the distribution becomes crowded.
+  const useBars = slices.length > 9;
   const maxBarCount = Math.max(1, ...slices.map((slice) => slice.count));
   const activeSlice = locked ?? hovered;
   const hideArcLabels = size < 320 || slices.length > 8;
