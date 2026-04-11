@@ -94,31 +94,34 @@ export function TimelineView({ persons, filteredIds, onSelectPerson, language = 
   };
 
   return (
-    <div className="w-full h-full flex flex-col bg-white" dir={t ? 'rtl' : 'ltr'}>
+    <div
+      className="flex h-full w-full flex-col rounded-2xl border border-[rgba(160,147,125,0.16)] bg-[linear-gradient(180deg,rgba(255,255,255,0.72),rgba(250,247,242,0.95))]"
+      dir={t ? 'rtl' : 'ltr'}
+    >
       {/* Header */}
-      <div className="px-4 py-3 border-b border-gray-200 flex items-center gap-3">
-        <h2 className="font-bold text-gray-700">{t ? 'ציר זמן' : 'Timeline'}</h2>
-        <span className="text-sm text-gray-400">{events.length.toLocaleString()} {t ? 'אירועים' : 'events'}</span>
+      <div className="flex items-center gap-3 border-b border-[rgba(160,147,125,0.12)] px-4 py-3">
+        <h2 className="font-bold text-[rgb(94,87,78)]">{t ? 'ציר זמן' : 'Timeline'}</h2>
+        <span className="text-sm text-[rgb(141,134,123)]">{events.length.toLocaleString()} {t ? 'אירועים' : 'events'}</span>
         {range && (
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-[rgb(141,134,123)]">
             {t ? 'טווח שנים' : 'Year range'}: {range.minYear}–{range.maxYear}
           </span>
         )}
         <div className="flex items-center gap-2 mr-auto">
           <button
-            className="text-xs text-gray-500 hover:text-gray-700"
+            className="text-xs text-[rgb(116,108,96)] hover:text-[rgb(94,87,78)]"
             onClick={() => jumpToDecade('start')}
           >
             {t ? 'להתחלה' : 'Start'}
           </button>
           <button
-            className="text-xs text-gray-500 hover:text-gray-700"
+            className="text-xs text-[rgb(116,108,96)] hover:text-[rgb(94,87,78)]"
             onClick={() => jumpToDecade('1900')}
           >
             1900
           </button>
           <button
-            className="text-xs text-gray-500 hover:text-gray-700"
+            className="text-xs text-[rgb(116,108,96)] hover:text-[rgb(94,87,78)]"
             onClick={() => jumpToDecade('end')}
           >
             {t ? 'לסוף' : 'End'}
@@ -126,7 +129,7 @@ export function TimelineView({ persons, filteredIds, onSelectPerson, language = 
         </div>
         {selectedDecade !== null && (
           <button
-            className="text-xs text-blue-500 hover:text-blue-700"
+            className="text-xs text-[rgb(90,118,133)] hover:text-[rgb(70,103,114)]"
             onClick={() => setSelectedDecade(null)}
           >
             {t ? 'נקה בחירה' : 'Clear selection'}
@@ -137,7 +140,7 @@ export function TimelineView({ persons, filteredIds, onSelectPerson, language = 
       {/* Timeline bar chart */}
       <div
         ref={timelineRef}
-        className="flex items-end gap-0.5 px-4 py-4 overflow-x-auto min-h-[160px] border-b border-gray-100"
+        className="flex min-h-[160px] items-end gap-0.5 overflow-x-auto border-b border-[rgba(160,147,125,0.12)] px-4 py-4"
         dir="ltr"
       >
         {decades.map(decade => {
@@ -156,20 +159,20 @@ export function TimelineView({ persons, filteredIds, onSelectPerson, language = 
               onClick={() => setSelectedDecade(isSelected ? null : decade)}
               title={`${decade}s: ${births} births, ${deaths} deaths`}
             >
-              <div className="text-[9px] text-gray-400 mb-1">{count}</div>
+              <div className="mb-1 text-[9px] text-[rgb(141,134,123)]">{count}</div>
               <div className="flex flex-col w-8 rounded-t overflow-hidden" style={{ height }}>
                 <div
-                  className={`${isSelected ? 'bg-blue-500' : 'bg-blue-300 group-hover:bg-blue-400'} transition-colors`}
+                  className={`${isSelected ? 'bg-[rgb(90,118,133)]' : 'bg-[rgb(181,202,210)] group-hover:bg-[rgb(153,180,190)]'} transition-colors`}
                   style={{ flex: births }}
                 />
                 {deaths > 0 && (
                   <div
-                    className={`${isSelected ? 'bg-red-400' : 'bg-red-200 group-hover:bg-red-300'} transition-colors`}
+                    className={`${isSelected ? 'bg-[rgb(181,138,132)]' : 'bg-[rgb(228,214,209)] group-hover:bg-[rgb(214,195,189)]'} transition-colors`}
                     style={{ flex: deaths }}
                   />
                 )}
               </div>
-              <div className={`text-[10px] mt-1 ${isSelected ? 'font-bold text-blue-600' : 'text-gray-500'}`}>
+              <div className={`mt-1 text-[10px] ${isSelected ? 'font-bold text-[rgb(90,118,133)]' : 'text-[rgb(116,108,96)]'}`}>
                 {decade}
               </div>
             </button>
@@ -180,31 +183,32 @@ export function TimelineView({ persons, filteredIds, onSelectPerson, language = 
       {/* Events list */}
       <div className="flex-1 overflow-y-auto px-4 py-2">
         {selectedDecade === null ? (
-          <div className="text-center text-gray-400 text-sm mt-8">
+          <div className="mt-8 text-center text-sm text-[rgb(141,134,123)]">
             {t ? 'לחצ/י על עשור בגרף למעלה כדי לראות אירועים' : 'Click a decade above to view events'}
           </div>
         ) : (
           <div>
-            <h3 className="font-bold text-sm text-gray-700 mb-2">
+            <h3 className="mb-2 text-sm font-bold text-[rgb(94,87,78)]">
               {t ? `שנות ה-${selectedDecade} - ${selectedEvents.length} אירועים` : `${selectedDecade}s - ${selectedEvents.length} events`}
             </h3>
             <div className="space-y-1">
               {selectedEvents.map((evt, i) => (
                 <button
                   key={`${evt.person.id}-${evt.type}-${i}`}
-                  className="w-full flex items-center gap-2 py-1.5 px-2 rounded hover:bg-gray-50 text-right transition-colors"
+                  className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-right transition-colors hover:bg-[rgba(248,245,240,0.84)]"
                   onClick={() => onSelectPerson(evt.person.id)}
                 >
-                  <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                    evt.type === 'birth' ? 'bg-blue-400' : 'bg-red-400'
+                  <span
+                    className={`h-2 w-2 flex-shrink-0 rounded-full ${
+                      evt.type === 'birth' ? 'bg-[rgb(90,118,133)]' : 'bg-[rgb(181,138,132)]'
                   }`} />
-                  <span className="text-xs text-gray-400 w-10 flex-shrink-0">{evt.year}</span>
+                  <span className="w-10 flex-shrink-0 text-xs text-[rgb(141,134,123)]">{evt.year}</span>
                   <span className="text-sm font-medium truncate">{evt.person.fullName}</span>
-                  <span className="text-xs text-gray-400 flex-shrink-0">
+                  <span className="flex-shrink-0 text-xs text-[rgb(141,134,123)]">
                     {evt.type === 'birth' ? (t ? 'לידה' : 'Birth') : (t ? 'פטירה' : 'Death')}
                   </span>
                   {evt.person.birthPlace && evt.type === 'birth' && (
-                    <span className="text-xs text-gray-300 truncate">{evt.person.birthPlace}</span>
+                    <span className="truncate text-xs text-[rgb(168,161,152)]">{evt.person.birthPlace}</span>
                   )}
                 </button>
               ))}
@@ -214,12 +218,12 @@ export function TimelineView({ persons, filteredIds, onSelectPerson, language = 
       </div>
 
       {/* Legend */}
-      <div className="px-4 py-2 border-t border-gray-100 flex gap-4 text-xs text-gray-500">
+      <div className="flex gap-4 border-t border-[rgba(160,147,125,0.12)] px-4 py-2 text-xs text-[rgb(116,108,96)]">
         <span className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-blue-400" /> {t ? 'לידה' : 'Birth'}
+          <span className="h-2 w-2 rounded-full bg-[rgb(90,118,133)]" /> {t ? 'לידה' : 'Birth'}
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-red-400" /> {t ? 'פטירה' : 'Death'}
+          <span className="h-2 w-2 rounded-full bg-[rgb(181,138,132)]" /> {t ? 'פטירה' : 'Death'}
         </span>
       </div>
     </div>

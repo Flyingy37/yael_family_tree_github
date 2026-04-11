@@ -139,39 +139,39 @@ export function MapView({ persons, filteredIds, onSelectPerson, language = 'en' 
   const approxMarkers = useMemo(() => points.filter(p => p.isApprox).length, [points]);
 
   return (
-    <div className="flex-1 min-h-0 w-full flex flex-col rounded-2xl border border-slate-200 bg-slate-100 shadow-xl overflow-hidden relative">
+    <div className="relative flex-1 min-h-0 w-full flex flex-col overflow-hidden rounded-2xl border border-[rgba(160,147,125,0.16)] bg-[linear-gradient(180deg,rgba(246,243,236,0.86),rgba(239,233,224,0.96))] shadow-xl">
       <div
-        className="absolute top-4 end-4 z-[400] bg-white/95 backdrop-blur-sm px-5 py-3 rounded-xl shadow-lg border border-slate-200 max-w-[min(20rem,calc(100%-2rem))]"
+        className="absolute top-4 end-4 z-[400] max-w-[min(20rem,calc(100%-2rem))] rounded-xl border border-[rgba(160,147,125,0.16)] bg-[linear-gradient(180deg,rgba(255,255,255,0.82),rgba(250,247,242,0.96))] px-5 py-3 shadow-lg backdrop-blur-sm"
         dir={t ? 'rtl' : 'ltr'}
       >
-        <h3 className="font-bold text-slate-800 text-lg">
+        <h3 className="text-lg font-bold text-[rgb(94,87,78)]">
           {t ? 'מפת מסע המשפחה' : 'Family journey map'}
         </h3>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-[rgb(116,108,96)]">
           {t ? (
             <>
-              <span className="font-semibold text-blue-600">{points.length}</span> נקודות על המפה
+              <span className="font-semibold text-[rgb(90,118,133)]">{points.length}</span> נקודות על המפה
               {totalPeople > 0 && (
                 <>
                   {' '}
-                  (<span className="font-semibold text-slate-700">{totalPeople}</span> אנשים)
+                  (<span className="font-semibold text-[rgb(94,87,78)]">{totalPeople}</span> אנשים)
                 </>
               )}
             </>
           ) : (
             <>
-              <span className="font-semibold text-blue-600">{points.length}</span> locations on the map
+              <span className="font-semibold text-[rgb(90,118,133)]">{points.length}</span> locations on the map
               {totalPeople > 0 && (
                 <>
                   {' '}
-                  (<span className="font-semibold text-slate-700">{totalPeople}</span> people)
+                  (<span className="font-semibold text-[rgb(94,87,78)]">{totalPeople}</span> people)
                 </>
               )}
             </>
           )}
         </p>
         {(exactMarkers > 0 || approxMarkers > 0) && (
-          <p className="text-xs text-slate-400 mt-1 leading-snug">
+          <p className="mt-1 text-xs leading-snug text-[rgb(141,134,123)]">
             {t
               ? `${exactMarkers} מקור GPS · ${approxMarkers} משוער ממקום לידה`
               : `${exactMarkers} with coordinates · ${approxMarkers} estimated from birthplace`}
@@ -181,10 +181,10 @@ export function MapView({ persons, filteredIds, onSelectPerson, language = 'en' 
 
       {points.length === 0 && (
         <div
-          className="absolute inset-0 z-[500] flex items-center justify-center bg-slate-100/90 px-6 text-center"
+          className="absolute inset-0 z-[500] flex items-center justify-center bg-[rgba(246,243,236,0.92)] px-6 text-center"
           dir={t ? 'rtl' : 'ltr'}
         >
-          <p className="text-slate-600 text-sm max-w-md">
+          <p className="max-w-md text-sm text-[rgb(116,108,96)]">
             {t
               ? 'אין מיקומים להצגה: אין קואורדינטות או מקום לידה שמזוהה לסינון הנוכחי. נסי להרחיב את הסינון או לבחור אנשים עם מקום לידה מפורט.'
               : 'No locations to show for the current filter: no coordinates or recognizable birth places. Try widening filters or including people with place names in their birth field.'}
@@ -196,7 +196,7 @@ export function MapView({ persons, filteredIds, onSelectPerson, language = 'en' 
         center={[50.45, 22.0]}
         zoom={4}
         className="flex-1 min-h-[280px] w-full z-[10]"
-        style={{ width: '100%', height: '100%', minHeight: 280, background: '#e2e8f0' }}
+        style={{ width: '100%', height: '100%', minHeight: 280, background: '#e8e4dc' }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -214,35 +214,35 @@ export function MapView({ persons, filteredIds, onSelectPerson, language = 'en' 
               <Popup>
                 <div className={t ? 'text-right' : 'text-left'} dir={t ? 'rtl' : 'ltr'}>
                   {cluster.isApprox && (
-                    <span className="block text-[11px] font-medium text-amber-700 mb-1">
+                    <span className="mb-1 block text-[11px] font-medium text-[rgb(133,109,72)]">
                       {t ? 'מיקום משוער לפי מקום לידה' : '~Approximate (from birthplace text)'}
                     </span>
                   )}
-                  <strong className="block text-[15px] text-slate-800 mb-1">{loc.original_location}</strong>
+                  <strong className="mb-1 block text-[15px] text-[rgb(94,87,78)]">{loc.original_location}</strong>
                   {distinctPlaces.size > 1 && (
-                    <span className="block text-xs text-slate-500 mb-2 leading-relaxed">{loc.resolved_name}</span>
+                    <span className="mb-2 block text-xs leading-relaxed text-[rgb(126,117,104)]">{loc.resolved_name}</span>
                   )}
                   {loc.peopleCount != null && loc.peopleCount > 0 && (
-                    <div className="inline-block bg-blue-50 text-blue-700 text-xs font-semibold px-2 py-1 rounded-md mb-2">
+                    <div className="mb-2 inline-block rounded-md border border-[rgba(160,147,125,0.16)] bg-[linear-gradient(180deg,rgba(248,245,240,0.96),rgba(240,235,228,0.88))] px-2 py-1 text-xs font-semibold text-[rgb(90,118,133)]">
                       {t
                         ? `${loc.peopleCount} בני משפחה קשורים למקום זה`
                         : `${loc.peopleCount} family members at this place`}
                     </div>
                   )}
-                  <div className="max-h-48 overflow-y-auto text-xs border-t border-slate-100 pt-2 mt-1 space-y-0.5">
+                  <div className="mt-1 max-h-48 space-y-0.5 overflow-y-auto border-t border-[rgba(160,147,125,0.12)] pt-2 text-xs">
                     {cluster.persons.slice(0, 20).map(p => (
                       <button
                         key={p.id}
                         type="button"
-                        className={`block w-full py-0.5 text-blue-600 hover:underline ${t ? 'text-right' : 'text-left'}`}
+                        className={`block w-full py-0.5 text-[rgb(90,118,133)] hover:underline ${t ? 'text-right' : 'text-left'}`}
                         onClick={() => onSelectPerson(p.id)}
                       >
                         {p.fullName}
-                        {p.birthDate && <span className="text-slate-400"> ({p.birthDate})</span>}
+                        {p.birthDate && <span className="text-[rgb(141,134,123)]"> ({p.birthDate})</span>}
                       </button>
                     ))}
                     {cluster.persons.length > 20 && (
-                      <div className="text-slate-400 pt-1">
+                      <div className="pt-1 text-[rgb(141,134,123)]">
                         +{cluster.persons.length - 20} {t ? 'נוספים…' : 'more…'}
                       </div>
                     )}
